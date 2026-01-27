@@ -1,0 +1,24 @@
+{
+  "description": "File with co-signature attestation",
+  "master_key_hex": "0000000000000000000000000000000000000000000000000000000000000001",
+  "salt_hex": "0000000000000000000000000000000000000000000000000000000000000000",
+  "content": "Attested document",
+  "content_type": "text/plain",
+  "filename": "attested.txt",
+  "attestation": {
+    "signer_id": "user:42:accountant@example.com",
+    "signer_key_hex": "0000000000000000000000000000000000000000000000000000000000000002",
+    "statement": "Reviewed and approved",
+    "timestamp": 1706367600
+  },
+  "expected": {
+    "attestation_hmac_verifiable": true,
+    "attestation_hmac_algorithm": "HMAC-SHA256(signer_key, merkle_root || signer_id || pack_uint64_be(timestamp) || statement)",
+    "attestation_block_type": "0x07",
+    "attestation_block_type_name": "ATTESTATION",
+    "attestation_block_content_is_json": true,
+    "attestation_json_fields": ["signer_id", "signer_key", "statement", "timestamp", "hmac_hex"],
+    "content_sha256": "876ac8e5f0cf12eb5583d9aaa22c8f3e6cc8123a3f08a3e147ffcd6eeddf29a0",
+    "total_block_count_note": "1 content block + 1 attestation block = 2 blocks"
+  }
+}

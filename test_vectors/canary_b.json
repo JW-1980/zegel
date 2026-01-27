@@ -1,0 +1,21 @@
+{
+  "description": "Canary trap file for recipient B - same content as canary_a",
+  "master_key_hex": "0000000000000000000000000000000000000000000000000000000000000001",
+  "salt_hex": "0000000000000000000000000000000000000000000000000000000000000000",
+  "content": "Confidential document",
+  "content_type": "text/plain",
+  "filename": "confidential.txt",
+  "flags": "0x0080",
+  "recipient_id_hex": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "expected": {
+    "has_canary_flag": true,
+    "same_content_as_canary_a": true,
+    "different_ciphertext_from_canary_a": true,
+    "identifiable_recipient": true,
+    "original_content_sha256": "559e056cc17d81f262057b1771e682153b87e8cb01bb7f21dcca59767dfa80dd",
+    "padding_differs_from_canary_a": true,
+    "padding_note": "Different recipient_id produces different HMAC, thus different padding bytes and length",
+    "merkle_root_differs_from_canary_a": true,
+    "merkle_root_note": "Padding changes the plaintext, so the leaf hash and Merkle root change"
+  }
+}

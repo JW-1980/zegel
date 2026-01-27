@@ -1,0 +1,143 @@
+{
+  "@@locale": "en",
+  "appTitle": "Zegel",
+  "@appTitle": {
+    "description": "The application title"
+  },
+  "homeTitle": "Zegel - Tamper-Proof Sealing",
+  "@homeTitle": {
+    "description": "Title shown on the home screen"
+  },
+  "sealAction": "Seal",
+  "@sealAction": {
+    "description": "Label for the seal action"
+  },
+  "verifyAction": "Verify",
+  "@verifyAction": {
+    "description": "Label for the verify action"
+  },
+  "extractAction": "Extract",
+  "@extractAction": {
+    "description": "Label for the extract action"
+  },
+  "inspectAction": "Inspect",
+  "@inspectAction": {
+    "description": "Label for the inspect action"
+  },
+  "settingsTitle": "Settings",
+  "@settingsTitle": {
+    "description": "Title for the settings screen"
+  },
+  "dropZoneHint": "Drop a file here to seal, or a .zgl file to verify",
+  "@dropZoneHint": {
+    "description": "Hint text shown in the drag and drop zone"
+  },
+  "keyLabel": "Master Key",
+  "@keyLabel": {
+    "description": "Label for the master key input"
+  },
+  "keyHint": "Enter 64-character hex key or load from file",
+  "@keyHint": {
+    "description": "Hint text for the key input field"
+  },
+  "generateKeyAction": "Generate New Key",
+  "@generateKeyAction": {
+    "description": "Button label to generate a new key"
+  },
+  "fileSelected": "File selected: {filename}",
+  "@fileSelected": {
+    "description": "Message shown when a file is selected",
+    "placeholders": {
+      "filename": {
+        "type": "String",
+        "example": "document.pdf"
+      }
+    }
+  },
+  "sealSuccess": "File sealed successfully",
+  "@sealSuccess": {
+    "description": "Message shown after successful sealing"
+  },
+  "verifyValid": "File integrity verified - INTACT",
+  "@verifyValid": {
+    "description": "Message shown when file verification passes"
+  },
+  "verifyTampered": "TAMPERED - File has been modified!",
+  "@verifyTampered": {
+    "description": "Message shown when file has been tampered with"
+  },
+  "verifyExpired": "EXPIRED - File has passed its expiration date",
+  "@verifyExpired": {
+    "description": "Message shown when file has expired"
+  },
+  "extractSuccess": "Original file extracted successfully",
+  "@extractSuccess": {
+    "description": "Message shown after successful extraction"
+  },
+  "redactAction": "Redact Blocks",
+  "@redactAction": {
+    "description": "Label for the redact action"
+  },
+  "splitKeyAction": "Split Key",
+  "@splitKeyAction": {
+    "description": "Label for the split key action"
+  },
+  "disclosureAction": "Selective Disclosure",
+  "@disclosureAction": {
+    "description": "Label for the selective disclosure action"
+  },
+  "attestAction": "Add Attestation",
+  "@attestAction": {
+    "description": "Label for the attestation action"
+  },
+  "auditTrailTitle": "Audit Trail",
+  "@auditTrailTitle": {
+    "description": "Title for the audit trail section"
+  },
+  "noFileSelected": "No file selected",
+  "@noFileSelected": {
+    "description": "Message when no file has been selected"
+  },
+  "errorGeneric": "An error occurred: {message}",
+  "@errorGeneric": {
+    "description": "Generic error message",
+    "placeholders": {
+      "message": {
+        "type": "String",
+        "example": "File not found"
+      }
+    }
+  },
+  "savedKeysTitle": "Saved Keys",
+  "@savedKeysTitle": {
+    "description": "Title for the saved keys section"
+  },
+  "languageLabel": "Language",
+  "@languageLabel": {
+    "description": "Label for the language selector"
+  },
+  "blockSizeLabel": "Default Block Size",
+  "@blockSizeLabel": {
+    "description": "Label for the block size setting"
+  },
+  "compressionLabel": "Enable Compression",
+  "@compressionLabel": {
+    "description": "Label for the compression toggle"
+  },
+  "expirationLabel": "Expiration Date",
+  "@expirationLabel": {
+    "description": "Label for the expiration date picker"
+  },
+  "recipientLabel": "Recipient ID",
+  "@recipientLabel": {
+    "description": "Label for the recipient ID input"
+  },
+  "thresholdLabel": "Threshold (M)",
+  "@thresholdLabel": {
+    "description": "Label for the threshold input in split-key"
+  },
+  "totalSharesLabel": "Total Shares (N)",
+  "@totalSharesLabel": {
+    "description": "Label for the total shares input in split-key"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "description": "File larger than one block (3 blocks)",
+  "master_key_hex": "0000000000000000000000000000000000000000000000000000000000000001",
+  "salt_hex": "0000000000000000000000000000000000000000000000000000000000000000",
+  "content_description": "196608 bytes (3 x 65536) of repeating 0x41 ('A')",
+  "content_type": "application/octet-stream",
+  "filename": "large.bin",
+  "flags": "0x0000",
+  "block_count": 3,
+  "expected": {
+    "all_blocks_type": "0x01",
+    "block_0_size": 65536,
+    "block_1_size": 65536,
+    "block_2_size": 65536,
+    "total_content_size": 196608,
+    "each_block_plaintext_sha256": "156c38442089c1323d3e3ba549a6ac24341c47e8b6367bec4740c9b8c865826e",
+    "merkle_tree_depth": 2,
+    "merkle_tree_note": "3 leaves -> pad to 4 (dup last) -> 2 parents -> 1 root",
+    "merkle_internal_node_hex": "526975c66901a739de3fc98f9178cab8489cde9a99d8553ae5bb21697aa259f9",
+    "merkle_root_hex": "83ea9be983b00483d850a1585144d17a5de09715005ecd6b3beb1a7c4f6603a2"
+  }
+}

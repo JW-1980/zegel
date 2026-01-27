@@ -1,0 +1,21 @@
+include: package:lints/recommended.yaml
+
+linter:
+  rules:
+    prefer_final_locals: true
+    prefer_const_constructors: true
+    prefer_const_declarations: true
+    avoid_print: true
+    prefer_single_quotes: true
+    sort_constructors_first: true
+    unawaited_futures: true
+    unnecessary_lambdas: true
+    prefer_expression_function_bodies: false
+
+analyzer:
+  language:
+    strict-casts: true
+    strict-inference: true
+    strict-raw-types: true
+  exclude:
+    - '**/*.g.dart'
