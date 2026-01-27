@@ -65,30 +65,43 @@ class ExtractCommand extends Command<int> {
 
     final fileBytes = Uint8List.fromList(file.readAsBytesSync());
 
-    // Create reader and extract.
-    final reader = ZegelReader(fileBytes);
-    final result = reader.verify(masterKey);
+    // Create reader and verify/extract.
+    final reader = const ZegelReader();
+    ZegelResult result;
 
-    switch (result.status) {
-      case ZegelVerifyStatus.tampered:
-        stderr.writeln(Ansi.error('TAMPERED') +
-            ' - File integrity check FAILED. Cannot extract.');
-        if (result.errorMessage != null) {
-          stderr.writeln('  Reason: ${result.errorMessage}');
+    try {
+      result = reader.verify(fileBytes, masterKey);
+    } on ZegelTamperedException catch (e) {
+      stderr.writeln(
+        '${Ansi.error('TAMPERED')} - File integrity check FAILED. '
+        'Cannot extract.',
+      );
+      stderr.writeln('  Reason: ${e.message}');
+      return 1;
+    } on ZegelExpiredException catch (e) {
+      stderr.writeln(
+        '${Ansi.error('EXPIRED')} - File has passed its cryptographic '
+        'expiration date.',
+      );
+      stderr.writeln('  Detail: ${e.message}');
+
+      try {
+        final inspection = reader.inspect(fileBytes);
+        if (inspection.expirationTimestamp != null) {
+          final expiresAt = DateTime.fromMillisecondsSinceEpoch(
+            inspection.expirationTimestamp! * 1000,
+            isUtc: true,
+          );
+          stderr.writeln('  Expired: ${formatTimestamp(expiresAt)}');
         }
-        return 1;
-
-      case ZegelVerifyStatus.expired:
-        stderr.writeln(Ansi.error('EXPIRED') +
-            ' - File has passed its cryptographic expiration date.');
-        final header = reader.inspectHeader();
-        if (header.expiresAt != null) {
-          stderr.writeln('  Expired: ${formatTimestamp(header.expiresAt!)}');
-        }
-        return 2;
-
-      case ZegelVerifyStatus.valid:
-        break; // Continue to extraction.
+      } catch (_) {
+        // Could not inspect header for expiration details.
+      }
+      return 2;
+    } on ZegelFormatException catch (e) {
+      stderr.writeln('${Ansi.error('ERROR')} - Invalid file format.');
+      stderr.writeln('  Reason: ${e.message}');
+      return 1;
     }
 
     if (result.content == null || result.content!.isEmpty) {
@@ -96,8 +109,9 @@ class ExtractCommand extends Command<int> {
     }
 
     // Determine output path.
-    final header = reader.inspectHeader();
-    final outputPath = argResults!['output'] as String? ?? header.filename;
+    final inspection = reader.inspect(fileBytes);
+    final outputPath =
+        argResults!['output'] as String? ?? inspection.filename ?? '';
 
     if (outputPath.isEmpty) {
       exitError(
@@ -125,15 +139,19 @@ class ExtractCommand extends Command<int> {
     stdout.writeln();
     stdout.writeln('  Source:   $filePath');
     stdout.writeln('  Output:   $outputPath');
-    stdout.writeln('  Filename: ${header.filename}');
-    stdout.writeln('  Type:     ${header.contentType}');
+    if (inspection.filename != null) {
+      stdout.writeln('  Filename: ${inspection.filename}');
+    }
+    if (inspection.contentType != null) {
+      stdout.writeln('  Type:     ${inspection.contentType}');
+    }
     stdout.writeln('  Size:     ${formatFileSize(result.content!.length)}');
 
-    if (result.redactedBlocks.isNotEmpty) {
+    if (result.redactedBlocks != null && result.redactedBlocks!.isNotEmpty) {
       stdout.writeln();
       stdout.writeln(Ansi.warning(
-        '  Note: ${result.redactedBlocks.length} block(s) were redacted '
-        '(blocks: ${result.redactedBlocks.join(', ')})',
+        '  Note: ${result.redactedBlocks!.length} block(s) were redacted '
+        '(blocks: ${result.redactedBlocks!.join(', ')})',
       ));
     }
 

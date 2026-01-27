@@ -76,7 +76,9 @@ class RedactCommand extends Command<int> {
       if (trimmed.isEmpty) continue;
       final index = int.tryParse(trimmed);
       if (index == null || index < 0) {
-        exitError('Invalid block index: "$trimmed". Must be a non-negative integer.');
+        exitError(
+          'Invalid block index: "$trimmed". Must be a non-negative integer.',
+        );
       }
       blockIndices.add(index);
     }
@@ -93,20 +95,25 @@ class RedactCommand extends Command<int> {
 
     final fileBytes = Uint8List.fromList(file.readAsBytesSync());
 
-    // First verify the file is intact.
-    final reader = ZegelReader(fileBytes);
-    final header = reader.inspectHeader();
+    // Parse raw header to validate block indices and check types.
+    RawZegelHeader rawHeader;
+    try {
+      rawHeader = RawZegelHeader.parse(fileBytes);
+    } on FormatException catch (e) {
+      exitError('Invalid .zgl file: ${e.message}');
+    }
 
     // Validate block indices are within range.
     for (final index in blockIndices) {
-      if (index >= header.blockCount) {
+      if (index >= rawHeader.blockCount) {
         exitError(
           'Block index $index is out of range. '
-          'File has ${header.blockCount} blocks (0-${header.blockCount - 1}).',
+          'File has ${rawHeader.blockCount} blocks '
+          '(0-${rawHeader.blockCount - 1}).',
         );
       }
       // Check if block is already redacted.
-      if (header.blockDirectory[index].type == 0x06) {
+      if (rawHeader.blockDirectory[index].type == ZegelFormat.blockRedacted) {
         stderr.writeln(Ansi.warning(
           'Warning: Block $index is already redacted.',
         ));
@@ -121,7 +128,7 @@ class RedactCommand extends Command<int> {
         'The following blocks will be permanently destroyed:',
       );
       for (final index in blockIndices) {
-        final block = header.blockDirectory[index];
+        final block = rawHeader.blockDirectory[index];
         stderr.writeln(
           '  Block $index: ${blockTypeName(block.type)} '
           '(${formatFileSize(block.ciphertextLength)})',
@@ -136,10 +143,13 @@ class RedactCommand extends Command<int> {
     }
 
     // Verify the file before redacting.
-    final verifyResult = reader.verify(masterKey);
-    if (verifyResult.status != ZegelVerifyStatus.valid) {
+    final reader = const ZegelReader();
+    try {
+      reader.verify(fileBytes, masterKey);
+    } on ZegelException catch (e) {
       exitError(
-        'File verification failed. Cannot redact an already-tampered file.',
+        'File verification failed. Cannot redact an already-tampered file. '
+        '(${e.message})',
       );
     }
 
@@ -160,9 +170,10 @@ class RedactCommand extends Command<int> {
     stdout.writeln('  Source:          $filePath');
     stdout.writeln('  Output:          $outputPath');
     stdout.writeln('  Redacted blocks: ${blockIndices.join(', ')}');
-    stdout.writeln('  Total blocks:    ${header.blockCount}');
+    stdout.writeln('  Total blocks:    ${rawHeader.blockCount}');
     stdout.writeln(
-      '  Remaining:       ${header.blockCount - blockIndices.length} accessible',
+      '  Remaining:       ${rawHeader.blockCount - blockIndices.length} '
+      'accessible',
     );
     stdout.writeln();
     stdout.writeln(Ansi.info(

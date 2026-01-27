@@ -4,6 +4,8 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:args/command_runner.dart';
+import 'package:crypto/crypto.dart' as crypto;
+import 'package:pointycastle/export.dart';
 import 'package:zegel/zegel.dart';
 
 import 'common.dart';
@@ -122,19 +124,24 @@ class AttestCommand extends Command<int> {
 
     final fileBytes = Uint8List.fromList(file.readAsBytesSync());
 
-    // Verify the file first.
-    final reader = ZegelReader(fileBytes);
-    final header = reader.inspectHeader();
-    final verifyResult = reader.verify(masterKey);
-
-    if (verifyResult.status != ZegelVerifyStatus.valid) {
-      exitError(
-        'File verification failed. Cannot attest to a tampered file.',
-      );
+    // Parse raw header for detailed binary information.
+    RawZegelHeader rawHeader;
+    try {
+      rawHeader = RawZegelHeader.parse(fileBytes);
+    } on FormatException catch (e) {
+      exitError('Invalid .zgl file: ${e.message}');
     }
 
-    if (header.merkleRoot == null) {
-      exitError('Could not extract Merkle root from file.');
+    // Verify the file first using the library.
+    final reader = const ZegelReader();
+    ZegelResult result;
+    try {
+      result = reader.verify(fileBytes, masterKey);
+    } on ZegelException catch (e) {
+      exitError(
+        'File verification failed. Cannot attest to a tampered file. '
+        '(${e.message})',
+      );
     }
 
     // Create the attestation using the CURRENT Merkle root.
@@ -143,7 +150,7 @@ class AttestCommand extends Command<int> {
     // the signer attested to the file as it was before the block was added.
     final timestamp = DateTime.now().toUtc();
     final attestation = Attestation.createAttestation(
-      header.merkleRoot!,
+      rawHeader.merkleRoot,
       signerId,
       signerKey,
       statement,
@@ -159,8 +166,7 @@ class AttestCommand extends Command<int> {
     final attestedBytes = _resealWithAttestation(
       fileBytes,
       masterKey,
-      header,
-      verifyResult,
+      rawHeader,
       Uint8List.fromList(utf8.encode(attestationJson)),
     );
 
@@ -172,15 +178,17 @@ class AttestCommand extends Command<int> {
     // Print success message.
     stdout.writeln(Ansi.success('Attestation added successfully.'));
     stdout.writeln();
-    stdout.writeln('  File:      ${outputPath == filePath ? '$filePath (updated)' : outputPath}');
+    stdout.writeln(
+      '  File:      ${outputPath == filePath ? '$filePath (updated)' : outputPath}',
+    );
     stdout.writeln('  Signer:    $signerId');
     stdout.writeln('  Statement: $statement');
     stdout.writeln('  Time:      ${formatTimestamp(timestamp)}');
     stdout.writeln('  HMAC:      ${attestation['hmac_hex']}');
 
-    if (verifyResult.attestations != null) {
+    if (result.attestations != null) {
       stdout.writeln(
-        '  Total:     ${verifyResult.attestations!.length + 1} attestation(s)',
+        '  Total:     ${result.attestations!.length + 1} attestation(s)',
       );
     }
 
@@ -194,54 +202,18 @@ class AttestCommand extends Command<int> {
   Uint8List _resealWithAttestation(
     Uint8List originalFileBytes,
     Uint8List masterKey,
-    ZegelHeader header,
-    ZegelReadResult verifyResult,
+    RawZegelHeader header,
     Uint8List attestationPlaintext,
   ) {
     final random = Random.secure();
 
-    // Reconstruct all block plaintexts from the verified extraction.
-    // We re-read the file to get the raw encrypted blocks, then decrypt them
-    // to recover the exact plaintexts (including compression and canary padding).
-    // This preserves the exact block structure.
-
-    // Parse block data offsets from the original file.
-    final bd = ByteData.sublistView(originalFileBytes);
-    final int filenameLen = bd.getUint16(84, Endian.big);
-    final int saltOffset = 86 + filenameLen;
-    final Uint8List salt = Uint8List.fromList(
-      originalFileBytes.sublist(saltOffset, saltOffset + ZegelFormat.saltSize),
-    );
-    final int blockCountOffset = saltOffset + ZegelFormat.saltSize;
-
-    // Use the original salt for consistency.
-
-    // We need the original per-block plaintexts (as stored, including
-    // compression/canary). The leaf hashes in the directory ARE the SHA-256
-    // of these plaintexts, so we can decrypt and verify.
-
-    // Find data start.
-    int cursor = blockCountOffset + 4;
-    if (header.flags & ZegelFormat.flagPasswordDerived != 0) cursor += 8;
-    if (header.flags & ZegelFormat.flagHasExpiration != 0) cursor += 8;
-    if (header.flags & ZegelFormat.flagHasCanary != 0) cursor += 32;
-    if (header.flags & ZegelFormat.flagSplitKey != 0) cursor += 2;
-    if (header.flags & ZegelFormat.flagVersioned != 0) cursor += 32;
-    if (header.flags & ZegelFormat.flagHasPublicMetadata != 0) {
-      final int pubMetaLen = bd.getUint32(cursor, Endian.big);
-      cursor += 4 + pubMetaLen;
-    }
-    cursor += header.blockCount * ZegelFormat.blockDirectoryEntrySize;
-    cursor += ZegelFormat.hashSize; // Merkle root
-    if (header.flags & ZegelFormat.flagHasKeyCommitment != 0) {
-      cursor += ZegelFormat.hashSize;
-    }
-    final int dataStart = cursor;
-
     // Build expiration date string for key derivation.
     String? expirationDateStr;
-    if (header.expiresAt != null) {
-      final dt = header.expiresAt!.toUtc();
+    if (header.expirationTimestamp != null) {
+      final dt = DateTime.fromMillisecondsSinceEpoch(
+        header.expirationTimestamp! * 1000,
+        isUtc: true,
+      );
       expirationDateStr =
           '${dt.year.toString().padLeft(4, '0')}-'
           '${dt.month.toString().padLeft(2, '0')}-'
@@ -251,7 +223,7 @@ class AttestCommand extends Command<int> {
     // Decrypt all existing blocks to recover their plaintexts.
     final List<Uint8List> plaintexts = [];
     final List<int> blockTypes = [];
-    int dataOffset = dataStart;
+    int dataOffset = header.dataStart;
 
     for (int i = 0; i < header.blockCount; i++) {
       final entry = header.blockDirectory[i];
@@ -263,8 +235,8 @@ class AttestCommand extends Command<int> {
       dataOffset += entry.ciphertextLength;
 
       if (entry.type == ZegelFormat.blockRedacted) {
-        // Preserve redacted blocks as-is (use their original hash).
-        plaintexts.add(ciphertext); // Random bytes, won't be re-encrypted.
+        // Preserve redacted blocks as-is.
+        plaintexts.add(ciphertext);
         blockTypes.add(ZegelFormat.blockRedacted);
         continue;
       }
@@ -272,15 +244,16 @@ class AttestCommand extends Command<int> {
       // Derive original block key.
       final Uint8List blockKey = KeyDerivation.deriveBlockKey(
         masterKey,
-        header.merkleRoot!,
-        salt,
+        header.merkleRoot,
+        header.salt,
         i,
         expirationDate: expirationDateStr,
       );
 
       // Decrypt.
       final cipher = _createGCMCipher(false, blockKey, entry.iv);
-      final Uint8List input = Uint8List(ciphertext.length + entry.tag.length);
+      final Uint8List input =
+          Uint8List(ciphertext.length + entry.tag.length);
       input.setRange(0, ciphertext.length, ciphertext);
       input.setRange(ciphertext.length, input.length, entry.tag);
       final Uint8List plaintext = cipher.process(input);
@@ -301,9 +274,7 @@ class AttestCommand extends Command<int> {
         leafHashes.add(header.blockDirectory[i].plaintextHash);
       } else {
         leafHashes.add(
-          Uint8List.fromList(
-            _sha256(plaintexts[i]),
-          ),
+          Uint8List.fromList(crypto.sha256.convert(plaintexts[i]).bytes),
         );
       }
     }
@@ -330,7 +301,7 @@ class AttestCommand extends Command<int> {
       final Uint8List key = KeyDerivation.deriveBlockKey(
         masterKey,
         newMerkleRoot,
-        salt,
+        header.salt,
         i,
         expirationDate: expirationDateStr,
       );
@@ -356,14 +327,12 @@ class AttestCommand extends Command<int> {
     // Rebuild the binary.
     final output = BytesBuilder();
 
-    // Header (copy from original up to block count).
+    // Header.
     output.add(ZegelFormat.magic);
     output.addByte(header.versionMajor);
     output.addByte(header.versionMinor);
     output.add(_uint16BE(header.flags));
-    output.add(_uint64BE(
-      header.createdAt.millisecondsSinceEpoch ~/ 1000,
-    ));
+    output.add(_uint64BE(header.timestamp));
 
     // Content-Type.
     final Uint8List ctPadded = Uint8List(ZegelFormat.contentTypeSize);
@@ -380,27 +349,25 @@ class AttestCommand extends Command<int> {
     output.add(fnBytes);
 
     // Salt.
-    output.add(salt);
+    output.add(header.salt);
 
     // Block count (now includes attestation).
     output.add(_uint32BE(plaintexts.length));
 
-    // Extended header (copy from original).
+    // Extended header.
     if (header.flags & ZegelFormat.flagPasswordDerived != 0) {
       output.add(_uint32BE(header.argon2TimeCost!));
       output.add(_uint32BE(header.argon2MemoryCost!));
     }
     if (header.flags & ZegelFormat.flagHasExpiration != 0) {
-      output.add(_uint64BE(
-        header.expiresAt!.millisecondsSinceEpoch ~/ 1000,
-      ));
+      output.add(_uint64BE(header.expirationTimestamp!));
     }
     if (header.flags & ZegelFormat.flagHasCanary != 0) {
       output.add(header.recipientId!);
     }
     if (header.flags & ZegelFormat.flagSplitKey != 0) {
       output.addByte(header.splitKeyThreshold!);
-      output.addByte(header.splitKeyShares!);
+      output.addByte(header.splitKeyTotal!);
     }
     if (header.flags & ZegelFormat.flagVersioned != 0) {
       output.add(header.versionChainHash!);
@@ -438,7 +405,7 @@ class AttestCommand extends Command<int> {
     final Uint8List sealKey = KeyDerivation.computeSealKey(
       newMerkleRoot,
       masterKey,
-      salt,
+      header.salt,
     );
     final Uint8List masterSeal = KeyDerivation.computeMasterSeal(
       sealKey,
@@ -473,13 +440,6 @@ class AttestCommand extends Command<int> {
     return Uint8List.fromList(
       List<int>.generate(length, (_) => random.nextInt(256)),
     );
-  }
-
-  static List<int> _sha256(Uint8List data) {
-    // Use the same SHA-256 as the library.
-    // Import crypto through the zegel library re-export.
-    final digest = sha256Hash(data);
-    return digest;
   }
 
   static Uint8List _uint16BE(int value) {

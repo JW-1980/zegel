@@ -70,74 +70,102 @@ class VerifyCommand extends Command<int> {
     final quiet = argResults!['quiet'] as bool;
 
     // Create reader and verify.
-    final reader = ZegelReader(fileBytes);
-    final result = reader.verify(masterKey);
+    final reader = const ZegelReader();
 
-    switch (result.status) {
-      case ZegelVerifyStatus.valid:
-        if (quiet) {
-          stdout.writeln('VALID');
-        } else {
-          stdout.writeln(Ansi.success('VALID') +
-              ' - File integrity verified.');
-          stdout.writeln();
-          _printFileInfo(reader, result, filePath, verbose);
-        }
-        return 0;
+    try {
+      final result = reader.verify(fileBytes, masterKey);
 
-      case ZegelVerifyStatus.tampered:
-        if (quiet) {
-          stdout.writeln('TAMPERED');
-        } else {
-          stdout.writeln(Ansi.error('TAMPERED') +
-              ' - File integrity check FAILED.');
-          stdout.writeln();
-          if (result.errorMessage != null) {
-            stderr.writeln('  Reason: ${result.errorMessage}');
-          }
-        }
-        return 1;
+      if (quiet) {
+        stdout.writeln('VALID');
+      } else {
+        stdout.writeln('${Ansi.success('VALID')} - File integrity verified.');
+        stdout.writeln();
+        _printFileInfo(reader, result, fileBytes, filePath, verbose);
+      }
+      return 0;
+    } on ZegelTamperedException catch (e) {
+      if (quiet) {
+        stdout.writeln('TAMPERED');
+      } else {
+        stdout.writeln(
+          '${Ansi.error('TAMPERED')} - File integrity check FAILED.',
+        );
+        stdout.writeln();
+        stderr.writeln('  Reason: ${e.message}');
+      }
+      return 1;
+    } on ZegelExpiredException catch (e) {
+      if (quiet) {
+        stdout.writeln('EXPIRED');
+      } else {
+        stdout.writeln(
+          '${Ansi.error('EXPIRED')} - File has passed its cryptographic '
+          'expiration date.',
+        );
+        stdout.writeln();
+        stderr.writeln('  Detail: ${e.message}');
 
-      case ZegelVerifyStatus.expired:
-        if (quiet) {
-          stdout.writeln('EXPIRED');
-        } else {
-          stdout.writeln(Ansi.error('EXPIRED') +
-              ' - File has passed its cryptographic expiration date.');
-          stdout.writeln();
-          final header = reader.inspectHeader();
-          if (header.expiresAt != null) {
-            stdout.writeln(
-              '  Expired: ${formatTimestamp(header.expiresAt!)}',
+        try {
+          final inspection = reader.inspect(fileBytes);
+          if (inspection.expirationTimestamp != null) {
+            final expiresAt = DateTime.fromMillisecondsSinceEpoch(
+              inspection.expirationTimestamp! * 1000,
+              isUtc: true,
             );
+            stdout.writeln('  Expired: ${formatTimestamp(expiresAt)}');
           }
+        } catch (_) {
+          // Could not inspect header for expiration details.
         }
-        return 2;
+      }
+      return 2;
+    } on ZegelFormatException catch (e) {
+      if (quiet) {
+        stdout.writeln('TAMPERED');
+      } else {
+        stderr.writeln('${Ansi.error('ERROR')} - Invalid file format.');
+        stderr.writeln('  Reason: ${e.message}');
+      }
+      return 1;
     }
   }
 
   /// Prints file information after successful verification.
   void _printFileInfo(
     ZegelReader reader,
-    ZegelReadResult result,
+    ZegelResult result,
+    Uint8List fileBytes,
     String filePath,
     bool verbose,
   ) {
-    final header = reader.inspectHeader();
+    final inspection = reader.inspect(fileBytes);
+
+    final createdAt = DateTime.fromMillisecondsSinceEpoch(
+      inspection.timestamp * 1000,
+      isUtc: true,
+    );
 
     stdout.writeln('  File:       $filePath');
-    stdout.writeln('  Version:    ${header.versionMajor}.${header.versionMinor}');
-    stdout.writeln('  Created:    ${formatTimestamp(header.createdAt)}');
-    stdout.writeln('  Filename:   ${header.filename}');
-    stdout.writeln('  Type:       ${header.contentType}');
-    stdout.writeln('  Blocks:     ${header.blockCount}');
+    stdout.writeln('  Version:    ${inspection.version}');
+    stdout.writeln('  Created:    ${formatTimestamp(createdAt)}');
+    if (inspection.filename != null) {
+      stdout.writeln('  Filename:   ${inspection.filename}');
+    }
+    if (inspection.contentType != null) {
+      stdout.writeln('  Type:       ${inspection.contentType}');
+    }
+    stdout.writeln('  Blocks:     ${inspection.blockCount}');
 
-    if (header.expiresAt != null) {
-      stdout.writeln('  Expires:    ${formatTimestamp(header.expiresAt!)}');
+    if (inspection.expirationTimestamp != null) {
+      final expiresAt = DateTime.fromMillisecondsSinceEpoch(
+        inspection.expirationTimestamp! * 1000,
+        isUtc: true,
+      );
+      stdout.writeln('  Expires:    ${formatTimestamp(expiresAt)}');
     }
 
     // Show flags.
-    final flags = decodeFlagNames(header.flags);
+    final flags = decodeFlagNames(inspection.flags);
     if (flags.isNotEmpty) {
       stdout.writeln('  Flags:      ${flags.join(', ')}');
     }
@@ -152,19 +180,20 @@ class VerifyCommand extends Command<int> {
     }
 
     // Show public metadata if present.
-    if (header.publicMetadata != null && header.publicMetadata!.isNotEmpty) {
+    if (inspection.publicMetadata != null &&
+        inspection.publicMetadata!.isNotEmpty) {
       stdout.writeln();
       stdout.writeln(Ansi.header('  Public Metadata:'));
-      for (final entry in header.publicMetadata!.entries) {
+      for (final entry in inspection.publicMetadata!.entries) {
         stdout.writeln('    ${entry.key}: ${entry.value}');
       }
     }
 
     // Show redacted blocks.
-    if (result.redactedBlocks.isNotEmpty) {
+    if (result.redactedBlocks != null && result.redactedBlocks!.isNotEmpty) {
       stdout.writeln();
       stdout.writeln(Ansi.warning(
-        '  Redacted blocks: ${result.redactedBlocks.join(', ')}',
+        '  Redacted blocks: ${result.redactedBlocks!.join(', ')}',
       ));
     }
 
@@ -173,11 +202,7 @@ class VerifyCommand extends Command<int> {
       stdout.writeln();
       stdout.writeln(Ansi.header('  Attestations:'));
       for (final att in result.attestations!) {
-        final valid = att['valid'] == true;
-        final status = valid
-            ? Ansi.success('VALID')
-            : Ansi.error('INVALID');
-        stdout.writeln('    [$status] ${att['signer_id']}');
+        stdout.writeln('    Signer: ${att['signer_id']}');
         stdout.writeln('      Statement: ${att['statement']}');
         if (att['timestamp'] != null) {
           final ts = DateTime.fromMillisecondsSinceEpoch(
@@ -201,28 +226,29 @@ class VerifyCommand extends Command<int> {
                 isUtc: true,
               )
             : null;
-        final chainValid = entry['chain_valid'] == true;
-        final chainStatus = chainValid
-            ? Ansi.success('OK')
-            : Ansi.error('BROKEN');
         stdout.writeln(
           '    ${i + 1}. [${entry['action']}] by ${entry['actor']} '
-          '${ts != null ? formatTimestamp(ts) : 'unknown time'} '
-          '(chain: $chainStatus)',
+          '${ts != null ? formatTimestamp(ts) : 'unknown time'}',
         );
       }
     }
 
     if (verbose) {
-      stdout.writeln();
-      stdout.writeln(Ansi.header('  Block Directory:'));
-      for (var i = 0; i < header.blockCount; i++) {
-        final block = header.blockDirectory[i];
-        stdout.writeln(
-          '    [$i] ${blockTypeName(block.type)} '
-          '${formatFileSize(block.ciphertextLength)} '
-          'hash=${hexEncode(Uint8List.fromList(block.plaintextHash.take(8).toList()))}...',
-        );
+      // Use raw binary parsing to show block directory details.
+      try {
+        final rawHeader = RawZegelHeader.parse(fileBytes);
+        stdout.writeln();
+        stdout.writeln(Ansi.header('  Block Directory:'));
+        for (var i = 0; i < rawHeader.blockCount; i++) {
+          final block = rawHeader.blockDirectory[i];
+          stdout.writeln(
+            '    [$i] ${blockTypeName(block.type)} '
+            '${formatFileSize(block.ciphertextLength)} '
+            'hash=${hexEncode(Uint8List.fromList(block.plaintextHash.take(8).toList()))}...',
+          );
+        }
+      } catch (_) {
+        // Could not parse block directory.
       }
     }
   }

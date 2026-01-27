@@ -100,32 +100,52 @@ class DiscloseCommand extends Command<int> {
 
     final fileBytes = Uint8List.fromList(file.readAsBytesSync());
 
-    // Verify the file first.
-    final reader = ZegelReader(fileBytes);
-    final header = reader.inspectHeader();
+    // Parse raw header for merkleRoot, salt, and block directory.
+    RawZegelHeader rawHeader;
+    try {
+      rawHeader = RawZegelHeader.parse(fileBytes);
+    } on FormatException catch (e) {
+      exitError('Invalid .zgl file: ${e.message}');
+    }
 
     // Validate block indices.
     for (final index in blockIndices) {
-      if (index >= header.blockCount) {
+      if (index >= rawHeader.blockCount) {
         exitError(
           'Block index $index is out of range. '
-          'File has ${header.blockCount} blocks (0-${header.blockCount - 1}).',
+          'File has ${rawHeader.blockCount} blocks '
+          '(0-${rawHeader.blockCount - 1}).',
         );
       }
-      if (header.blockDirectory[index].type == 0x06) {
+      if (rawHeader.blockDirectory[index].type == ZegelFormat.blockRedacted) {
         exitError(
           'Block $index is redacted and cannot be disclosed.',
         );
       }
     }
 
-    final verifyResult = reader.verify(masterKey);
-    if (verifyResult.status != ZegelVerifyStatus.valid) {
-      exitError('File verification failed. Cannot generate disclosure token.');
+    // Verify the file first.
+    final reader = const ZegelReader();
+    try {
+      reader.verify(fileBytes, masterKey);
+    } on ZegelException catch (e) {
+      exitError(
+        'File verification failed. Cannot generate disclosure token. '
+        '(${e.message})',
+      );
     }
 
-    if (header.merkleRoot == null) {
-      exitError('Could not extract Merkle root from file.');
+    // Build expiration date string for key derivation (from file's expiration).
+    String? expirationDateStr;
+    if (rawHeader.expirationTimestamp != null) {
+      final dt = DateTime.fromMillisecondsSinceEpoch(
+        rawHeader.expirationTimestamp! * 1000,
+        isUtc: true,
+      );
+      expirationDateStr =
+          '${dt.year.toString().padLeft(4, '0')}-'
+          '${dt.month.toString().padLeft(2, '0')}-'
+          '${dt.day.toString().padLeft(2, '0')}';
     }
 
     // Parse optional token expiration.
@@ -137,12 +157,11 @@ class DiscloseCommand extends Command<int> {
 
     // Generate the disclosure token.
     final token = SelectiveDisclosure.generateToken(
-      masterKey: masterKey,
-      salt: header.masterSalt,
-      merkleRoot: header.merkleRoot!,
-      blockIndices: blockIndices,
-      flags: header.flags,
-      expiresAt: header.expiresAt,
+      masterKey,
+      rawHeader.merkleRoot,
+      rawHeader.salt,
+      blockIndices,
+      expirationDate: expirationDateStr,
     );
 
     // Add optional fields to the token.
@@ -166,7 +185,9 @@ class DiscloseCommand extends Command<int> {
     stdout.writeln('  Source:      $filePath');
     stdout.writeln('  Token file:  $outputPath');
     stdout.writeln('  Blocks:      ${blockIndices.join(', ')}');
-    stdout.writeln('  Block count: ${blockIndices.length} of ${header.blockCount}');
+    stdout.writeln(
+      '  Block count: ${blockIndices.length} of ${rawHeader.blockCount}',
+    );
 
     if (tokenExpires != null) {
       stdout.writeln('  Expires:     ${formatTimestamp(tokenExpires)}');
@@ -180,7 +201,7 @@ class DiscloseCommand extends Command<int> {
     stdout.writeln();
     stdout.writeln(Ansi.header('  Disclosed blocks:'));
     for (final index in blockIndices) {
-      final block = header.blockDirectory[index];
+      final block = rawHeader.blockDirectory[index];
       stdout.writeln(
         '    [$index] ${blockTypeName(block.type)} '
         '(${formatFileSize(block.ciphertextLength)})',
@@ -306,18 +327,20 @@ class ExtractWithTokenCommand extends Command<int> {
     final fileBytes = Uint8List.fromList(file.readAsBytesSync());
     final metadataOnly = argResults!['metadata-only'] as bool;
 
-    // Extract using the token.
-    final result = SelectiveDisclosure.extractWithToken(
-      fileBytes: fileBytes,
-      token: token,
-    );
-
-    if (result.status == ZegelVerifyStatus.tampered) {
-      stderr.writeln(Ansi.error('TAMPERED') +
-          ' - File does not match the disclosure token.');
-      if (result.errorMessage != null) {
-        stderr.writeln('  Reason: ${result.errorMessage}');
-      }
+    // Extract using the token via the library's reader.
+    final reader = const ZegelReader();
+    ZegelResult result;
+    try {
+      result = reader.extractWithToken(fileBytes, token);
+    } on ZegelTamperedException catch (e) {
+      stderr.writeln(
+        '${Ansi.error('TAMPERED')} - File does not match the disclosure token.',
+      );
+      stderr.writeln('  Reason: ${e.message}');
+      return 1;
+    } on ZegelFormatException catch (e) {
+      stderr.writeln('${Ansi.error('ERROR')} - Invalid file format.');
+      stderr.writeln('  Reason: ${e.message}');
       return 1;
     }
 
@@ -357,10 +380,10 @@ class ExtractWithTokenCommand extends Command<int> {
     }
 
     // Determine output path.
-    final reader = ZegelReader(fileBytes);
-    final header = reader.inspectHeader();
-    final outputPath = argResults!['output'] as String? ??
-        'partial_${header.filename}';
+    final inspection = reader.inspect(fileBytes);
+    final defaultFilename = inspection.filename ?? 'extracted';
+    final outputPath =
+        argResults!['output'] as String? ?? 'partial_$defaultFilename';
 
     if (outputPath.isEmpty) {
       exitError(
@@ -386,7 +409,9 @@ class ExtractWithTokenCommand extends Command<int> {
     stdout.writeln('  Source:     $filePath');
     stdout.writeln('  Token:      $tokenPath');
     stdout.writeln('  Output:     $outputPath');
-    stdout.writeln('  Disclosed:  $disclosedBlockCount of ${header.blockCount} blocks');
+    stdout.writeln(
+      '  Disclosed:  $disclosedBlockCount of ${inspection.blockCount} blocks',
+    );
     stdout.writeln('  Size:       ${formatFileSize(result.content!.length)}');
 
     if (result.metadata != null && result.metadata!.isNotEmpty) {
@@ -397,10 +422,10 @@ class ExtractWithTokenCommand extends Command<int> {
       }
     }
 
-    if (result.redactedBlocks.isNotEmpty) {
+    if (result.redactedBlocks != null && result.redactedBlocks!.isNotEmpty) {
       stdout.writeln();
       stdout.writeln(Ansi.warning(
-        '  Redacted blocks: ${result.redactedBlocks.join(', ')}',
+        '  Redacted blocks: ${result.redactedBlocks!.join(', ')}',
       ));
     }
 

@@ -55,19 +55,33 @@ class InspectCommand extends Command<int> {
     final jsonOutput = argResults!['json'] as bool;
     final showBlocks = argResults!['blocks'] as bool;
 
-    // Create reader and inspect header.
-    ZegelHeader header;
+    // Inspect header using the library.
+    ZegelInspection inspection;
     try {
-      final reader = ZegelReader(fileBytes);
-      header = reader.inspectHeader();
+      final reader = const ZegelReader();
+      inspection = reader.inspect(fileBytes);
     } on ZegelFormatException catch (e) {
       exitError('Invalid .zgl file: ${e.message}');
     }
 
+    // Parse raw header for detailed information.
+    RawZegelHeader? rawHeader;
+    try {
+      rawHeader = RawZegelHeader.parse(fileBytes);
+    } catch (_) {
+      // Fall back to library-only inspection if raw parsing fails.
+    }
+
     if (jsonOutput) {
-      _printJson(header);
+      _printJson(inspection, rawHeader);
     } else {
-      _printHumanReadable(header, filePath, fileBytes.length, showBlocks);
+      _printHumanReadable(
+        inspection,
+        rawHeader,
+        filePath,
+        fileBytes.length,
+        showBlocks,
+      );
     }
 
     return 0;
@@ -75,32 +89,42 @@ class InspectCommand extends Command<int> {
 
   /// Prints header information in human-readable format.
   void _printHumanReadable(
-    ZegelHeader header,
+    ZegelInspection inspection,
+    RawZegelHeader? rawHeader,
     String filePath,
     int fileSize,
     bool showBlocks,
   ) {
+    final createdAt = DateTime.fromMillisecondsSinceEpoch(
+      inspection.timestamp * 1000,
+      isUtc: true,
+    );
+
     stdout.writeln(Ansi.header('Zegel File Inspector'));
     stdout.writeln();
     stdout.writeln('  File:         $filePath');
     stdout.writeln('  File size:    ${formatFileSize(fileSize)}');
-    stdout.writeln('  Version:      ${header.versionMajor}.${header.versionMinor}');
-    stdout.writeln('  Created:      ${formatTimestamp(header.createdAt)}');
-    stdout.writeln('  Content-Type: ${header.contentType}');
-    stdout.writeln('  Filename:     ${header.filename}');
-    stdout.writeln('  Block count:  ${header.blockCount}');
+    stdout.writeln('  Version:      ${inspection.version}');
+    stdout.writeln('  Created:      ${formatTimestamp(createdAt)}');
+    if (inspection.contentType != null) {
+      stdout.writeln('  Content-Type: ${inspection.contentType}');
+    }
+    if (inspection.filename != null) {
+      stdout.writeln('  Filename:     ${inspection.filename}');
+    }
+    stdout.writeln('  Block count:  ${inspection.blockCount}');
 
     // Flags.
-    final flagNames = decodeFlagNames(header.flags);
+    final flagNames = decodeFlagNames(inspection.flags);
     stdout.writeln(
-      '  Flags:        0x${header.flags.toRadixString(16).padLeft(4, '0')}'
+      '  Flags:        0x${inspection.flags.toRadixString(16).padLeft(4, '0')}'
       '${flagNames.isNotEmpty ? ' (${flagNames.join(', ')})' : ' (none)'}',
     );
 
-    // Merkle root.
-    if (header.merkleRoot != null) {
+    // Merkle root (from raw header).
+    if (rawHeader != null) {
       stdout.writeln(
-        '  Merkle root:  ${hexEncode(header.merkleRoot!)}',
+        '  Merkle root:  ${hexEncode(rawHeader.merkleRoot)}',
       );
     }
 
@@ -108,72 +132,77 @@ class InspectCommand extends Command<int> {
     stdout.writeln();
     stdout.writeln(Ansi.header('  Features:'));
 
-    if (header.flags & 0x0004 != 0) {
+    if (inspection.flags & ZegelFormat.flagPasswordDerived != 0) {
       stdout.writeln('    Password-derived key (Argon2id)');
-      if (header.argon2TimeCost != null) {
-        stdout.writeln('      Time cost:   ${header.argon2TimeCost}');
-        stdout.writeln('      Memory cost: ${header.argon2MemoryCost} KiB');
+      if (rawHeader != null && rawHeader.argon2TimeCost != null) {
+        stdout.writeln('      Time cost:   ${rawHeader.argon2TimeCost}');
+        stdout.writeln('      Memory cost: ${rawHeader.argon2MemoryCost} KiB');
       }
     }
 
-    if (header.expiresAt != null) {
+    if (inspection.expirationTimestamp != null) {
+      final expiresAt = DateTime.fromMillisecondsSinceEpoch(
+        inspection.expirationTimestamp! * 1000,
+        isUtc: true,
+      );
       final now = DateTime.now().toUtc();
-      final expired = now.isAfter(header.expiresAt!);
+      final expired = now.isAfter(expiresAt);
       final status = expired
           ? Ansi.error('EXPIRED')
           : Ansi.success('active');
       stdout.writeln(
-        '    Expiration:    ${formatTimestamp(header.expiresAt!)} ($status)',
+        '    Expiration:    ${formatTimestamp(expiresAt)} ($status)',
       );
     }
 
-    if (header.flags & 0x0080 != 0) {
+    if (inspection.flags & ZegelFormat.flagHasCanary != 0) {
       stdout.writeln('    Canary trap:   enabled (recipient fingerprinted)');
     }
 
-    if (header.flags & 0x0100 != 0) {
+    if (inspection.flags & ZegelFormat.flagHasRedactions != 0) {
       stdout.writeln('    Redactions:    file contains redacted blocks');
     }
 
-    if (header.splitKeyThreshold != null) {
+    if (inspection.splitKeyParams != null) {
       stdout.writeln(
-        '    Split-key:     ${header.splitKeyThreshold}-of-'
-        '${header.splitKeyShares} (Shamir SSS)',
+        '    Split-key:     ${inspection.splitKeyParams!['threshold']}-of-'
+        '${inspection.splitKeyParams!['total']} (Shamir SSS)',
       );
     }
 
-    if (header.flags & 0x0400 != 0) {
+    if (inspection.flags & ZegelFormat.flagSelectiveDisclosure != 0) {
       stdout.writeln('    Selective disclosure: enabled');
     }
 
-    if (header.flags & 0x0800 != 0) {
+    if (inspection.flags & ZegelFormat.flagVersioned != 0) {
       stdout.writeln('    Versioned:     linked to previous version');
-      if (header.versionChainHash != null) {
+      if (rawHeader != null && rawHeader.versionChainHash != null) {
         stdout.writeln(
-          '      Chain hash:  ${hexEncode(header.versionChainHash!)}',
+          '      Chain hash:  ${hexEncode(rawHeader.versionChainHash!)}',
         );
       }
     }
 
-    if (header.flags & 0x0002 != 0) {
+    if (inspection.flags & ZegelFormat.flagCompressed != 0) {
       stdout.writeln('    Compression:   enabled (zlib)');
     }
 
-    if (header.flags & 0x0008 != 0) {
+    if (inspection.flags & ZegelFormat.flagHasKeyCommitment != 0) {
       stdout.writeln('    Key commitment: present');
     }
 
     // Public metadata.
-    if (header.publicMetadata != null && header.publicMetadata!.isNotEmpty) {
+    if (inspection.publicMetadata != null &&
+        inspection.publicMetadata!.isNotEmpty) {
       stdout.writeln();
       stdout.writeln(Ansi.header('  Public Metadata:'));
-      for (final entry in header.publicMetadata!.entries) {
+      for (final entry in inspection.publicMetadata!.entries) {
         stdout.writeln('    ${entry.key}: ${entry.value}');
       }
     }
 
-    // Block directory.
-    if (showBlocks && header.blockDirectory.isNotEmpty) {
+    // Block directory (from raw header).
+    if (showBlocks && rawHeader != null && rawHeader.blockDirectory.isNotEmpty) {
       stdout.writeln();
       stdout.writeln(Ansi.header('  Block Directory:'));
       stdout.writeln(
@@ -183,10 +212,11 @@ class InspectCommand extends Command<int> {
         'Hash',
       );
       stdout.writeln('    ${'-' * 70}');
-      for (var i = 0; i < header.blockDirectory.length; i++) {
-        final block = header.blockDirectory[i];
-        final hashPreview =
-            hexEncode(Uint8List.fromList(block.plaintextHash.take(8).toList()));
+      for (var i = 0; i < rawHeader.blockDirectory.length; i++) {
+        final block = rawHeader.blockDirectory[i];
+        final hashPreview = hexEncode(
+          Uint8List.fromList(block.plaintextHash.take(8).toList()),
+        );
         stdout.writeln(
           '    ${i.toString().padRight(4)}'
           '${blockTypeName(block.type).padRight(20)}'
@@ -198,35 +228,61 @@ class InspectCommand extends Command<int> {
   }
 
   /// Prints header information as JSON.
-  void _printJson(ZegelHeader header) {
+  void _printJson(ZegelInspection inspection, RawZegelHeader? rawHeader) {
     final buffer = StringBuffer();
     buffer.writeln('{');
-    buffer.writeln('  "version": "${header.versionMajor}.${header.versionMinor}",');
-    buffer.writeln('  "flags": ${header.flags},');
-    buffer.writeln('  "flags_names": [${decodeFlagNames(header.flags).map((f) => '"$f"').join(', ')}],');
-    buffer.writeln('  "created_at": ${header.createdAt.millisecondsSinceEpoch ~/ 1000},');
-    buffer.writeln('  "created_at_iso": "${header.createdAt.toIso8601String()}",');
-    buffer.writeln('  "content_type": "${_jsonEscape(header.contentType)}",');
-    buffer.writeln('  "filename": "${_jsonEscape(header.filename)}",');
-    buffer.writeln('  "block_count": ${header.blockCount},');
+    buffer.writeln('  "version": "${inspection.version}",');
+    buffer.writeln('  "flags": ${inspection.flags},');
+    buffer.writeln(
+      '  "flags_names": [${decodeFlagNames(inspection.flags).map((f) => '"$f"').join(', ')}],',
+    );
+    buffer.writeln('  "created_at": ${inspection.timestamp},');
 
-    if (header.merkleRoot != null) {
-      buffer.writeln('  "merkle_root": "${hexEncode(header.merkleRoot!)}",');
+    final createdAt = DateTime.fromMillisecondsSinceEpoch(
+      inspection.timestamp * 1000,
+      isUtc: true,
+    );
+    buffer.writeln('  "created_at_iso": "${createdAt.toIso8601String()}",');
+
+    if (inspection.contentType != null) {
+      buffer.writeln(
+        '  "content_type": "${_jsonEscape(inspection.contentType!)}",',
+      );
+    }
+    if (inspection.filename != null) {
+      buffer.writeln(
+        '  "filename": "${_jsonEscape(inspection.filename!)}",',
+      );
+    }
+    buffer.writeln('  "block_count": ${inspection.blockCount},');
+
+    if (rawHeader != null) {
+      buffer.writeln('  "merkle_root": "${hexEncode(rawHeader.merkleRoot)}",');
     }
 
-    if (header.expiresAt != null) {
-      buffer.writeln('  "expires_at": ${header.expiresAt!.millisecondsSinceEpoch ~/ 1000},');
-      buffer.writeln('  "expires_at_iso": "${header.expiresAt!.toIso8601String()}",');
+    if (inspection.expirationTimestamp != null) {
+      buffer.writeln('  "expires_at": ${inspection.expirationTimestamp},');
+      final expiresAt = DateTime.fromMillisecondsSinceEpoch(
+        inspection.expirationTimestamp! * 1000,
+        isUtc: true,
+      );
+      buffer.writeln(
+        '  "expires_at_iso": "${expiresAt.toIso8601String()}",',
+      );
     }
 
-    if (header.splitKeyThreshold != null) {
-      buffer.writeln('  "split_key_threshold": ${header.splitKeyThreshold},');
-      buffer.writeln('  "split_key_shares": ${header.splitKeyShares},');
+    if (inspection.splitKeyParams != null) {
+      buffer.writeln(
+        '  "split_key_threshold": ${inspection.splitKeyParams!['threshold']},',
+      );
+      buffer.writeln(
+        '  "split_key_shares": ${inspection.splitKeyParams!['total']},',
+      );
     }
 
-    if (header.publicMetadata != null) {
+    if (inspection.publicMetadata != null) {
       buffer.writeln('  "public_metadata": {');
-      final entries = header.publicMetadata!.entries.toList();
+      final entries = inspection.publicMetadata!.entries.toList();
       for (var i = 0; i < entries.length; i++) {
         final comma = i < entries.length - 1 ? ',' : '';
         buffer.writeln(
@@ -237,20 +293,28 @@ class InspectCommand extends Command<int> {
       buffer.writeln('  },');
     }
 
-    // Block directory.
-    buffer.writeln('  "blocks": [');
-    for (var i = 0; i < header.blockDirectory.length; i++) {
-      final block = header.blockDirectory[i];
-      final comma = i < header.blockDirectory.length - 1 ? ',' : '';
-      buffer.writeln('    {');
-      buffer.writeln('      "index": $i,');
-      buffer.writeln('      "type": ${block.type},');
-      buffer.writeln('      "type_name": "${blockTypeName(block.type)}",');
-      buffer.writeln('      "ciphertext_length": ${block.ciphertextLength},');
-      buffer.writeln('      "plaintext_hash": "${hexEncode(block.plaintextHash)}"');
-      buffer.writeln('    }$comma');
+    // Block directory (from raw header).
+    if (rawHeader != null) {
+      buffer.writeln('  "blocks": [');
+      for (var i = 0; i < rawHeader.blockDirectory.length; i++) {
+        final block = rawHeader.blockDirectory[i];
+        final comma = i < rawHeader.blockDirectory.length - 1 ? ',' : '';
+        buffer.writeln('    {');
+        buffer.writeln('      "index": $i,');
+        buffer.writeln('      "type": ${block.type},');
+        buffer.writeln(
+          '      "type_name": "${blockTypeName(block.type)}",',
+        );
+        buffer.writeln(
+          '      "ciphertext_length": ${block.ciphertextLength},',
+        );
+        buffer.writeln(
+          '      "plaintext_hash": "${hexEncode(block.plaintextHash)}"',
+        );
+        buffer.writeln('    }$comma');
+      }
+      buffer.writeln('  ]');
     }
-    buffer.writeln('  ]');
 
     buffer.writeln('}');
     stdout.write(buffer.toString());
