@@ -128,8 +128,7 @@ Uint8List readKeyFile(String path) {
 
 /// Simple base64 decode.
 Uint8List _base64Decode(String input) {
-  final codec = const Base64Codec();
-  return Uint8List.fromList(codec.decode(input));
+  return Uint8List.fromList(base64.decode(input));
 }
 
 // =============================================================================
@@ -420,30 +419,3 @@ Never exitError(String message, {int code = 1}) {
   exit(code);
 }
 
-/// Base64 codec helper.
-class Base64Codec {
-  const Base64Codec();
-
-  List<int> decode(String input) {
-    const table =
-        'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-    final cleanInput = input.replaceAll(RegExp(r'\s'), '');
-    final output = <int>[];
-    var buffer = 0;
-    var bitsCollected = 0;
-
-    for (var i = 0; i < cleanInput.length; i++) {
-      final ch = cleanInput[i];
-      if (ch == '=') break;
-      final idx = table.indexOf(ch);
-      if (idx < 0) throw FormatException('Invalid base64 character: $ch');
-      buffer = (buffer << 6) | idx;
-      bitsCollected += 6;
-      if (bitsCollected >= 8) {
-        bitsCollected -= 8;
-        output.add((buffer >> bitsCollected) & 0xFF);
-      }
-    }
-    return output;
-  }
-}
