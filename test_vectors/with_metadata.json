@@ -1,0 +1,27 @@
+{
+  "description": "File with encrypted metadata block",
+  "master_key_hex": "0000000000000000000000000000000000000000000000000000000000000001",
+  "salt_hex": "0000000000000000000000000000000000000000000000000000000000000000",
+  "content": "Document content here",
+  "content_type": "text/plain",
+  "filename": "document.txt",
+  "flags": "0x0001",
+  "metadata": {
+    "sealed_at": "2026-01-27T12:00:00Z",
+    "sealed_by": "zegel-test-vectors",
+    "document_id": 1,
+    "document_type": "test"
+  },
+  "block_count": 2,
+  "expected": {
+    "first_block_type": "0x02",
+    "first_block_type_name": "METADATA",
+    "second_block_type": "0x01",
+    "second_block_type_name": "CONTENT",
+    "metadata_is_encrypted_json": true,
+    "metadata_block_index": 0,
+    "content_block_index": 1,
+    "content_sha256": "8ce0bfe2b4f72a0e79bb2643a8a6ef0e680589ec046367a03e244e23626c1ba3",
+    "flag_has_metadata_set": true
+  }
+}

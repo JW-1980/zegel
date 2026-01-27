@@ -1,0 +1,31 @@
+{
+  "description": "File with audit trail entries",
+  "master_key_hex": "0000000000000000000000000000000000000000000000000000000000000001",
+  "salt_hex": "0000000000000000000000000000000000000000000000000000000000000000",
+  "content": "Audited document",
+  "content_type": "text/plain",
+  "filename": "audited.txt",
+  "audit_entries": [
+    {
+      "actor": "user:1:admin@example.com",
+      "action": "sealed",
+      "timestamp": 1706367600
+    },
+    {
+      "actor": "user:2:reviewer@example.com",
+      "action": "verified",
+      "timestamp": 1706371200
+    }
+  ],
+  "expected": {
+    "chain_hash_0_starts_from_zeros": true,
+    "chain_hash_0_note": "chain_hash[0] = SHA-256(zeros_32_bytes || entry_0_json)",
+    "chain_hash_1_depends_on_0": true,
+    "chain_hash_1_note": "chain_hash[1] = SHA-256(chain_hash[0] || entry_1_json)",
+    "chain_verification_succeeds": true,
+    "audit_block_type": "0x09",
+    "audit_block_count": 2,
+    "content_sha256": "1fa8f4f8662ddf24828c242702e34634d3e3d15d81bbfbc6991365bdd62900c1",
+    "total_block_count_note": "1 content block + 2 audit blocks = 3 blocks"
+  }
+}

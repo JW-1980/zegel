@@ -1,0 +1,72 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+
+  release:
+    name: Create Release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Prepare release assets
+        run: |
+          mkdir -p release
+          # CLI binaries
+          cp artifacts/cli-linux-x64/zegel-linux-x64 release/
+          cp artifacts/cli-windows-x64/zegel-windows-x64.exe release/
+          cp artifacts/cli-macos-x64/zegel-macos-x64 release/
+          # GUI builds
+          cp artifacts/gui-linux-x64/zegel-linux-gui-x64.tar.gz release/
+          cp artifacts/gui-windows-x64/zegel-windows-gui-x64.zip release/
+          cp artifacts/gui-macos-x64/zegel-macos-gui-x64.zip release/
+          cp artifacts/gui-android-apk/app-release.apk release/zegel-android.apk
+          cp artifacts/gui-ios-nosign/zegel-ios-nosign.zip release/
+          cp artifacts/gui-web/zegel-web.tar.gz release/
+          # Generate checksums
+          cd release
+          sha256sum * > SHA256SUMS.txt
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: |
+            release/*
+          body: |
+            ## Zegel ${{ github.ref_name }}
+
+            ### Downloads
+
+            #### CLI (Command Line)
+            | Platform | File |
+            |----------|------|
+            | Linux x64 | `zegel-linux-x64` |
+            | Windows x64 | `zegel-windows-x64.exe` |
+            | macOS x64 | `zegel-macos-x64` |
+
+            #### GUI Application
+            | Platform | File |
+            |----------|------|
+            | Linux x64 | `zegel-linux-gui-x64.tar.gz` |
+            | Windows x64 | `zegel-windows-gui-x64.zip` |
+            | macOS x64 | `zegel-macos-gui-x64.zip` |
+            | Android | `zegel-android.apk` |
+            | iOS (unsigned) | `zegel-ios-nosign.zip` |
+            | Web | `zegel-web.tar.gz` |
+
+            ### Verification
+            Verify downloads with `SHA256SUMS.txt`:
+            ```
+            sha256sum -c SHA256SUMS.txt
+            ```

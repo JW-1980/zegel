@@ -1,0 +1,33 @@
+{
+  "description": "File with 3 content blocks, block 1 redacted",
+  "master_key_hex": "0000000000000000000000000000000000000000000000000000000000000001",
+  "salt_hex": "0000000000000000000000000000000000000000000000000000000000000000",
+  "content_description": "196608 bytes (3 x 65536), block 1 redacted after sealing",
+  "content_type": "application/octet-stream",
+  "filename": "redacted.bin",
+  "flags": "0x0100",
+  "redacted_blocks": [1],
+  "expected": {
+    "has_redactions_flag": true,
+    "block_0_type": "0x01",
+    "block_1_type": "0x06",
+    "block_2_type": "0x01",
+    "block_1_type_name": "REDACTED",
+    "merkle_root_unchanged": true,
+    "merkle_root_note": "Original plaintext hashes are preserved in directory for Merkle tree integrity",
+    "merkle_root_hex": "83ea9be983b00483d850a1585144d17a5de09715005ecd6b3beb1a7c4f6603a2",
+    "verification_succeeds": true,
+    "blocks_0_and_2_extractable": true,
+    "block_1_not_extractable": true,
+    "block_1_ciphertext_is_random": true,
+    "block_1_original_hash_preserved": true,
+    "redaction_process": [
+      "1. Verify original file is intact (full verification)",
+      "2. Replace block 1 ciphertext with random_bytes(ciphertext_length)",
+      "3. Change block 1 type to 0x06 (REDACTED)",
+      "4. Keep original plaintext hash, IV, and auth tag in directory",
+      "5. Set FLAG_HAS_REDACTIONS (0x0100)",
+      "6. Recompute master seal over modified file"
+    ]
+  }
+}

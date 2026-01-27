@@ -1,0 +1,14 @@
+{
+  "description": "Valid file with one bit flipped in first block's ciphertext",
+  "based_on": "minimal.json",
+  "tampering": "The first byte of the first block's ciphertext is XORed with 0x01, flipping the least significant bit. This changes the encrypted data without modifying the header, directory, Merkle root, or seal.",
+  "tamper_location": "first byte of first block's ciphertext (after Merkle root, before seal)",
+  "tamper_operation": "ciphertext_block_0[0] ^= 0x01",
+  "expected": {
+    "verification_fails": true,
+    "failure_reason": "seal_mismatch",
+    "failure_detail": "The master seal covers all bytes before the seal, including ciphertext. Flipping a ciphertext byte changes the HMAC-SHA512 input, so the seal check fails first. If the seal were somehow bypassed, AES-256-GCM decryption would also fail because the authentication tag would not match the modified ciphertext.",
+    "secondary_failure": "decryption_failed",
+    "secondary_detail": "AES-256-GCM authentication tag verification rejects the modified ciphertext"
+  }
+}

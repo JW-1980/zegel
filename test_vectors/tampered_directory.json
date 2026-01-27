@@ -1,0 +1,14 @@
+{
+  "description": "Valid file with block directory hash modified - first byte XORed with 0xFF",
+  "based_on": "minimal.json",
+  "tampering": "The first byte of the first block's plaintext hash in the block directory is XORed with 0xFF. This changes the stored hash for block 0 without modifying the actual ciphertext, Merkle root, or any other field.",
+  "tamper_location": "block directory entry 0, plaintext hash field (bytes 1-32 of directory entry)",
+  "tamper_operation": "directory_entry_0.plaintext_hash[0] ^= 0xFF",
+  "expected": {
+    "verification_fails": true,
+    "failure_reason": "seal_mismatch",
+    "failure_detail": "The master seal covers all bytes before the seal, including the block directory. Modifying any directory byte changes the HMAC-SHA512 input. If the seal were bypassed, the Merkle tree rebuilt from modified directory hashes would not match the stored Merkle root. If both were bypassed, the decrypted plaintext hash would not match the modified directory hash.",
+    "secondary_failure": "hash_mismatch",
+    "secondary_detail": "Merkle tree root recomputed from directory hashes does not match stored Merkle root (step 11-12 of verification). Additionally, SHA-256 of decrypted plaintext would not match the tampered directory hash (step 14g)."
+  }
+}

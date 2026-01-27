@@ -1,0 +1,224 @@
+name: Build
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+jobs:
+  # CLI builds (Dart native compilation) - all platforms
+  build-cli-linux:
+    name: CLI - Linux
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      - name: Install dependencies
+        run: |
+          cd lib && dart pub get
+          cd ../cli && dart pub get
+      - name: Compile CLI
+        working-directory: cli
+        run: dart compile exe bin/zegel.dart -o zegel-linux-x64
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cli-linux-x64
+          path: cli/zegel-linux-x64
+
+  build-cli-windows:
+    name: CLI - Windows
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      - name: Install dependencies
+        run: |
+          cd lib && dart pub get
+          cd ../cli && dart pub get
+      - name: Compile CLI
+        working-directory: cli
+        run: dart compile exe bin/zegel.dart -o zegel-windows-x64.exe
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cli-windows-x64
+          path: cli/zegel-windows-x64.exe
+
+  build-cli-macos:
+    name: CLI - macOS
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      - name: Install dependencies
+        run: |
+          cd lib && dart pub get
+          cd ../cli && dart pub get
+      - name: Compile CLI
+        working-directory: cli
+        run: dart compile exe bin/zegel.dart -o zegel-macos-x64
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cli-macos-x64
+          path: cli/zegel-macos-x64
+
+  # Flutter GUI builds - per platform
+  build-gui-linux:
+    name: GUI - Linux
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - name: Install Linux build dependencies
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ninja-build libgtk-3-dev
+      - name: Install dependencies
+        run: |
+          cd lib && dart pub get
+          cd ../app && flutter pub get
+      - name: Build Linux
+        working-directory: app
+        run: flutter build linux --release
+      - name: Archive Linux build
+        run: tar -czf zegel-linux-gui-x64.tar.gz -C app/build/linux/x64/release/bundle .
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: gui-linux-x64
+          path: zegel-linux-gui-x64.tar.gz
+
+  build-gui-windows:
+    name: GUI - Windows
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - name: Install dependencies
+        run: |
+          cd lib && dart pub get
+          cd ../app && flutter pub get
+      - name: Build Windows
+        working-directory: app
+        run: flutter build windows --release
+      - name: Archive Windows build
+        run: Compress-Archive -Path app\build\windows\x64\runner\Release\* -DestinationPath zegel-windows-gui-x64.zip
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: gui-windows-x64
+          path: zegel-windows-gui-x64.zip
+
+  build-gui-macos:
+    name: GUI - macOS
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - name: Install dependencies
+        run: |
+          cd lib && dart pub get
+          cd ../app && flutter pub get
+      - name: Build macOS
+        working-directory: app
+        run: flutter build macos --release
+      - name: Archive macOS build
+        run: |
+          cd app/build/macos/Build/Products/Release
+          zip -r ../../../../../zegel-macos-gui-x64.zip zegel_app.app
+          cd ../../../../..
+          mv app/zegel-macos-gui-x64.zip .
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: gui-macos-x64
+          path: zegel-macos-gui-x64.zip
+
+  build-gui-android:
+    name: GUI - Android (APK)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - name: Install dependencies
+        run: |
+          cd lib && dart pub get
+          cd ../app && flutter pub get
+      - name: Build APK
+        working-directory: app
+        run: flutter build apk --release
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: gui-android-apk
+          path: app/build/app/outputs/flutter-apk/app-release.apk
+
+  build-gui-ios:
+    name: GUI - iOS (no code signing)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - name: Install dependencies
+        run: |
+          cd lib && dart pub get
+          cd ../app && flutter pub get
+      - name: Build iOS (no codesign)
+        working-directory: app
+        run: flutter build ios --release --no-codesign
+      - name: Archive iOS build
+        run: |
+          cd app/build/ios/iphoneos
+          zip -r ../../../../zegel-ios-nosign.zip Runner.app
+          cd ../../../..
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: gui-ios-nosign
+          path: zegel-ios-nosign.zip
+
+  # Web build (optional)
+  build-gui-web:
+    name: GUI - Web
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - name: Install dependencies
+        run: |
+          cd lib && dart pub get
+          cd ../app && flutter pub get
+      - name: Build Web
+        working-directory: app
+        run: flutter build web --release
+      - name: Archive Web build
+        run: tar -czf zegel-web.tar.gz -C app/build/web .
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: gui-web
+          path: zegel-web.tar.gz

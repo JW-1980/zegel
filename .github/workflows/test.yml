@@ -1,0 +1,112 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # Library tests on all OS
+  lib-test:
+    name: Library Tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      - name: Install dependencies
+        working-directory: lib
+        run: dart pub get
+      - name: Analyze
+        working-directory: lib
+        run: dart analyze --fatal-infos
+      - name: Format check
+        working-directory: lib
+        run: dart format --output=none --set-exit-if-changed .
+      - name: Run tests
+        working-directory: lib
+        run: dart test
+
+  # CLI tests on all OS
+  cli-test:
+    name: CLI Tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      - name: Install lib dependencies
+        working-directory: lib
+        run: dart pub get
+      - name: Install CLI dependencies
+        working-directory: cli
+        run: dart pub get
+      - name: Analyze
+        working-directory: cli
+        run: dart analyze --fatal-infos
+      - name: Format check
+        working-directory: cli
+        run: dart format --output=none --set-exit-if-changed .
+      - name: Run tests
+        working-directory: cli
+        run: dart test
+
+  # Flutter app tests on all OS
+  app-test:
+    name: App Tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - name: Install lib dependencies
+        working-directory: lib
+        run: dart pub get
+      - name: Install app dependencies
+        working-directory: app
+        run: flutter pub get
+      - name: Analyze
+        working-directory: app
+        run: flutter analyze
+      - name: Format check
+        working-directory: app
+        run: dart format --output=none --set-exit-if-changed .
+      - name: Run tests
+        working-directory: app
+        run: flutter test
+
+  # Audit dependencies
+  audit:
+    name: Dependency Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      - name: Audit lib
+        working-directory: lib
+        run: |
+          dart pub get
+          dart pub audit
+      - name: Audit CLI
+        working-directory: cli
+        run: |
+          dart pub get
+          dart pub audit

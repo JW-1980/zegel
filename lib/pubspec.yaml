@@ -1,0 +1,20 @@
+name: zegel
+description: >-
+  Dart implementation of the Zegel tamper-proof container format (.zgl).
+  Provides self-enforcing integrity through Merkle tree key derivation,
+  AES-256-GCM authenticated encryption, and HMAC-SHA512 master sealing.
+version: 1.2.0
+homepage: https://github.com/zegel/zegel
+repository: https://github.com/zegel/zegel
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  crypto: ^3.0.3
+  pointycastle: ^3.7.3
+  archive: ^3.4.10
+
+dev_dependencies:
+  test: ^1.24.0
+  lints: ^3.0.0

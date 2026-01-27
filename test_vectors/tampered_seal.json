@@ -1,0 +1,15 @@
+{
+  "description": "Valid file with last 64 bytes (seal) modified - bit flip at byte 0 of seal",
+  "based_on": "minimal.json",
+  "tampering": "The first byte of the 64-byte HMAC-SHA512 master seal is XORed with 0x01, flipping the least significant bit. The seal covers all bytes from offset 0 through the end of the last ciphertext block. A single bit change in the seal invalidates the HMAC verification.",
+  "tamper_location": "last 64 bytes of file (master seal)",
+  "tamper_operation": "seal_bytes[0] ^= 0x01",
+  "expected": {
+    "verification_fails": true,
+    "failure_reason": "seal_mismatch",
+    "failure_step": "Step 10 of verification: compare computed seal with stored seal",
+    "failure_detail": "HMAC-SHA512 recomputed over file bytes does not match the stored (tampered) seal",
+    "blocks_not_attempted": true,
+    "blocks_note": "Seal verification happens before block decryption; no blocks are decrypted"
+  }
+}

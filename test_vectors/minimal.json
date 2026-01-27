@@ -1,0 +1,26 @@
+{
+  "description": "Minimal valid Zegel file - single block, no metadata",
+  "master_key_hex": "0000000000000000000000000000000000000000000000000000000000000001",
+  "salt_hex": "0000000000000000000000000000000000000000000000000000000000000000",
+  "content": "Hello, Zegel!",
+  "content_type": "text/plain",
+  "filename": "hello.txt",
+  "flags": "0x0000",
+  "version_major": 1,
+  "version_minor": 2,
+  "block_count": 1,
+  "block_size": 65536,
+  "expected": {
+    "content_bytes_hex": "48656c6c6f2c205a6567656c21",
+    "content_sha256": "c383cc5547405849101f8f7ea7e9412e445f4c8bbdd49b79026c5124e73ded8c",
+    "merkle_root_equals_leaf_hash": true,
+    "merkle_root_hex": "c383cc5547405849101f8f7ea7e9412e445f4c8bbdd49b79026c5124e73ded8c",
+    "header_size_before_directory": 131,
+    "header_size_note": "magic(8) + version_major(1) + version_minor(1) + flags(2) + timestamp(8) + content_type(64) + filename_length(2) + filename(9) + salt(32) + block_count(4) = 131",
+    "directory_entry_size": 65,
+    "directory_entry_note": "block_type(1) + plaintext_hash(32) + ciphertext_length(4) + iv(12) + auth_tag(16) = 65",
+    "block_0_type": "0x01",
+    "seal_offset_from_end": 64,
+    "seal_algorithm": "HMAC-SHA512"
+  }
+}
