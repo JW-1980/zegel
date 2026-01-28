@@ -71,6 +71,20 @@ class ZegelFormat {
   /// File is linked to a previous version via chain hash.
   static const int flagVersioned = 0x0800;
 
+  // v1.3 flags
+
+  /// File is under regulatory hold and cannot be extracted until the hold expires.
+  static const int flagRegulatoryHold = 0x1000;
+
+  /// File contains a trusted timestamp block (RFC 3161).
+  static const int flagHasTimestamp = 0x2000;
+
+  /// File was sealed in anonymous mode (no identifying metadata).
+  static const int flagAnonymous = 0x4000;
+
+  /// File has a classification level in public metadata.
+  static const int flagHasClassification = 0x8000;
+
   // ---------------------------------------------------------------------------
   // Block type constants (uint8)
   // ---------------------------------------------------------------------------
@@ -104,6 +118,58 @@ class ZegelFormat {
 
   /// Index of blocks available for selective disclosure.
   static const int blockDisclosureIndex = 0x0A;
+
+  // v1.3 block types
+
+  /// Trusted timestamp block (RFC 3161 token).
+  static const int blockTimestamp = 0x0B;
+
+  /// Excerpt proof block.
+  static const int blockExcerpt = 0x0C;
+
+  /// Manifest entry referencing an external file.
+  static const int blockManifestEntry = 0x0D;
+
+  // ---------------------------------------------------------------------------
+  // Classification levels (v1.3)
+  // ---------------------------------------------------------------------------
+
+  /// Public classification level -- no restrictions.
+  static const String classificationPublic = 'PUBLIC';
+
+  /// Internal classification level -- organisation-internal only.
+  static const String classificationInternal = 'INTERNAL';
+
+  /// Confidential classification level -- restricted distribution.
+  static const String classificationConfidential = 'CONFIDENTIAL';
+
+  /// Secret classification level -- need-to-know basis.
+  static const String classificationSecret = 'SECRET';
+
+  /// Top Secret classification level -- highest restriction.
+  static const String classificationTopSecret = 'TOP_SECRET';
+
+  // ---------------------------------------------------------------------------
+  // Attestation roles (v1.3)
+  // ---------------------------------------------------------------------------
+
+  /// The file owner / originator.
+  static const String roleOwner = 'owner';
+
+  /// A signer who cryptographically signed the attestation.
+  static const String roleSigner = 'signer';
+
+  /// A witness who observed the sealing or verification.
+  static const String roleWitness = 'witness';
+
+  /// A notary who provides independent verification.
+  static const String roleNotary = 'notary';
+
+  /// An auditor who reviewed the file for compliance.
+  static const String roleAuditor = 'auditor';
+
+  /// A reviewer who inspected the file content.
+  static const String roleReviewer = 'reviewer';
 
   // ---------------------------------------------------------------------------
   // Field sizes in bytes
@@ -191,4 +257,17 @@ class ZegelExpiredException extends ZegelException {
 
   @override
   String toString() => 'ZegelExpiredException: $message';
+}
+
+/// Thrown when a file is under regulatory hold and cannot be extracted.
+///
+/// A regulatory hold prevents any extraction or modification of the sealed
+/// content until the hold date has passed. This is used for compliance with
+/// data retention regulations (e.g. SEC 17a-4, GDPR litigation holds).
+class ZegelRegulatoryHoldException extends ZegelException {
+  /// Creates a [ZegelRegulatoryHoldException] with the given [message].
+  const ZegelRegulatoryHoldException(super.message);
+
+  @override
+  String toString() => 'ZegelRegulatoryHoldException: $message';
 }

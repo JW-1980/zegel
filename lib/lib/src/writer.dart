@@ -39,6 +39,12 @@ class ZegelOptions {
     this.enableSelectiveDisclosure = false,
     this.blockSize = ZegelFormat.defaultBlockSize,
     this.salt,
+    this.anonymous = false,
+    this.classification,
+    this.classificationAuthority,
+    this.regulatoryHoldUntil,
+    this.tsaUrl,
+    this.preserveMediaMetadata = false,
   });
 
   /// MIME type of the original content (e.g. `"text/plain"`).
@@ -103,6 +109,51 @@ class ZegelOptions {
   /// Explicit master salt for deterministic output (testing only).
   /// In production, leave null and a CSPRNG salt is generated.
   final Uint8List? salt;
+
+  /// Whether to seal in anonymous mode (v1.3).
+  ///
+  /// When `true`, the `FLAG_ANONYMOUS` flag is set and no identifying metadata
+  /// (filename, content type, or private metadata) is included. This is useful
+  /// for whistle-blower protection or anonymous submissions.
+  final bool anonymous;
+
+  /// Document classification level (v1.3).
+  ///
+  /// When non-null, the `FLAG_HAS_CLASSIFICATION` flag is set and the
+  /// classification level is included in the public metadata block.
+  /// Must be one of: `PUBLIC`, `INTERNAL`, `CONFIDENTIAL`, `SECRET`,
+  /// `TOP_SECRET`.
+  final String? classification;
+
+  /// Authority who assigned the classification.
+  ///
+  /// Required when [classification] is non-null. Identifies the person or
+  /// system that classified the document.
+  final String? classificationAuthority;
+
+  /// Regulatory hold expiration as a Unix epoch timestamp (v1.3).
+  ///
+  /// When non-null, the `FLAG_REGULATORY_HOLD` flag is set and the file
+  /// cannot be extracted until the current time exceeds this timestamp.
+  /// Used for compliance with data retention regulations such as SEC 17a-4,
+  /// GDPR litigation holds, or HIPAA record retention.
+  final int? regulatoryHoldUntil;
+
+  /// RFC 3161 Time Stamp Authority URL (v1.3).
+  ///
+  /// When non-null, the `FLAG_HAS_TIMESTAMP` flag is set. The writer should
+  /// obtain a trusted timestamp from this TSA and embed it as a timestamp
+  /// block. Note: the actual TSA request is performed externally; this URL
+  /// is recorded for reference.
+  final String? tsaUrl;
+
+  /// Whether to extract and preserve media metadata (EXIF, GPS) (v1.3).
+  ///
+  /// When `true`, image and video files have their metadata extracted and
+  /// stored in the encrypted metadata block. Useful for insurance claims,
+  /// forensics, and evidence preservation where the original capture
+  /// context must be maintained.
+  final bool preserveMediaMetadata;
 }
 
 // =============================================================================

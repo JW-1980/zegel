@@ -14,7 +14,7 @@ import 'common.dart';
 ///
 /// Usage:
 ///   zegel attest <file.zgl> --signer-key <hex> --signer-id <string>
-///       --statement "text" -k <master-key-hex>
+///       --statement "text" -k <master-key-hex> [--role <role>]
 ///
 /// The attestation is an HMAC-SHA256 over the Merkle root, signer ID,
 /// timestamp, and statement. Adding an attestation block changes the Merkle
@@ -24,8 +24,28 @@ class AttestCommand extends Command<int> {
   final String name = 'attest';
 
   @override
-  final String description =
-      'Add a co-signature attestation to a .zgl file.';
+  String get description =>
+      'Add a co-signature attestation to a .zgl file.\n'
+      '\n'
+      'Creates an HMAC-SHA256 attestation over the Merkle root, signer ID,\n'
+      'timestamp, statement, and role. The attestation is stored as an\n'
+      'ATTESTATION block, which changes the Merkle tree and requires\n'
+      're-encryption of all blocks.\n'
+      '\n'
+      'Both the signer key (--signer-key) and the master key (-k) are\n'
+      'needed: the signer key creates the HMAC, and the master key is\n'
+      'needed to re-encrypt the file after adding the attestation block.\n'
+      '\n'
+      'Use --role to specify the signer\'s role for attestation policy\n'
+      'enforcement (see "zegel verify --check-attestation-policy").\n'
+      '\n'
+      'Exit codes:\n'
+      '  0  Attestation added successfully\n'
+      '  1  Error\n'
+      '\n'
+      'Examples:\n'
+      '  zegel attest contract.zgl --signer-key <hex> --signer-id "alice@corp" -s "Reviewed" -k <master-hex>\n'
+      '  zegel attest doc.zgl --signer-key-file signer.key --signer-id "notary:42" --role notary -s "Notarized" -k <hex> -o attested.zgl';
 
   @override
   final String invocation = 'zegel attest <file.zgl> [options]';
@@ -33,7 +53,7 @@ class AttestCommand extends Command<int> {
   AttestCommand() {
     argParser.addOption(
       'signer-key',
-      help: 'Signer\'s 32-byte key as hex.',
+      help: 'Signer\'s 32-byte key as hex (64 characters).',
       valueHelp: 'hex',
     );
 
@@ -45,7 +65,9 @@ class AttestCommand extends Command<int> {
 
     argParser.addOption(
       'signer-id',
-      help: 'Signer identifier (e.g., "user:42:name@example.com").',
+      help: 'Signer identifier string.\n'
+          'Recommended format: "user:id:name@example.com" or\n'
+          '"role:id:description".',
       valueHelp: 'id',
       mandatory: true,
     );
@@ -53,15 +75,24 @@ class AttestCommand extends Command<int> {
     argParser.addOption(
       'statement',
       abbr: 's',
-      help: 'Attestation statement text.',
+      help: 'Attestation statement text describing what is being attested.',
       valueHelp: 'text',
       mandatory: true,
+    );
+
+    argParser.addOption(
+      'role',
+      abbr: 'r',
+      help: 'Signer\'s role in the attestation workflow.\n'
+          'Valid roles: owner, signer, witness, notary, auditor, reviewer.\n'
+          'Roles are used by --check-attestation-policy during verification.',
+      valueHelp: 'role',
     );
 
     addKeyOptions(argParser);
     addOutputOption(
       argParser,
-      help: 'Output path for the attested .zgl file. '
+      help: 'Output path for the attested .zgl file.\n'
           'Defaults to overwriting the input file.',
     );
   }
@@ -103,6 +134,7 @@ class AttestCommand extends Command<int> {
 
     final signerId = argResults!['signer-id'] as String;
     final statement = argResults!['statement'] as String;
+    final roleStr = argResults!['role'] as String?;
 
     if (signerId.isEmpty) {
       exitError('Signer ID cannot be empty.');
@@ -110,6 +142,16 @@ class AttestCommand extends Command<int> {
 
     if (statement.isEmpty) {
       exitError('Statement cannot be empty.');
+    }
+
+    // Validate role if specified.
+    String? role;
+    if (roleStr != null && roleStr.isNotEmpty) {
+      try {
+        role = validateRole(roleStr);
+      } on FormatException catch (e) {
+        exitError(e.message);
+      }
     }
 
     // Parse master key (needed to re-encrypt all blocks after adding
@@ -157,6 +199,11 @@ class AttestCommand extends Command<int> {
       timestamp: timestamp,
     );
 
+    // Add the role to the attestation if specified.
+    if (role != null) {
+      attestation['role'] = role;
+    }
+
     // The attestation block plaintext is the JSON encoding.
     final attestationJson = jsonEncode(attestation);
 
@@ -182,6 +229,9 @@ class AttestCommand extends Command<int> {
       '  File:      ${outputPath == filePath ? '$filePath (updated)' : outputPath}',
     );
     stdout.writeln('  Signer:    $signerId');
+    if (role != null) {
+      stdout.writeln('  Role:      $role');
+    }
     stdout.writeln('  Statement: $statement');
     stdout.writeln('  Time:      ${formatTimestamp(timestamp)}');
     stdout.writeln('  HMAC:      ${attestation['hmac_hex']}');

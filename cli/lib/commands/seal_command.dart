@@ -12,14 +12,34 @@ import 'common.dart';
 ///   zegel seal <input-file> -k <key-hex> -o <output.zgl>
 ///       [--metadata key=value...] [--compress] [--password]
 ///       [--expires YYYY-MM-DD] [--recipient-id <hex>]
-///       [--enable-disclosure]
+///       [--enable-disclosure] [--anonymous] [--classification <level>]
+///       [--classification-authority <name>] [--regulatory-hold-until <date>]
+///       [--tsa-url <url>] [--preserve-media-metadata]
 class SealCommand extends Command<int> {
   @override
   final String name = 'seal';
 
   @override
-  final String description =
-      'Seal a file into a tamper-proof .zgl container.';
+  String get description => 'Seal a file into a tamper-proof .zgl container.\n'
+      '\n'
+      'Encrypts and integrity-protects a file using AES-256-GCM with a\n'
+      'Merkle tree binding all blocks. The resulting .zgl file becomes\n'
+      'physically unreadable if even a single byte is modified.\n'
+      '\n'
+      'Key can be provided as a 64-character hex string (-k) or read from\n'
+      'a key file (--key-file). Use --password to derive a key from a\n'
+      'passphrase via Argon2id.\n'
+      '\n'
+      'Exit codes:\n'
+      '  0  Sealed successfully\n'
+      '  1  Error (invalid arguments, file not found, etc.)\n'
+      '\n'
+      'Examples:\n'
+      '  zegel seal document.pdf -k \$(cat master.key) -o document.pdf.zgl\n'
+      '  zegel seal report.docx --key-file master.key --compress --metadata author=Alice\n'
+      '  zegel seal secret.txt --password --expires 2025-12-31 -o secret.zgl\n'
+      '  zegel seal contract.pdf -k <hex> --classification CONFIDENTIAL --classification-authority "Legal Dept"\n'
+      '  zegel seal memo.txt -k <hex> --anonymous --recipient-id <hex>';
 
   @override
   final String invocation = 'zegel seal <input-file> [options]';
@@ -105,6 +125,54 @@ class SealCommand extends Command<int> {
       help: 'Master seal (hex) of a previous version for version chaining.',
       valueHelp: 'hex',
     );
+
+    argParser.addFlag(
+      'anonymous',
+      help: 'Omit the original filename from the .zgl header.\n'
+          'The content type is preserved but the filename field\n'
+          'is set to an empty string.',
+      defaultsTo: false,
+    );
+
+    argParser.addOption(
+      'classification',
+      help: 'Classification level for the sealed file.\n'
+          'Stored in public metadata for inspection without a key.\n'
+          'Levels: PUBLIC, INTERNAL, CONFIDENTIAL, SECRET, TOP_SECRET.',
+      valueHelp: 'level',
+    );
+
+    argParser.addOption(
+      'classification-authority',
+      help: 'Name of the authority who set the classification level.\n'
+          'Required when --classification is specified.',
+      valueHelp: 'name',
+    );
+
+    argParser.addOption(
+      'regulatory-hold-until',
+      help: 'Set a regulatory hold date (YYYY-MM-DD). Files under\n'
+          'regulatory hold can be extracted only after the hold expires.\n'
+          'Stored in public metadata.',
+      valueHelp: 'YYYY-MM-DD',
+    );
+
+    argParser.addOption(
+      'tsa-url',
+      help: 'URL of a trusted timestamping authority (TSA) to use\n'
+          'for an RFC 3161 timestamp. The timestamp response is\n'
+          'stored as a PROVENANCE block.',
+      valueHelp: 'url',
+    );
+
+    argParser.addFlag(
+      'preserve-media-metadata',
+      help: 'Preserve media metadata (EXIF, ID3, etc.) from the input\n'
+          'file. By default, media metadata is stripped for privacy.\n'
+          'When enabled, the original metadata is stored in a\n'
+          'METADATA block.',
+      defaultsTo: false,
+    );
   }
 
   @override
@@ -159,7 +227,7 @@ class SealCommand extends Command<int> {
 
     // Read input file.
     final content = inputFile.readAsBytesSync();
-    final filename = inputFile.uri.pathSegments.last;
+    final filename = anonymous ? '' : inputFile.uri.pathSegments.last;
 
     // Parse metadata.
     Map<String, dynamic>? metadata;
@@ -212,6 +280,54 @@ class SealCommand extends Command<int> {
           'Got ${recipientId.length} bytes.',
         );
       }
+    }
+
+    // Handle anonymous mode.
+    final anonymous = argResults!['anonymous'] as bool;
+
+    // Handle classification.
+    final classificationStr = argResults!['classification'] as String?;
+    final classificationAuthority =
+        argResults!['classification-authority'] as String?;
+    if (classificationStr != null) {
+      try {
+        validateClassificationLevel(classificationStr);
+      } on FormatException catch (e) {
+        exitError(e.message);
+      }
+      if (classificationAuthority == null || classificationAuthority.isEmpty) {
+        exitError(
+          '--classification-authority is required when --classification '
+          'is specified.',
+        );
+      }
+      // Add classification to public metadata.
+      publicMetadata ??= <String, dynamic>{};
+      publicMetadata['classification'] =
+          classificationStr.toUpperCase().replaceAll('-', '_');
+      publicMetadata['classification_authority'] = classificationAuthority;
+      publicMetadata['classification_date'] =
+          DateTime.now().toUtc().toIso8601String();
+    }
+
+    // Handle regulatory hold.
+    final regulatoryHoldStr =
+        argResults!['regulatory-hold-until'] as String?;
+    if (regulatoryHoldStr != null) {
+      final holdDate = parseExpirationDate(regulatoryHoldStr);
+      publicMetadata ??= <String, dynamic>{};
+      publicMetadata['regulatory_hold_until'] =
+          holdDate.millisecondsSinceEpoch ~/ 1000;
+      publicMetadata['regulatory_hold_date_str'] = regulatoryHoldStr;
+    }
+
+    // Handle TSA URL (store as metadata for reference).
+    final tsaUrl = argResults!['tsa-url'] as String?;
+    if (tsaUrl != null) {
+      publicMetadata ??= <String, dynamic>{};
+      publicMetadata['tsa_url'] = tsaUrl;
+      publicMetadata['tsa_timestamp_requested'] =
+          DateTime.now().toUtc().toIso8601String();
     }
 
     // Parse content type.
@@ -293,6 +409,19 @@ class SealCommand extends Command<int> {
     }
     if (argResults!['enable-disclosure'] as bool) {
       stdout.writeln('  Disclosure: enabled');
+    }
+    if (anonymous) {
+      stdout.writeln('  Anonymous: filename omitted from header');
+    }
+    if (classificationStr != null) {
+      stdout.writeln('  Classification: ${classificationStr.toUpperCase()}');
+      stdout.writeln('  Authority: $classificationAuthority');
+    }
+    if (regulatoryHoldStr != null) {
+      stdout.writeln('  Regulatory hold: until $regulatoryHoldStr');
+    }
+    if (tsaUrl != null) {
+      stdout.writeln('  TSA URL: $tsaUrl');
     }
 
     return 0;

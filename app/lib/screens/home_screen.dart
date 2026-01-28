@@ -11,6 +11,13 @@ import 'settings_screen.dart';
 import 'redact_screen.dart';
 import 'split_key_screen.dart';
 import 'disclose_screen.dart';
+import 'batch_screen.dart';
+import 'classification_screen.dart';
+import 'manifest_screen.dart';
+import 'excerpt_screen.dart';
+import 'provenance_screen.dart';
+import 'credential_screen.dart';
+import 'contract_screen.dart';
 
 /// The main home screen of the Zegel application.
 ///
@@ -254,8 +261,40 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  void _navigateTo(Widget screen) {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => screen),
+    );
+  }
+
   Widget _buildDrawer(BuildContext context, AppLocalizations l10n) {
     final theme = Theme.of(context);
+
+    Widget sectionHeader(String title) {
+      return Padding(
+        padding: const EdgeInsets.only(left: 16, top: 12, bottom: 4),
+        child: Text(
+          title,
+          style: theme.textTheme.labelMedium?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 0.5,
+          ),
+        ),
+      );
+    }
+
+    Widget drawerItem(IconData icon, String title, VoidCallback onTap) {
+      return ListTile(
+        leading: Icon(icon),
+        title: Text(title),
+        dense: true,
+        onTap: () {
+          Navigator.of(context).pop();
+          onTap();
+        },
+      );
+    }
 
     return Drawer(
       child: ListView(
@@ -291,80 +330,55 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
-          ListTile(
-            leading: const Icon(Icons.lock),
-            title: Text(l10n.sealAction),
-            onTap: () {
-              Navigator.of(context).pop();
-              _navigateToSeal();
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.verified_user),
-            title: Text(l10n.verifyAction),
-            onTap: () {
-              Navigator.of(context).pop();
-              _navigateToVerify();
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.file_download),
-            title: Text(l10n.extractAction),
-            onTap: () {
-              Navigator.of(context).pop();
-              _navigateToExtract();
-            },
-          ),
+
+          // Core
+          sectionHeader(l10n.drawerCoreSection),
+          drawerItem(Icons.lock, l10n.sealAction, () => _navigateToSeal()),
+          drawerItem(
+              Icons.verified_user, l10n.verifyAction, () => _navigateToVerify()),
+          drawerItem(
+              Icons.file_download, l10n.extractAction, () => _navigateToExtract()),
+
           const Divider(),
-          Padding(
-            padding: const EdgeInsets.only(left: 16, top: 8, bottom: 4),
-            child: Text(
-              'Advanced',
-              style: theme.textTheme.labelMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          ListTile(
-            leading: const Icon(Icons.content_cut),
-            title: Text(l10n.redactAction),
-            onTap: () {
-              Navigator.of(context).pop();
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const RedactScreen()),
-              );
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.key),
-            title: Text(l10n.splitKeyAction),
-            onTap: () {
-              Navigator.of(context).pop();
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const SplitKeyScreen()),
-              );
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.visibility),
-            title: Text(l10n.disclosureAction),
-            onTap: () {
-              Navigator.of(context).pop();
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const DiscloseScreen()),
-              );
-            },
-          ),
+
+          // Security
+          sectionHeader(l10n.drawerSecuritySection),
+          drawerItem(Icons.content_cut, l10n.redactAction,
+              () => _navigateTo(const RedactScreen())),
+          drawerItem(Icons.key, l10n.splitKeyAction,
+              () => _navigateTo(const SplitKeyScreen())),
+          drawerItem(Icons.security, l10n.classificationTitle,
+              () => _navigateTo(const ClassificationScreen())),
+
           const Divider(),
-          ListTile(
-            leading: const Icon(Icons.settings),
-            title: Text(l10n.settingsTitle),
-            onTap: () {
-              Navigator.of(context).pop();
-              _navigateToSettings();
-            },
-          ),
+
+          // Disclosure
+          sectionHeader(l10n.drawerDisclosureSection),
+          drawerItem(Icons.visibility, l10n.disclosureAction,
+              () => _navigateTo(const DiscloseScreen())),
+          drawerItem(Icons.receipt_long, l10n.excerptTitle,
+              () => _navigateTo(const ExcerptScreen())),
+
+          const Divider(),
+
+          // Advanced
+          sectionHeader(l10n.drawerAdvancedSection),
+          drawerItem(Icons.batch_prediction, l10n.batchOperationsTitle,
+              () => _navigateTo(const BatchScreen())),
+          drawerItem(Icons.list_alt, l10n.manifestTitle,
+              () => _navigateTo(const ManifestScreen())),
+          drawerItem(Icons.description, l10n.contractTitle,
+              () => _navigateTo(const ContractScreen())),
+          drawerItem(Icons.school, l10n.credentialTitle,
+              () => _navigateTo(const CredentialScreen())),
+          drawerItem(Icons.history, l10n.provenanceTitle,
+              () => _navigateTo(const ProvenanceScreen())),
+
+          const Divider(),
+
+          // Settings
+          drawerItem(
+              Icons.settings, l10n.settingsTitle, () => _navigateToSettings()),
         ],
       ),
     );

@@ -38,6 +38,14 @@ class _SealScreenState extends State<SealScreen> {
   int _splitKeyThreshold = 0;
   int _splitKeyTotal = 0;
 
+  // New advanced options
+  bool _anonymousMode = false;
+  String _classificationLevel = '';
+  String _classificationAuthority = '';
+  DateTime? _regulatoryHoldDate;
+  String _tsaUrl = '';
+  bool _preserveMediaMetadata = false;
+
   // Metadata key-value pairs
   final List<_MetadataEntry> _metadataEntries = [];
 
@@ -456,6 +464,124 @@ class _SealScreenState extends State<SealScreen> {
                                 ? null
                                 : (v) => setState(
                                     () => _enableSelectiveDisclosure = v),
+                          ),
+                          const Divider(),
+                          SwitchListTile(
+                            title: Text(l10n.sealAnonymousMode),
+                            subtitle: Text(l10n.sealAnonymousModeDesc),
+                            value: _anonymousMode,
+                            onChanged: _isSealing
+                                ? null
+                                : (v) =>
+                                    setState(() => _anonymousMode = v),
+                          ),
+                          const SizedBox(height: 8),
+                          DropdownButtonFormField<String>(
+                            value: _classificationLevel.isEmpty
+                                ? null
+                                : _classificationLevel,
+                            decoration: InputDecoration(
+                              labelText: l10n.sealClassificationLevel,
+                              border: const OutlineInputBorder(),
+                            ),
+                            items: const [
+                              DropdownMenuItem(
+                                  value: 'PUBLIC',
+                                  child: Text('PUBLIC')),
+                              DropdownMenuItem(
+                                  value: 'INTERNAL',
+                                  child: Text('INTERNAL')),
+                              DropdownMenuItem(
+                                  value: 'CONFIDENTIAL',
+                                  child: Text('CONFIDENTIAL')),
+                              DropdownMenuItem(
+                                  value: 'SECRET',
+                                  child: Text('SECRET')),
+                              DropdownMenuItem(
+                                  value: 'TOP_SECRET',
+                                  child: Text('TOP SECRET')),
+                            ],
+                            onChanged: _isSealing
+                                ? null
+                                : (v) => setState(
+                                    () => _classificationLevel = v ?? ''),
+                          ),
+                          if (_classificationLevel.isNotEmpty) ...[
+                            const SizedBox(height: 12),
+                            TextField(
+                              decoration: InputDecoration(
+                                labelText: l10n.sealClassificationAuthority,
+                                hintText: l10n.sealClassificationAuthorityHint,
+                              ),
+                              onChanged: (v) => setState(
+                                  () => _classificationAuthority = v),
+                            ),
+                          ],
+                          const SizedBox(height: 12),
+                          ListTile(
+                            title: Text(l10n.sealRegulatoryHold),
+                            subtitle: Text(
+                              _regulatoryHoldDate != null
+                                  ? '${_regulatoryHoldDate!.year}-${_regulatoryHoldDate!.month.toString().padLeft(2, '0')}-${_regulatoryHoldDate!.day.toString().padLeft(2, '0')}'
+                                  : l10n.sealNotSet,
+                            ),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                if (_regulatoryHoldDate != null)
+                                  IconButton(
+                                    icon: const Icon(Icons.clear),
+                                    onPressed: () => setState(
+                                        () => _regulatoryHoldDate = null),
+                                  ),
+                                IconButton(
+                                  icon: const Icon(Icons.calendar_today),
+                                  onPressed: _isSealing
+                                      ? null
+                                      : () async {
+                                          final now = DateTime.now();
+                                          final picked =
+                                              await showDatePicker(
+                                            context: context,
+                                            initialDate:
+                                                _regulatoryHoldDate ??
+                                                    now.add(
+                                                        const Duration(
+                                                            days: 365 * 7)),
+                                            firstDate: now,
+                                            lastDate: now.add(
+                                                const Duration(
+                                                    days: 365 * 100)),
+                                          );
+                                          if (picked != null) {
+                                            setState(() =>
+                                                _regulatoryHoldDate =
+                                                    picked);
+                                          }
+                                        },
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          TextField(
+                            decoration: InputDecoration(
+                              labelText: l10n.sealTsaUrl,
+                              hintText: l10n.sealTsaUrlHint,
+                            ),
+                            onChanged: (v) =>
+                                setState(() => _tsaUrl = v),
+                          ),
+                          const SizedBox(height: 8),
+                          SwitchListTile(
+                            title: Text(l10n.sealPreserveMediaMetadata),
+                            subtitle: Text(
+                                l10n.sealPreserveMediaMetadataDesc),
+                            value: _preserveMediaMetadata,
+                            onChanged: _isSealing
+                                ? null
+                                : (v) => setState(
+                                    () => _preserveMediaMetadata = v),
                           ),
                         ],
                       ),

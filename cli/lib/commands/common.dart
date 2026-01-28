@@ -419,3 +419,184 @@ Never exitError(String message, {int code = 1}) {
   exit(code);
 }
 
+// =============================================================================
+// Duration parsing
+// =============================================================================
+
+/// Parses a human-readable duration string into a [Duration].
+///
+/// Supported formats:
+///   - "30m" or "30min" -> 30 minutes
+///   - "24h" -> 24 hours
+///   - "7d" -> 7 days
+///   - "2w" -> 2 weeks
+///
+/// Throws [FormatException] if the format is invalid.
+Duration parseDuration(String s) {
+  final trimmed = s.trim().toLowerCase();
+  final match = RegExp(r'^(\d+)\s*(m|min|h|d|w)$').firstMatch(trimmed);
+  if (match == null) {
+    throw FormatException(
+      'Invalid duration format: "$s". '
+      'Expected a number followed by a unit (m/min, h, d, w). '
+      'Examples: "30m", "24h", "7d", "2w".',
+    );
+  }
+
+  final value = int.parse(match.group(1)!);
+  final unit = match.group(2)!;
+
+  switch (unit) {
+    case 'm':
+    case 'min':
+      return Duration(minutes: value);
+    case 'h':
+      return Duration(hours: value);
+    case 'd':
+      return Duration(days: value);
+    case 'w':
+      return Duration(days: value * 7);
+    default:
+      throw FormatException('Unknown duration unit: "$unit".');
+  }
+}
+
+// =============================================================================
+// Table formatting
+// =============================================================================
+
+/// Prints a list of rows as an aligned text table.
+///
+/// The first row is treated as a header and separated with dashes.
+/// Each row should have the same number of columns.
+///
+/// Example:
+/// ```dart
+/// printTable([
+///   ['File', 'Status', 'Time'],
+///   ['doc.zgl', 'VALID', '12ms'],
+///   ['img.zgl', 'TAMPERED', '8ms'],
+/// ]);
+/// ```
+void printTable(List<List<String>> rows) {
+  if (rows.isEmpty) return;
+
+  final columnCount = rows[0].length;
+  final widths = List<int>.filled(columnCount, 0);
+
+  // Compute maximum width per column.
+  for (final row in rows) {
+    for (int i = 0; i < row.length && i < columnCount; i++) {
+      if (row[i].length > widths[i]) {
+        widths[i] = row[i].length;
+      }
+    }
+  }
+
+  // Print header.
+  final headerLine = StringBuffer('  ');
+  for (int i = 0; i < columnCount; i++) {
+    headerLine.write(rows[0][i].padRight(widths[i] + 2));
+  }
+  stdout.writeln(Ansi.header(headerLine.toString()));
+
+  // Print separator.
+  final totalWidth = widths.fold<int>(0, (a, b) => a + b) + (columnCount * 2);
+  stdout.writeln('  ${'-' * totalWidth}');
+
+  // Print data rows.
+  for (int r = 1; r < rows.length; r++) {
+    final line = StringBuffer('  ');
+    for (int i = 0; i < columnCount; i++) {
+      final cell = (i < rows[r].length) ? rows[r][i] : '';
+      line.write(cell.padRight(widths[i] + 2));
+    }
+    stdout.writeln(line.toString());
+  }
+}
+
+// =============================================================================
+// Standard help output
+// =============================================================================
+
+/// Prints standardized help text for a command with description and examples.
+void printHelp(String command, String description, List<String> examples) {
+  stdout.writeln(Ansi.header('zegel $command'));
+  stdout.writeln();
+  stdout.writeln(description);
+
+  if (examples.isNotEmpty) {
+    stdout.writeln();
+    stdout.writeln(Ansi.header('Examples:'));
+    for (final example in examples) {
+      stdout.writeln('  \$ $example');
+    }
+  }
+}
+
+// =============================================================================
+// Classification level validation
+// =============================================================================
+
+/// Valid classification levels in ascending order of sensitivity.
+const classificationLevels = [
+  'PUBLIC',
+  'INTERNAL',
+  'CONFIDENTIAL',
+  'SECRET',
+  'TOP_SECRET',
+];
+
+/// Validates a classification level string.
+///
+/// Returns the normalized (uppercased) level string.
+/// Throws [FormatException] if the level is invalid.
+String validateClassificationLevel(String level) {
+  final normalized = level.toUpperCase().replaceAll('-', '_');
+  if (!classificationLevels.contains(normalized)) {
+    throw FormatException(
+      'Invalid classification level: "$level". '
+      'Must be one of: ${classificationLevels.join(', ')}.',
+    );
+  }
+  return normalized;
+}
+
+/// Returns the numeric rank of a classification level (0 = PUBLIC, 4 = TOP_SECRET).
+int classificationRank(String level) {
+  final index = classificationLevels.indexOf(level.toUpperCase());
+  if (index < 0) {
+    throw FormatException('Invalid classification level: "$level".');
+  }
+  return index;
+}
+
+// =============================================================================
+// Role validation
+// =============================================================================
+
+/// Valid attestation roles.
+const attestationRoles = [
+  'owner',
+  'signer',
+  'witness',
+  'notary',
+  'auditor',
+  'reviewer',
+];
+
+/// Validates an attestation role string.
+///
+/// Returns the normalized (lowercased) role string.
+/// Throws [FormatException] if the role is invalid.
+String validateRole(String role) {
+  final normalized = role.toLowerCase();
+  if (!attestationRoles.contains(normalized)) {
+    throw FormatException(
+      'Invalid attestation role: "$role". '
+      'Must be one of: ${attestationRoles.join(', ')}.',
+    );
+  }
+  return normalized;
+}
+

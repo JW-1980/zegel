@@ -15,8 +15,30 @@ class ExtractCommand extends Command<int> {
   final String name = 'extract';
 
   @override
-  final String description =
-      'Extract the original content from a .zgl file after verification.';
+  String get description =>
+      'Extract the original content from a .zgl file after verification.\n'
+      '\n'
+      'First verifies the file integrity (master seal, Merkle tree, block\n'
+      'HMACs), then decrypts and writes the original content. Extraction\n'
+      'fails if the file has been tampered with or has expired.\n'
+      '\n'
+      'If the file contains redacted blocks, the non-redacted content is\n'
+      'still extractable (with gaps where redacted blocks were).\n'
+      '\n'
+      'Use --check-regulatory-hold to refuse extraction of files that\n'
+      'are under a regulatory hold (exit code 3).\n'
+      '\n'
+      'Exit codes:\n'
+      '  0  Extracted successfully\n'
+      '  1  Error (tampered, format error, file not found)\n'
+      '  2  Expired (cryptographic expiration reached)\n'
+      '  3  Regulatory hold active (extraction refused)\n'
+      '\n'
+      'Examples:\n'
+      '  zegel extract document.zgl -k \$(cat master.key) -o document.pdf\n'
+      '  zegel extract archive.zgl --key-file master.key -o output.tar.gz\n'
+      '  zegel extract secret.zgl -k <hex> --force\n'
+      '  zegel extract legal.zgl -k <hex> --check-regulatory-hold -o legal.pdf';
 
   @override
   final String invocation = 'zegel extract <file.zgl> [options]';
@@ -25,7 +47,8 @@ class ExtractCommand extends Command<int> {
     addKeyOptions(argParser);
     addOutputOption(
       argParser,
-      help: 'Output file path. Defaults to the original filename.',
+      help: 'Output file path. Defaults to the original filename\n'
+          'stored in the .zgl header.',
     );
 
     argParser.addFlag(
@@ -37,8 +60,16 @@ class ExtractCommand extends Command<int> {
 
     argParser.addFlag(
       'skip-redacted',
-      help: 'Continue extraction even if some blocks are redacted.',
+      help: 'Continue extraction even if some blocks are redacted.\n'
+          'Redacted blocks are replaced with empty content.',
       defaultsTo: true,
+    );
+
+    argParser.addFlag(
+      'check-regulatory-hold',
+      help: 'Check for regulatory hold metadata. If a hold is active\n'
+          '(hold date is in the future), refuse extraction with exit code 3.',
+      defaultsTo: false,
     );
   }
 
@@ -110,6 +141,36 @@ class ExtractCommand extends Command<int> {
 
     // Determine output path.
     final inspection = reader.inspect(fileBytes);
+
+    // Check regulatory hold if requested.
+    final checkRegulatoryHold = argResults!['check-regulatory-hold'] as bool;
+    if (checkRegulatoryHold && inspection.publicMetadata != null) {
+      final holdTimestamp =
+          inspection.publicMetadata!['regulatory_hold_until'];
+      if (holdTimestamp != null) {
+        final holdDate = DateTime.fromMillisecondsSinceEpoch(
+          (holdTimestamp as int) * 1000,
+          isUtc: true,
+        );
+        final now = DateTime.now().toUtc();
+        if (now.isBefore(holdDate)) {
+          final holdStr =
+              inspection.publicMetadata!['regulatory_hold_date_str'] ??
+                  formatTimestamp(holdDate);
+          stderr.writeln(
+            '${Ansi.error('REGULATORY HOLD')} - File is under regulatory hold.',
+          );
+          stderr.writeln('  Hold until: $holdStr');
+          stderr.writeln(
+            '  Extraction is refused while the hold is active.',
+          );
+          stderr.writeln(
+            '  Use --no-check-regulatory-hold to bypass this check.',
+          );
+          return 3;
+        }
+      }
+    }
     final outputPath =
         argResults!['output'] as String? ?? inspection.filename ?? '';
 

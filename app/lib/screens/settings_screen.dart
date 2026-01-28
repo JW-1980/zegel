@@ -23,6 +23,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
   List<String> _keyNames = [];
   bool _isLoadingKeys = true;
   String _selectedBlockSize = '65536';
+  String _defaultClassification = 'INTERNAL';
+  String _tsaUrl = '';
+  bool _preserveMediaMetadata = false;
+  bool _anonymousMode = false;
 
   @override
   void initState() {
@@ -395,6 +399,130 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           const SizedBox(height: 16),
 
+          // Default classification level
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.security, color: theme.colorScheme.primary),
+                      const SizedBox(width: 8),
+                      Text(
+                        l10n.settingsDefaultClassification,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  DropdownButtonFormField<String>(
+                    value: _defaultClassification,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                    ),
+                    items: const [
+                      DropdownMenuItem(
+                          value: 'PUBLIC', child: Text('PUBLIC')),
+                      DropdownMenuItem(
+                          value: 'INTERNAL', child: Text('INTERNAL')),
+                      DropdownMenuItem(
+                          value: 'CONFIDENTIAL',
+                          child: Text('CONFIDENTIAL')),
+                      DropdownMenuItem(
+                          value: 'SECRET', child: Text('SECRET')),
+                      DropdownMenuItem(
+                          value: 'TOP_SECRET',
+                          child: Text('TOP SECRET')),
+                    ],
+                    onChanged: (value) {
+                      if (value != null) {
+                        setState(() => _defaultClassification = value);
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // TSA URL setting
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.access_time, color: theme.colorScheme.primary),
+                      const SizedBox(width: 8),
+                      Text(
+                        l10n.settingsTsaUrl,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    decoration: InputDecoration(
+                      hintText: l10n.settingsTsaUrlHint,
+                      border: const OutlineInputBorder(),
+                    ),
+                    onChanged: (v) => setState(() => _tsaUrl = v),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // Toggles
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.tune, color: theme.colorScheme.primary),
+                      const SizedBox(width: 8),
+                      Text(
+                        l10n.settingsAdvancedOptions,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Divider(),
+                  SwitchListTile(
+                    title: Text(l10n.settingsPreserveMediaMetadata),
+                    subtitle: Text(l10n.settingsPreserveMediaMetadataDesc),
+                    value: _preserveMediaMetadata,
+                    onChanged: (v) =>
+                        setState(() => _preserveMediaMetadata = v),
+                  ),
+                  SwitchListTile(
+                    title: Text(l10n.settingsAnonymousMode),
+                    subtitle: Text(l10n.settingsAnonymousModeDesc),
+                    value: _anonymousMode,
+                    onChanged: (v) =>
+                        setState(() => _anonymousMode = v),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+
           // About section
           Card(
             child: Padding(
@@ -416,7 +544,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                   const Divider(),
                   _AboutRow(label: 'Application', value: 'Zegel'),
-                  _AboutRow(label: 'Version', value: '1.2.0'),
+                  _AboutRow(label: 'Version', value: '1.3.0'),
                   _AboutRow(label: 'Format Version', value: '1.2'),
                   _AboutRow(label: 'File Extension', value: '.zgl'),
                   _AboutRow(label: 'MIME Type', value: 'application/x-zgl'),
@@ -436,6 +564,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     'if even a single byte is modified.',
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'v1.3 Features',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '- Batch operations (verify & seal)\n'
+                    '- Classification management (PUBLIC to TOP SECRET)\n'
+                    '- Manifest creation & verification\n'
+                    '- Excerpt proof generation & verification\n'
+                    '- Provenance chain viewer\n'
+                    '- Credential issuance & verification\n'
+                    '- Contract multi-party workflows\n'
+                    '- Anonymous mode & TSA timestamps\n'
+                    '- Media metadata preservation',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                      height: 1.5,
                     ),
                   ),
                 ],

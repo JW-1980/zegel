@@ -9,6 +9,7 @@ import '../widgets/status_badge.dart';
 import '../widgets/file_info_card.dart';
 import '../widgets/attestation_badge.dart';
 import '../widgets/audit_trail_view.dart';
+import '../widgets/classification_badge.dart';
 import 'extract_screen.dart';
 
 /// Screen for verifying the integrity of a .zgl file.
@@ -31,6 +32,8 @@ class _VerifyScreenState extends State<VerifyScreen> {
   bool _isVerifying = false;
   ZegelResult? _result;
   String? _errorMessage;
+  ZegelInspection? _inspection;
+  bool _provenanceExpanded = false;
 
   @override
   void initState() {
@@ -73,9 +76,18 @@ class _VerifyScreenState extends State<VerifyScreen> {
       final zegelService = context.read<ZegelService>();
       final result = await zegelService.verify(_filePath!, _hexKey);
 
+      // Also try to load inspection data for additional display
+      ZegelInspection? inspection;
+      try {
+        inspection = await zegelService.inspect(_filePath!);
+      } catch (_) {
+        // Inspection is optional; if it fails, we still show verify result.
+      }
+
       if (mounted) {
         setState(() {
           _result = result;
+          _inspection = inspection;
           _isVerifying = false;
         });
       }
@@ -232,6 +244,98 @@ class _VerifyScreenState extends State<VerifyScreen> {
                 ),
               ),
 
+              // Classification level badge
+              if (_result!.metadata != null &&
+                  _result!.metadata!.containsKey('classification')) ...[
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      children: [
+                        Icon(Icons.security,
+                            color: theme.colorScheme.primary),
+                        const SizedBox(width: 8),
+                        Text(
+                          l10n.verifyClassificationLabel,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const Spacer(),
+                        ClassificationBadge(
+                          level: _result!.metadata!['classification']
+                              as String,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
+
+              // Regulatory hold status
+              if (_result!.metadata != null &&
+                  _result!.metadata!.containsKey('regulatory_hold_until')) ...[
+                Card(
+                  color: Colors.amber.shade50,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      children: [
+                        Icon(Icons.gavel, color: Colors.amber.shade800),
+                        const SizedBox(width: 8),
+                        Text(
+                          l10n.verifyRegulatoryHold(
+                            _result!.metadata!['regulatory_hold_until']
+                                .toString(),
+                          ),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.amber.shade900,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
+
+              // Timestamp authority info
+              if (_result!.metadata != null &&
+                  _result!.metadata!.containsKey('tsa_url')) ...[
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      children: [
+                        Icon(Icons.access_time,
+                            color: theme.colorScheme.primary),
+                        const SizedBox(width: 8),
+                        Text(
+                          l10n.verifyTimestampAuthority,
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            _result!.metadata!['tsa_url'].toString(),
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              fontFamily: 'monospace',
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
+
               // File info card (if valid)
               if (_result!.status == ZegelStatus.valid) ...[
                 FileInfoCard(
@@ -241,6 +345,73 @@ class _VerifyScreenState extends State<VerifyScreen> {
                   blockCount: _result!.blockCount,
                   flags: _result!.flags,
                   publicMetadata: _result!.metadata,
+                  inspection: _inspection,
+                ),
+                const SizedBox(height: 16),
+              ],
+
+              // Attestation policy check
+              if (_result!.attestations != null &&
+                  _result!.attestations!.isNotEmpty) ...[
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Icons.policy,
+                                color: theme.colorScheme.primary),
+                            const SizedBox(width: 8),
+                            Text(
+                              l10n.verifyAttestationPolicy,
+                              style:
+                                  theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const Divider(),
+                        Row(
+                          children: [
+                            Icon(
+                              _result!.attestations!
+                                      .every((a) => a.isVerified)
+                                  ? Icons.check_circle
+                                  : Icons.warning,
+                              color: _result!.attestations!
+                                      .every((a) => a.isVerified)
+                                  ? Colors.green
+                                  : Colors.orange,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              _result!.attestations!
+                                      .every((a) => a.isVerified)
+                                  ? l10n.verifyAllAttestationsValid
+                                  : l10n.verifySomeAttestationsInvalid,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: _result!.attestations!
+                                        .every((a) => a.isVerified)
+                                    ? Colors.green
+                                    : Colors.orange,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          '${_result!.attestations!.where((a) => a.isVerified).length} / ${_result!.attestations!.length} attestations verified',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 16),
               ],
@@ -256,6 +427,50 @@ class _VerifyScreenState extends State<VerifyScreen> {
               if (_result!.auditTrail != null &&
                   _result!.auditTrail!.isNotEmpty) ...[
                 AuditTrailView(entries: _result!.auditTrail!),
+                const SizedBox(height: 16),
+              ],
+
+              // Provenance timeline preview (collapsed, expandable)
+              if (_result!.auditTrail != null &&
+                  _result!.auditTrail!.isNotEmpty) ...[
+                Card(
+                  child: Column(
+                    children: [
+                      ListTile(
+                        leading: Icon(Icons.timeline,
+                            color: theme.colorScheme.primary),
+                        title: Text(
+                          l10n.verifyProvenancePreview,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        subtitle: Text(
+                          '${_result!.auditTrail!.length} events',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                        trailing: Icon(
+                          _provenanceExpanded
+                              ? Icons.expand_less
+                              : Icons.expand_more,
+                        ),
+                        onTap: () {
+                          setState(() =>
+                              _provenanceExpanded = !_provenanceExpanded);
+                        },
+                      ),
+                      if (_provenanceExpanded)
+                        Padding(
+                          padding:
+                              const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                          child: AuditTrailView(
+                              entries: _result!.auditTrail!),
+                        ),
+                    ],
+                  ),
+                ),
                 const SizedBox(height: 16),
               ],
 

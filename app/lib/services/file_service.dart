@@ -94,4 +94,45 @@ class FileService {
       return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
     }
   }
+
+  /// Picks a directory from the file system.
+  ///
+  /// Returns the directory path, or null if the user cancelled.
+  Future<String?> pickDirectory() async {
+    return FilePicker.platform.getDirectoryPath(
+      dialogTitle: 'Select folder',
+    );
+  }
+
+  /// Lists all .zgl files in a directory.
+  Future<List<String>> listZegelFiles(String directoryPath) async {
+    final dir = Directory(directoryPath);
+    if (!await dir.exists()) return [];
+    final files = <String>[];
+    await for (final entity in dir.list()) {
+      if (entity is File && entity.path.endsWith('.zgl')) {
+        files.add(entity.path);
+      }
+    }
+    return files;
+  }
+
+  /// Lists all regular files in a directory (non-recursive).
+  Future<List<String>> listAllFiles(String directoryPath) async {
+    final dir = Directory(directoryPath);
+    if (!await dir.exists()) return [];
+    final files = <String>[];
+    await for (final entity in dir.list()) {
+      if (entity is File) {
+        files.add(entity.path);
+      }
+    }
+    return files;
+  }
+
+  /// Saves bytes to a specific file path (no dialog).
+  Future<void> saveFileToPath(Uint8List bytes, String outputPath) async {
+    final file = File(outputPath);
+    await file.writeAsBytes(bytes);
+  }
 }

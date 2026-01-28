@@ -20,8 +20,30 @@ class VerifyCommand extends Command<int> {
   final String name = 'verify';
 
   @override
-  final String description =
-      'Verify the integrity of a .zgl file.';
+  String get description =>
+      'Verify the integrity and authenticity of a .zgl file.\n'
+      '\n'
+      'Performs a complete integrity check: validates the master seal,\n'
+      'Merkle tree, all block HMACs, and key commitment. If any byte\n'
+      'has been modified, the file is reported as TAMPERED.\n'
+      '\n'
+      'Use --verbose to see detailed block-by-block verification results,\n'
+      'attestation details, and audit trail entries.\n'
+      '\n'
+      'Use --check-attestation-policy to require that specific roles have\n'
+      'attested to the file (e.g., require both a reviewer and a notary).\n'
+      '\n'
+      'Exit codes:\n'
+      '  0  VALID - file integrity verified\n'
+      '  1  TAMPERED - integrity check failed / format error\n'
+      '  2  EXPIRED - cryptographic expiration reached\n'
+      '  3  POLICY_VIOLATION - attestation policy not met\n'
+      '\n'
+      'Examples:\n'
+      '  zegel verify document.zgl -k \$(cat master.key)\n'
+      '  zegel verify document.zgl --key-file master.key --verbose\n'
+      '  zegel verify document.zgl -k <hex> --quiet\n'
+      '  zegel verify contract.zgl -k <hex> --check-attestation-policy reviewer,notary';
 
   @override
   final String invocation = 'zegel verify <file.zgl> [options]';
@@ -32,15 +54,26 @@ class VerifyCommand extends Command<int> {
     argParser.addFlag(
       'verbose',
       abbr: 'v',
-      help: 'Show detailed verification information.',
+      help: 'Show detailed verification information including block\n'
+          'directory, per-block hashes, attestation HMACs, and\n'
+          'audit trail entries.',
       defaultsTo: false,
     );
 
     argParser.addFlag(
       'quiet',
       abbr: 'q',
-      help: 'Only output the result (VALID, TAMPERED, or EXPIRED).',
+      help: 'Only output the result (VALID, TAMPERED, or EXPIRED).\n'
+          'Useful for scripting.',
       defaultsTo: false,
+    );
+
+    argParser.addOption(
+      'check-attestation-policy',
+      help: 'Comma-separated list of required attestation roles.\n'
+          'Verification fails (exit code 3) if any role is missing.\n'
+          'Valid roles: owner, signer, witness, notary, auditor, reviewer.',
+      valueHelp: 'role1,role2',
     );
   }
 
@@ -74,6 +107,59 @@ class VerifyCommand extends Command<int> {
 
     try {
       final result = reader.verify(fileBytes, masterKey);
+
+      // Check attestation policy if specified.
+      final policyStr =
+          argResults!['check-attestation-policy'] as String?;
+      if (policyStr != null && policyStr.isNotEmpty) {
+        final requiredRoles = policyStr
+            .split(',')
+            .map((r) => r.trim().toLowerCase())
+            .where((r) => r.isNotEmpty)
+            .toList();
+
+        // Validate role names.
+        for (final role in requiredRoles) {
+          if (!attestationRoles.contains(role)) {
+            exitError(
+              'Invalid attestation role in policy: "$role". '
+              'Valid roles: ${attestationRoles.join(', ')}.',
+            );
+          }
+        }
+
+        // Check that each required role has at least one attestation.
+        final attestedRoles = <String>{};
+        if (result.attestations != null) {
+          for (final att in result.attestations!) {
+            final role = att['role'] as String?;
+            if (role != null) {
+              attestedRoles.add(role.toLowerCase());
+            }
+          }
+        }
+
+        final missingRoles =
+            requiredRoles.where((r) => !attestedRoles.contains(r)).toList();
+        if (missingRoles.isNotEmpty) {
+          if (quiet) {
+            stdout.writeln('POLICY_VIOLATION');
+          } else {
+            stdout.writeln(
+              '${Ansi.error('POLICY_VIOLATION')} - Required attestation '
+              'roles are missing.',
+            );
+            stdout.writeln();
+            stderr.writeln(
+              '  Missing roles: ${missingRoles.join(', ')}',
+            );
+            stderr.writeln(
+              '  Present roles: ${attestedRoles.isEmpty ? '(none)' : attestedRoles.join(', ')}',
+            );
+          }
+          return 3;
+        }
+      }
 
       if (quiet) {
         stdout.writeln('VALID');
