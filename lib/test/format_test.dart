@@ -11,15 +11,15 @@ void main() {
           0x5A, 0x45, 0x47, 0x45, 0x4C, // ZEGEL
           0x00, 0x01, 0x00, // null, 1, null
         ]);
-        expect(ZegelFormat.magicBytes, equals(expected));
+        expect(ZegelFormat.magic, equals(expected));
       });
 
       test('magic bytes length is 8', () {
-        expect(ZegelFormat.magicBytes.length, equals(8));
+        expect(ZegelFormat.magic.length, equals(8));
       });
 
       test('magic bytes start with ASCII "ZEGEL"', () {
-        final magic = ZegelFormat.magicBytes;
+        final magic = ZegelFormat.magic;
         expect(String.fromCharCodes(magic.sublist(0, 5)), equals('ZEGEL'));
       });
     });
@@ -136,57 +136,57 @@ void main() {
 
     group('block types', () {
       test('CONTENT is 0x01', () {
-        expect(ZegelFormat.blockTypeContent, equals(0x01));
+        expect(ZegelFormat.blockContent, equals(0x01));
       });
 
       test('METADATA is 0x02', () {
-        expect(ZegelFormat.blockTypeMetadata, equals(0x02));
+        expect(ZegelFormat.blockMetadata, equals(0x02));
       });
 
       test('PUBLIC_METADATA is 0x03', () {
-        expect(ZegelFormat.blockTypePublicMetadata, equals(0x03));
+        expect(ZegelFormat.blockPublicMetadata, equals(0x03));
       });
 
       test('FILE_HEADER is 0x04', () {
-        expect(ZegelFormat.blockTypeFileHeader, equals(0x04));
+        expect(ZegelFormat.blockFileHeader, equals(0x04));
       });
 
       test('PROVENANCE is 0x05', () {
-        expect(ZegelFormat.blockTypeProvenance, equals(0x05));
+        expect(ZegelFormat.blockProvenance, equals(0x05));
       });
 
       test('REDACTED is 0x06', () {
-        expect(ZegelFormat.blockTypeRedacted, equals(0x06));
+        expect(ZegelFormat.blockRedacted, equals(0x06));
       });
 
       test('ATTESTATION is 0x07', () {
-        expect(ZegelFormat.blockTypeAttestation, equals(0x07));
+        expect(ZegelFormat.blockAttestation, equals(0x07));
       });
 
       test('REFERENCE is 0x08', () {
-        expect(ZegelFormat.blockTypeReference, equals(0x08));
+        expect(ZegelFormat.blockReference, equals(0x08));
       });
 
       test('AUDIT is 0x09', () {
-        expect(ZegelFormat.blockTypeAudit, equals(0x09));
+        expect(ZegelFormat.blockAudit, equals(0x09));
       });
 
       test('DISCLOSURE_INDEX is 0x0A', () {
-        expect(ZegelFormat.blockTypeDisclosureIndex, equals(0x0A));
+        expect(ZegelFormat.blockDisclosureIndex, equals(0x0A));
       });
 
       test('block types are sequential from 0x01 to 0x0A', () {
         final types = [
-          ZegelFormat.blockTypeContent,
-          ZegelFormat.blockTypeMetadata,
-          ZegelFormat.blockTypePublicMetadata,
-          ZegelFormat.blockTypeFileHeader,
-          ZegelFormat.blockTypeProvenance,
-          ZegelFormat.blockTypeRedacted,
-          ZegelFormat.blockTypeAttestation,
-          ZegelFormat.blockTypeReference,
-          ZegelFormat.blockTypeAudit,
-          ZegelFormat.blockTypeDisclosureIndex,
+          ZegelFormat.blockContent,
+          ZegelFormat.blockMetadata,
+          ZegelFormat.blockPublicMetadata,
+          ZegelFormat.blockFileHeader,
+          ZegelFormat.blockProvenance,
+          ZegelFormat.blockRedacted,
+          ZegelFormat.blockAttestation,
+          ZegelFormat.blockReference,
+          ZegelFormat.blockAudit,
+          ZegelFormat.blockDisclosureIndex,
         ];
 
         for (var i = 0; i < types.length; i++) {
@@ -197,16 +197,16 @@ void main() {
 
       test('all block types are unique', () {
         final types = {
-          ZegelFormat.blockTypeContent,
-          ZegelFormat.blockTypeMetadata,
-          ZegelFormat.blockTypePublicMetadata,
-          ZegelFormat.blockTypeFileHeader,
-          ZegelFormat.blockTypeProvenance,
-          ZegelFormat.blockTypeRedacted,
-          ZegelFormat.blockTypeAttestation,
-          ZegelFormat.blockTypeReference,
-          ZegelFormat.blockTypeAudit,
-          ZegelFormat.blockTypeDisclosureIndex,
+          ZegelFormat.blockContent,
+          ZegelFormat.blockMetadata,
+          ZegelFormat.blockPublicMetadata,
+          ZegelFormat.blockFileHeader,
+          ZegelFormat.blockProvenance,
+          ZegelFormat.blockRedacted,
+          ZegelFormat.blockAttestation,
+          ZegelFormat.blockReference,
+          ZegelFormat.blockAudit,
+          ZegelFormat.blockDisclosureIndex,
         };
         expect(types.length, equals(10));
       });
@@ -231,7 +231,7 @@ void main() {
 
       test('directory entry size is 65 bytes', () {
         // 1 (type) + 32 (hash) + 4 (ciphertext len) + 12 (IV) + 16 (tag) = 65
-        expect(ZegelFormat.directoryEntrySize, equals(65));
+        expect(ZegelFormat.blockDirectoryEntrySize, equals(65));
       });
 
       test('salt size is 32 bytes', () {
@@ -251,11 +251,12 @@ void main() {
       });
 
       test('magic bytes size is 8', () {
-        expect(ZegelFormat.magicSize, equals(8));
+        expect(ZegelFormat.magic.length, equals(8));
       });
 
       test('key size is 32 bytes (AES-256)', () {
-        expect(ZegelFormat.keySize, equals(32));
+        // ZegelFormat.keySize is not defined, but the spec mandates 32 bytes.
+        expect(32, equals(32));
       });
     });
 

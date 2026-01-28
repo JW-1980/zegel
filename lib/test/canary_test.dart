@@ -116,8 +116,8 @@ void main() {
           recipientId: recipientB,
         );
 
-        final fileA = ZegelWriter.seal(content, masterKey, options: optionsA);
-        final fileB = ZegelWriter.seal(content, masterKey, options: optionsB);
+        final fileA = ZegelWriter(masterKey, options: optionsA).seal(content);
+        final fileB = ZegelWriter(masterKey, options: optionsB).seal(content);
 
         // Merkle roots should be the same because padding is applied
         // BEFORE hashing (the plaintext hash includes padding)
@@ -158,8 +158,8 @@ void main() {
           recipientId: recipientB,
         );
 
-        final fileA = ZegelWriter.seal(content, masterKey, options: optionsA);
-        final fileB = ZegelWriter.seal(content, masterKey, options: optionsB);
+        final fileA = ZegelWriter(masterKey, options: optionsA).seal(content);
+        final fileB = ZegelWriter(masterKey, options: optionsB).seal(content);
 
         // The encrypted block data should differ due to different canary padding
         // (Even with same IV, which won't happen in practice since IVs are random)
@@ -176,7 +176,7 @@ void main() {
           recipientId: recipientA,
         );
         final fileBytes =
-            ZegelWriter.seal(content, masterKey, options: options);
+            ZegelWriter(masterKey, options: options).seal(content);
 
         final inspection = ZegelReader.inspect(fileBytes);
         expect(
@@ -196,7 +196,7 @@ void main() {
           recipientId: recipientA,
         );
         final fileBytes =
-            ZegelWriter.seal(content, masterKey, options: options);
+            ZegelWriter(masterKey, options: options).seal(content);
 
         final identified = CanaryTrap.identifyRecipient(
           fileBytes,
@@ -216,7 +216,7 @@ void main() {
           recipientId: recipientB,
         );
         final fileBytes =
-            ZegelWriter.seal(content, masterKey, options: options);
+            ZegelWriter(masterKey, options: options).seal(content);
 
         final identified = CanaryTrap.identifyRecipient(
           fileBytes,
@@ -237,7 +237,7 @@ void main() {
           recipientId: unknownRecipient,
         );
         final fileBytes =
-            ZegelWriter.seal(content, masterKey, options: options);
+            ZegelWriter(masterKey, options: options).seal(content);
 
         final identified = CanaryTrap.identifyRecipient(
           fileBytes,
@@ -257,7 +257,7 @@ void main() {
           recipientId: recipientA,
         );
         final fileBytes =
-            ZegelWriter.seal(content, masterKey, options: options);
+            ZegelWriter(masterKey, options: options).seal(content);
 
         // Create 100 candidate IDs with recipient A somewhere in the list
         final candidates = List.generate(
@@ -285,9 +285,9 @@ void main() {
           recipientId: recipientA,
         );
         final fileBytes =
-            ZegelWriter.seal(content, masterKey, options: options);
+            ZegelWriter(masterKey, options: options).seal(content);
 
-        final result = ZegelReader.extract(fileBytes, masterKey);
+        final result = ZegelReader().verify(fileBytes, masterKey);
         expect(result.valid, isTrue);
         // After extraction, canary padding should be stripped
         expect(result.content, equals(content));
@@ -301,9 +301,9 @@ void main() {
           recipientId: recipientB,
         );
         final fileBytes =
-            ZegelWriter.seal(content, masterKey, options: options);
+            ZegelWriter(masterKey, options: options).seal(content);
 
-        final result = ZegelReader.extract(fileBytes, masterKey);
+        final result = ZegelReader().verify(fileBytes, masterKey);
         expect(result.valid, isTrue);
         expect(result.content, equals(content));
       });
@@ -322,9 +322,9 @@ void main() {
           recipientId: recipientA,
         );
         final fileBytes =
-            ZegelWriter.seal(largeContent, masterKey, options: options);
+            ZegelWriter(masterKey, options: options).seal(largeContent);
 
-        final result = ZegelReader.extract(fileBytes, masterKey);
+        final result = ZegelReader().verify(fileBytes, masterKey);
         expect(result.valid, isTrue);
         expect(result.content, equals(largeContent));
       });

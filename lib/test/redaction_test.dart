@@ -26,7 +26,7 @@ Uint8List _createThreeBlockFile(Uint8List key) {
     filename: 'multi.bin',
     salt: _zeroSalt(),
   );
-  return ZegelWriter.seal(content, key, options: options);
+  return ZegelWriter(key, options).seal(content);
 }
 
 /// Helper to compute offsets for filename "multi.bin" (9 bytes), N blocks.
@@ -57,12 +57,12 @@ void main() {
         final fileBytes = _createThreeBlockFile(masterKey);
 
         // Verify original file is valid first
-        final originalResult = ZegelReader.verify(fileBytes, masterKey);
+        final originalResult = ZegelReader().verify(fileBytes, masterKey);
         expect(originalResult.valid, isTrue);
 
         // Redact block 1
         final redactedBytes =
-            ZegelRedaction.redact(fileBytes, masterKey, [1]);
+            Redaction.redactBlocks(fileBytes, masterKey, [1]);
         expect(redactedBytes, isNotNull);
         expect(redactedBytes.length, greaterThan(0));
       });
@@ -70,10 +70,10 @@ void main() {
       test('redacted file verifies successfully', () {
         final fileBytes = _createThreeBlockFile(masterKey);
         final redactedBytes =
-            ZegelRedaction.redact(fileBytes, masterKey, [1]);
+            Redaction.redactBlocks(fileBytes, masterKey, [1]);
 
         // Redacted file should still verify
-        final result = ZegelReader.verify(redactedBytes, masterKey);
+        final result = ZegelReader().verify(redactedBytes, masterKey);
         expect(result.valid, isTrue,
             reason: 'Redacted file should verify (Merkle root preserved)');
       });
@@ -81,9 +81,9 @@ void main() {
       test('extracting redacted file returns blocks 0 and 2, block 1 marked redacted', () {
         final fileBytes = _createThreeBlockFile(masterKey);
         final redactedBytes =
-            ZegelRedaction.redact(fileBytes, masterKey, [1]);
+            Redaction.redactBlocks(fileBytes, masterKey, [1]);
 
-        final result = ZegelReader.extract(redactedBytes, masterKey);
+        final result = ZegelReader().verify(redactedBytes, masterKey);
         expect(result.valid, isTrue);
 
         // The result should indicate which blocks are redacted
@@ -101,13 +101,13 @@ void main() {
       test('redacted block type is 0x06 (REDACTED)', () {
         final fileBytes = _createThreeBlockFile(masterKey);
         final redactedBytes =
-            ZegelRedaction.redact(fileBytes, masterKey, [1]);
+            Redaction.redactBlocks(fileBytes, masterKey, [1]);
 
         final offsets = _offsetsForMulti(3);
         // Block 1 is the second directory entry (index 1)
         final block1TypeOffset = offsets['directory']! + 1 * 65;
         expect(redactedBytes[block1TypeOffset],
-            equals(ZegelFormat.blockTypeRedacted));
+            equals(ZegelFormat.blockRedacted));
       });
 
       test('original plaintext hash preserved for Merkle tree', () {
@@ -121,7 +121,7 @@ void main() {
 
         // Redact block 1
         final redactedBytes =
-            ZegelRedaction.redact(fileBytes, masterKey, [1]);
+            Redaction.redactBlocks(fileBytes, masterKey, [1]);
 
         // Hash should be preserved
         final redactedHash = Uint8List.fromList(
@@ -134,7 +134,7 @@ void main() {
       test('Merkle root is preserved after redaction', () {
         final fileBytes = _createThreeBlockFile(masterKey);
         final redactedBytes =
-            ZegelRedaction.redact(fileBytes, masterKey, [1]);
+            Redaction.redactBlocks(fileBytes, masterKey, [1]);
 
         final offsets = _offsetsForMulti(3);
         final merkleRootOffset = offsets['merkleRoot']!;
@@ -153,9 +153,9 @@ void main() {
       test('HAS_REDACTIONS flag is set after redaction', () {
         final fileBytes = _createThreeBlockFile(masterKey);
         final redactedBytes =
-            ZegelRedaction.redact(fileBytes, masterKey, [1]);
+            Redaction.redactBlocks(fileBytes, masterKey, [1]);
 
-        final inspection = ZegelReader.inspect(redactedBytes);
+        final inspection = ZegelReader().inspect(redactedBytes);
         expect(
           inspection.flags & ZegelFormat.flagHasRedactions,
           isNonZero,
@@ -166,7 +166,7 @@ void main() {
       test('original file does not have HAS_REDACTIONS flag', () {
         final fileBytes = _createThreeBlockFile(masterKey);
 
-        final inspection = ZegelReader.inspect(fileBytes);
+        final inspection = ZegelReader().inspect(fileBytes);
         expect(
           inspection.flags & ZegelFormat.flagHasRedactions,
           equals(0),
@@ -179,10 +179,10 @@ void main() {
       test('tampering with non-redacted block after redaction -> fails', () {
         final fileBytes = _createThreeBlockFile(masterKey);
         final redactedBytes =
-            ZegelRedaction.redact(fileBytes, masterKey, [1]);
+            Redaction.redactBlocks(fileBytes, masterKey, [1]);
 
         // Verify the redacted file is valid first
-        final validResult = ZegelReader.verify(redactedBytes, masterKey);
+        final validResult = ZegelReader().verify(redactedBytes, masterKey);
         expect(validResult.valid, isTrue);
 
         // Now tamper with block 0's ciphertext
@@ -192,10 +192,12 @@ void main() {
         final tampered = Uint8List.fromList(redactedBytes);
         tampered[blockDataStart] ^= 0x01;
 
-        final result = ZegelReader.verify(tampered, masterKey);
-        expect(result.valid, isFalse,
-            reason:
-                'Tampering with non-redacted block should fail verification');
+        expect(
+          () => ZegelReader().verify(tampered, masterKey),
+          throwsA(isA<ZegelTamperedException>()),
+          reason:
+              'Tampering with non-redacted block should fail verification',
+        );
       });
     });
 
@@ -203,35 +205,35 @@ void main() {
       test('redact blocks 0 and 2', () {
         final fileBytes = _createThreeBlockFile(masterKey);
         final redactedBytes =
-            ZegelRedaction.redact(fileBytes, masterKey, [0, 2]);
+            Redaction.redactBlocks(fileBytes, masterKey, [0, 2]);
 
-        final result = ZegelReader.verify(redactedBytes, masterKey);
+        final result = ZegelReader().verify(redactedBytes, masterKey);
         expect(result.valid, isTrue);
 
         final offsets = _offsetsForMulti(3);
         // Block 0 should be REDACTED
         expect(redactedBytes[offsets['directory']!],
-            equals(ZegelFormat.blockTypeRedacted));
+            equals(ZegelFormat.blockRedacted));
         // Block 1 should still be CONTENT
         expect(redactedBytes[offsets['directory']! + 65],
-            equals(ZegelFormat.blockTypeContent));
+            equals(ZegelFormat.blockContent));
         // Block 2 should be REDACTED
         expect(redactedBytes[offsets['directory']! + 130],
-            equals(ZegelFormat.blockTypeRedacted));
+            equals(ZegelFormat.blockRedacted));
       });
 
       test('redacting all blocks -> verifies but no content extractable', () {
         final fileBytes = _createThreeBlockFile(masterKey);
         final redactedBytes =
-            ZegelRedaction.redact(fileBytes, masterKey, [0, 1, 2]);
+            Redaction.redactBlocks(fileBytes, masterKey, [0, 1, 2]);
 
         // Should still verify (Merkle root preserved)
-        final result = ZegelReader.verify(redactedBytes, masterKey);
+        final result = ZegelReader().verify(redactedBytes, masterKey);
         expect(result.valid, isTrue);
 
         // Extract should show all blocks as redacted
         final extractResult =
-            ZegelReader.extract(redactedBytes, masterKey);
+            ZegelReader().verify(redactedBytes, masterKey);
         expect(extractResult.valid, isTrue);
         expect(extractResult.redactedBlocks, containsAll([0, 1, 2]));
       });
@@ -251,18 +253,18 @@ void main() {
           metadata: {'sealed_by': 'test'},
         );
         final fileBytes =
-            ZegelWriter.seal(content, masterKey, options: options);
+            ZegelWriter(masterKey, options).seal(content);
 
         // Block 0 = metadata, blocks 1, 2, 3 = content
         // Redact content block 1 (the first content block)
         final redactedBytes =
-            ZegelRedaction.redact(fileBytes, masterKey, [1]);
+            Redaction.redactBlocks(fileBytes, masterKey, [1]);
 
-        final result = ZegelReader.verify(redactedBytes, masterKey);
+        final result = ZegelReader().verify(redactedBytes, masterKey);
         expect(result.valid, isTrue);
 
         final extractResult =
-            ZegelReader.extract(redactedBytes, masterKey);
+            ZegelReader().verify(redactedBytes, masterKey);
         expect(extractResult.valid, isTrue);
         // Metadata should still be accessible
         expect(extractResult.metadata, isNotNull);
@@ -276,7 +278,7 @@ void main() {
       test('redacted file has different seal than original', () {
         final fileBytes = _createThreeBlockFile(masterKey);
         final redactedBytes =
-            ZegelRedaction.redact(fileBytes, masterKey, [1]);
+            Redaction.redactBlocks(fileBytes, masterKey, [1]);
 
         // Seals should differ (ciphertext changed, flags may have changed)
         final originalSeal =
@@ -313,7 +315,7 @@ void main() {
 
         // Redact
         final redactedBytes =
-            ZegelRedaction.redact(fileBytes, masterKey, [1]);
+            Redaction.redactBlocks(fileBytes, masterKey, [1]);
 
         final redactedBlock1 = Uint8List.fromList(
             redactedBytes.sublist(block1Start, block1End));

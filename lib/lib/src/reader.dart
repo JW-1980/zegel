@@ -28,6 +28,7 @@ class ZegelResult {
     this.auditTrail,
     this.provenance,
     this.redactedBlocks,
+    this.disclosedBlocks,
   });
 
   /// Whether all cryptographic checks passed.
@@ -59,6 +60,9 @@ class ZegelResult {
 
   /// Zero-based indices of redacted blocks (block type 0x06).
   final List<int>? redactedBlocks;
+
+  /// Zero-based indices of blocks successfully disclosed (only for selective disclosure).
+  final List<int>? disclosedBlocks;
 }
 
 /// Header-only inspection result (no master key required).
@@ -298,6 +302,7 @@ class ZegelReader {
     final List<Map<String, dynamic>> provenanceEntries =
         <Map<String, dynamic>>[];
     final List<int> redactedBlocks = <int>[];
+    final List<int> disclosedIndices = <int>[];
 
     for (int i = 0; i < h.blockCount; i++) {
       final _DirEntry entry = h.directory[i];
@@ -464,6 +469,17 @@ class ZegelReader {
     final Map<String, dynamic> blockKeysMap =
         token['block_keys'] as Map<String, dynamic>;
 
+    // Verify token Merkle root matches file
+    if (token.containsKey('merkle_root')) {
+      final String tokenRoot = token['merkle_root'] as String;
+      final String fileRoot = _bytesToHex(h.merkleRoot);
+      if (tokenRoot != fileRoot) {
+        throw const ZegelTamperedException(
+          'Token Merkle root does not match file',
+        );
+      }
+    }
+
     int dataOffset = h.dataStart;
     // Pre-compute data offsets for each block.
     final List<int> blockDataOffsets = <int>[];
@@ -479,6 +495,7 @@ class ZegelReader {
     final List<Map<String, dynamic>> provenanceEntries =
         <Map<String, dynamic>>[];
     final List<int> redactedBlocks = <int>[];
+    final List<int> disclosedIndices = <int>[];
 
     for (int i = 0; i < h.blockCount; i++) {
       final _DirEntry entry = h.directory[i];
@@ -493,6 +510,8 @@ class ZegelReader {
       if (!blockKeysMap.containsKey(indexStr)) {
         continue;
       }
+
+      disclosedIndices.add(i);
 
       final Uint8List blockKey = _hexToBytes(
         blockKeysMap[indexStr] as String,
@@ -586,6 +605,7 @@ class ZegelReader {
       auditTrail: auditTrail.isNotEmpty ? auditTrail : null,
       provenance: provenanceEntries.isNotEmpty ? provenanceEntries : null,
       redactedBlocks: redactedBlocks.isNotEmpty ? redactedBlocks : null,
+      disclosedBlocks: disclosedIndices,
     );
   }
 
@@ -765,6 +785,15 @@ class ZegelReader {
         'File too short: expected at least $requiredLength bytes for $context',
       );
     }
+  }
+
+  /// Converts bytes to lowercase hex string.
+  static String _bytesToHex(Uint8List bytes) {
+    final StringBuffer buf = StringBuffer();
+    for (final byte in bytes) {
+      buf.write(byte.toRadixString(16).padLeft(2, '0'));
+    }
+    return buf.toString();
   }
 
   /// Constant-time comparison of two byte arrays.

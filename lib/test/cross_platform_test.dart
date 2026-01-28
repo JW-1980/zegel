@@ -53,7 +53,7 @@ void main() {
           filename: 'hello.txt',
           salt: _zeroSalt(),
         );
-        fileBytes = ZegelWriter.seal(content, masterKey, options: options);
+        fileBytes = ZegelWriter(masterKey, options).seal(content);
       });
 
       test('file starts with correct magic bytes', () {
@@ -127,7 +127,7 @@ void main() {
         final contentHash = _sha256(content);
 
         // For a single leaf tree, root = leaf hash
-        final merkleRoot = MerkleTree.computeRoot([contentHash]);
+        final merkleRoot = MerkleTree.buildRoot([contentHash]);
         expect(merkleRoot, equals(contentHash));
       });
 
@@ -139,7 +139,7 @@ void main() {
         final hash0 = _sha256(block0);
         final hash1 = _sha256(block1);
 
-        final root = MerkleTree.computeRoot([hash0, hash1]);
+        final root = MerkleTree.buildRoot([hash0, hash1]);
         expect(root.length, equals(32));
 
         // Compute expected root manually
@@ -219,7 +219,7 @@ void main() {
           salt: _zeroSalt(),
         );
         final fileBytes =
-            ZegelWriter.seal(content, masterKey, options: options);
+            ZegelWriter(masterKey, options).seal(content);
 
         final seal = fileBytes.sublist(fileBytes.length - 64);
         expect(seal.length, equals(64));
@@ -238,10 +238,10 @@ void main() {
           salt: _zeroSalt(),
         );
         final fileBytes =
-            ZegelWriter.seal(content, masterKey, options: options);
+            ZegelWriter(masterKey, options).seal(content);
 
         // Offset 0-7: Magic (8 bytes)
-        expect(fileBytes.sublist(0, 8), equals(ZegelFormat.magicBytes));
+        expect(fileBytes.sublist(0, 8), equals(ZegelFormat.magic));
 
         // Offset 8: Version major
         expect(fileBytes[8], equals(1));
@@ -282,7 +282,7 @@ void main() {
 
         // Offset 131: Start of block directory
         // Block type at 131
-        expect(fileBytes[131], equals(ZegelFormat.blockTypeContent));
+        expect(fileBytes[131], equals(ZegelFormat.blockContent));
 
         // Hash at 132-163 (32 bytes)
         final blockHash = fileBytes.sublist(132, 164);
