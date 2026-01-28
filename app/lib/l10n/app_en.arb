@@ -139,5 +139,663 @@
   "totalSharesLabel": "Total Shares (N)",
   "@totalSharesLabel": {
     "description": "Label for the total shares input in split-key"
+  },
+  "cancelAction": "Cancel",
+  "@cancelAction": {
+    "description": "Label for cancel button"
+  },
+  "selectFileAction": "Select File",
+  "@selectFileAction": {
+    "description": "Label for select file button"
+  },
+  "selectFolderAction": "Select Folder",
+  "@selectFolderAction": {
+    "description": "Label for select folder button"
+  },
+  "noFolderSelected": "No folder selected",
+  "@noFolderSelected": {
+    "description": "Message when no folder has been selected"
+  },
+
+  "drawerCoreSection": "Core",
+  "@drawerCoreSection": {
+    "description": "Drawer section header for core features"
+  },
+  "drawerSecuritySection": "Security",
+  "@drawerSecuritySection": {
+    "description": "Drawer section header for security features"
+  },
+  "drawerDisclosureSection": "Disclosure",
+  "@drawerDisclosureSection": {
+    "description": "Drawer section header for disclosure features"
+  },
+  "drawerAdvancedSection": "Advanced",
+  "@drawerAdvancedSection": {
+    "description": "Drawer section header for advanced features"
+  },
+
+  "batchOperationsTitle": "Batch Operations",
+  "@batchOperationsTitle": {
+    "description": "Title for the batch operations screen"
+  },
+  "batchVerifyTab": "Batch Verify",
+  "@batchVerifyTab": {
+    "description": "Tab label for batch verify"
+  },
+  "batchSealTab": "Batch Seal",
+  "@batchSealTab": {
+    "description": "Tab label for batch seal"
+  },
+  "batchInputFolder": "Input Folder",
+  "@batchInputFolder": {
+    "description": "Label for input folder selection"
+  },
+  "batchOutputFolder": "Output Folder",
+  "@batchOutputFolder": {
+    "description": "Label for output folder selection"
+  },
+  "batchOptions": "Options",
+  "@batchOptions": {
+    "description": "Label for batch options section"
+  },
+  "batchStartVerify": "Start Batch Verify",
+  "@batchStartVerify": {
+    "description": "Button to start batch verification"
+  },
+  "batchStartSeal": "Start Batch Seal",
+  "@batchStartSeal": {
+    "description": "Button to start batch sealing"
+  },
+  "batchProcessing": "Processing...",
+  "@batchProcessing": {
+    "description": "Label shown during batch processing"
+  },
+  "batchResults": "Results",
+  "@batchResults": {
+    "description": "Label for batch results section"
+  },
+  "batchVerified": "Verified",
+  "@batchVerified": {
+    "description": "Summary label for verified files"
+  },
+  "batchSealed": "Sealed",
+  "@batchSealed": {
+    "description": "Summary label for sealed files"
+  },
+  "batchFailed": "Failed",
+  "@batchFailed": {
+    "description": "Summary label for failed files"
+  },
+  "batchTotalTime": "Total Time",
+  "@batchTotalTime": {
+    "description": "Summary label for total processing time"
+  },
+
+  "classificationTitle": "Classification",
+  "@classificationTitle": {
+    "description": "Title for the classification screen"
+  },
+  "classificationFileLabel": "Classified File",
+  "@classificationFileLabel": {
+    "description": "Label for file picker in classification screen"
+  },
+  "classificationCurrentLabel": "Current level:",
+  "@classificationCurrentLabel": {
+    "description": "Label for current classification level"
+  },
+  "classificationNone": "No classification set",
+  "@classificationNone": {
+    "description": "Shown when no classification is set"
+  },
+  "classificationSetLabel": "Set Classification",
+  "@classificationSetLabel": {
+    "description": "Section label for setting classification"
+  },
+  "classificationSetAction": "Set Classification",
+  "@classificationSetAction": {
+    "description": "Button label to set classification"
+  },
+  "classificationLevelLabel": "Classification Level",
+  "@classificationLevelLabel": {
+    "description": "Dropdown label for classification level"
+  },
+  "classificationAuthorityLabel": "Authority",
+  "@classificationAuthorityLabel": {
+    "description": "Input label for classification authority"
+  },
+  "classificationAuthorityHint": "e.g. Security Officer",
+  "@classificationAuthorityHint": {
+    "description": "Hint for authority input"
+  },
+  "classificationCaveatLabel": "Caveat",
+  "@classificationCaveatLabel": {
+    "description": "Input label for classification caveat"
+  },
+  "classificationCaveatHint": "e.g. NOFORN, EYES ONLY",
+  "@classificationCaveatHint": {
+    "description": "Hint for caveat input"
+  },
+  "classificationDeclassifyLabel": "Declassify",
+  "@classificationDeclassifyLabel": {
+    "description": "Section label for declassification"
+  },
+  "classificationNewLevelLabel": "New Level",
+  "@classificationNewLevelLabel": {
+    "description": "Dropdown label for new classification level"
+  },
+  "classificationDeclassifyAction": "Declassify",
+  "@classificationDeclassifyAction": {
+    "description": "Button label to declassify"
+  },
+  "classificationDeclassifyAuthorityHint": "e.g. Declassification Authority",
+  "@classificationDeclassifyAuthorityHint": {
+    "description": "Hint for declassification authority"
+  },
+  "classificationDeclassifyWarningTitle": "Confirm Declassification",
+  "@classificationDeclassifyWarningTitle": {
+    "description": "Title for declassification warning dialog"
+  },
+  "classificationDeclassifyWarningBody": "Declassification will lower the security level of this document. This action is recorded in the audit trail and cannot be undone. Continue?",
+  "@classificationDeclassifyWarningBody": {
+    "description": "Body text for declassification warning dialog"
+  },
+  "classificationPublic": "PUBLIC",
+  "@classificationPublic": {
+    "description": "Public classification label"
+  },
+  "classificationInternal": "INTERNAL",
+  "@classificationInternal": {
+    "description": "Internal classification label"
+  },
+  "classificationConfidential": "CONFIDENTIAL",
+  "@classificationConfidential": {
+    "description": "Confidential classification label"
+  },
+  "classificationSecret": "SECRET",
+  "@classificationSecret": {
+    "description": "Secret classification label"
+  },
+  "classificationTopSecret": "TOP SECRET",
+  "@classificationTopSecret": {
+    "description": "Top Secret classification label"
+  },
+
+  "manifestTitle": "Manifests",
+  "@manifestTitle": {
+    "description": "Title for the manifest screen"
+  },
+  "manifestCreateTab": "Create",
+  "@manifestCreateTab": {
+    "description": "Tab label for creating manifests"
+  },
+  "manifestVerifyTab": "Verify",
+  "@manifestVerifyTab": {
+    "description": "Tab label for verifying manifests"
+  },
+  "manifestFilesLabel": "Files in Manifest",
+  "@manifestFilesLabel": {
+    "description": "Label for the manifest file list"
+  },
+  "manifestAddFile": "Add File",
+  "@manifestAddFile": {
+    "description": "Button to add a file to manifest"
+  },
+  "manifestNoFiles": "No files added. Tap + to add files.",
+  "@manifestNoFiles": {
+    "description": "Shown when no files are in the manifest"
+  },
+  "manifestSignerIdLabel": "Signer ID",
+  "@manifestSignerIdLabel": {
+    "description": "Label for signer ID input"
+  },
+  "manifestSignerIdHint": "e.g. auditor@example.com",
+  "@manifestSignerIdHint": {
+    "description": "Hint for signer ID input"
+  },
+  "manifestCreateAction": "Create Manifest",
+  "@manifestCreateAction": {
+    "description": "Button to create the manifest"
+  },
+  "manifestCreating": "Creating...",
+  "@manifestCreating": {
+    "description": "Label shown while creating manifest"
+  },
+  "manifestFileLabel": "Manifest File",
+  "@manifestFileLabel": {
+    "description": "Label for manifest file picker"
+  },
+  "manifestFileDirectoryLabel": "File Directory (optional)",
+  "@manifestFileDirectoryLabel": {
+    "description": "Label for optional file directory"
+  },
+  "manifestFileDirectoryHint": "Directory containing the manifest files for verification",
+  "@manifestFileDirectoryHint": {
+    "description": "Hint for file directory picker"
+  },
+  "manifestVerifyAction": "Verify Manifest",
+  "@manifestVerifyAction": {
+    "description": "Button to verify the manifest"
+  },
+  "manifestVerifying": "Verifying...",
+  "@manifestVerifying": {
+    "description": "Label shown while verifying manifest"
+  },
+  "manifestResultsLabel": "Verification Results",
+  "@manifestResultsLabel": {
+    "description": "Label for manifest verification results"
+  },
+
+  "excerptTitle": "Excerpt Proof",
+  "@excerptTitle": {
+    "description": "Title for the excerpt proof screen"
+  },
+  "excerptGenerateTab": "Generate",
+  "@excerptGenerateTab": {
+    "description": "Tab label for generating excerpt proofs"
+  },
+  "excerptVerifyTab": "Verify",
+  "@excerptVerifyTab": {
+    "description": "Tab label for verifying excerpt proofs"
+  },
+  "excerptFileLabel": "Source File (.zgl)",
+  "@excerptFileLabel": {
+    "description": "Label for excerpt source file picker"
+  },
+  "excerptLoadBlocks": "Load Blocks",
+  "@excerptLoadBlocks": {
+    "description": "Button to load blocks from file"
+  },
+  "excerptSelectBlocks": "Select Blocks",
+  "@excerptSelectBlocks": {
+    "description": "Label for block selection section"
+  },
+  "excerptGenerateAction": "Generate Proof",
+  "@excerptGenerateAction": {
+    "description": "Button to generate excerpt proof"
+  },
+  "excerptGenerating": "Generating...",
+  "@excerptGenerating": {
+    "description": "Label shown while generating proof"
+  },
+  "excerptZglFileLabel": "Zegel File (.zgl)",
+  "@excerptZglFileLabel": {
+    "description": "Label for .zgl file picker in verify tab"
+  },
+  "excerptProofFileLabel": "Proof File (.json)",
+  "@excerptProofFileLabel": {
+    "description": "Label for proof file picker"
+  },
+  "excerptVerifyAction": "Verify Proof",
+  "@excerptVerifyAction": {
+    "description": "Button to verify excerpt proof"
+  },
+  "excerptVerifying": "Verifying...",
+  "@excerptVerifying": {
+    "description": "Label shown while verifying proof"
+  },
+  "excerptProofValid": "Excerpt proof is VALID",
+  "@excerptProofValid": {
+    "description": "Status when excerpt proof is valid"
+  },
+  "excerptProofInvalid": "Excerpt proof is INVALID",
+  "@excerptProofInvalid": {
+    "description": "Status when excerpt proof is invalid"
+  },
+
+  "provenanceTitle": "Provenance",
+  "@provenanceTitle": {
+    "description": "Title for the provenance screen"
+  },
+  "provenanceFileLabel": "File to Inspect",
+  "@provenanceFileLabel": {
+    "description": "Label for provenance file picker"
+  },
+  "provenanceLoadAction": "Load Provenance",
+  "@provenanceLoadAction": {
+    "description": "Button to load provenance data"
+  },
+  "provenanceLoading": "Loading...",
+  "@provenanceLoading": {
+    "description": "Label shown while loading provenance"
+  },
+  "provenanceTimeline": "Provenance Timeline",
+  "@provenanceTimeline": {
+    "description": "Title for the provenance timeline"
+  },
+  "provenanceNoEvents": "No provenance events found.",
+  "@provenanceNoEvents": {
+    "description": "Shown when no provenance events exist"
+  },
+  "provenanceExportReport": "Export Report",
+  "@provenanceExportReport": {
+    "description": "Button to export provenance report"
+  },
+
+  "credentialTitle": "Credentials",
+  "@credentialTitle": {
+    "description": "Title for the credential screen"
+  },
+  "credentialIssueTab": "Issue",
+  "@credentialIssueTab": {
+    "description": "Tab label for issuing credentials"
+  },
+  "credentialVerifyTab": "Verify",
+  "@credentialVerifyTab": {
+    "description": "Tab label for verifying credentials"
+  },
+  "credentialDocumentLabel": "Certificate Document",
+  "@credentialDocumentLabel": {
+    "description": "Label for certificate document picker"
+  },
+  "credentialInstitutionLabel": "Institution Details",
+  "@credentialInstitutionLabel": {
+    "description": "Label for institution details section"
+  },
+  "credentialInstitutionNameLabel": "Institution Name",
+  "@credentialInstitutionNameLabel": {
+    "description": "Label for institution name input"
+  },
+  "credentialInstitutionNameHint": "e.g. University of Amsterdam",
+  "@credentialInstitutionNameHint": {
+    "description": "Hint for institution name"
+  },
+  "credentialInstitutionIdLabel": "Institution ID",
+  "@credentialInstitutionIdLabel": {
+    "description": "Label for institution ID input"
+  },
+  "credentialInstitutionIdHint": "e.g. NL-UVA-001",
+  "@credentialInstitutionIdHint": {
+    "description": "Hint for institution ID"
+  },
+  "credentialTypeLabel": "Credential Type",
+  "@credentialTypeLabel": {
+    "description": "Label for credential type dropdown"
+  },
+  "credentialTypeDiploma": "Diploma",
+  "@credentialTypeDiploma": {
+    "description": "Credential type: diploma"
+  },
+  "credentialTypeCertificate": "Certificate",
+  "@credentialTypeCertificate": {
+    "description": "Credential type: certificate"
+  },
+  "credentialTypeLicense": "License",
+  "@credentialTypeLicense": {
+    "description": "Credential type: license"
+  },
+  "credentialTypeAccreditation": "Accreditation",
+  "@credentialTypeAccreditation": {
+    "description": "Credential type: accreditation"
+  },
+  "credentialRecipientLabel": "Recipient",
+  "@credentialRecipientLabel": {
+    "description": "Label for recipient section"
+  },
+  "credentialRecipientNameLabel": "Recipient Name",
+  "@credentialRecipientNameLabel": {
+    "description": "Label for recipient name input"
+  },
+  "credentialRecipientNameHint": "e.g. Jan de Vries",
+  "@credentialRecipientNameHint": {
+    "description": "Hint for recipient name"
+  },
+  "credentialRecipientIdLabel": "Recipient ID",
+  "@credentialRecipientIdLabel": {
+    "description": "Label for recipient ID input"
+  },
+  "credentialRecipientIdHint": "e.g. student number or national ID",
+  "@credentialRecipientIdHint": {
+    "description": "Hint for recipient ID"
+  },
+  "credentialIssueAction": "Issue Credential",
+  "@credentialIssueAction": {
+    "description": "Button to issue the credential"
+  },
+  "credentialIssuing": "Issuing...",
+  "@credentialIssuing": {
+    "description": "Label shown while issuing credential"
+  },
+  "credentialFileLabel": "Credential File (.zgl)",
+  "@credentialFileLabel": {
+    "description": "Label for credential file picker"
+  },
+  "credentialVerifyAction": "Verify Credential",
+  "@credentialVerifyAction": {
+    "description": "Button to verify the credential"
+  },
+  "credentialVerifying": "Verifying...",
+  "@credentialVerifying": {
+    "description": "Label shown while verifying credential"
+  },
+  "credentialDetailsLabel": "Credential Details",
+  "@credentialDetailsLabel": {
+    "description": "Label for credential details section"
+  },
+  "credentialIssuedAtLabel": "Issued At",
+  "@credentialIssuedAtLabel": {
+    "description": "Label for credential issue date"
+  },
+  "credentialValidStatus": "Credential is VALID - all attestations verified",
+  "@credentialValidStatus": {
+    "description": "Status when credential is valid"
+  },
+  "credentialInvalidStatus": "Credential is INVALID - attestation verification failed",
+  "@credentialInvalidStatus": {
+    "description": "Status when credential is invalid"
+  },
+
+  "contractTitle": "Contract Workflow",
+  "@contractTitle": {
+    "description": "Title for the contract workflow screen"
+  },
+  "contractDocumentLabel": "Contract Document",
+  "@contractDocumentLabel": {
+    "description": "Label for contract document picker"
+  },
+  "contractOwnerKeyLabel": "Owner Key",
+  "@contractOwnerKeyLabel": {
+    "description": "Label for the contract owner key"
+  },
+  "contractPartiesLabel": "Contract Parties",
+  "@contractPartiesLabel": {
+    "description": "Label for contract parties section"
+  },
+  "contractNoParties": "No parties added. Tap the + button to add parties.",
+  "@contractNoParties": {
+    "description": "Shown when no parties are added"
+  },
+  "contractAddParty": "Add Party",
+  "@contractAddParty": {
+    "description": "Button to add a contract party"
+  },
+  "contractAddPartyAction": "Add",
+  "@contractAddPartyAction": {
+    "description": "Action button in add party dialog"
+  },
+  "contractPartyName": "Party Name",
+  "@contractPartyName": {
+    "description": "Label for party name input"
+  },
+  "contractPartyNameHint": "e.g. Jane Smith",
+  "@contractPartyNameHint": {
+    "description": "Hint for party name"
+  },
+  "contractPartyRole": "Role",
+  "@contractPartyRole": {
+    "description": "Label for party role dropdown"
+  },
+  "contractPartyKey": "Party Key (hex)",
+  "@contractPartyKey": {
+    "description": "Label for party key input"
+  },
+  "contractPartyKeyHint": "64-character hex key (optional)",
+  "@contractPartyKeyHint": {
+    "description": "Hint for party key"
+  },
+  "contractSplitKeyLabel": "Split Key Configuration",
+  "@contractSplitKeyLabel": {
+    "description": "Label for split key config section"
+  },
+  "contractEnableSplitKey": "Enable Multi-Party Key Splitting",
+  "@contractEnableSplitKey": {
+    "description": "Toggle for split key in contracts"
+  },
+  "contractWorkflowLabel": "Workflow Steps",
+  "@contractWorkflowLabel": {
+    "description": "Label for contract workflow section"
+  },
+  "contractSealAction": "Seal Contract",
+  "@contractSealAction": {
+    "description": "Button to seal the contract"
+  },
+  "contractVerifyAttestations": "Verify Attestations",
+  "@contractVerifyAttestations": {
+    "description": "Button to verify all attestations"
+  },
+
+  "settingsDefaultClassification": "Default Classification Level",
+  "@settingsDefaultClassification": {
+    "description": "Label for default classification setting"
+  },
+  "settingsTsaUrl": "Timestamp Authority (TSA) URL",
+  "@settingsTsaUrl": {
+    "description": "Label for TSA URL setting"
+  },
+  "settingsTsaUrlHint": "e.g. https://tsa.example.com/timestamp",
+  "@settingsTsaUrlHint": {
+    "description": "Hint for TSA URL input"
+  },
+  "settingsAdvancedOptions": "Advanced Options",
+  "@settingsAdvancedOptions": {
+    "description": "Label for advanced options section"
+  },
+  "settingsPreserveMediaMetadata": "Preserve Media Metadata",
+  "@settingsPreserveMediaMetadata": {
+    "description": "Toggle label for media metadata preservation"
+  },
+  "settingsPreserveMediaMetadataDesc": "Keep EXIF, XMP, and other media metadata when sealing",
+  "@settingsPreserveMediaMetadataDesc": {
+    "description": "Description for media metadata preservation toggle"
+  },
+  "settingsAnonymousMode": "Anonymous Mode",
+  "@settingsAnonymousMode": {
+    "description": "Toggle label for anonymous mode"
+  },
+  "settingsAnonymousModeDesc": "Omit user identity from audit trail and provenance records",
+  "@settingsAnonymousModeDesc": {
+    "description": "Description for anonymous mode toggle"
+  },
+
+  "sealAnonymousMode": "Anonymous Mode",
+  "@sealAnonymousMode": {
+    "description": "Label for anonymous mode in seal screen"
+  },
+  "sealAnonymousModeDesc": "Omit identity from audit trail",
+  "@sealAnonymousModeDesc": {
+    "description": "Description for anonymous mode in seal screen"
+  },
+  "sealClassificationLevel": "Classification Level",
+  "@sealClassificationLevel": {
+    "description": "Label for classification dropdown in seal screen"
+  },
+  "sealClassificationAuthority": "Classification Authority",
+  "@sealClassificationAuthority": {
+    "description": "Label for classification authority in seal screen"
+  },
+  "sealClassificationAuthorityHint": "e.g. Security Officer",
+  "@sealClassificationAuthorityHint": {
+    "description": "Hint for classification authority input"
+  },
+  "sealRegulatoryHold": "Regulatory Hold Date",
+  "@sealRegulatoryHold": {
+    "description": "Label for regulatory hold date picker"
+  },
+  "sealNotSet": "Not set",
+  "@sealNotSet": {
+    "description": "Shown when a value is not set"
+  },
+  "sealTsaUrl": "TSA URL",
+  "@sealTsaUrl": {
+    "description": "Label for TSA URL in seal screen"
+  },
+  "sealTsaUrlHint": "Timestamp authority URL for trusted timestamps",
+  "@sealTsaUrlHint": {
+    "description": "Hint for TSA URL"
+  },
+  "sealPreserveMediaMetadata": "Preserve Media Metadata",
+  "@sealPreserveMediaMetadata": {
+    "description": "Label for media metadata toggle in seal screen"
+  },
+  "sealPreserveMediaMetadataDesc": "Keep EXIF/XMP data in sealed file",
+  "@sealPreserveMediaMetadataDesc": {
+    "description": "Description for media metadata toggle"
+  },
+
+  "verifyClassificationLabel": "Classification",
+  "@verifyClassificationLabel": {
+    "description": "Label for classification display in verify screen"
+  },
+  "verifyRegulatoryHold": "HELD UNTIL {date}",
+  "@verifyRegulatoryHold": {
+    "description": "Regulatory hold status display",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "2030-01-01"
+      }
+    }
+  },
+  "verifyTimestampAuthority": "Timestamp Authority:",
+  "@verifyTimestampAuthority": {
+    "description": "Label for timestamp authority in verify screen"
+  },
+  "verifyAttestationPolicy": "Attestation Policy",
+  "@verifyAttestationPolicy": {
+    "description": "Label for attestation policy check"
+  },
+  "verifyAllAttestationsValid": "All attestations verified",
+  "@verifyAllAttestationsValid": {
+    "description": "Shown when all attestations are valid"
+  },
+  "verifySomeAttestationsInvalid": "Some attestations not verified",
+  "@verifySomeAttestationsInvalid": {
+    "description": "Shown when some attestations fail"
+  },
+  "verifyProvenancePreview": "Provenance Timeline",
+  "@verifyProvenancePreview": {
+    "description": "Label for collapsible provenance timeline"
+  },
+
+  "helpBatchVerify": "Verify all .zgl files in a folder at once",
+  "@helpBatchVerify": {
+    "description": "Help text for batch verify"
+  },
+  "helpBatchSeal": "Seal all files in a folder into .zgl format",
+  "@helpBatchSeal": {
+    "description": "Help text for batch seal"
+  },
+  "helpClassification": "Set or change the security classification of a sealed file",
+  "@helpClassification": {
+    "description": "Help text for classification screen"
+  },
+  "helpManifest": "Create or verify a signed list of sealed files",
+  "@helpManifest": {
+    "description": "Help text for manifest screen"
+  },
+  "helpExcerpt": "Generate or verify cryptographic proofs for specific blocks",
+  "@helpExcerpt": {
+    "description": "Help text for excerpt proof screen"
+  },
+  "helpProvenance": "View the chain of custody and provenance events",
+  "@helpProvenance": {
+    "description": "Help text for provenance screen"
+  },
+  "helpCredential": "Issue or verify academic credentials and certifications",
+  "@helpCredential": {
+    "description": "Help text for credential screen"
+  },
+  "helpContract": "Multi-party contract workflow with attestations and split keys",
+  "@helpContract": {
+    "description": "Help text for contract screen"
   }
 }

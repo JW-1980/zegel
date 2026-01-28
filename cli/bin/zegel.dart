@@ -11,18 +11,92 @@ import 'package:zegel_cli/commands/redact_command.dart';
 import 'package:zegel_cli/commands/split_key_command.dart';
 import 'package:zegel_cli/commands/attest_command.dart';
 import 'package:zegel_cli/commands/disclose_command.dart';
+import 'package:zegel_cli/commands/batch_command.dart';
+import 'package:zegel_cli/commands/manifest_command.dart';
+import 'package:zegel_cli/commands/classify_command.dart';
+import 'package:zegel_cli/commands/excerpt_command.dart';
+import 'package:zegel_cli/commands/version_chain_command.dart';
+import 'package:zegel_cli/commands/provenance_command.dart';
+
+/// Application version.
+const String version = '1.3.0';
 
 /// Zegel CLI - tamper-proof container format tool.
 ///
 /// Provides commands for sealing, verifying, extracting, and managing
 /// files in the Zegel (.zgl) format.
 void main(List<String> arguments) async {
+  // Handle --version flag before CommandRunner takes over.
+  if (arguments.length == 1 && arguments[0] == '--version') {
+    stdout.writeln('zegel $version');
+    exit(0);
+  }
+
   final runner = CommandRunner<int>(
     'zegel',
-    'Zegel - tamper-proof container format (v1.2)\n'
+    'Zegel CLI - Tamper-proof container format tool (v$version)\n'
         '\n'
-        'Seal any file so that modifying a single byte makes\n'
-        'the entire content physically unreadable.',
+        'Seal any file so that modifying a single byte makes the entire\n'
+        'content physically unreadable. Uses AES-256-GCM encryption with\n'
+        'Merkle tree integrity binding.\n'
+        '\n'
+        'Usage: zegel <command> [arguments] [options]\n'
+        '\n'
+        'Core commands:\n'
+        '  seal                  Seal a file into a tamper-proof .zgl container\n'
+        '  verify                Verify the integrity of a .zgl file\n'
+        '  extract               Extract original content from a verified .zgl file\n'
+        '  inspect               Inspect a .zgl file header (no key required)\n'
+        '  keygen                Generate a cryptographically secure master key\n'
+        '\n'
+        'Security commands:\n'
+        '  redact                Permanently redact specific blocks from a .zgl file\n'
+        '  split-key             Split a master key into M-of-N Shamir shares\n'
+        '  reconstruct           Reconstruct a master key from Shamir shares\n'
+        '  attest                Add a co-signature attestation to a .zgl file\n'
+        '\n'
+        'Disclosure commands:\n'
+        '  disclose              Generate a selective disclosure token for specific blocks\n'
+        '  extract-with-token    Extract content using a disclosure token (no master key)\n'
+        '  excerpt-proof         Generate a Merkle proof for a specific block\n'
+        '  verify-excerpt        Verify an excerpt proof against a .zgl file\n'
+        '\n'
+        'Batch commands:\n'
+        '  batch-verify          Verify multiple .zgl files at once\n'
+        '  batch-seal            Seal multiple files from a directory\n'
+        '  manifest-create       Create a manifest from .zgl files\n'
+        '  manifest-verify       Verify a manifest against files on disk\n'
+        '\n'
+        'Classification commands:\n'
+        '  classify              Set classification level on a .zgl file\n'
+        '  declassify            Reduce classification level of a .zgl file\n'
+        '\n'
+        'Versioning commands:\n'
+        '  version-chain-verify  Verify a sequence of .zgl files are linked\n'
+        '  provenance-verify     Verify provenance chain in a .zgl file\n'
+        '\n'
+        'Global flags:\n'
+        '  --help                Show help for a command\n'
+        '  --version             Show the Zegel CLI version\n'
+        '\n'
+        'Examples:\n'
+        '  # Generate a key and seal a file\n'
+        '  zegel keygen -o master.key\n'
+        '  zegel seal document.pdf --key-file master.key -o document.pdf.zgl\n'
+        '\n'
+        '  # Verify and extract\n'
+        '  zegel verify document.pdf.zgl --key-file master.key\n'
+        '  zegel extract document.pdf.zgl --key-file master.key -o recovered.pdf\n'
+        '\n'
+        '  # Split a key for shared custody\n'
+        '  zegel split-key --key-file master.key --threshold 3 --shares 5 -o shares/\n'
+        '  zegel reconstruct shares/share_1.key shares/share_2.key shares/share_3.key -o recovered.key\n'
+        '\n'
+        '  # Selective disclosure (share specific blocks without the master key)\n'
+        '  zegel disclose report.zgl -k <hex> --blocks 0,2 -o token.json\n'
+        '  zegel extract-with-token report.zgl --token token.json -o partial.pdf\n'
+        '\n'
+        'Run "zegel <command> --help" for detailed usage of each command.',
   );
 
   // Core commands.
@@ -32,13 +106,31 @@ void main(List<String> arguments) async {
   runner.addCommand(InspectCommand());
   runner.addCommand(KeygenCommand());
 
-  // Advanced commands.
+  // Security commands.
   runner.addCommand(RedactCommand());
   runner.addCommand(SplitKeyCommand());
   runner.addCommand(ReconstructCommand());
   runner.addCommand(AttestCommand());
+
+  // Disclosure commands.
   runner.addCommand(DiscloseCommand());
   runner.addCommand(ExtractWithTokenCommand());
+  runner.addCommand(ExcerptProofCommand());
+  runner.addCommand(VerifyExcerptCommand());
+
+  // Batch commands.
+  runner.addCommand(BatchVerifyCommand());
+  runner.addCommand(BatchSealCommand());
+  runner.addCommand(ManifestCreateCommand());
+  runner.addCommand(ManifestVerifyCommand());
+
+  // Classification commands.
+  runner.addCommand(ClassifyCommand());
+  runner.addCommand(DeclassifyCommand());
+
+  // Versioning commands.
+  runner.addCommand(VersionChainVerifyCommand());
+  runner.addCommand(ProvenanceVerifyCommand());
 
   try {
     final exitCode = await runner.run(arguments) ?? 0;

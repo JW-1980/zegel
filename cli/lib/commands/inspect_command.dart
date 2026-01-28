@@ -12,28 +12,55 @@ import 'common.dart';
 ///   zegel inspect <file.zgl>
 ///
 /// Displays version, flags, timestamp, content type, filename,
-/// block count, and any public metadata.
+/// block count, classification level, regulatory hold date,
+/// attestation summary, and any public metadata.
 class InspectCommand extends Command<int> {
   @override
   final String name = 'inspect';
 
   @override
-  final String description =
-      'Inspect a .zgl file header (no key required).';
+  String get description =>
+      'Inspect a .zgl file header without requiring the master key.\n'
+      '\n'
+      'Displays all unencrypted header information including:\n'
+      '  - Format version and creation timestamp\n'
+      '  - Content type and original filename\n'
+      '  - Feature flags (compression, expiration, canary, etc.)\n'
+      '  - Classification level and authority (if set)\n'
+      '  - Regulatory hold date (if set)\n'
+      '  - Attestation summary (count and block indices)\n'
+      '  - Split-key parameters\n'
+      '  - Public metadata\n'
+      '  - Block directory (with --blocks)\n'
+      '\n'
+      'No master key is needed because only unencrypted header\n'
+      'fields and public metadata are displayed.\n'
+      '\n'
+      'Exit codes:\n'
+      '  0  Success\n'
+      '  1  Error (file not found, invalid format)\n'
+      '\n'
+      'Examples:\n'
+      '  zegel inspect document.zgl\n'
+      '  zegel inspect document.zgl --blocks\n'
+      '  zegel inspect document.zgl --json\n'
+      '  zegel inspect document.zgl --json | jq .classification';
 
   @override
-  final String invocation = 'zegel inspect <file.zgl>';
+  final String invocation = 'zegel inspect <file.zgl> [options]';
 
   InspectCommand() {
     argParser.addFlag(
       'json',
-      help: 'Output header information as JSON.',
+      help: 'Output header information as JSON.\n'
+          'Useful for piping to jq or other tools.',
       defaultsTo: false,
     );
 
     argParser.addFlag(
       'blocks',
-      help: 'Show block directory details.',
+      help: 'Show block directory with type, size, and hash\n'
+          'for each block.',
       defaultsTo: false,
     );
   }
@@ -189,6 +216,72 @@ class InspectCommand extends Command<int> {
 
     if (inspection.flags & ZegelFormat.flagHasKeyCommitment != 0) {
       stdout.writeln('    Key commitment: present');
+    }
+
+    // Classification level (from public metadata).
+    if (inspection.publicMetadata != null) {
+      final classification =
+          inspection.publicMetadata!['classification'] as String?;
+      if (classification != null) {
+        stdout.writeln();
+        stdout.writeln(Ansi.header('  Classification:'));
+        stdout.writeln('    Level:       $classification');
+        final authority =
+            inspection.publicMetadata!['classification_authority'];
+        if (authority != null) {
+          stdout.writeln('    Authority:   $authority');
+        }
+        final classDate =
+            inspection.publicMetadata!['classification_date'];
+        if (classDate != null) {
+          stdout.writeln('    Date:        $classDate');
+        }
+      }
+
+      // Regulatory hold (from public metadata).
+      final holdTimestamp =
+          inspection.publicMetadata!['regulatory_hold_until'];
+      if (holdTimestamp != null) {
+        final holdDate = DateTime.fromMillisecondsSinceEpoch(
+          (holdTimestamp as int) * 1000,
+          isUtc: true,
+        );
+        final now = DateTime.now().toUtc();
+        final holdActive = now.isBefore(holdDate);
+        final holdStr =
+            inspection.publicMetadata!['regulatory_hold_date_str'] ??
+                formatTimestamp(holdDate);
+        stdout.writeln();
+        stdout.writeln(Ansi.header('  Regulatory Hold:'));
+        stdout.writeln('    Until:       $holdStr');
+        stdout.writeln(
+          '    Status:      ${holdActive ? Ansi.warning('ACTIVE') : Ansi.success('Expired')}',
+        );
+      }
+    }
+
+    // Attestation summary (from block directory).
+    if (rawHeader != null) {
+      int attestationCount = 0;
+      final attestationIndices = <int>[];
+      for (var i = 0; i < rawHeader.blockDirectory.length; i++) {
+        if (rawHeader.blockDirectory[i].type == 0x07) {
+          // ATTESTATION
+          attestationCount++;
+          attestationIndices.add(i);
+        }
+      }
+      if (attestationCount > 0) {
+        stdout.writeln();
+        stdout.writeln(Ansi.header('  Attestations:'));
+        stdout.writeln('    Count:       $attestationCount');
+        stdout.writeln(
+          '    Blocks:      ${attestationIndices.join(', ')}',
+        );
+        stdout.writeln(
+          '    ${Ansi.dim}(use "zegel verify" with key to see attestation details)${Ansi.reset}',
+        );
+      }
     }
 
     // Public metadata.

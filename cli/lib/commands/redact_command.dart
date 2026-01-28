@@ -19,8 +19,28 @@ class RedactCommand extends Command<int> {
   final String name = 'redact';
 
   @override
-  final String description =
-      'Permanently redact specific blocks from a .zgl file.';
+  String get description =>
+      'Permanently redact specific blocks from a .zgl file.\n'
+      '\n'
+      'Replaces the content of specified blocks with cryptographically\n'
+      'random bytes, making the original content irrecoverable. The\n'
+      'original plaintext hashes are preserved in the block directory\n'
+      'so the Merkle tree remains valid.\n'
+      '\n'
+      'This allows non-redacted blocks to still be verified and\n'
+      'extracted normally. Redaction is IRREVERSIBLE.\n'
+      '\n'
+      'Use --declassify to simultaneously redact blocks and lower the\n'
+      'classification level of the file.\n'
+      '\n'
+      'Exit codes:\n'
+      '  0  Redaction complete\n'
+      '  1  Error (tampered, invalid format, block out of range)\n'
+      '\n'
+      'Examples:\n'
+      '  zegel redact secret.zgl -k <hex> --blocks 1,3,5 -o redacted.zgl\n'
+      '  zegel redact report.zgl -k <hex> --blocks 2 -o public.zgl --confirm\n'
+      '  zegel redact classified.zgl -k <hex> --blocks 0,1 --declassify --new-classification INTERNAL -o declassified.zgl';
 
   @override
   final String invocation = 'zegel redact <file.zgl> [options]';
@@ -29,21 +49,38 @@ class RedactCommand extends Command<int> {
     addKeyOptions(argParser);
     addOutputOption(
       argParser,
-      help: 'Output path for the redacted .zgl file.',
+      help: 'Output path for the redacted .zgl file (required).',
     );
 
     argParser.addOption(
       'blocks',
       abbr: 'b',
-      help: 'Comma-separated list of block indices to redact.',
+      help: 'Comma-separated list of block indices to redact.\n'
+          'Use "zegel inspect --blocks" to see available indices.',
       valueHelp: '1,3,5',
       mandatory: true,
     );
 
     argParser.addFlag(
       'confirm',
-      help: 'Skip confirmation prompt (dangerous).',
+      help: 'Skip confirmation prompt (dangerous).\n'
+          'Use in scripts where interactive prompts are not possible.',
       defaultsTo: false,
+    );
+
+    argParser.addFlag(
+      'declassify',
+      help: 'Lower the classification level after redaction.\n'
+          'Must be used with --new-classification.',
+      defaultsTo: false,
+    );
+
+    argParser.addOption(
+      'new-classification',
+      help: 'New classification level after declassification.\n'
+          'Must be lower than the current level.\n'
+          'Levels: PUBLIC, INTERNAL, CONFIDENTIAL, SECRET, TOP_SECRET.',
+      valueHelp: 'level',
     );
   }
 
@@ -153,6 +190,39 @@ class RedactCommand extends Command<int> {
       );
     }
 
+    // Handle declassification.
+    final declassify = argResults!['declassify'] as bool;
+    final newClassification = argResults!['new-classification'] as String?;
+
+    if (declassify) {
+      if (newClassification == null || newClassification.isEmpty) {
+        exitError(
+          '--new-classification is required when --declassify is specified.',
+        );
+      }
+      try {
+        validateClassificationLevel(newClassification);
+      } on FormatException catch (e) {
+        exitError(e.message);
+      }
+
+      // Validate that new level is lower than current level.
+      if (rawHeader.publicMetadata != null) {
+        final currentLevel =
+            rawHeader.publicMetadata!['classification'] as String?;
+        if (currentLevel != null) {
+          final currentRank = classificationRank(currentLevel);
+          final newRank = classificationRank(newClassification);
+          if (newRank >= currentRank) {
+            exitError(
+              'New classification "$newClassification" must be lower than '
+              'current classification "$currentLevel".',
+            );
+          }
+        }
+      }
+    }
+
     // Perform redaction.
     final redactedBytes = Redaction.redactBlocks(
       fileBytes,
@@ -175,6 +245,13 @@ class RedactCommand extends Command<int> {
       '  Remaining:       ${rawHeader.blockCount - blockIndices.length} '
       'accessible',
     );
+
+    if (declassify) {
+      stdout.writeln(
+        '  Declassified:    ${newClassification!.toUpperCase()}',
+      );
+    }
+
     stdout.writeln();
     stdout.writeln(Ansi.info(
       'The Merkle tree remains intact. Non-redacted blocks can still be '

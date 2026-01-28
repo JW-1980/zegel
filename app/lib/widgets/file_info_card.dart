@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../services/zegel_service.dart';
+import 'classification_badge.dart';
 
 /// A card displaying detailed file metadata.
 ///
@@ -32,6 +33,21 @@ class FileInfoCard extends StatelessWidget {
   /// Inspection data (optional, for more detail).
   final ZegelInspection? inspection;
 
+  /// Classification level (e.g. PUBLIC, SECRET).
+  final String? classificationLevel;
+
+  /// Regulatory hold expiry date string.
+  final String? regulatoryHoldUntil;
+
+  /// Number of attestations present.
+  final int? attestationCount;
+
+  /// Roles of attestors.
+  final List<String>? attestationRoles;
+
+  /// Whether the version chain is valid.
+  final bool? versionChainValid;
+
   const FileInfoCard({
     super.key,
     this.filename,
@@ -42,6 +58,11 @@ class FileInfoCard extends StatelessWidget {
     this.blockCount,
     this.publicMetadata,
     this.inspection,
+    this.classificationLevel,
+    this.regulatoryHoldUntil,
+    this.attestationCount,
+    this.attestationRoles,
+    this.versionChainValid,
   });
 
   String _formatFileSize(int bytes) {
@@ -128,6 +149,126 @@ class FileInfoCard extends StatelessWidget {
                       '${inspection!.splitKeyThreshold}-of-${inspection!.splitKeyTotal}',
                 ),
             ],
+            // Classification level
+            if (classificationLevel != null &&
+                classificationLevel!.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  SizedBox(
+                    width: 120,
+                    child: Text(
+                      'Classification',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  ClassificationBadge(
+                    level: classificationLevel!,
+                    compact: true,
+                  ),
+                ],
+              ),
+            ],
+
+            // Regulatory hold
+            if (regulatoryHoldUntil != null &&
+                regulatoryHoldUntil!.isNotEmpty) ...[
+              const SizedBox(height: 4),
+              Row(
+                children: [
+                  SizedBox(
+                    width: 120,
+                    child: Text(
+                      'Regulatory Hold',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: Colors.amber.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(4),
+                      border:
+                          Border.all(color: Colors.amber.withOpacity(0.5)),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.gavel,
+                            size: 12, color: Colors.amber.shade800),
+                        const SizedBox(width: 4),
+                        Text(
+                          'HELD UNTIL $regulatoryHoldUntil',
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.amber.shade800,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+
+            // Attestation count and roles
+            if (attestationCount != null && attestationCount! > 0) ...[
+              const SizedBox(height: 4),
+              _InfoRow(
+                label: 'Attestations',
+                value: '$attestationCount',
+              ),
+              if (attestationRoles != null && attestationRoles!.isNotEmpty)
+                _InfoRow(
+                  label: 'Roles',
+                  value: attestationRoles!.join(', '),
+                ),
+            ],
+
+            // Version chain info
+            if (versionChainValid != null) ...[
+              const SizedBox(height: 4),
+              Row(
+                children: [
+                  SizedBox(
+                    width: 120,
+                    child: Text(
+                      'Version Chain',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  Icon(
+                    versionChainValid! ? Icons.link : Icons.link_off,
+                    size: 14,
+                    color: versionChainValid!
+                        ? const Color(0xFF2E7D32)
+                        : const Color(0xFFC62828),
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    versionChainValid! ? 'Chain intact' : 'Chain broken',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: versionChainValid!
+                          ? const Color(0xFF2E7D32)
+                          : const Color(0xFFC62828),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+
             if (flags != null && flags! > 0) ...[
               const SizedBox(height: 8),
               Text(

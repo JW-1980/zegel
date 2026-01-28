@@ -25,6 +25,8 @@ class SelectiveDisclosure {
   /// [blockIndices] is the list of zero-based block indices to disclose.
   /// [expirationDate] is the optional expiration date string (YYYY-MM-DD) if
   /// the file has `FLAG_HAS_EXPIRATION`.
+  /// [expiresAt] is an optional Unix epoch timestamp after which the token
+  /// is considered expired and should be rejected by extractors.
   ///
   /// Returns a JSON-serialisable map representing the token.
   static Map<String, dynamic> generateToken(
@@ -33,6 +35,7 @@ class SelectiveDisclosure {
     Uint8List salt,
     List<int> blockIndices, {
     String? expirationDate,
+    int? expiresAt,
   }) {
     final Map<String, String> blockKeys = <String, String>{};
 
@@ -50,12 +53,31 @@ class SelectiveDisclosure {
     final int createdAt =
         DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
 
-    return <String, dynamic>{
+    final Map<String, dynamic> token = <String, dynamic>{
       'version': 1,
       'merkle_root': _bytesToHex(merkleRoot),
       'block_keys': blockKeys,
       'created_at': createdAt,
     };
+
+    if (expiresAt != null) {
+      token['expires_at'] = expiresAt;
+    }
+
+    return token;
+  }
+
+  /// Checks if a selective disclosure token has expired.
+  ///
+  /// Returns `false` if the token has no `expires_at` field (tokens without
+  /// expiration never expire). Returns `true` if the current UTC time is
+  /// past the token's `expires_at` timestamp.
+  static bool isTokenExpired(Map<String, dynamic> token) {
+    if (!token.containsKey('expires_at')) return false;
+    final int expiresAt = token['expires_at'] as int;
+    final int nowEpoch =
+        DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
+    return nowEpoch > expiresAt;
   }
 
   /// Extracts and decrypts a single block using a selective disclosure token.

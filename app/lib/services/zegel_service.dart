@@ -229,6 +229,55 @@ class DisclosureToken {
   }
 }
 
+/// A provenance event from the chain of custody.
+class ProvenanceEvent {
+  final String actor;
+  final String action;
+  final DateTime timestamp;
+  final bool isSignatureVerified;
+
+  const ProvenanceEvent({
+    required this.actor,
+    required this.action,
+    required this.timestamp,
+    this.isSignatureVerified = false,
+  });
+}
+
+/// Result of a manifest file verification.
+class ManifestFileResult {
+  final String filename;
+  final bool isValid;
+  final String message;
+
+  const ManifestFileResult({
+    required this.filename,
+    required this.isValid,
+    required this.message,
+  });
+}
+
+/// Information about a verified credential.
+class CredentialInfo {
+  final String credentialType;
+  final String institutionName;
+  final String institutionId;
+  final String recipientName;
+  final String recipientId;
+  final DateTime? issuedAt;
+  final bool isValid;
+
+  const CredentialInfo({
+    required this.credentialType,
+    required this.institutionName,
+    required this.institutionId,
+    required this.recipientName,
+    required this.recipientId,
+    this.issuedAt,
+    required this.isValid,
+  });
+}
+
 /// High-level service wrapping the zegel lib/ package for GUI operations.
 ///
 /// This service provides the bridge between the Flutter UI and the core
@@ -447,5 +496,216 @@ class ZegelService {
       default:
         return 'UNKNOWN (0x${blockType.toRadixString(16).padLeft(2, '0')})';
     }
+  }
+
+  // ======================================================================
+  // Batch operations
+  // ======================================================================
+
+  /// Verifies multiple .zgl files in batch.
+  ///
+  /// Returns a list of [ZegelResult] for each file.
+  Future<List<ZegelResult>> batchVerify(
+    List<String> filePaths,
+    String hexKey,
+  ) async {
+    final results = <ZegelResult>[];
+    for (final path in filePaths) {
+      try {
+        final result = await verify(path, hexKey);
+        results.add(result);
+      } catch (e) {
+        results.add(ZegelResult(
+          status: ZegelStatus.tampered,
+          message: 'Error: $e',
+        ));
+      }
+    }
+    return results;
+  }
+
+  /// Seals multiple files in batch.
+  ///
+  /// Returns a list of sealed byte arrays.
+  Future<List<Uint8List>> batchSeal(
+    List<String> filePaths,
+    String hexKey,
+    SealOptions options,
+  ) async {
+    final results = <Uint8List>[];
+    for (final path in filePaths) {
+      final sealed = await seal(path, hexKey, options);
+      results.add(sealed);
+    }
+    return results;
+  }
+
+  // ======================================================================
+  // Manifest operations
+  // ======================================================================
+
+  /// Creates a signed manifest of multiple files.
+  ///
+  /// Returns the manifest as JSON bytes.
+  Future<Uint8List> createManifest(
+    List<String> filePaths,
+    String signerKeyHex,
+    String signerId,
+  ) async {
+    // Delegate to the zegel library.
+    throw UnimplementedError(
+      'Create manifest operation requires the zegel core library. '
+      'Ensure package:zegel is properly linked in pubspec.yaml.',
+    );
+  }
+
+  /// Verifies a manifest file against the signer key.
+  ///
+  /// Returns per-file verification results.
+  Future<List<ManifestFileResult>> verifyManifest(
+    String manifestPath,
+    String signerKeyHex, {
+    String? fileDirectory,
+  }) async {
+    // Delegate to the zegel library.
+    throw UnimplementedError(
+      'Verify manifest operation requires the zegel core library. '
+      'Ensure package:zegel is properly linked in pubspec.yaml.',
+    );
+  }
+
+  // ======================================================================
+  // Classification operations
+  // ======================================================================
+
+  /// Sets or changes the classification level of a .zgl file.
+  Future<void> classify(
+    String filePath,
+    String level,
+    String authority, {
+    String? caveat,
+  }) async {
+    // Delegate to the zegel library.
+    throw UnimplementedError(
+      'Classify operation requires the zegel core library. '
+      'Ensure package:zegel is properly linked in pubspec.yaml.',
+    );
+  }
+
+  /// Declassifies a .zgl file to a lower classification level.
+  ///
+  /// Optionally redacts specified blocks during declassification.
+  Future<void> declassify(
+    String filePath,
+    String newLevel,
+    String authority, {
+    List<int>? redactBlocks,
+  }) async {
+    // Delegate to the zegel library.
+    throw UnimplementedError(
+      'Declassify operation requires the zegel core library. '
+      'Ensure package:zegel is properly linked in pubspec.yaml.',
+    );
+  }
+
+  // ======================================================================
+  // Excerpt proof operations
+  // ======================================================================
+
+  /// Generates a cryptographic excerpt proof for specific blocks.
+  ///
+  /// Returns the proof as JSON bytes.
+  Future<Uint8List> generateExcerptProof(
+    String filePath,
+    String hexKey,
+    List<int> blockIndices,
+  ) async {
+    // Delegate to the zegel library.
+    throw UnimplementedError(
+      'Generate excerpt proof operation requires the zegel core library. '
+      'Ensure package:zegel is properly linked in pubspec.yaml.',
+    );
+  }
+
+  /// Verifies an excerpt proof against a .zgl file.
+  ///
+  /// No master key is required for verification.
+  /// Returns true if the proof is valid.
+  Future<bool> verifyExcerptProof(
+    String filePath,
+    String proofPath,
+  ) async {
+    // Delegate to the zegel library.
+    throw UnimplementedError(
+      'Verify excerpt proof operation requires the zegel core library. '
+      'Ensure package:zegel is properly linked in pubspec.yaml.',
+    );
+  }
+
+  // ======================================================================
+  // Provenance operations
+  // ======================================================================
+
+  /// Reads and verifies the provenance chain from a .zgl file.
+  ///
+  /// Returns a list of provenance events with signature verification status.
+  Future<List<ProvenanceEvent>> verifyProvenance(
+    String filePath,
+    String hexKey,
+  ) async {
+    // Delegate to the zegel library.
+    throw UnimplementedError(
+      'Verify provenance operation requires the zegel core library. '
+      'Ensure package:zegel is properly linked in pubspec.yaml.',
+    );
+  }
+
+  // ======================================================================
+  // Version chain operations
+  // ======================================================================
+
+  /// Verifies the version chain hash of a .zgl file.
+  ///
+  /// Returns true if the version chain is intact and unbroken.
+  Future<bool> verifyVersionChain(String filePath) async {
+    // Delegate to the zegel library.
+    throw UnimplementedError(
+      'Verify version chain operation requires the zegel core library. '
+      'Ensure package:zegel is properly linked in pubspec.yaml.',
+    );
+  }
+
+  // ======================================================================
+  // Credential operations
+  // ======================================================================
+
+  /// Issues a credential by sealing a document with attestation metadata.
+  ///
+  /// Returns the sealed credential bytes.
+  Future<Uint8List> issueCredential(
+    String filePath,
+    String hexKey, {
+    required String institutionName,
+    required String institutionId,
+    required String credentialType,
+    required String recipientName,
+    required String recipientId,
+  }) async {
+    // Delegate to the zegel library.
+    throw UnimplementedError(
+      'Issue credential operation requires the zegel core library. '
+      'Ensure package:zegel is properly linked in pubspec.yaml.',
+    );
+  }
+
+  /// Verifies a credential .zgl file using public attestation data.
+  ///
+  /// No master key required for attestation verification.
+  Future<CredentialInfo> verifyCredential(String filePath) async {
+    // Delegate to the zegel library.
+    throw UnimplementedError(
+      'Verify credential operation requires the zegel core library. '
+      'Ensure package:zegel is properly linked in pubspec.yaml.',
+    );
   }
 }
