@@ -272,7 +272,7 @@ class ZegelWriter {
     // 5. Compress content chunks (after canary padding, before hashing)
     // =========================================================================
     if (options.compress) {
-      final ZLibEncoder encoder = ZLibEncoder(level: 6);
+      const ZLibEncoder encoder = ZLibEncoder();
       for (int i = 0; i < contentChunks.length; i++) {
         contentChunks[i] = Uint8List.fromList(
           encoder.encode(contentChunks[i]),
