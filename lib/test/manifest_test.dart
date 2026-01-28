@@ -5,45 +5,9 @@ import 'package:crypto/crypto.dart';
 import 'package:test/test.dart';
 import 'package:zegel/zegel.dart';
 
-/// Creates a 32-byte test master key (0x00...01).
-Uint8List _testKey() {
-  final key = Uint8List(32);
-  key[31] = 0x01;
-  return key;
-}
-
-/// Creates a second test key that differs from the primary key.
-Uint8List _otherKey() {
-  final key = Uint8List(32);
-  key[31] = 0x02;
-  return key;
-}
-
-/// Creates a 32-byte all-zeros salt for deterministic testing.
-Uint8List _zeroSalt() => Uint8List(32);
-
-/// Creates a sealed file and returns a ManifestFileEntry for it.
-ManifestFileEntry _createFileEntry(
-  Uint8List key,
-  String filename,
-  String content,
-) {
-  final contentBytes = Uint8List.fromList(utf8.encode(content));
-  final options = ZegelOptions(
-    contentType: 'text/plain',
-    filename: filename,
-    salt: _zeroSalt(),
-  );
-  final fileBytes = ZegelWriter.seal(contentBytes, key, options: options);
-  final inspection = ZegelReader.inspect(fileBytes);
-
-  return ManifestFileEntry(
-    filename: filename,
-    merkleRoot: inspection.merkleRoot!,
-    contentType: 'text/plain',
-    fileSize: fileBytes.length,
-    fileBytes: fileBytes,
-  );
+/// Creates a 32-byte Merkle root stand-in by hashing the content string.
+Uint8List _merkleRootFor(String content) {
+  return Uint8List.fromList(sha256.convert(utf8.encode(content)).bytes);
 }
 
 /// Creates a 32-byte signer key from a string identifier.
@@ -53,192 +17,147 @@ Uint8List _signerKey(String id) {
 
 void main() {
   group('ZegelManifest', () {
-    late Uint8List masterKey;
-
-    setUp(() {
-      masterKey = _testKey();
-    });
-
     group('manifest creation and signature', () {
       test('create manifest from 5 file entries and verify signature', () {
-        final entries = <ManifestFileEntry>[];
+        final entries = <String, Uint8List>{};
         for (var i = 0; i < 5; i++) {
-          entries.add(_createFileEntry(
-            masterKey,
-            'file_$i.txt',
-            'Content of file $i',
-          ));
+          entries['file_$i.txt'] = _merkleRootFor('Content of file $i');
         }
 
         final signerKey = _signerKey('manifest-signer');
         final manifest = ZegelManifest.create(
-          entries: entries,
-          signerId: 'auditor@example.com',
-          signerKey: signerKey,
+          entries,
+          signerKey,
+          'auditor@example.com',
         );
 
         expect(manifest, isNotNull);
-        expect(manifest.entries.length, equals(5));
+        final files = manifest['files'] as List<dynamic>;
+        expect(files.length, equals(5));
 
         // Verify the manifest signature
-        final isValid = ZegelManifest.verifySignature(
-          manifest,
-          signerKey,
-        );
+        final isValid = ZegelManifest.verify(manifest, signerKey);
         expect(isValid, isTrue,
             reason: 'Manifest signature should verify with correct key');
       });
 
       test('manifest with wrong signer key fails verification', () {
-        final entries = <ManifestFileEntry>[
-          _createFileEntry(masterKey, 'doc.txt', 'Document content'),
-        ];
+        final entries = <String, Uint8List>{
+          'doc.txt': _merkleRootFor('Document content'),
+        };
 
         final signerKey = _signerKey('manifest-signer');
         final wrongKey = _signerKey('wrong-signer');
 
         final manifest = ZegelManifest.create(
-          entries: entries,
-          signerId: 'auditor@example.com',
-          signerKey: signerKey,
+          entries,
+          signerKey,
+          'auditor@example.com',
         );
 
-        final isValid = ZegelManifest.verifySignature(
-          manifest,
-          wrongKey,
-        );
+        final isValid = ZegelManifest.verify(manifest, wrongKey);
         expect(isValid, isFalse,
             reason: 'Manifest signature should fail with wrong key');
       });
     });
 
-    group('deep verification', () {
-      test('deep verify with matching files succeeds', () {
-        final entries = <ManifestFileEntry>[];
+    group('file verification with checkFiles', () {
+      test('checkFiles with matching roots succeeds', () {
+        final entries = <String, Uint8List>{};
         for (var i = 0; i < 3; i++) {
-          entries.add(_createFileEntry(
-            masterKey,
-            'report_$i.txt',
-            'Report content $i',
-          ));
+          entries['report_$i.txt'] = _merkleRootFor('Report content $i');
         }
 
         final signerKey = _signerKey('deep-verify-signer');
         final manifest = ZegelManifest.create(
-          entries: entries,
-          signerId: 'verifier@example.com',
-          signerKey: signerKey,
+          entries,
+          signerKey,
+          'verifier@example.com',
         );
 
-        // Provide the actual file bytes for deep verification
-        final fileMap = <String, Uint8List>{};
-        for (final entry in entries) {
-          fileMap[entry.filename] = entry.fileBytes!;
+        // Provide the same Merkle roots for verification
+        final actualRoots = <String, Uint8List>{};
+        for (var i = 0; i < 3; i++) {
+          actualRoots['report_$i.txt'] = _merkleRootFor('Report content $i');
         }
 
-        final deepResult = ZegelManifest.deepVerify(
-          manifest,
-          signerKey,
-          fileMap,
-        );
-        expect(deepResult.valid, isTrue);
-        expect(deepResult.missingFiles, isEmpty);
-        expect(deepResult.tamperedFiles, isEmpty);
+        final results = ZegelManifest.checkFiles(manifest, actualRoots);
+        for (final entry in results.entries) {
+          expect(entry.value, isTrue,
+              reason: 'File ${entry.key} should match');
+        }
       });
 
-      test('deep verify detects missing file', () {
-        final entries = <ManifestFileEntry>[];
+      test('checkFiles detects missing file', () {
+        final entries = <String, Uint8List>{};
         for (var i = 0; i < 3; i++) {
-          entries.add(_createFileEntry(
-            masterKey,
-            'doc_$i.txt',
-            'Document $i',
-          ));
+          entries['doc_$i.txt'] = _merkleRootFor('Document $i');
         }
 
         final signerKey = _signerKey('missing-file-signer');
         final manifest = ZegelManifest.create(
-          entries: entries,
-          signerId: 'verifier@example.com',
-          signerKey: signerKey,
+          entries,
+          signerKey,
+          'verifier@example.com',
         );
 
         // Provide only 2 of 3 files
-        final fileMap = <String, Uint8List>{};
-        fileMap[entries[0].filename] = entries[0].fileBytes!;
-        fileMap[entries[1].filename] = entries[1].fileBytes!;
-        // entries[2] is missing
+        final actualRoots = <String, Uint8List>{
+          'doc_0.txt': _merkleRootFor('Document 0'),
+          'doc_1.txt': _merkleRootFor('Document 1'),
+          // doc_2.txt is missing
+        };
 
-        final deepResult = ZegelManifest.deepVerify(
-          manifest,
-          signerKey,
-          fileMap,
-        );
-        expect(deepResult.valid, isFalse,
-            reason: 'Missing file should cause deep verify failure');
-        expect(deepResult.missingFiles, contains('doc_2.txt'));
+        final results = ZegelManifest.checkFiles(manifest, actualRoots);
+        expect(results['doc_2.txt'], isFalse,
+            reason: 'Missing file should be reported as not matching');
       });
 
-      test('deep verify detects tampered file (wrong Merkle root)', () {
-        final entries = <ManifestFileEntry>[];
+      test('checkFiles detects tampered file (wrong Merkle root)', () {
+        final entries = <String, Uint8List>{};
         for (var i = 0; i < 3; i++) {
-          entries.add(_createFileEntry(
-            masterKey,
-            'audit_$i.txt',
-            'Audit content $i',
-          ));
+          entries['audit_$i.txt'] = _merkleRootFor('Audit content $i');
         }
 
         final signerKey = _signerKey('tampered-file-signer');
         final manifest = ZegelManifest.create(
-          entries: entries,
-          signerId: 'verifier@example.com',
-          signerKey: signerKey,
-        );
-
-        // Replace one file with a different sealed file (different content)
-        final differentEntry = _createFileEntry(
-          masterKey,
-          'audit_1.txt',
-          'TAMPERED content that differs from original',
-        );
-
-        final fileMap = <String, Uint8List>{};
-        fileMap[entries[0].filename] = entries[0].fileBytes!;
-        fileMap['audit_1.txt'] = differentEntry.fileBytes!; // tampered
-        fileMap[entries[2].filename] = entries[2].fileBytes!;
-
-        final deepResult = ZegelManifest.deepVerify(
-          manifest,
+          entries,
           signerKey,
-          fileMap,
+          'verifier@example.com',
         );
-        expect(deepResult.valid, isFalse,
-            reason: 'Tampered file should cause deep verify failure');
-        expect(deepResult.tamperedFiles, contains('audit_1.txt'));
+
+        // Replace one file's root with a different hash
+        final actualRoots = <String, Uint8List>{
+          'audit_0.txt': _merkleRootFor('Audit content 0'),
+          'audit_1.txt': _merkleRootFor('TAMPERED content that differs'),
+          'audit_2.txt': _merkleRootFor('Audit content 2'),
+        };
+
+        final results = ZegelManifest.checkFiles(manifest, actualRoots);
+        expect(results['audit_1.txt'], isFalse,
+            reason: 'Tampered file should be reported as not matching');
+        expect(results['audit_0.txt'], isTrue);
+        expect(results['audit_2.txt'], isTrue);
       });
     });
 
-    group('manifest metadata', () {
-      test('manifest includes metadata', () {
-        final entries = <ManifestFileEntry>[
-          _createFileEntry(masterKey, 'report.txt', 'Report content'),
-        ];
+    group('manifest structure', () {
+      test('manifest includes signer ID and version', () {
+        final entries = <String, Uint8List>{
+          'report.txt': _merkleRootFor('Report content'),
+        };
 
         final signerKey = _signerKey('meta-signer');
         final manifest = ZegelManifest.create(
-          entries: entries,
-          signerId: 'admin@example.com',
-          signerKey: signerKey,
-          metadata: {
-            'audit_period': 'Q1-2026',
-            'department': 'Finance',
-          },
+          entries,
+          signerKey,
+          'admin@example.com',
         );
 
-        expect(manifest.metadata, isNotNull);
-        expect(manifest.metadata!['audit_period'], equals('Q1-2026'));
-        expect(manifest.metadata!['department'], equals('Finance'));
+        expect(manifest['signer_id'], equals('admin@example.com'));
+        expect(manifest['version'], equals(1));
+        expect(manifest.containsKey('created_at'), isTrue);
+        expect(manifest.containsKey('signature'), isTrue);
       });
     });
 
@@ -246,47 +165,62 @@ void main() {
       test('empty manifest is valid', () {
         final signerKey = _signerKey('empty-signer');
         final manifest = ZegelManifest.create(
-          entries: <ManifestFileEntry>[],
-          signerId: 'admin@example.com',
-          signerKey: signerKey,
+          <String, Uint8List>{},
+          signerKey,
+          'admin@example.com',
         );
 
-        expect(manifest.entries, isEmpty);
+        final files = manifest['files'] as List<dynamic>;
+        expect(files, isEmpty);
 
-        final isValid = ZegelManifest.verifySignature(manifest, signerKey);
+        final isValid = ZegelManifest.verify(manifest, signerKey);
         expect(isValid, isTrue,
             reason: 'Empty manifest should still have a valid signature');
       });
 
       test('manifest preserves file order', () {
-        final entries = <ManifestFileEntry>[];
+        // Use a LinkedHashMap to preserve insertion order
+        final entries = <String, Uint8List>{};
         final filenames = ['z-last.txt', 'a-first.txt', 'm-middle.txt'];
         for (final name in filenames) {
-          entries.add(_createFileEntry(masterKey, name, 'Content for $name'));
+          entries[name] = _merkleRootFor('Content for $name');
         }
 
         final signerKey = _signerKey('order-signer');
         final manifest = ZegelManifest.create(
-          entries: entries,
-          signerId: 'admin@example.com',
-          signerKey: signerKey,
+          entries,
+          signerKey,
+          'admin@example.com',
         );
 
+        final files = manifest['files'] as List<dynamic>;
         // Order should be preserved, not sorted
-        expect(manifest.entries[0].filename, equals('z-last.txt'));
-        expect(manifest.entries[1].filename, equals('a-first.txt'));
-        expect(manifest.entries[2].filename, equals('m-middle.txt'));
+        expect((files[0] as Map<String, dynamic>)['filename'],
+            equals('z-last.txt'));
+        expect((files[1] as Map<String, dynamic>)['filename'],
+            equals('a-first.txt'));
+        expect((files[2] as Map<String, dynamic>)['filename'],
+            equals('m-middle.txt'));
       });
 
-      test('manifest entry includes file size', () {
-        final entry = _createFileEntry(
-          masterKey,
-          'sized.txt',
-          'Some content here',
+      test('manifest file entries include merkle_root', () {
+        final entries = <String, Uint8List>{
+          'sized.txt': _merkleRootFor('Some content here'),
+        };
+
+        final signerKey = _signerKey('size-signer');
+        final manifest = ZegelManifest.create(
+          entries,
+          signerKey,
+          'admin@example.com',
         );
 
-        expect(entry.fileSize, greaterThan(0),
-            reason: 'File size should be positive');
+        final files = manifest['files'] as List<dynamic>;
+        final fileEntry = files[0] as Map<String, dynamic>;
+        expect(fileEntry['filename'], equals('sized.txt'));
+        expect(fileEntry['merkle_root'], isNotNull);
+        expect((fileEntry['merkle_root'] as String).length, equals(64),
+            reason: 'Merkle root hex should be 64 chars (32 bytes)');
       });
     });
   });

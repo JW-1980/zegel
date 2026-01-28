@@ -22,150 +22,220 @@ void main() {
       masterKey = _testKey();
     });
 
-    group('createGpsMetadata', () {
+    group('extractBasicMetadata', () {
       test('returns correct structure', () {
-        final gps = MediaMetadata.createGpsMetadata(
-          latitude: 52.3676,
-          longitude: 4.9041,
-        );
+        final content = Uint8List.fromList([0x00, 0x01, 0x02, 0x03]);
+        final metadata =
+            MediaMetadata.extractBasicMetadata(content, 'test.bin');
 
-        expect(gps, isA<Map<String, dynamic>>());
-        expect(gps.containsKey('gps'), isTrue);
-        expect(gps['gps'], isA<Map<String, dynamic>>());
+        expect(metadata, isA<Map<String, dynamic>>());
+        expect(metadata.containsKey('filename'), isTrue);
+        expect(metadata.containsKey('file_size'), isTrue);
+        expect(metadata.containsKey('content_hash'), isTrue);
+        expect(metadata.containsKey('detected_type'), isTrue);
       });
 
-      test('GPS metadata includes latitude and longitude', () {
-        final gps = MediaMetadata.createGpsMetadata(
-          latitude: 48.8566,
-          longitude: 2.3522,
-        );
+      test('includes correct filename', () {
+        final content = Uint8List.fromList([0x00, 0x01, 0x02, 0x03]);
+        final metadata =
+            MediaMetadata.extractBasicMetadata(content, 'document.pdf');
 
-        final gpsData = gps['gps'] as Map<String, dynamic>;
-        expect(gpsData['latitude'], closeTo(48.8566, 0.0001));
-        expect(gpsData['longitude'], closeTo(2.3522, 0.0001));
+        expect(metadata['filename'], equals('document.pdf'));
       });
 
-      test('GPS metadata includes optional altitude', () {
-        final gps = MediaMetadata.createGpsMetadata(
-          latitude: 46.8182,
-          longitude: 8.2275,
-          altitude: 1450.0,
-        );
+      test('includes correct file size', () {
+        final content = Uint8List.fromList(List.generate(100, (i) => i));
+        final metadata =
+            MediaMetadata.extractBasicMetadata(content, 'data.bin');
 
-        final gpsData = gps['gps'] as Map<String, dynamic>;
-        expect(gpsData['altitude'], closeTo(1450.0, 0.01));
+        expect(metadata['file_size'], equals(100));
       });
 
-      test('GPS metadata includes optional timestamp', () {
-        final captureTime = DateTime.utc(2026, 1, 15, 14, 30, 0);
-        final gps = MediaMetadata.createGpsMetadata(
-          latitude: 40.7128,
-          longitude: -74.0060,
-          timestamp: captureTime,
-        );
+      test('includes content hash as hex string', () {
+        final content = Uint8List.fromList([0x00, 0x01, 0x02, 0x03]);
+        final metadata =
+            MediaMetadata.extractBasicMetadata(content, 'test.bin');
 
-        final gpsData = gps['gps'] as Map<String, dynamic>;
-        expect(gpsData.containsKey('timestamp'), isTrue);
-        // Timestamp should be stored as ISO 8601 string or epoch seconds
-        final storedTimestamp = gpsData['timestamp'];
-        expect(storedTimestamp, isNotNull);
+        final hash = metadata['content_hash'] as String;
+        expect(hash.length, equals(64),
+            reason: 'SHA-256 hash should be 64 hex characters');
+        expect(RegExp(r'^[0-9a-f]+$').hasMatch(hash), isTrue,
+            reason: 'Hash should be lowercase hex');
       });
 
-      test('GPS metadata without optional fields omits them', () {
-        final gps = MediaMetadata.createGpsMetadata(
-          latitude: 35.6762,
-          longitude: 139.6503,
-        );
+      test('detects JPEG content type', () {
+        // JPEG magic bytes: FF D8 FF
+        final content =
+            Uint8List.fromList([0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10]);
+        final metadata =
+            MediaMetadata.extractBasicMetadata(content, 'photo.jpg');
 
-        final gpsData = gps['gps'] as Map<String, dynamic>;
-        expect(gpsData.containsKey('latitude'), isTrue);
-        expect(gpsData.containsKey('longitude'), isTrue);
-        // Altitude and timestamp should not be present when not provided
-        expect(gpsData.containsKey('altitude'), isFalse);
-        expect(gpsData.containsKey('timestamp'), isFalse);
+        expect(metadata['detected_type'], equals('image/jpeg'));
       });
 
-      test('GPS metadata handles negative coordinates (Southern/Western hemisphere)', () {
-        final gps = MediaMetadata.createGpsMetadata(
-          latitude: -33.8688,
-          longitude: -151.2093, // Note: this is actually positive but testing negative
-        );
+      test('detects PNG content type', () {
+        // PNG magic bytes: 89 50 4E 47
+        final content =
+            Uint8List.fromList([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A]);
+        final metadata =
+            MediaMetadata.extractBasicMetadata(content, 'image.png');
 
-        final gpsData = gps['gps'] as Map<String, dynamic>;
-        expect(gpsData['latitude'], closeTo(-33.8688, 0.0001));
-        expect(gpsData['longitude'], closeTo(-151.2093, 0.0001));
+        expect(metadata['detected_type'], equals('image/png'));
       });
 
-      test('GPS metadata handles zero coordinates', () {
-        final gps = MediaMetadata.createGpsMetadata(
-          latitude: 0.0,
-          longitude: 0.0,
-        );
+      test('detects PDF content type', () {
+        // PDF magic bytes: 25 50 44 46 (%PDF)
+        final content =
+            Uint8List.fromList([0x25, 0x50, 0x44, 0x46, 0x2D, 0x31]);
+        final metadata =
+            MediaMetadata.extractBasicMetadata(content, 'report.pdf');
 
-        final gpsData = gps['gps'] as Map<String, dynamic>;
-        expect(gpsData['latitude'], equals(0.0));
-        expect(gpsData['longitude'], equals(0.0));
+        expect(metadata['detected_type'], equals('application/pdf'));
+      });
+
+      test('detects ZIP content type', () {
+        // ZIP magic bytes: 50 4B 03 04
+        final content =
+            Uint8List.fromList([0x50, 0x4B, 0x03, 0x04, 0x00, 0x00]);
+        final metadata =
+            MediaMetadata.extractBasicMetadata(content, 'archive.zip');
+
+        expect(metadata['detected_type'], equals('application/zip'));
+      });
+
+      test('detects GIF content type', () {
+        // GIF magic bytes: 47 49 46 (GIF)
+        final content =
+            Uint8List.fromList([0x47, 0x49, 0x46, 0x38, 0x39, 0x61]);
+        final metadata =
+            MediaMetadata.extractBasicMetadata(content, 'anim.gif');
+
+        expect(metadata['detected_type'], equals('image/gif'));
+      });
+
+      test('returns octet-stream for unknown content', () {
+        final content = Uint8List.fromList([0x00, 0x01, 0x02, 0x03]);
+        final metadata =
+            MediaMetadata.extractBasicMetadata(content, 'mystery.dat');
+
+        expect(metadata['detected_type'], equals('application/octet-stream'));
+      });
+
+      test('handles very small content', () {
+        // Content smaller than 4 bytes
+        final content = Uint8List.fromList([0x01]);
+        final metadata =
+            MediaMetadata.extractBasicMetadata(content, 'tiny.bin');
+
+        expect(metadata['file_size'], equals(1));
+        expect(metadata['detected_type'], equals('unknown'));
       });
     });
 
-    group('extractFromFile', () {
-      test('handles JPEG content type', () {
-        // Simulate JPEG content (just the magic bytes for test purposes)
+    group('stripMetadata', () {
+      test('returns content with same length for basic types', () {
         final content =
             Uint8List.fromList([0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10]);
-        final gps = MediaMetadata.createGpsMetadata(
-          latitude: 52.3676,
-          longitude: 4.9041,
-          altitude: 10.5,
+        final stripped =
+            MediaMetadata.stripMetadata(content, 'image/jpeg');
+
+        expect(stripped.length, equals(content.length));
+      });
+
+      test('populates strippedFields list', () {
+        final content =
+            Uint8List.fromList([0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10]);
+        final strippedFields = <String>[];
+        MediaMetadata.stripMetadata(
+          content,
+          'image/jpeg',
+          strippedFields: strippedFields,
         );
+
+        expect(strippedFields, isNotEmpty,
+            reason: 'Should report fields that would be stripped');
+        expect(strippedFields, contains('GPS coordinates'));
+        expect(strippedFields, contains('Camera make/model'));
+      });
+    });
+
+    group('createProvenanceEntry', () {
+      test('returns correct structure', () {
+        final entry = MediaMetadata.createProvenanceEntry(
+          'photo.jpg',
+          'captured',
+          'camera-device-001',
+        );
+
+        expect(entry, isA<Map<String, dynamic>>());
+        expect(entry['filename'], equals('photo.jpg'));
+        expect(entry['action'], equals('captured'));
+        expect(entry['actor'], equals('camera-device-001'));
+        expect(entry.containsKey('timestamp'), isTrue);
+      });
+
+      test('includes timestamp as epoch seconds', () {
+        final beforeEpoch =
+            DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
+
+        final entry = MediaMetadata.createProvenanceEntry(
+          'doc.pdf',
+          'scanned',
+          'scanner-01',
+        );
+
+        final afterEpoch =
+            DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
+
+        final timestamp = entry['timestamp'] as int;
+        expect(timestamp, greaterThanOrEqualTo(beforeEpoch));
+        expect(timestamp, lessThanOrEqualTo(afterEpoch));
+      });
+
+      test('includes additional fields when provided', () {
+        final entry = MediaMetadata.createProvenanceEntry(
+          'evidence.jpg',
+          'captured',
+          'bodycam-42',
+          additionalFields: {
+            'location': 'Building A',
+            'case_number': 'C-2026-001',
+          },
+        );
+
+        expect(entry['location'], equals('Building A'));
+        expect(entry['case_number'], equals('C-2026-001'));
+      });
+    });
+
+    group('metadata in sealed files', () {
+      test('basic metadata survives seal/extract roundtrip', () {
+        final content =
+            Uint8List.fromList([0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10]);
+
+        // Extract basic metadata
+        final basicMeta =
+            MediaMetadata.extractBasicMetadata(content, 'photo.jpg');
+
+        // Seal with metadata
         final options = ZegelOptions(
           contentType: 'image/jpeg',
           filename: 'photo.jpg',
           salt: _zeroSalt(),
-          metadata: gps,
+          metadata: basicMeta,
         );
-        final fileBytes =
-            ZegelWriter.seal(content, masterKey, options: options);
+        final fileBytes = ZegelWriter(masterKey, options).seal(content);
 
-        final extracted = MediaMetadata.extractFromFile(
-          fileBytes: fileBytes,
-          masterKey: masterKey,
-        );
-
-        expect(extracted, isNotNull);
-        expect(extracted!.containsKey('gps'), isTrue);
-        final gpsData = extracted['gps'] as Map<String, dynamic>;
-        expect(gpsData['latitude'], closeTo(52.3676, 0.0001));
-        expect(gpsData['longitude'], closeTo(4.9041, 0.0001));
+        // Verify and extract
+        final result = const ZegelReader().verify(fileBytes, masterKey);
+        expect(result.valid, isTrue);
+        expect(result.metadata, isNotNull);
+        expect(result.metadata!['filename'], equals('photo.jpg'));
+        expect(result.metadata!['file_size'], equals(6));
+        expect(result.metadata!['detected_type'], equals('image/jpeg'));
       });
 
-      test('handles unknown content type gracefully', () {
-        final content = Uint8List.fromList([0x00, 0x01, 0x02, 0x03]);
-        final options = ZegelOptions(
-          contentType: 'application/x-unknown-format',
-          filename: 'mystery.dat',
-          salt: _zeroSalt(),
-        );
-        final fileBytes =
-            ZegelWriter.seal(content, masterKey, options: options);
-
-        // Should return null or empty metadata for unknown content type
-        // with no metadata block
-        final extracted = MediaMetadata.extractFromFile(
-          fileBytes: fileBytes,
-          masterKey: masterKey,
-        );
-
-        // Either null (no media metadata found) or an empty map is acceptable
-        expect(
-          extracted == null || extracted.isEmpty,
-          isTrue,
-          reason:
-              'Unknown content type without metadata should return null or empty',
-        );
-      });
-
-      test('handles file with metadata but no GPS data', () {
+      test('file with non-media metadata round-trips correctly', () {
         final content = Uint8List.fromList(utf8.encode('Text document'));
         final options = ZegelOptions(
           contentType: 'text/plain',
@@ -173,49 +243,28 @@ void main() {
           salt: _zeroSalt(),
           metadata: {'author': 'Alice', 'version': 1},
         );
-        final fileBytes =
-            ZegelWriter.seal(content, masterKey, options: options);
+        final fileBytes = ZegelWriter(masterKey, options).seal(content);
 
-        final extracted = MediaMetadata.extractFromFile(
-          fileBytes: fileBytes,
-          masterKey: masterKey,
-        );
-
-        // Should either return null or not contain GPS data
-        if (extracted != null) {
-          expect(extracted.containsKey('gps'), isFalse,
-              reason: 'Text file should not have GPS metadata');
-        }
-      });
-    });
-
-    group('GPS metadata in sealed files', () {
-      test('GPS metadata survives seal/extract roundtrip', () {
-        final content = Uint8List.fromList([0xFF, 0xD8, 0xFF]);
-        final gps = MediaMetadata.createGpsMetadata(
-          latitude: 51.5074,
-          longitude: -0.1278,
-          altitude: 30.0,
-          timestamp: DateTime.utc(2026, 3, 15, 10, 0, 0),
-        );
-        final options = ZegelOptions(
-          contentType: 'image/jpeg',
-          filename: 'london.jpg',
-          salt: _zeroSalt(),
-          metadata: gps,
-        );
-        final fileBytes =
-            ZegelWriter.seal(content, masterKey, options: options);
-
-        final result = ZegelReader.extract(fileBytes, masterKey);
+        final result = const ZegelReader().verify(fileBytes, masterKey);
         expect(result.valid, isTrue);
         expect(result.metadata, isNotNull);
-        expect(result.metadata!.containsKey('gps'), isTrue);
+        expect(result.metadata!['author'], equals('Alice'));
+        expect(result.metadata!['version'], equals(1));
+      });
 
-        final gpsData = result.metadata!['gps'] as Map<String, dynamic>;
-        expect(gpsData['latitude'], closeTo(51.5074, 0.0001));
-        expect(gpsData['longitude'], closeTo(-0.1278, 0.0001));
-        expect(gpsData['altitude'], closeTo(30.0, 0.01));
+      test('sealed file without metadata returns null metadata', () {
+        final content = Uint8List.fromList([0x00, 0x01, 0x02, 0x03]);
+        final options = ZegelOptions(
+          contentType: 'application/x-unknown-format',
+          filename: 'mystery.dat',
+          salt: _zeroSalt(),
+        );
+        final fileBytes = ZegelWriter(masterKey, options).seal(content);
+
+        final result = const ZegelReader().verify(fileBytes, masterKey);
+        expect(result.valid, isTrue);
+        expect(result.metadata, isNull,
+            reason: 'File sealed without metadata should have null metadata');
       });
     });
   });

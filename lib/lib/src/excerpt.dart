@@ -1,7 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:crypto/crypto.dart';
-
 import 'merkle_tree.dart';
 
 /// Excerpt proofs using Merkle inclusion (v1.3).

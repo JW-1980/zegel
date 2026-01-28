@@ -28,7 +28,7 @@ Uint8List _sealTestFile(
     metadata: metadata,
     publicMetadata: publicMetadata,
   );
-  return ZegelWriter.seal(content, key, options: options);
+  return ZegelWriter(key, options).seal(content);
 }
 
 void main() {
@@ -48,8 +48,10 @@ void main() {
         fileBytes[0] = 0xFF;
         fileBytes[1] = 0xFF;
 
-        final result = ZegelReader.verify(fileBytes, masterKey);
-        expect(result.valid, isFalse);
+        expect(
+          () => const ZegelReader().verify(fileBytes, masterKey),
+          throwsA(isA<ZegelFormatException>()),
+        );
       });
 
       test('rejects file with partially wrong magic bytes', () {
@@ -57,8 +59,10 @@ void main() {
         // Corrupt just the last magic byte
         fileBytes[7] = 0xFF;
 
-        final result = ZegelReader.verify(fileBytes, masterKey);
-        expect(result.valid, isFalse);
+        expect(
+          () => const ZegelReader().verify(fileBytes, masterKey),
+          throwsA(isA<ZegelFormatException>()),
+        );
       });
 
       test('rejects truncated file (too short for header)', () {
@@ -67,7 +71,7 @@ void main() {
         truncated.setAll(0, [0x5A, 0x45, 0x47, 0x45, 0x4C, 0x00, 0x01, 0x00]);
 
         expect(
-          () => ZegelReader.verify(truncated, masterKey),
+          () => const ZegelReader().verify(truncated, masterKey),
           throwsA(anything),
         );
       });
@@ -77,8 +81,10 @@ void main() {
         // Flip a bit in the seal (last 64 bytes)
         fileBytes[fileBytes.length - 1] ^= 0x01;
 
-        final result = ZegelReader.verify(fileBytes, masterKey);
-        expect(result.valid, isFalse);
+        expect(
+          () => const ZegelReader().verify(fileBytes, masterKey),
+          throwsA(isA<ZegelTamperedException>()),
+        );
       });
 
       test('rejects file with modified merkle root', () {
@@ -98,8 +104,10 @@ void main() {
 
         fileBytes[merkleRootStart] ^= 0x01;
 
-        final result = ZegelReader.verify(fileBytes, masterKey);
-        expect(result.valid, isFalse);
+        expect(
+          () => const ZegelReader().verify(fileBytes, masterKey),
+          throwsA(isA<ZegelTamperedException>()),
+        );
       });
 
       test('rejects file with modified block data', () {
@@ -114,8 +122,10 @@ void main() {
 
         fileBytes[blockDataStart] ^= 0x01;
 
-        final result = ZegelReader.verify(fileBytes, masterKey);
-        expect(result.valid, isFalse);
+        expect(
+          () => const ZegelReader().verify(fileBytes, masterKey),
+          throwsA(isA<ZegelTamperedException>()),
+        );
       });
     });
 
@@ -123,23 +133,23 @@ void main() {
       test('verify returns valid for unmodified file', () {
         final fileBytes = _sealTestFile(content, masterKey);
 
-        final result = ZegelReader.verify(fileBytes, masterKey);
+        final result = const ZegelReader().verify(fileBytes, masterKey);
         expect(result.valid, isTrue);
       });
 
-      test('extract returns correct content', () {
+      test('verify returns correct content', () {
         final fileBytes = _sealTestFile(content, masterKey);
 
-        final result = ZegelReader.extract(fileBytes, masterKey);
+        final result = const ZegelReader().verify(fileBytes, masterKey);
         expect(result.valid, isTrue);
         expect(result.content, equals(content));
       });
 
-      test('extract returns correct UTF-8 string content', () {
+      test('verify returns correct UTF-8 string content', () {
         final textContent = Uint8List.fromList(utf8.encode('Hello, Zegel!'));
         final fileBytes = _sealTestFile(textContent, masterKey);
 
-        final result = ZegelReader.extract(fileBytes, masterKey);
+        final result = const ZegelReader().verify(fileBytes, masterKey);
         expect(utf8.decode(result.content!), equals('Hello, Zegel!'));
       });
 
@@ -151,7 +161,7 @@ void main() {
         final fileBytes =
             _sealTestFile(content, masterKey, metadata: metadata);
 
-        final result = ZegelReader.extract(fileBytes, masterKey);
+        final result = const ZegelReader().verify(fileBytes, masterKey);
         expect(result.valid, isTrue);
         expect(result.metadata, isNotNull);
         expect(result.metadata!['sealed_by'], equals('test-suite'));
@@ -163,7 +173,7 @@ void main() {
       test('file without metadata has null metadata in result', () {
         final fileBytes = _sealTestFile(content, masterKey);
 
-        final result = ZegelReader.extract(fileBytes, masterKey);
+        final result = const ZegelReader().verify(fileBytes, masterKey);
         expect(result.valid, isTrue);
         expect(result.metadata, isNull);
       });
@@ -173,7 +183,7 @@ void main() {
         final fileBytes =
             _sealTestFile(content, masterKey, metadata: metadata);
 
-        final result = ZegelReader.extract(fileBytes, masterKey);
+        final result = const ZegelReader().verify(fileBytes, masterKey);
         expect(result.valid, isTrue);
         expect(result.metadata, isNotNull);
         expect(result.metadata!['key'], equals('value'));
@@ -185,7 +195,7 @@ void main() {
             _sealTestFile(content, masterKey, metadata: metadata);
 
         // Empty metadata may or may not set the flag depending on implementation
-        final result = ZegelReader.extract(fileBytes, masterKey);
+        final result = const ZegelReader().verify(fileBytes, masterKey);
         expect(result.valid, isTrue);
       });
     });
@@ -194,16 +204,15 @@ void main() {
       test('inspect works without a key', () {
         final fileBytes = _sealTestFile(content, masterKey);
 
-        final inspection = ZegelReader.inspect(fileBytes);
+        final inspection = const ZegelReader().inspect(fileBytes);
         expect(inspection, isNotNull);
       });
 
       test('inspect reports correct version', () {
         final fileBytes = _sealTestFile(content, masterKey);
 
-        final inspection = ZegelReader.inspect(fileBytes);
-        expect(inspection.versionMajor, equals(1));
-        expect(inspection.versionMinor, equals(2));
+        final inspection = const ZegelReader().inspect(fileBytes);
+        expect(inspection.version, equals('1.2'));
       });
 
       test('inspect reports correct flags', () {
@@ -214,9 +223,9 @@ void main() {
           metadata: {'key': 'value'},
           compress: true,
         );
-        final fileBytes = ZegelWriter.seal(content, masterKey, options: options);
+        final fileBytes = ZegelWriter(masterKey, options).seal(content);
 
-        final inspection = ZegelReader.inspect(fileBytes);
+        final inspection = const ZegelReader().inspect(fileBytes);
         expect(inspection.flags & ZegelFormat.flagHasMetadata, isNonZero);
         expect(inspection.flags & ZegelFormat.flagCompressed, isNonZero);
       });
@@ -224,7 +233,7 @@ void main() {
       test('inspect reports correct block count', () {
         final fileBytes = _sealTestFile(content, masterKey);
 
-        final inspection = ZegelReader.inspect(fileBytes);
+        final inspection = const ZegelReader().inspect(fileBytes);
         expect(inspection.blockCount, equals(1));
       });
 
@@ -235,28 +244,28 @@ void main() {
           metadata: {'key': 'value'},
         );
 
-        final inspection = ZegelReader.inspect(fileBytes);
+        final inspection = const ZegelReader().inspect(fileBytes);
         expect(inspection.blockCount, equals(2)); // 1 metadata + 1 content
       });
 
       test('inspect reports correct content type', () {
         final fileBytes = _sealTestFile(content, masterKey);
 
-        final inspection = ZegelReader.inspect(fileBytes);
+        final inspection = const ZegelReader().inspect(fileBytes);
         expect(inspection.contentType, equals('text/plain'));
       });
 
       test('inspect reports correct filename', () {
         final fileBytes = _sealTestFile(content, masterKey);
 
-        final inspection = ZegelReader.inspect(fileBytes);
+        final inspection = const ZegelReader().inspect(fileBytes);
         expect(inspection.filename, equals('test.txt'));
       });
 
       test('inspect reports timestamp', () {
         final fileBytes = _sealTestFile(content, masterKey);
 
-        final inspection = ZegelReader.inspect(fileBytes);
+        final inspection = const ZegelReader().inspect(fileBytes);
         expect(inspection.timestamp, greaterThan(0));
       });
 
@@ -268,18 +277,17 @@ void main() {
           publicMetadata: publicMeta,
         );
 
-        final inspection = ZegelReader.inspect(fileBytes);
+        final inspection = const ZegelReader().inspect(fileBytes);
         expect(inspection.publicMetadata, isNotNull);
         expect(
             inspection.publicMetadata!['classification'], equals('public'));
       });
 
-      test('inspect shows merkle root', () {
+      test('inspect reports block count for valid file', () {
         final fileBytes = _sealTestFile(content, masterKey);
 
-        final inspection = ZegelReader.inspect(fileBytes);
-        expect(inspection.merkleRoot, isNotNull);
-        expect(inspection.merkleRoot!.length, equals(32));
+        final inspection = const ZegelReader().inspect(fileBytes);
+        expect(inspection.blockCount, greaterThan(0));
       });
     });
 
@@ -290,8 +298,10 @@ void main() {
         final wrongKey = Uint8List(32);
         wrongKey[31] = 0x02; // Different key
 
-        final result = ZegelReader.verify(fileBytes, wrongKey);
-        expect(result.valid, isFalse);
+        expect(
+          () => const ZegelReader().verify(fileBytes, wrongKey),
+          throwsA(isA<ZegelTamperedException>()),
+        );
       });
 
       test('wrong key fails extraction', () {
@@ -300,8 +310,10 @@ void main() {
         final wrongKey = Uint8List(32);
         wrongKey[31] = 0x02;
 
-        final result = ZegelReader.extract(fileBytes, wrongKey);
-        expect(result.valid, isFalse);
+        expect(
+          () => const ZegelReader().verify(fileBytes, wrongKey),
+          throwsA(isA<ZegelTamperedException>()),
+        );
       });
     });
   });

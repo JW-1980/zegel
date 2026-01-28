@@ -156,9 +156,7 @@ class SelectiveDisclosure {
     if (flags & ZegelFormat.flagSplitKey != 0) extHeaderSize += 2;
     if (flags & ZegelFormat.flagVersioned != 0) extHeaderSize += 32;
     if (flags & ZegelFormat.flagHasPublicMetadata != 0) {
-      final int pubMetaOffset = blockCountOffset + 4 + extHeaderSize -
-          (flags & ZegelFormat.flagHasPublicMetadata != 0 ? 0 : 0);
-      // We need to compute offset up to the public metadata length field.
+      // Compute offset up to the public metadata length field.
       int tempOffset = blockCountOffset + 4;
       if (flags & ZegelFormat.flagPasswordDerived != 0) tempOffset += 8;
       if (flags & ZegelFormat.flagHasExpiration != 0) tempOffset += 8;

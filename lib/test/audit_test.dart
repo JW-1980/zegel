@@ -1,13 +1,7 @@
-import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:crypto/crypto.dart';
 import 'package:test/test.dart';
 import 'package:zegel/zegel.dart';
-
-Uint8List _sha256(Uint8List data) {
-  return Uint8List.fromList(sha256.convert(data).bytes);
-}
 
 Uint8List _hexToBytes(String hex) {
   final length = hex.length ~/ 2;

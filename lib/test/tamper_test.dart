@@ -28,7 +28,7 @@ Uint8List _createValidFile({
     salt: _zeroSalt(),
     metadata: metadata,
   );
-  return ZegelWriter.seal(content, _testKey(), options: options);
+  return ZegelWriter(_testKey(), options).seal(content);
 }
 
 /// Creates a valid multi-block sealed file for advanced tamper tests.
@@ -43,7 +43,7 @@ Uint8List _createMultiBlockFile() {
     filename: 'multi.bin',
     salt: _zeroSalt(),
   );
-  return ZegelWriter.seal(content, _testKey(), options: options);
+  return ZegelWriter(_testKey(), options).seal(content);
 }
 
 /// Computes offsets into the binary structure for a given filename length
@@ -82,9 +82,11 @@ void main() {
         final tampered = Uint8List.fromList(fileBytes);
         tampered[blockDataOffset] ^= 0x01;
 
-        final result = ZegelReader.verify(tampered, masterKey);
-        expect(result.valid, isFalse,
-            reason: 'Should detect flipped bit in encrypted block data');
+        expect(
+          () => const ZegelReader().verify(tampered, masterKey),
+          throwsA(anything),
+          reason: 'Should detect flipped bit in encrypted block data',
+        );
       });
 
       test('flip bit in middle of encrypted block data -> fails', () {
@@ -99,8 +101,10 @@ void main() {
           tampered[midOffset] ^= 0x80;
         }
 
-        final result = ZegelReader.verify(tampered, masterKey);
-        expect(result.valid, isFalse);
+        expect(
+          () => const ZegelReader().verify(tampered, masterKey),
+          throwsA(anything),
+        );
       });
     });
 
@@ -112,9 +116,11 @@ void main() {
         final tampered = Uint8List.fromList(fileBytes);
         tampered[offsets['merkleRoot']!] ^= 0x01;
 
-        final result = ZegelReader.verify(tampered, masterKey);
-        expect(result.valid, isFalse,
-            reason: 'Should detect flipped bit in Merkle root');
+        expect(
+          () => const ZegelReader().verify(tampered, masterKey),
+          throwsA(anything),
+          reason: 'Should detect flipped bit in Merkle root',
+        );
       });
 
       test('flip bit in last byte of merkle root -> fails', () {
@@ -124,8 +130,10 @@ void main() {
         final tampered = Uint8List.fromList(fileBytes);
         tampered[offsets['merkleRoot']! + 31] ^= 0x01;
 
-        final result = ZegelReader.verify(tampered, masterKey);
-        expect(result.valid, isFalse);
+        expect(
+          () => const ZegelReader().verify(tampered, masterKey),
+          throwsA(anything),
+        );
       });
     });
 
@@ -136,9 +144,11 @@ void main() {
         final tampered = Uint8List.fromList(fileBytes);
         tampered[tampered.length - 1] ^= 0x01;
 
-        final result = ZegelReader.verify(tampered, masterKey);
-        expect(result.valid, isFalse,
-            reason: 'Should detect flipped bit in master seal');
+        expect(
+          () => const ZegelReader().verify(tampered, masterKey),
+          throwsA(anything),
+          reason: 'Should detect flipped bit in master seal',
+        );
       });
 
       test('flip bit in first byte of master seal -> fails', () {
@@ -147,8 +157,10 @@ void main() {
         final tampered = Uint8List.fromList(fileBytes);
         tampered[tampered.length - 64] ^= 0x01;
 
-        final result = ZegelReader.verify(tampered, masterKey);
-        expect(result.valid, isFalse);
+        expect(
+          () => const ZegelReader().verify(tampered, masterKey),
+          throwsA(anything),
+        );
       });
 
       test('flip bit in middle of master seal -> fails', () {
@@ -157,8 +169,10 @@ void main() {
         final tampered = Uint8List.fromList(fileBytes);
         tampered[tampered.length - 32] ^= 0x01;
 
-        final result = ZegelReader.verify(tampered, masterKey);
-        expect(result.valid, isFalse);
+        expect(
+          () => const ZegelReader().verify(tampered, masterKey),
+          throwsA(anything),
+        );
       });
     });
 
@@ -174,9 +188,11 @@ void main() {
         final tampered = Uint8List.fromList(fileBytes);
         tampered[hashOffset] ^= 0x01;
 
-        final result = ZegelReader.verify(tampered, masterKey);
-        expect(result.valid, isFalse,
-            reason: 'Should detect flipped bit in block directory hash');
+        expect(
+          () => const ZegelReader().verify(tampered, masterKey),
+          throwsA(anything),
+          reason: 'Should detect flipped bit in block directory hash',
+        );
       });
 
       test('modify block directory ciphertext length -> fails', () {
@@ -194,9 +210,11 @@ void main() {
         ByteData.sublistView(tampered, ctLenOffset, ctLenOffset + 4)
             .setUint32(0, currentLen + 1, Endian.big);
 
-        final result = ZegelReader.verify(tampered, masterKey);
-        expect(result.valid, isFalse,
-            reason: 'Should detect modified ciphertext length');
+        expect(
+          () => const ZegelReader().verify(tampered, masterKey),
+          throwsA(anything),
+          reason: 'Should detect modified ciphertext length',
+        );
       });
     });
 
@@ -208,21 +226,10 @@ void main() {
             fileBytes.sublist(0, fileBytes.length - 1));
 
         expect(
-          () => ZegelReader.verify(truncated, masterKey),
-          anyOf(
-            throwsA(anything),
-            returnsNormally, // may return invalid result
-          ),
+          () => const ZegelReader().verify(truncated, masterKey),
+          throwsA(anything),
+          reason: 'Truncated file should fail verification',
         );
-
-        // If it doesn't throw, it should report invalid
-        try {
-          final result = ZegelReader.verify(truncated, masterKey);
-          expect(result.valid, isFalse,
-              reason: 'Truncated file should fail verification');
-        } catch (_) {
-          // Throwing is also acceptable
-        }
       });
 
       test('append 1 byte -> fails', () {
@@ -232,9 +239,11 @@ void main() {
         extended.setAll(0, fileBytes);
         extended[fileBytes.length] = 0xFF;
 
-        final result = ZegelReader.verify(extended, masterKey);
-        expect(result.valid, isFalse,
-            reason: 'Appended file should fail verification');
+        expect(
+          () => const ZegelReader().verify(extended, masterKey),
+          throwsA(anything),
+          reason: 'Appended file should fail verification',
+        );
       });
     });
 
@@ -259,8 +268,8 @@ void main() {
         }
 
         // Find where block 0 and block 1 ciphertext data are
-        var block0Start = blockDataStart;
-        var block1Start = block0Start + ctLengths[0];
+        final block0Start = blockDataStart;
+        final block1Start = block0Start + ctLengths[0];
 
         // Only swap if both blocks exist
         if (block1Start + ctLengths[1] <= fileBytes.length - 64) {
@@ -284,9 +293,11 @@ void main() {
             tampered.setAll(block0Start + ctLengths[1], block0Data);
           }
 
-          final result = ZegelReader.verify(tampered, masterKey);
-          expect(result.valid, isFalse,
-              reason: 'Swapped blocks should fail verification');
+          expect(
+            () => const ZegelReader().verify(tampered, masterKey),
+            throwsA(anything),
+            reason: 'Swapped blocks should fail verification',
+          );
         }
       });
 
@@ -307,9 +318,11 @@ void main() {
           tampered[blockDataStart + i] ^= 0xFF;
         }
 
-        final result = ZegelReader.verify(tampered, masterKey);
-        expect(result.valid, isFalse,
-            reason: 'Replaced block should fail verification');
+        expect(
+          () => const ZegelReader().verify(tampered, masterKey),
+          throwsA(anything),
+          reason: 'Replaced block should fail verification',
+        );
       });
     });
 
@@ -322,9 +335,11 @@ void main() {
         // Increment the last byte
         tampered[19] ^= 0x01;
 
-        final result = ZegelReader.verify(tampered, masterKey);
-        expect(result.valid, isFalse,
-            reason: 'Modified timestamp should cause seal mismatch');
+        expect(
+          () => const ZegelReader().verify(tampered, masterKey),
+          throwsA(anything),
+          reason: 'Modified timestamp should cause seal mismatch',
+        );
       });
 
       test('modify flags -> fails', () {
@@ -334,9 +349,11 @@ void main() {
         // Flags at offset 10-11
         tampered[11] ^= 0x01;
 
-        final result = ZegelReader.verify(tampered, masterKey);
-        expect(result.valid, isFalse,
-            reason: 'Modified flags should cause seal mismatch');
+        expect(
+          () => const ZegelReader().verify(tampered, masterKey),
+          throwsA(anything),
+          reason: 'Modified flags should cause seal mismatch',
+        );
       });
     });
 
@@ -353,9 +370,11 @@ void main() {
           tampered[ivOffset + i] = 0x00;
         }
 
-        final result = ZegelReader.verify(tampered, masterKey);
-        expect(result.valid, isFalse,
-            reason: 'Zeroed IV should cause seal mismatch or decryption failure');
+        expect(
+          () => const ZegelReader().verify(tampered, masterKey),
+          throwsA(anything),
+          reason: 'Zeroed IV should cause seal mismatch or decryption failure',
+        );
       });
 
       test('flip bit in IV -> fails', () {
@@ -367,8 +386,10 @@ void main() {
         final tampered = Uint8List.fromList(fileBytes);
         tampered[ivOffset] ^= 0x01;
 
-        final result = ZegelReader.verify(tampered, masterKey);
-        expect(result.valid, isFalse);
+        expect(
+          () => const ZegelReader().verify(tampered, masterKey),
+          throwsA(anything),
+        );
       });
     });
 
@@ -383,9 +404,11 @@ void main() {
         final tampered = Uint8List.fromList(fileBytes);
         tampered[tagOffset] ^= 0x01;
 
-        final result = ZegelReader.verify(tampered, masterKey);
-        expect(result.valid, isFalse,
-            reason: 'Flipped auth tag should cause seal mismatch or decryption failure');
+        expect(
+          () => const ZegelReader().verify(tampered, masterKey),
+          throwsA(anything),
+          reason: 'Flipped auth tag should cause seal mismatch or decryption failure',
+        );
       });
     });
 
@@ -397,8 +420,10 @@ void main() {
         // Content-type is at offset 20-83
         tampered[20] ^= 0x01;
 
-        final result = ZegelReader.verify(tampered, masterKey);
-        expect(result.valid, isFalse);
+        expect(
+          () => const ZegelReader().verify(tampered, masterKey),
+          throwsA(anything),
+        );
       });
     });
 
@@ -410,9 +435,11 @@ void main() {
         final tampered = Uint8List.fromList(fileBytes);
         tampered[offsets['salt']!] ^= 0x01;
 
-        final result = ZegelReader.verify(tampered, masterKey);
-        expect(result.valid, isFalse,
-            reason: 'Modified salt should cause seal mismatch');
+        expect(
+          () => const ZegelReader().verify(tampered, masterKey),
+          throwsA(anything),
+          reason: 'Modified salt should cause seal mismatch',
+        );
       });
     });
 
@@ -426,8 +453,10 @@ void main() {
         tampered[19] ^= 0x01; // timestamp
         tampered[blockDataOffset] ^= 0x01; // block data
 
-        final result = ZegelReader.verify(tampered, masterKey);
-        expect(result.valid, isFalse);
+        expect(
+          () => const ZegelReader().verify(tampered, masterKey),
+          throwsA(anything),
+        );
       });
     });
   });
