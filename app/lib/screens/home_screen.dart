@@ -18,6 +18,14 @@ import 'excerpt_screen.dart';
 import 'provenance_screen.dart';
 import 'credential_screen.dart';
 import 'contract_screen.dart';
+import 'inspect_screen.dart';
+import 'media_metadata_screen.dart';
+import 'timestamp_screen.dart';
+import 'version_chain_screen.dart';
+import 'attest_screen.dart';
+import 'audit_screen.dart';
+import 'canary_screen.dart';
+import 'keygen_screen.dart';
 
 /// The main home screen of the Zegel application.
 ///
@@ -338,6 +346,8 @@ class _HomeScreenState extends State<HomeScreen> {
               Icons.verified_user, l10n.verifyAction, () => _navigateToVerify()),
           drawerItem(
               Icons.file_download, l10n.extractAction, () => _navigateToExtract()),
+          drawerItem(Icons.search, l10n.inspectAction,
+              () => _navigateTo(const InspectScreen())),
 
           const Divider(),
 
@@ -349,6 +359,12 @@ class _HomeScreenState extends State<HomeScreen> {
               () => _navigateTo(const SplitKeyScreen())),
           drawerItem(Icons.security, l10n.classificationTitle,
               () => _navigateTo(const ClassificationScreen())),
+          drawerItem(Icons.approval, l10n.attestAction,
+              () => _navigateTo(const AttestScreen())),
+          drawerItem(Icons.timeline, l10n.auditTrailTitle,
+              () => _navigateTo(const AuditScreen())),
+          drawerItem(Icons.track_changes, 'Canary Traps',
+              () => _navigateTo(const CanaryScreen())),
 
           const Divider(),
 
@@ -373,6 +389,19 @@ class _HomeScreenState extends State<HomeScreen> {
               () => _navigateTo(const CredentialScreen())),
           drawerItem(Icons.history, l10n.provenanceTitle,
               () => _navigateTo(const ProvenanceScreen())),
+
+          const Divider(),
+
+          // Tools
+          sectionHeader(l10n.drawerToolsSection),
+          drawerItem(Icons.casino, l10n.generateKeyAction,
+              () => _navigateTo(const KeygenScreen())),
+          drawerItem(Icons.image, l10n.mediaMetadataTitle,
+              () => _navigateTo(const MediaMetadataScreen())),
+          drawerItem(Icons.access_time, l10n.timestampTitle,
+              () => _navigateTo(const TimestampScreen())),
+          drawerItem(Icons.history_edu, l10n.versionChainTitle,
+              () => _navigateTo(const VersionChainScreen())),
 
           const Divider(),
 
