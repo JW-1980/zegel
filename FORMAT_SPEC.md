@@ -1,4 +1,4 @@
-# Zegel File Format Specification v1.2
+# Zegel File Format Specification v1.3
 
 **Extension:** `.zgl`
 **MIME type:** `application/x-zgl`
@@ -41,6 +41,7 @@ Zegel ("seal" in Dutch) is a tamper-proof container format. It wraps any file an
 | 1.0 | 2026-01-27 | Initial specification: core sealing, Merkle tree, HKDF key derivation, AES-256-GCM |
 | 1.1 | 2026-01-27 | SEC-1 Argon2id password derivation, SEC-2 key commitment, SEC-3 expiration, GEN-1 public metadata, GEN-2 compression, GEN-3 streaming verification, GEN-4 multi-file container, GEN-5 provenance chain |
 | 1.2 | 2026-01-27 | SEC-4 canary traps, SEC-5 partial redaction, SEC-6 split-key M-of-N, GEN-6 co-signatures, GEN-7 cross-file references, GEN-8 audit trail, GEN-9 selective disclosure, GEN-10 content versioning |
+| 1.3 | 2026-01-28 | SEC-7 regulatory hold, SEC-8 classification levels, SEC-9 hierarchical split-key, GEN-11 trusted timestamps (RFC 3161), GEN-12 anonymous mode, GEN-13 role-based attestation, GEN-14 excerpt proofs (Merkle inclusion), GEN-15 batch operations, GEN-16 manifests, GEN-17 provenance verification, GEN-18 token expiration |
 
 ---
 
@@ -136,6 +137,9 @@ Each block has a 65-byte directory entry:
 | `0x08` | REFERENCE | v1.2 | Cross-file reference (Merkle root of another .zgl file) |
 | `0x09` | AUDIT | v1.2 | Tamper-evident audit trail entry |
 | `0x0A` | DISCLOSURE_INDEX | v1.2 | Index of blocks available for selective disclosure |
+| `0x0B` | TIMESTAMP | v1.3 | Trusted timestamp token (RFC 3161 compatible) |
+| `0x0C` | EXCERPT | v1.3 | Merkle inclusion proof for excerpt verification |
+| `0x0D` | MANIFEST_ENTRY | v1.3 | Reference to an external file in a manifest |
 
 If the `FLAG_HAS_METADATA` flag is set, the **first block** is always a metadata block. Subsequent blocks follow in the order they were added.
 
@@ -169,7 +173,10 @@ The last 64 bytes of the file. HMAC-SHA512 computed over everything preceding it
 | 9 | `0x0200` | SPLIT_KEY | v1.2 | Master key was split using Shamir's Secret Sharing |
 | 10 | `0x0400` | SELECTIVE_DISCLOSURE | v1.2 | Selective disclosure index block is present |
 | 11 | `0x0800` | VERSIONED | v1.2 | File is linked to a previous version via chain hash |
-| 12-15 | - | RESERVED | - | Must be zero |
+| 12 | `0x1000` | REGULATORY_HOLD | v1.3 | File is under regulatory hold (extraction blocked until hold date) |
+| 13 | `0x2000` | HAS_TIMESTAMP | v1.3 | File contains a trusted timestamp block (RFC 3161) |
+| 14 | `0x4000` | ANONYMOUS | v1.3 | File was sealed in anonymous mode (no identifying metadata) |
+| 15 | `0x8000` | HAS_CLASSIFICATION | v1.3 | File has a classification level in public metadata |
 
 ---
 
@@ -421,6 +428,131 @@ version_chain_hash = SHA-256(previous_merkle_root || previous_master_seal)
 ```
 
 This allows verification that a file is a legitimate successor of another without needing the predecessor's master key.
+
+---
+
+## 7a. Security Features (v1.3)
+
+### 7a.1 SEC-7: Regulatory Hold
+
+When `FLAG_REGULATORY_HOLD` (0x1000) is set, the file cannot be extracted until the hold date has passed. The hold expiration is stored in public metadata as `regulatory_hold_until` (Unix epoch seconds). Readers MUST check the current time against this value and throw `ZegelRegulatoryHoldException` if the hold is still active.
+
+Use cases: SEC 17a-4 compliance, GDPR litigation holds, evidence preservation orders.
+
+### 7a.2 SEC-8: Classification Levels
+
+When `FLAG_HAS_CLASSIFICATION` (0x8000) is set, the public metadata contains a `classification` field with one of the following levels (ordered from lowest to highest):
+
+| Level | Description |
+|-------|-------------|
+| `PUBLIC` | No restrictions |
+| `INTERNAL` | Organisation-internal only |
+| `CONFIDENTIAL` | Restricted distribution |
+| `SECRET` | Need-to-know basis |
+| `TOP_SECRET` | Highest restriction |
+
+Classification metadata also includes `authority` (who set the level), `classified_at` (timestamp), and optional `caveats` (handling instructions like "NOFORN", "REL TO").
+
+**Declassification:** A declassification record lowers the classification level and records the authority and reason. The new level must be strictly lower than the current level.
+
+### 7a.3 SEC-9: Hierarchical Split-Key
+
+Extends Shamir's Secret Sharing (SEC-6) with classification-based access levels. For each classification level, a level-specific sub-key is derived:
+
+```
+level_key = HMAC-SHA256(master_key, "zegel-level:" || level_name)
+```
+
+Each level key is then split using standard Shamir SSS with level-appropriate threshold/total values. Higher-level shares cannot reconstruct lower-level keys and vice versa.
+
+## 7b. General Features (v1.3)
+
+### 7b.1 GEN-11: Trusted Timestamps (RFC 3161)
+
+When `FLAG_HAS_TIMESTAMP` (0x2000) is set, a timestamp block (type `0x0B`) contains a signed timestamp proving when the file was sealed.
+
+**Timestamp request:**
+```
+message_imprint = SHA-256(merkle_root || master_seal)
+```
+
+**Local timestamp token:** When no external TSA is available, a local token is created:
+```
+message = merkle_root || master_seal || pack_uint64_be(epoch_seconds)
+signature = HMAC-SHA256(signer_key, message)
+```
+
+This helps prevent clock manipulation attacks on expiration features.
+
+### 7b.2 GEN-12: Anonymous Mode
+
+When `FLAG_ANONYMOUS` (0x4000) is set, the file was sealed without identifying metadata. The filename is set to a random identifier, and no user-attributable metadata is included. Use cases: whistleblower protection, anonymous voting.
+
+### 7b.3 GEN-13: Role-Based Attestation
+
+Extends co-signatures (GEN-6) with predefined roles. The role field is included in the HMAC computation:
+
+```
+message = merkle_root || signer_id || pack_uint64_be(timestamp) || statement || role
+hmac = HMAC-SHA256(signer_key, message)
+```
+
+Standard roles: `owner`, `signer`, `witness`, `notary`, `auditor`, `reviewer`.
+
+**Policy checking:** A required roles policy can be defined (e.g., requires both a `signer` and a `notary`). The `checkPolicy` method verifies all required roles are present in the attestation set.
+
+### 7b.4 GEN-14: Excerpt Proofs (Merkle Inclusion)
+
+Excerpt blocks (type `0x0C`) contain Merkle inclusion proofs that allow proving a specific block belongs to a sealed file without revealing the full file.
+
+**Proof generation:**
+```
+Given leaf hashes [h0, h1, ..., hn] and target block index i:
+1. Compute sibling hashes along the path from leaf i to the root
+2. Package as: { block_index, block_hash, merkle_root, proof: [sibling_hashes], total_leaves }
+```
+
+**Proof verification:** Recompute the root from the block hash and proof path. Compare with the expected Merkle root from the file header.
+
+### 7b.5 GEN-15: Batch Operations
+
+Provides efficient processing of multiple .zgl files:
+
+- **Batch verify:** Verify multiple files against the same master key, with optional stop-on-first-failure.
+- **Batch seal:** Seal multiple content entries into individual .zgl files with shared options.
+
+### 7b.6 GEN-16: Manifests
+
+A manifest is a signed JSON document listing multiple .zgl files with their Merkle roots, enabling batch integrity verification of document sets (e.g., all files in a real estate closing).
+
+**Manifest structure:**
+```json
+{
+  "version": 1,
+  "signer_id": "notary@example.com",
+  "created_at": 1706367600,
+  "files": [
+    { "filename": "contract.zgl", "merkle_root": "<hex>" },
+    { "filename": "deed.zgl", "merkle_root": "<hex>" }
+  ],
+  "signature": "<HMAC-SHA256 hex>"
+}
+```
+
+### 7b.7 GEN-17: Provenance Verification
+
+Extends provenance chains (GEN-5) with signed, hash-chained events and chronological verification:
+
+```
+event_hash[0] = SHA-256(event_0_json)
+event_hash[n] = SHA-256(event_n_json)  // includes previous_event link
+```
+
+Each event is HMAC-signed and linked to a specific file via its Merkle root. Verification checks chronological order, chain hash integrity, and signature validity.
+
+### 7b.8 GEN-18: Token Expiration
+
+Extends selective disclosure tokens (GEN-9) with an `expires_at` field (Unix epoch seconds). Readers MUST check whether the token has expired before allowing extraction. This prevents indefinite access from a single token issuance.
 
 ---
 
@@ -680,4 +812,7 @@ The reference implementation in PHP (Laravel) is available at:
 - `app/Services/TamperProof/ZegelOptions.php` - Feature option configuration
 - `app/Services/TamperProof/ZegelService.php` - High-level application API
 
-A cross-platform implementation in Dart/Flutter is planned for the `zegel` open-source repository.
+A cross-platform implementation in Dart/Flutter is available in the `zegel` open-source repository:
+- `lib/lib/src/` - Core library (format, reader, writer, Merkle tree, key derivation, Shamir SSS, canary traps, attestation, audit trail, selective disclosure, batch, manifest, classification, excerpt, timestamp, provenance verification, hierarchical split-key, media metadata)
+- `cli/bin/zegel.dart` - CLI application with 22 commands
+- `app/` - Flutter GUI for Windows, macOS, Linux, Android, iOS
