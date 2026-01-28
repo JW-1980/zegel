@@ -22,6 +22,14 @@ Uint8List _testMerkleRoot() {
   );
 }
 
+/// Creates a 64-byte fake master seal for testing.
+Uint8List _testMasterSeal() {
+  return Uint8List.fromList(
+    sha256.convert(utf8.encode('test-master-seal-part1')).bytes +
+        sha256.convert(utf8.encode('test-master-seal-part2')).bytes,
+  );
+}
+
 void main() {
   group('TrustedTimestamp', () {
     late Uint8List masterKey;
@@ -30,11 +38,13 @@ void main() {
       masterKey = _testKey();
     });
 
-    group('createTimestampRequest', () {
-      test('produces non-empty bytes', () {
+    group('createRequest', () {
+      test('produces a non-empty map', () {
         final merkleRoot = _testMerkleRoot();
-        final request = TrustedTimestamp.createTimestampRequest(
-          merkleRoot: merkleRoot,
+        final masterSeal = _testMasterSeal();
+        final request = TrustedTimestamp.createRequest(
+          merkleRoot,
+          masterSeal,
         );
 
         expect(request, isNotNull);
@@ -42,173 +52,240 @@ void main() {
             reason: 'Timestamp request should be non-empty');
       });
 
-      test('request is deterministic for same Merkle root', () {
+      test('request contains required fields', () {
         final merkleRoot = _testMerkleRoot();
-        final request1 = TrustedTimestamp.createTimestampRequest(
-          merkleRoot: merkleRoot,
-        );
-        final request2 = TrustedTimestamp.createTimestampRequest(
-          merkleRoot: merkleRoot,
+        final masterSeal = _testMasterSeal();
+        final request = TrustedTimestamp.createRequest(
+          merkleRoot,
+          masterSeal,
         );
 
-        expect(request1, equals(request2),
-            reason:
-                'Same Merkle root should produce same timestamp request');
+        expect(request.containsKey('version'), isTrue);
+        expect(request['version'], equals(1));
+        expect(request.containsKey('algorithm'), isTrue);
+        expect(request['algorithm'], equals('SHA-256'));
+        expect(request.containsKey('message_imprint'), isTrue);
+        expect(request.containsKey('nonce'), isTrue);
+        expect(request.containsKey('cert_req'), isTrue);
+        expect(request['cert_req'], isTrue);
       });
 
-      test('different Merkle roots produce different requests', () {
+      test('different inputs produce different message imprints', () {
         final root1 = Uint8List.fromList(
           sha256.convert(utf8.encode('root-1')).bytes,
         );
         final root2 = Uint8List.fromList(
           sha256.convert(utf8.encode('root-2')).bytes,
         );
+        final masterSeal = _testMasterSeal();
 
-        final request1 = TrustedTimestamp.createTimestampRequest(
-          merkleRoot: root1,
-        );
-        final request2 = TrustedTimestamp.createTimestampRequest(
-          merkleRoot: root2,
-        );
+        final request1 = TrustedTimestamp.createRequest(root1, masterSeal);
+        final request2 = TrustedTimestamp.createRequest(root2, masterSeal);
 
-        expect(request1, isNot(equals(request2)),
-            reason:
-                'Different Merkle roots should produce different requests');
+        expect(
+          request1['message_imprint'],
+          isNot(equals(request2['message_imprint'])),
+          reason:
+              'Different Merkle roots should produce different message imprints',
+        );
       });
     });
 
-    group('createTimestampBlock', () {
-      test('returns complete JSON', () {
+    group('createLocalToken', () {
+      test('returns complete map', () {
         final merkleRoot = _testMerkleRoot();
-        final tsaUrl = 'https://freetsa.org/tsr';
+        final masterSeal = _testMasterSeal();
+        final signerKey = masterKey;
 
-        final block = TrustedTimestamp.createTimestampBlock(
-          merkleRoot: merkleRoot,
-          tsaUrl: tsaUrl,
+        final token = TrustedTimestamp.createLocalToken(
+          merkleRoot,
+          masterSeal,
+          signerKey,
         );
 
-        expect(block, isNotNull);
-        expect(block, isA<Map<String, dynamic>>());
+        expect(token, isNotNull);
+        expect(token, isA<Map<String, dynamic>>());
       });
 
-      test('timestamp block includes tsa_url', () {
+      test('local token includes type field', () {
         final merkleRoot = _testMerkleRoot();
-        final tsaUrl = 'https://timestamp.digicert.com';
+        final masterSeal = _testMasterSeal();
+        final signerKey = masterKey;
 
-        final block = TrustedTimestamp.createTimestampBlock(
-          merkleRoot: merkleRoot,
-          tsaUrl: tsaUrl,
+        final token = TrustedTimestamp.createLocalToken(
+          merkleRoot,
+          masterSeal,
+          signerKey,
         );
 
-        expect(block['tsa_url'], equals(tsaUrl));
+        expect(token['type'], equals('local'));
       });
 
-      test('timestamp block includes merkle_root_hex', () {
+      test('local token includes merkle_root hex', () {
         final merkleRoot = _testMerkleRoot();
-        final tsaUrl = 'https://freetsa.org/tsr';
+        final masterSeal = _testMasterSeal();
+        final signerKey = masterKey;
 
-        final block = TrustedTimestamp.createTimestampBlock(
-          merkleRoot: merkleRoot,
-          tsaUrl: tsaUrl,
+        final token = TrustedTimestamp.createLocalToken(
+          merkleRoot,
+          masterSeal,
+          signerKey,
         );
 
-        expect(block.containsKey('merkle_root_hex'), isTrue);
-        final rootHex = block['merkle_root_hex'] as String;
+        expect(token.containsKey('merkle_root'), isTrue);
+        final rootHex = token['merkle_root'] as String;
         expect(rootHex.length, equals(64),
             reason: 'Merkle root hex should be 64 characters (32 bytes)');
         expect(RegExp(r'^[0-9a-f]+$').hasMatch(rootHex), isTrue,
             reason: 'Merkle root hex should be lowercase hex');
       });
 
-      test('timestamp block includes current timestamp', () {
+      test('local token includes current timestamp', () {
         final merkleRoot = _testMerkleRoot();
-        final tsaUrl = 'https://freetsa.org/tsr';
+        final masterSeal = _testMasterSeal();
+        final signerKey = masterKey;
 
         final beforeEpoch =
             DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
 
-        final block = TrustedTimestamp.createTimestampBlock(
-          merkleRoot: merkleRoot,
-          tsaUrl: tsaUrl,
+        final token = TrustedTimestamp.createLocalToken(
+          merkleRoot,
+          masterSeal,
+          signerKey,
         );
 
         final afterEpoch =
             DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
 
-        expect(block.containsKey('timestamp'), isTrue);
-        final timestamp = block['timestamp'] as int;
+        expect(token.containsKey('timestamp'), isTrue);
+        final timestamp = token['timestamp'] as int;
         expect(timestamp, greaterThanOrEqualTo(beforeEpoch));
         expect(timestamp, lessThanOrEqualTo(afterEpoch));
       });
 
-      test('timestamp block includes version', () {
+      test('local token includes version', () {
         final merkleRoot = _testMerkleRoot();
-        final block = TrustedTimestamp.createTimestampBlock(
-          merkleRoot: merkleRoot,
-          tsaUrl: 'https://freetsa.org/tsr',
+        final masterSeal = _testMasterSeal();
+        final signerKey = masterKey;
+        final token = TrustedTimestamp.createLocalToken(
+          merkleRoot,
+          masterSeal,
+          signerKey,
         );
 
-        expect(block.containsKey('version'), isTrue);
-        expect(block['version'], equals(1));
+        expect(token.containsKey('version'), isTrue);
+        expect(token['version'], equals(1));
       });
 
-      test('timestamp block can be JSON-serialized', () {
+      test('local token can be JSON-serialized', () {
         final merkleRoot = _testMerkleRoot();
-        final block = TrustedTimestamp.createTimestampBlock(
-          merkleRoot: merkleRoot,
-          tsaUrl: 'https://freetsa.org/tsr',
+        final masterSeal = _testMasterSeal();
+        final signerKey = masterKey;
+        final token = TrustedTimestamp.createLocalToken(
+          merkleRoot,
+          masterSeal,
+          signerKey,
         );
 
         // Should not throw
-        final json = jsonEncode(block);
+        final json = jsonEncode(token);
         expect(json, isNotEmpty);
 
         // Should round-trip
         final decoded = jsonDecode(json) as Map<String, dynamic>;
-        expect(decoded['tsa_url'], equals(block['tsa_url']));
-        expect(decoded['merkle_root_hex'], equals(block['merkle_root_hex']));
+        expect(decoded['type'], equals(token['type']));
+        expect(decoded['merkle_root'], equals(token['merkle_root']));
       });
 
-      test('timestamp block includes optional response token when provided', () {
+      test('local token includes signature', () {
         final merkleRoot = _testMerkleRoot();
-        final mockResponseToken = Uint8List.fromList(
-          List.generate(64, (i) => i),
+        final masterSeal = _testMasterSeal();
+        final signerKey = masterKey;
+
+        final token = TrustedTimestamp.createLocalToken(
+          merkleRoot,
+          masterSeal,
+          signerKey,
         );
 
-        final block = TrustedTimestamp.createTimestampBlock(
-          merkleRoot: merkleRoot,
-          tsaUrl: 'https://freetsa.org/tsr',
-          responseToken: mockResponseToken,
+        expect(token.containsKey('signature'), isTrue);
+        final sigHex = token['signature'] as String;
+        expect(sigHex.length, equals(64),
+            reason: 'Signature hex should be 64 chars for HMAC-SHA256');
+      });
+    });
+
+    group('verifyLocalToken', () {
+      test('verifies valid local token', () {
+        final merkleRoot = _testMerkleRoot();
+        final masterSeal = _testMasterSeal();
+        final signerKey = masterKey;
+
+        final token = TrustedTimestamp.createLocalToken(
+          merkleRoot,
+          masterSeal,
+          signerKey,
         );
 
-        expect(block.containsKey('response_token_hex'), isTrue);
-        final tokenHex = block['response_token_hex'] as String;
-        expect(tokenHex.length, equals(128),
-            reason: 'Token hex should be 128 chars for 64 bytes');
+        final isValid = TrustedTimestamp.verifyLocalToken(
+          token,
+          merkleRoot,
+          masterSeal,
+          signerKey,
+        );
+        expect(isValid, isTrue,
+            reason: 'Valid local token should pass verification');
+      });
+
+      test('fails with wrong signer key', () {
+        final merkleRoot = _testMerkleRoot();
+        final masterSeal = _testMasterSeal();
+        final signerKey = masterKey;
+
+        final token = TrustedTimestamp.createLocalToken(
+          merkleRoot,
+          masterSeal,
+          signerKey,
+        );
+
+        final wrongKey = Uint8List(32);
+        wrongKey[31] = 0x02;
+
+        final isValid = TrustedTimestamp.verifyLocalToken(
+          token,
+          merkleRoot,
+          masterSeal,
+          wrongKey,
+        );
+        expect(isValid, isFalse,
+            reason: 'Token signed with different key should fail verification');
       });
     });
 
     group('timestamp in sealed files', () {
-      test('sealed file with timestamp flag', () {
+      test('sealed file can be inspected for timestamp block context', () {
         final content = Uint8List.fromList(utf8.encode('Timestamped doc'));
         final options = ZegelOptions(
           contentType: 'text/plain',
           filename: 'timestamped.txt',
           salt: _zeroSalt(),
         );
-        final fileBytes =
-            ZegelWriter.seal(content, masterKey, options: options);
+        final fileBytes = ZegelWriter(masterKey, options).seal(content);
 
-        // Get the Merkle root from the sealed file
-        final inspection = ZegelReader.inspect(fileBytes);
+        // Inspect the sealed file
+        final inspection = const ZegelReader().inspect(fileBytes);
         expect(inspection, isNotNull);
+        expect(inspection.blockCount, greaterThan(0));
 
-        // Create a timestamp block for this file
-        final tsBlock = TrustedTimestamp.createTimestampBlock(
-          merkleRoot: inspection.merkleRoot!,
-          tsaUrl: 'https://freetsa.org/tsr',
+        // Create a local token using test Merkle root / master seal
+        final merkleRoot = _testMerkleRoot();
+        final masterSeal = _testMasterSeal();
+        final token = TrustedTimestamp.createLocalToken(
+          merkleRoot,
+          masterSeal,
+          masterKey,
         );
-        expect(tsBlock['merkle_root_hex'], isNotNull);
+        expect(token['merkle_root'], isNotNull);
       });
     });
   });

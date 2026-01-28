@@ -84,49 +84,52 @@ void main() {
         final metadata = Classification.createClassificationMetadata(
           level: ZegelFormat.classificationSecret,
           authority: 'Classification Board',
-          classifiedBy: 'admin@gov.example',
         );
 
-        expect(metadata['classification_level'],
+        final classification =
+            metadata['classification'] as Map<String, dynamic>;
+        expect(classification['level'],
             equals(ZegelFormat.classificationSecret));
-        expect(metadata['classification_authority'],
+        expect(classification['authority'],
             equals('Classification Board'));
-        expect(metadata['classified_by'], equals('admin@gov.example'));
-        expect(metadata.containsKey('classified_at'), isTrue);
+        expect(classification.containsKey('classified_at'), isTrue);
       });
 
       test('classification with caveat includes caveat', () {
         final metadata = Classification.createClassificationMetadata(
           level: ZegelFormat.classificationTopSecret,
           authority: 'National Security Office',
-          classifiedBy: 'officer@nso.example',
           caveat: 'NOFORN',
         );
 
-        expect(metadata['caveat'], equals('NOFORN'));
+        final classification =
+            metadata['classification'] as Map<String, dynamic>;
+        expect(classification['caveat'], equals('NOFORN'));
       });
 
       test('classification with declassify date includes it', () {
-        final declassifyDate = '2036-01-01';
+        final declassifyDate = DateTime.utc(2036, 1, 1);
         final metadata = Classification.createClassificationMetadata(
           level: ZegelFormat.classificationConfidential,
           authority: 'Records Office',
-          classifiedBy: 'archivist@gov.example',
-          declassifyDate: declassifyDate,
+          declassifyOn: declassifyDate,
         );
 
-        expect(metadata['declassify_date'], equals(declassifyDate));
+        final classification =
+            metadata['classification'] as Map<String, dynamic>;
+        expect(classification.containsKey('declassify_on'), isTrue);
       });
 
       test('classification without optional fields omits them', () {
         final metadata = Classification.createClassificationMetadata(
           level: ZegelFormat.classificationInternal,
           authority: 'IT Department',
-          classifiedBy: 'admin@corp.example',
         );
 
-        expect(metadata.containsKey('caveat'), isFalse);
-        expect(metadata.containsKey('declassify_date'), isFalse);
+        final classification =
+            metadata['classification'] as Map<String, dynamic>;
+        expect(classification.containsKey('caveat'), isFalse);
+        expect(classification.containsKey('declassify_on'), isFalse);
       });
     });
 
@@ -136,7 +139,6 @@ void main() {
         final classificationMeta = Classification.createClassificationMetadata(
           level: ZegelFormat.classificationSecret,
           authority: 'Security Office',
-          classifiedBy: 'officer@gov.example',
         );
         final options = ZegelOptions(
           contentType: 'text/plain',
@@ -144,24 +146,24 @@ void main() {
           salt: _zeroSalt(),
           publicMetadata: classificationMeta,
         );
-        final fileBytes =
-            ZegelWriter.seal(content, masterKey, options: options);
+        final fileBytes = ZegelWriter(masterKey, options).seal(content);
 
         final declassified = Classification.declassify(
-          fileBytes: fileBytes,
-          masterKey: masterKey,
-          newLevel: ZegelFormat.classificationConfidential,
-          authority: 'Declassification Board',
-          declassifiedBy: 'reviewer@gov.example',
+          fileBytes,
+          masterKey,
+          ZegelFormat.classificationConfidential,
+          'Declassification Board',
         );
 
         expect(declassified, isNotNull);
 
         // Inspect the declassified file to check the new level
-        final inspection = ZegelReader.inspect(declassified);
+        final inspection = const ZegelReader().inspect(declassified);
         expect(inspection.publicMetadata, isNotNull);
+        final classification =
+            inspection.publicMetadata!['classification'] as Map<String, dynamic>;
         expect(
-          inspection.publicMetadata!['classification_level'],
+          classification['level'],
           equals(ZegelFormat.classificationConfidential),
         );
       });
@@ -171,7 +173,6 @@ void main() {
         final classificationMeta = Classification.createClassificationMetadata(
           level: ZegelFormat.classificationInternal,
           authority: 'IT Department',
-          classifiedBy: 'admin@corp.example',
         );
         final options = ZegelOptions(
           contentType: 'text/plain',
@@ -179,18 +180,16 @@ void main() {
           salt: _zeroSalt(),
           publicMetadata: classificationMeta,
         );
-        final fileBytes =
-            ZegelWriter.seal(content, masterKey, options: options);
+        final fileBytes = ZegelWriter(masterKey, options).seal(content);
 
         expect(
           () => Classification.declassify(
-            fileBytes: fileBytes,
-            masterKey: masterKey,
-            newLevel: ZegelFormat.classificationTopSecret,
-            authority: 'Rogue Actor',
-            declassifiedBy: 'attacker@evil.example',
+            fileBytes,
+            masterKey,
+            ZegelFormat.classificationTopSecret,
+            'Rogue Actor',
           ),
-          throwsA(isA<ZegelException>()),
+          throwsA(isA<ArgumentError>()),
           reason: 'Declassification must not raise the classification level',
         );
       });
@@ -204,7 +203,6 @@ void main() {
         final classificationMeta = Classification.createClassificationMetadata(
           level: ZegelFormat.classificationTopSecret,
           authority: 'NSO',
-          classifiedBy: 'officer@nso.example',
         );
         final options = ZegelOptions(
           contentType: 'application/octet-stream',
@@ -212,23 +210,30 @@ void main() {
           salt: _zeroSalt(),
           publicMetadata: classificationMeta,
         );
-        final fileBytes =
-            ZegelWriter.seal(content, masterKey, options: options);
+        final fileBytes = ZegelWriter(masterKey, options).seal(content);
 
         final declassified = Classification.declassify(
-          fileBytes: fileBytes,
-          masterKey: masterKey,
-          newLevel: ZegelFormat.classificationConfidential,
-          authority: 'Declassification Board',
-          declassifiedBy: 'reviewer@gov.example',
-          redactBlockIndices: [0], // Redact the first content block
+          fileBytes,
+          masterKey,
+          ZegelFormat.classificationConfidential,
+          'Declassification Board',
+          redactBlocks: [0], // Redact the first content block
         );
 
-        // The declassified file should have redacted blocks
-        final result = ZegelReader.verify(declassified, masterKey);
+        // The declassified file is re-sealed after redaction, so the
+        // redacted content is permanently removed (not marked as redacted).
+        final result = const ZegelReader().verify(declassified, masterKey);
         expect(result.valid, isTrue);
-        expect(result.redactedBlocks, isNotNull);
-        expect(result.redactedBlocks, contains(0));
+        // Re-sealed file has less content than the original since
+        // the first block was redacted before re-sealing.
+        expect(result.content!.length, lessThan(content.length));
+        // Declassification history should be in public metadata
+        final pubMeta = result.publicMetadata!;
+        expect(pubMeta.containsKey('declassification_history'), isTrue);
+        final history = pubMeta['declassification_history'] as List;
+        expect(history.length, equals(1));
+        final entry = history[0] as Map<String, dynamic>;
+        expect(entry['redacted_blocks'], equals([0]));
       });
 
       test('declassified file still verifies', () {
@@ -236,7 +241,6 @@ void main() {
         final classificationMeta = Classification.createClassificationMetadata(
           level: ZegelFormat.classificationConfidential,
           authority: 'Records Office',
-          classifiedBy: 'clerk@gov.example',
         );
         final options = ZegelOptions(
           contentType: 'text/plain',
@@ -244,18 +248,16 @@ void main() {
           salt: _zeroSalt(),
           publicMetadata: classificationMeta,
         );
-        final fileBytes =
-            ZegelWriter.seal(content, masterKey, options: options);
+        final fileBytes = ZegelWriter(masterKey, options).seal(content);
 
         final declassified = Classification.declassify(
-          fileBytes: fileBytes,
-          masterKey: masterKey,
-          newLevel: ZegelFormat.classificationInternal,
-          authority: 'Declassification Board',
-          declassifiedBy: 'reviewer@gov.example',
+          fileBytes,
+          masterKey,
+          ZegelFormat.classificationInternal,
+          'Declassification Board',
         );
 
-        final result = ZegelReader.verify(declassified, masterKey);
+        final result = const ZegelReader().verify(declassified, masterKey);
         expect(result.valid, isTrue,
             reason: 'Declassified file must still verify');
       });
@@ -267,7 +269,6 @@ void main() {
         final classificationMeta = Classification.createClassificationMetadata(
           level: ZegelFormat.classificationPublic,
           authority: 'Communications Office',
-          classifiedBy: 'pr@corp.example',
         );
         final options = ZegelOptions(
           contentType: 'text/plain',
@@ -275,14 +276,15 @@ void main() {
           salt: _zeroSalt(),
           publicMetadata: classificationMeta,
         );
-        final fileBytes =
-            ZegelWriter.seal(content, masterKey, options: options);
+        final fileBytes = ZegelWriter(masterKey, options).seal(content);
 
         // Public metadata should be readable without the master key
-        final inspection = ZegelReader.inspect(fileBytes);
+        final inspection = const ZegelReader().inspect(fileBytes);
         expect(inspection.publicMetadata, isNotNull);
+        final classification =
+            inspection.publicMetadata!['classification'] as Map<String, dynamic>;
         expect(
-          inspection.publicMetadata!['classification_level'],
+          classification['level'],
           equals(ZegelFormat.classificationPublic),
         );
       });
@@ -292,7 +294,6 @@ void main() {
         final classificationMeta = Classification.createClassificationMetadata(
           level: ZegelFormat.classificationSecret,
           authority: 'Security Office',
-          classifiedBy: 'officer@gov.example',
         );
         final options = ZegelOptions(
           contentType: 'text/plain',
@@ -300,10 +301,9 @@ void main() {
           salt: _zeroSalt(),
           publicMetadata: classificationMeta,
         );
-        final fileBytes =
-            ZegelWriter.seal(content, masterKey, options: options);
+        final fileBytes = ZegelWriter(masterKey, options).seal(content);
 
-        final inspection = ZegelReader.inspect(fileBytes);
+        final inspection = const ZegelReader().inspect(fileBytes);
         // The HAS_PUBLIC_METADATA flag should be set (classification is in
         // public metadata)
         expect(

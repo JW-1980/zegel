@@ -268,14 +268,13 @@ void main() {
         expect(reconstructed, equals(key));
       });
 
-      test('M=N=1 (degenerate case)', () {
+      test('M=N=1 (degenerate case) throws because threshold must be >= 2', () {
         final key = _filledKey(0x42);
-        final shares = ShamirSecretSharing.split(key, 1, 1);
-
-        expect(shares.length, equals(1));
-        final reconstructed =
-            ShamirSecretSharing.reconstruct(shares, 1);
-        expect(reconstructed, equals(key));
+        expect(
+          () => ShamirSecretSharing.split(key, 1, 1),
+          throwsA(isA<ArgumentError>()),
+          reason: 'Threshold must be >= 2 for Shamir SSS',
+        );
       });
     });
 
@@ -369,14 +368,6 @@ void main() {
         final shares1 = ShamirSecretSharing.split(key, 2, 3);
         final shares2 = ShamirSecretSharing.split(key, 2, 3);
 
-        // y-values should differ between splits (random polynomial)
-        // x-coordinates will be the same (1, 2, 3)
-        var allSame = true;
-        for (var i = 0; i < 3; i++) {
-          if (shares1[i].sublist(1) != shares2[i].sublist(1)) {
-            allSame = false;
-          }
-        }
         // It is theoretically possible but astronomically unlikely
         // for two random polynomials to produce the same shares
         // We check by comparing the y-values

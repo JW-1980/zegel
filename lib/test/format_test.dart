@@ -254,9 +254,10 @@ void main() {
         expect(ZegelFormat.magic.length, equals(8));
       });
 
-      test('key size is 32 bytes (AES-256)', () {
-        // ZegelFormat.keySize is not defined, but the spec mandates 32 bytes.
-        expect(32, equals(32));
+      test('master key is 32 bytes (AES-256)', () {
+        // AES-256 requires a 32-byte key; salt and hash sizes match.
+        expect(ZegelFormat.saltSize, equals(32));
+        expect(ZegelFormat.hashSize, equals(32));
       });
     });
 

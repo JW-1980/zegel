@@ -227,7 +227,8 @@ class SealCommand extends Command<int> {
 
     // Read input file.
     final content = inputFile.readAsBytesSync();
-    final filename = anonymous ? '' : inputFile.uri.pathSegments.last;
+    final isAnonymous = argResults!['anonymous'] as bool;
+    final filename = isAnonymous ? '' : inputFile.uri.pathSegments.last;
 
     // Parse metadata.
     Map<String, dynamic>? metadata;
@@ -282,8 +283,7 @@ class SealCommand extends Command<int> {
       }
     }
 
-    // Handle anonymous mode.
-    final anonymous = argResults!['anonymous'] as bool;
+    // Handle anonymous mode (already parsed above as isAnonymous).
 
     // Handle classification.
     final classificationStr = argResults!['classification'] as String?;
@@ -410,7 +410,7 @@ class SealCommand extends Command<int> {
     if (argResults!['enable-disclosure'] as bool) {
       stdout.writeln('  Disclosure: enabled');
     }
-    if (anonymous) {
+    if (isAnonymous) {
       stdout.writeln('  Anonymous: filename omitted from header');
     }
     if (classificationStr != null) {

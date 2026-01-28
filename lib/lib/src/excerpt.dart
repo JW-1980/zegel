@@ -1,7 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:crypto/crypto.dart';
-
 import 'merkle_tree.dart';
 
 /// Excerpt proofs using Merkle inclusion (v1.3).
@@ -26,7 +24,7 @@ class ExcerptProof {
       throw RangeError('Block index $blockIndex out of range [0, ${leafHashes.length})');
     }
 
-    final proof = MerkleTree.inclusionProof(leafHashes, blockIndex);
+    final proof = MerkleTree.generateProof(leafHashes, blockIndex);
     final root = MerkleTree.buildRoot(leafHashes);
 
     return {
@@ -56,10 +54,10 @@ class ExcerptProof {
     final totalLeaves = proofData['total_leaves'] as int;
 
     return MerkleTree.verifyInclusion(
+      expectedRoot,
       blockHash,
       blockIndex,
       proofHashes,
-      expectedRoot,
       totalLeaves,
     );
   }

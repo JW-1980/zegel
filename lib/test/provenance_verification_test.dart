@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
@@ -19,99 +18,109 @@ Uint8List _otherKey() {
   return key;
 }
 
+/// Creates a 32-byte test Merkle root.
+Uint8List _testMerkleRoot() {
+  return Uint8List.fromList(
+    sha256.convert([0x01, 0x02, 0x03]).bytes,
+  );
+}
+
 /// Creates a provenance chain of [count] entries using
-/// ProvenanceVerification.createSignedEntry.
+/// ProvenanceVerification.createEvent.
 List<Map<String, dynamic>> _createChain(
-  Uint8List signingKey,
+  Uint8List signerKey,
+  Uint8List merkleRoot,
   int count, {
   bool chronological = true,
 }) {
   final entries = <Map<String, dynamic>>[];
-  Uint8List? previousHash;
+  String? previousEventHash;
 
   for (var i = 0; i < count; i++) {
     final timestamp = chronological
         ? DateTime.utc(2026, 1, 1 + i, 10, 0, 0)
         : DateTime.utc(2026, 1, count - i, 10, 0, 0); // reverse order
 
-    final entry = ProvenanceVerification.createSignedEntry(
-      actor: 'user_$i@example.com',
-      action: i == 0 ? 'created' : 'transferred',
-      signingKey: signingKey,
-      timestamp: timestamp,
-      previousChainHash: previousHash,
+    final entry = ProvenanceVerification.createEvent(
+      i == 0 ? 'created' : 'transferred',
+      'user_$i@example.com',
+      signerKey,
+      merkleRoot,
+      previousEventHash: previousEventHash,
       details: {'step': i, 'note': 'Step $i in chain'},
+      timestamp: timestamp,
     );
 
     entries.add(entry);
-    previousHash = _hexToBytes(entry['chain_hash'] as String);
+    previousEventHash = entry['event_hash'] as String?;
   }
 
   return entries;
 }
 
-/// Converts hex string to bytes.
-Uint8List _hexToBytes(String hex) {
-  final length = hex.length ~/ 2;
-  final bytes = Uint8List(length);
-  for (var i = 0; i < length; i++) {
-    bytes[i] = int.parse(hex.substring(i * 2, i * 2 + 2), radix: 16);
-  }
-  return bytes;
-}
-
 void main() {
   group('ProvenanceVerification', () {
-    late Uint8List signingKey;
+    late Uint8List signerKey;
+    late Uint8List merkleRoot;
 
     setUp(() {
-      signingKey = _testKey();
+      signerKey = _testKey();
+      merkleRoot = _testMerkleRoot();
     });
 
     group('chronological verification', () {
       test('succeeds for ordered entries', () {
-        final entries = _createChain(signingKey, 5);
+        final entries = _createChain(signerKey, merkleRoot, 5);
 
-        final result = ProvenanceVerification.verifyChronological(entries);
-        expect(result, isTrue,
+        final result = ProvenanceVerification.verifyChain(entries, signerKey);
+        expect(result['valid'], isTrue,
             reason:
                 'Chronologically ordered entries should pass verification');
       });
 
       test('fails for out-of-order timestamps', () {
         // Create entries with reverse timestamps
-        final entries = _createChain(signingKey, 5, chronological: false);
+        final entries = _createChain(
+          signerKey,
+          merkleRoot,
+          5,
+          chronological: false,
+        );
 
-        final result = ProvenanceVerification.verifyChronological(entries);
-        expect(result, isFalse,
+        final result = ProvenanceVerification.verifyChain(entries, signerKey);
+        // Out-of-order timestamps or broken chain links should cause errors
+        final errors = result['errors'] as List<String>;
+        expect(errors, isNotEmpty,
             reason:
-                'Non-chronological timestamps should fail verification');
+                'Non-chronological timestamps should produce verification errors');
       });
     });
 
-    group('createSignedEntry', () {
-      test('includes HMAC', () {
-        final entry = ProvenanceVerification.createSignedEntry(
-          actor: 'alice@example.com',
-          action: 'created',
-          signingKey: signingKey,
+    group('createEvent', () {
+      test('includes signature', () {
+        final entry = ProvenanceVerification.createEvent(
+          'created',
+          'alice@example.com',
+          signerKey,
+          merkleRoot,
           timestamp: DateTime.utc(2026, 1, 15, 12, 0, 0),
         );
 
-        expect(entry.containsKey('hmac_hex'), isTrue,
-            reason: 'Signed entry must contain HMAC');
-        final hmacHex = entry['hmac_hex'] as String;
-        expect(hmacHex.length, equals(64),
+        expect(entry.containsKey('signature'), isTrue,
+            reason: 'Signed entry must contain signature');
+        final sigHex = entry['signature'] as String;
+        expect(sigHex.length, equals(64),
             reason: 'HMAC-SHA256 should be 64 hex chars (32 bytes)');
-        expect(RegExp(r'^[0-9a-f]+$').hasMatch(hmacHex), isTrue,
-            reason: 'HMAC should be lowercase hex');
+        expect(RegExp(r'^[0-9a-f]+$').hasMatch(sigHex), isTrue,
+            reason: 'Signature should be lowercase hex');
       });
 
       test('includes actor and action', () {
-        final entry = ProvenanceVerification.createSignedEntry(
-          actor: 'bob@example.com',
-          action: 'transferred',
-          signingKey: signingKey,
+        final entry = ProvenanceVerification.createEvent(
+          'transferred',
+          'bob@example.com',
+          signerKey,
+          merkleRoot,
           timestamp: DateTime.utc(2026, 2, 1, 9, 0, 0),
         );
 
@@ -121,10 +130,11 @@ void main() {
 
       test('includes timestamp', () {
         final ts = DateTime.utc(2026, 6, 15, 14, 30, 0);
-        final entry = ProvenanceVerification.createSignedEntry(
-          actor: 'carol@example.com',
-          action: 'verified',
-          signingKey: signingKey,
+        final entry = ProvenanceVerification.createEvent(
+          'verified',
+          'carol@example.com',
+          signerKey,
+          merkleRoot,
           timestamp: ts,
         );
 
@@ -133,24 +143,26 @@ void main() {
         expect(storedTs, equals(ts.millisecondsSinceEpoch ~/ 1000));
       });
 
-      test('includes chain_hash', () {
-        final entry = ProvenanceVerification.createSignedEntry(
-          actor: 'david@example.com',
-          action: 'sealed',
-          signingKey: signingKey,
+      test('includes event_hash', () {
+        final entry = ProvenanceVerification.createEvent(
+          'sealed',
+          'david@example.com',
+          signerKey,
+          merkleRoot,
           timestamp: DateTime.utc(2026, 3, 1),
         );
 
-        expect(entry.containsKey('chain_hash'), isTrue);
-        final chainHash = entry['chain_hash'] as String;
-        expect(chainHash.length, equals(64));
+        expect(entry.containsKey('event_hash'), isTrue);
+        final eventHash = entry['event_hash'] as String;
+        expect(eventHash.length, equals(64));
       });
 
       test('includes optional details', () {
-        final entry = ProvenanceVerification.createSignedEntry(
-          actor: 'eve@example.com',
-          action: 'reviewed',
-          signingKey: signingKey,
+        final entry = ProvenanceVerification.createEvent(
+          'reviewed',
+          'eve@example.com',
+          signerKey,
+          merkleRoot,
           timestamp: DateTime.utc(2026, 4, 1),
           details: {'department': 'Legal', 'approval_level': 2},
         );
@@ -162,39 +174,39 @@ void main() {
       });
     });
 
-    group('signed entry verification', () {
+    group('signature verification via verifyChain', () {
       test('succeeds with correct key', () {
-        final entries = _createChain(signingKey, 3);
+        final entries = _createChain(signerKey, merkleRoot, 3);
 
+        // Verify each entry individually via verifyChain with single entry
         for (final entry in entries) {
-          final isValid = ProvenanceVerification.verifyEntryHmac(
-            entry,
-            signingKey,
-          );
-          expect(isValid, isTrue,
-              reason: 'Entry HMAC should verify with correct key');
+          final result =
+              ProvenanceVerification.verifyChain([entry], signerKey);
+          expect(result['valid'], isTrue,
+              reason: 'Entry signature should verify with correct key');
         }
       });
 
       test('fails with wrong key', () {
         final wrongKey = _otherKey();
-        final entries = _createChain(signingKey, 3);
+        final entries = _createChain(signerKey, merkleRoot, 3);
 
+        // Verify each entry individually with the wrong key
         for (final entry in entries) {
-          final isValid = ProvenanceVerification.verifyEntryHmac(
-            entry,
-            wrongKey,
-          );
-          expect(isValid, isFalse,
-              reason: 'Entry HMAC should fail with wrong key');
+          final result =
+              ProvenanceVerification.verifyChain([entry], wrongKey);
+          final errors = result['errors'] as List<String>;
+          expect(errors, isNotEmpty,
+              reason: 'Entry signature should fail with wrong key');
         }
       });
 
       test('fails if entry is tampered', () {
-        final entry = ProvenanceVerification.createSignedEntry(
-          actor: 'alice@example.com',
-          action: 'created',
-          signingKey: signingKey,
+        final entry = ProvenanceVerification.createEvent(
+          'created',
+          'alice@example.com',
+          signerKey,
+          merkleRoot,
           timestamp: DateTime.utc(2026, 5, 1),
         );
 
@@ -202,95 +214,86 @@ void main() {
         final tampered = Map<String, dynamic>.from(entry);
         tampered['action'] = 'deleted';
 
-        final isValid = ProvenanceVerification.verifyEntryHmac(
-          tampered,
-          signingKey,
-        );
-        expect(isValid, isFalse,
-            reason: 'Tampered entry should fail HMAC verification');
+        final result =
+            ProvenanceVerification.verifyChain([tampered], signerKey);
+        final errors = result['errors'] as List<String>;
+        expect(errors, isNotEmpty,
+            reason: 'Tampered entry should fail signature verification');
       });
     });
 
     group('chain verification', () {
       test('full chain verification succeeds', () {
-        final entries = _createChain(signingKey, 5);
+        final entries = _createChain(signerKey, merkleRoot, 5);
 
         final result = ProvenanceVerification.verifyChain(
           entries,
-          signingKey,
+          signerKey,
         );
-        expect(result, isTrue,
+        expect(result['valid'], isTrue,
             reason: 'Valid chain should pass full verification');
       });
 
       test('broken chain hash fails', () {
-        final entries = _createChain(signingKey, 5);
+        final entries = _createChain(signerKey, merkleRoot, 5);
 
-        // Tamper with the chain_hash of entry 2
-        entries[2]['chain_hash'] = 'ff' * 32;
+        // Tamper with the event_hash of entry 2
+        entries[2]['event_hash'] = 'ff' * 32;
 
         final result = ProvenanceVerification.verifyChain(
           entries,
-          signingKey,
+          signerKey,
         );
-        expect(result, isFalse,
+        expect(result['valid'], isFalse,
             reason: 'Broken chain hash should fail verification');
       });
     });
 
     group('edge cases', () {
       test('empty provenance chain is valid', () {
-        final result = ProvenanceVerification.verifyChronological(
+        final result = ProvenanceVerification.verifyChain(
           <Map<String, dynamic>>[],
+          signerKey,
         );
-        expect(result, isTrue,
+        expect(result['valid'], isTrue,
             reason: 'Empty chain should be considered valid');
-
-        final chainResult = ProvenanceVerification.verifyChain(
-          <Map<String, dynamic>>[],
-          signingKey,
-        );
-        expect(chainResult, isTrue,
-            reason: 'Empty chain should pass full verification');
       });
 
       test('single entry chain is valid', () {
-        final entries = _createChain(signingKey, 1);
+        final entries = _createChain(signerKey, merkleRoot, 1);
 
-        final chronoResult =
-            ProvenanceVerification.verifyChronological(entries);
-        expect(chronoResult, isTrue,
-            reason: 'Single entry is trivially chronological');
-
-        final chainResult = ProvenanceVerification.verifyChain(
+        final result = ProvenanceVerification.verifyChain(
           entries,
-          signingKey,
+          signerKey,
         );
-        expect(chainResult, isTrue,
+        expect(result['valid'], isTrue,
             reason: 'Single entry chain should be valid');
       });
 
       test('chain with same-second timestamps is valid', () {
         final sameTime = DateTime.utc(2026, 7, 1, 12, 0, 0);
-        final entry1 = ProvenanceVerification.createSignedEntry(
-          actor: 'a@example.com',
-          action: 'created',
-          signingKey: signingKey,
+        final entry1 = ProvenanceVerification.createEvent(
+          'created',
+          'a@example.com',
+          signerKey,
+          merkleRoot,
           timestamp: sameTime,
         );
-        final entry2 = ProvenanceVerification.createSignedEntry(
-          actor: 'b@example.com',
-          action: 'witnessed',
-          signingKey: signingKey,
+        final entry2 = ProvenanceVerification.createEvent(
+          'witnessed',
+          'b@example.com',
+          signerKey,
+          merkleRoot,
           timestamp: sameTime,
-          previousChainHash: _hexToBytes(entry1['chain_hash'] as String),
+          previousEventHash: entry1['event_hash'] as String,
         );
 
-        final result = ProvenanceVerification.verifyChronological(
+        final result = ProvenanceVerification.verifyChain(
           [entry1, entry2],
+          signerKey,
         );
         // Same-second timestamps should be acceptable (non-strictly ordered)
-        expect(result, isTrue,
+        expect(result['valid'], isTrue,
             reason: 'Same-second timestamps should be acceptable');
       });
     });
