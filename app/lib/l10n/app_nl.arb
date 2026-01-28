@@ -203,5 +203,32 @@
   "helpExcerpt": "Cryptografische bewijzen voor specifieke blokken genereren of verifi\u00ebren",
   "helpProvenance": "De bewakingsketen en herkomstgebeurtenissen bekijken",
   "helpCredential": "Academische certificaten en accreditaties uitgeven of verifi\u00ebren",
-  "helpContract": "Multi-partij contract workflow met attestaties en gesplitste sleutels"
+  "helpContract": "Multi-partij contract workflow met attestaties en gesplitste sleutels",
+
+  "inspectTitle": "Inspecteren",
+  "inspectFileLabel": "Te Inspecteren Bestand",
+  "helpInspect": "Bestandsheaderinformatie bekijken zonder de hoofdsleutel",
+
+  "mediaMetadataTitle": "Media-metadata",
+  "mediaMetadataFileLabel": "Mediabestand (.zgl)",
+  "mediaMetadataLoadAction": "Metadata Laden",
+  "helpMediaMetadata": "EXIF, GPS en andere media-metadata van verzegelde bestanden bekijken",
+
+  "timestampTitle": "Tijdstempels",
+  "timestampCreateTab": "Aanmaken",
+  "timestampVerifyTab": "Verifi\u00ebren",
+  "timestampFileLabel": "Te Tijdstempelen Bestand",
+  "timestampCreateAction": "Tijdstempel Aanmaken",
+  "timestampVerifyAction": "Tijdstempel Verifi\u00ebren",
+  "helpTimestamp": "Betrouwbare tijdstempels aanvragen of verifi\u00ebren van een TSA",
+
+  "versionChainTitle": "Versieketen",
+  "versionChainFileLabel": "Versiebestanden",
+  "versionChainAddFile": "Bestand Toevoegen",
+  "versionChainVerifyAction": "Versieketen Verifi\u00ebren",
+  "versionChainValid": "Versieketen GELDIG",
+  "versionChainInvalid": "Versieketen GEBROKEN",
+  "helpVersionChain": "Versiegeschiedenis en ketenhashs bekijken en verifi\u00ebren",
+
+  "drawerToolsSection": "Hulpmiddelen"
 }
