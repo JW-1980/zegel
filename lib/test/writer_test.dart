@@ -31,7 +31,7 @@ void main() {
           filename: 'hello.txt',
           salt: _zeroSalt(),
         );
-        final fileBytes = ZegelWriter.seal(content, masterKey, options: options);
+        final fileBytes = ZegelWriter(masterKey, options: options).seal(content);
 
         final magic = fileBytes.sublist(0, 8);
         expect(magic, equals(ZegelFormat.magicBytes));
@@ -43,7 +43,7 @@ void main() {
           filename: 'hello.txt',
           salt: _zeroSalt(),
         );
-        final fileBytes = ZegelWriter.seal(content, masterKey, options: options);
+        final fileBytes = ZegelWriter(masterKey, options: options).seal(content);
         expect(
           String.fromCharCodes(fileBytes.sublist(0, 5)),
           equals('ZEGEL'),
@@ -58,7 +58,7 @@ void main() {
           filename: 'hello.txt',
           salt: _zeroSalt(),
         );
-        final fileBytes = ZegelWriter.seal(content, masterKey, options: options);
+        final fileBytes = ZegelWriter(masterKey, options: options).seal(content);
         expect(fileBytes[8], equals(1));
       });
 
@@ -68,7 +68,7 @@ void main() {
           filename: 'hello.txt',
           salt: _zeroSalt(),
         );
-        final fileBytes = ZegelWriter.seal(content, masterKey, options: options);
+        final fileBytes = ZegelWriter(masterKey, options: options).seal(content);
         expect(fileBytes[9], equals(2));
       });
     });
@@ -80,7 +80,7 @@ void main() {
           filename: 'hello.txt',
           salt: _zeroSalt(),
         );
-        final fileBytes = ZegelWriter.seal(content, masterKey, options: options);
+        final fileBytes = ZegelWriter(masterKey, options: options).seal(content);
 
         final flagsValue = ByteData.sublistView(fileBytes, 10, 12)
             .getUint16(0, Endian.big);
@@ -94,7 +94,7 @@ void main() {
           salt: _zeroSalt(),
           metadata: {'key': 'value'},
         );
-        final fileBytes = ZegelWriter.seal(content, masterKey, options: options);
+        final fileBytes = ZegelWriter(masterKey, options: options).seal(content);
 
         final flagsValue = ByteData.sublistView(fileBytes, 10, 12)
             .getUint16(0, Endian.big);
@@ -108,7 +108,7 @@ void main() {
           salt: _zeroSalt(),
           compress: true,
         );
-        final fileBytes = ZegelWriter.seal(content, masterKey, options: options);
+        final fileBytes = ZegelWriter(masterKey, options: options).seal(content);
 
         final flagsValue = ByteData.sublistView(fileBytes, 10, 12)
             .getUint16(0, Endian.big);
@@ -122,7 +122,7 @@ void main() {
           salt: _zeroSalt(),
           keyCommitment: true,
         );
-        final fileBytes = ZegelWriter.seal(content, masterKey, options: options);
+        final fileBytes = ZegelWriter(masterKey, options: options).seal(content);
 
         final flagsValue = ByteData.sublistView(fileBytes, 10, 12)
             .getUint16(0, Endian.big);
@@ -138,7 +138,7 @@ void main() {
           salt: _zeroSalt(),
           expiration: futureTimestamp,
         );
-        final fileBytes = ZegelWriter.seal(content, masterKey, options: options);
+        final fileBytes = ZegelWriter(masterKey, options: options).seal(content);
 
         final flagsValue = ByteData.sublistView(fileBytes, 10, 12)
             .getUint16(0, Endian.big);
@@ -152,7 +152,7 @@ void main() {
           salt: _zeroSalt(),
           publicMetadata: {'classification': 'public'},
         );
-        final fileBytes = ZegelWriter.seal(content, masterKey, options: options);
+        final fileBytes = ZegelWriter(masterKey, options: options).seal(content);
 
         final flagsValue = ByteData.sublistView(fileBytes, 10, 12)
             .getUint16(0, Endian.big);
@@ -168,7 +168,7 @@ void main() {
           compress: true,
           keyCommitment: true,
         );
-        final fileBytes = ZegelWriter.seal(content, masterKey, options: options);
+        final fileBytes = ZegelWriter(masterKey, options: options).seal(content);
 
         final flagsValue = ByteData.sublistView(fileBytes, 10, 12)
             .getUint16(0, Endian.big);
@@ -186,7 +186,7 @@ void main() {
           salt: _zeroSalt(),
         );
         final before = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-        final fileBytes = ZegelWriter.seal(content, masterKey, options: options);
+        final fileBytes = ZegelWriter(masterKey, options: options).seal(content);
         final after = DateTime.now().millisecondsSinceEpoch ~/ 1000;
 
         final timestamp = ByteData.sublistView(fileBytes, 12, 20)
@@ -202,7 +202,7 @@ void main() {
           filename: 'hello.txt',
           salt: _zeroSalt(),
         );
-        final fileBytes = ZegelWriter.seal(content, masterKey, options: options);
+        final fileBytes = ZegelWriter(masterKey, options: options).seal(content);
 
         final timestamp = ByteData.sublistView(fileBytes, 12, 20)
             .getUint64(0, Endian.big);
@@ -217,7 +217,7 @@ void main() {
           filename: 'hello.txt',
           salt: _zeroSalt(),
         );
-        final fileBytes = ZegelWriter.seal(content, masterKey, options: options);
+        final fileBytes = ZegelWriter(masterKey, options: options).seal(content);
 
         final contentTypeBytes = fileBytes.sublist(20, 84);
         expect(contentTypeBytes.length, equals(64));
@@ -239,7 +239,7 @@ void main() {
           filename: 'hello.txt',
           salt: _zeroSalt(),
         );
-        final fileBytes = ZegelWriter.seal(content, masterKey, options: options);
+        final fileBytes = ZegelWriter(masterKey, options: options).seal(content);
 
         final contentTypeBytes = fileBytes.sublist(20, 84);
         for (var i = 0; i < 64; i++) {
@@ -255,7 +255,7 @@ void main() {
           filename: 'hello.txt',
           salt: _zeroSalt(),
         );
-        final fileBytes = ZegelWriter.seal(content, masterKey, options: options);
+        final fileBytes = ZegelWriter(masterKey, options: options).seal(content);
 
         final filenameLen = ByteData.sublistView(fileBytes, 84, 86)
             .getUint16(0, Endian.big);
@@ -268,7 +268,7 @@ void main() {
           filename: 'hello.txt',
           salt: _zeroSalt(),
         );
-        final fileBytes = ZegelWriter.seal(content, masterKey, options: options);
+        final fileBytes = ZegelWriter(masterKey, options: options).seal(content);
 
         final filenameLen = ByteData.sublistView(fileBytes, 84, 86)
             .getUint16(0, Endian.big);
@@ -282,7 +282,7 @@ void main() {
           filename: 'rapport\u00e9.txt', // rapporté.txt
           salt: _zeroSalt(),
         );
-        final fileBytes = ZegelWriter.seal(content, masterKey, options: options);
+        final fileBytes = ZegelWriter(masterKey, options: options).seal(content);
 
         final filenameLen = ByteData.sublistView(fileBytes, 84, 86)
             .getUint16(0, Endian.big);
@@ -302,7 +302,7 @@ void main() {
           filename: filename,
           salt: _zeroSalt(),
         );
-        final fileBytes = ZegelWriter.seal(content, masterKey, options: options);
+        final fileBytes = ZegelWriter(masterKey, options: options).seal(content);
 
         final salt = fileBytes.sublist(saltOffset, saltOffset + 32);
         expect(salt.length, equals(32));
@@ -319,8 +319,8 @@ void main() {
           contentType: 'text/plain',
           filename: 'hello.txt',
         );
-        final file1 = ZegelWriter.seal(content, masterKey, options: options1);
-        final file2 = ZegelWriter.seal(content, masterKey, options: options2);
+        final file1 = ZegelWriter(masterKey, options: options1).seal(content);
+        final file2 = ZegelWriter(masterKey, options: options2).seal(content);
 
         const filename = 'hello.txt';
         final filenameLen = utf8.encode(filename).length;
@@ -345,7 +345,7 @@ void main() {
           filename: filename,
           salt: _zeroSalt(),
         );
-        final fileBytes = ZegelWriter.seal(content, masterKey, options: options);
+        final fileBytes = ZegelWriter(masterKey, options: options).seal(content);
 
         final blockCount = ByteData.sublistView(
           fileBytes,
@@ -367,7 +367,7 @@ void main() {
           salt: _zeroSalt(),
         );
         final fileBytes =
-            ZegelWriter.seal(largeContent, masterKey, options: options);
+            ZegelWriter(masterKey, options: options).seal(largeContent);
 
         final blockCount = ByteData.sublistView(
           fileBytes,
@@ -389,7 +389,7 @@ void main() {
           salt: _zeroSalt(),
         );
         final fileBytes =
-            ZegelWriter.seal(exactContent, masterKey, options: options);
+            ZegelWriter(masterKey, options: options).seal(exactContent);
 
         final blockCount = ByteData.sublistView(
           fileBytes,
@@ -410,7 +410,7 @@ void main() {
           salt: _zeroSalt(),
           metadata: {'sealed_by': 'test'},
         );
-        final fileBytes = ZegelWriter.seal(content, masterKey, options: options);
+        final fileBytes = ZegelWriter(masterKey, options: options).seal(content);
 
         final blockCount = ByteData.sublistView(
           fileBytes,
@@ -434,7 +434,7 @@ void main() {
           salt: _zeroSalt(),
         );
         final fileBytes =
-            ZegelWriter.seal(largeContent, masterKey, options: options);
+            ZegelWriter(masterKey, options: options).seal(largeContent);
 
         final blockCount = ByteData.sublistView(
           fileBytes,
@@ -459,7 +459,7 @@ void main() {
           salt: _zeroSalt(),
           metadata: {'sealed_by': 'test'},
         );
-        final fileBytes = ZegelWriter.seal(content, masterKey, options: options);
+        final fileBytes = ZegelWriter(masterKey, options: options).seal(content);
 
         // First byte of block directory is the block type
         final firstBlockType = fileBytes[directoryOffset];
@@ -477,7 +477,7 @@ void main() {
           filename: filename,
           salt: _zeroSalt(),
         );
-        final fileBytes = ZegelWriter.seal(content, masterKey, options: options);
+        final fileBytes = ZegelWriter(masterKey, options: options).seal(content);
 
         final firstBlockType = fileBytes[directoryOffset];
         expect(firstBlockType, equals(ZegelFormat.blockTypeContent));
@@ -492,7 +492,7 @@ void main() {
           salt: _zeroSalt(),
           compress: true,
         );
-        final fileBytes = ZegelWriter.seal(content, masterKey, options: options);
+        final fileBytes = ZegelWriter(masterKey, options: options).seal(content);
 
         final flagsValue = ByteData.sublistView(fileBytes, 10, 12)
             .getUint16(0, Endian.big);
@@ -506,7 +506,7 @@ void main() {
           salt: _zeroSalt(),
           compress: false,
         );
-        final fileBytes = ZegelWriter.seal(content, masterKey, options: options);
+        final fileBytes = ZegelWriter(masterKey, options: options).seal(content);
 
         final flagsValue = ByteData.sublistView(fileBytes, 10, 12)
             .getUint16(0, Endian.big);
@@ -521,7 +521,7 @@ void main() {
           filename: 'hello.txt',
           salt: _zeroSalt(),
         );
-        final fileBytes = ZegelWriter.seal(content, masterKey, options: options);
+        final fileBytes = ZegelWriter(masterKey, options: options).seal(content);
 
         expect(fileBytes.length, greaterThan(64));
         final seal = fileBytes.sublist(fileBytes.length - 64);
@@ -538,9 +538,9 @@ void main() {
           filename: 'hello.txt',
           salt: _zeroSalt(),
         );
-        final fileBytes = ZegelWriter.seal(content, masterKey, options: options);
+        final fileBytes = ZegelWriter(masterKey, options: options).seal(content);
 
-        final result = ZegelReader.extract(fileBytes, masterKey);
+        final result = ZegelReader().verify(fileBytes, masterKey);
         expect(result.valid, isTrue);
         expect(result.content, equals(content));
       });
@@ -553,7 +553,7 @@ void main() {
           filename: 'hello.txt',
           salt: _zeroSalt(),
         );
-        final fileBytes = ZegelWriter.seal(content, masterKey, options: options);
+        final fileBytes = ZegelWriter(masterKey, options: options).seal(content);
 
         // Minimum overhead: 8 (magic) + 2 (version) + 2 (flags) + 8 (timestamp)
         // + 64 (content-type) + 2 (filename-len) + N (filename) + 32 (salt)
@@ -571,7 +571,7 @@ void main() {
         );
 
         expect(
-          () => ZegelWriter.seal(content, shortKey, options: options),
+          () => ZegelWriter(shortKey, options: options).seal(content),
           throwsA(isA<ArgumentError>()),
         );
       });
