@@ -63,10 +63,10 @@ class ClassifyCommand extends Command<int> {
     final normalized = validateClassificationLevel(level);
     final caveats = argResults!['caveats'] as List<String>;
 
-    final metadata = Classification.createMetadata(
-      normalized,
-      authority,
-      caveats: caveats.isNotEmpty ? caveats : null,
+    final metadata = Classification.createClassificationMetadata(
+      level: normalized,
+      authority: authority,
+      caveat: caveats.isNotEmpty ? caveats.join(', ') : null,
     );
 
     final outputPath = argResults!['output'] as String? ?? '$filePath.classification.json';
@@ -137,9 +137,22 @@ class DeclassifyCommand extends Command<int> {
     final normalizedNew = validateClassificationLevel(newLevel);
     final reason = argResults!['reason'] as String?;
 
-    final record = Classification.declassify(
-      normalizedCurrent, normalizedNew, authority, reason: reason,
-    );
+    // Validate that the new level is less restrictive.
+    if (Classification.compare(normalizedNew, normalizedCurrent) >= 0) {
+      exitError(
+        'New level "$normalizedNew" must be less restrictive than '
+        'current level "$normalizedCurrent".',
+      );
+    }
+
+    final record = <String, dynamic>{
+      'action': 'declassify',
+      'previous_level': normalizedCurrent,
+      'new_level': normalizedNew,
+      'authority': authority,
+      'timestamp': DateTime.now().toUtc().toIso8601String(),
+      if (reason != null) 'reason': reason,
+    };
 
     final outputPath = argResults!['output'] as String? ?? 'declassification.json';
     File(outputPath).writeAsStringSync(

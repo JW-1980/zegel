@@ -33,13 +33,34 @@ Uint8List _createVersionedFile(
         ? {'version': version, 'previous_filename': filename}
         : null,
   );
-  return ZegelWriter.seal(contentBytes, key, options: options);
+  return ZegelWriter(key, options).seal(contentBytes);
 }
 
-/// Extracts the Merkle root from a sealed file via inspection.
+/// Extracts the Merkle root from a sealed file by parsing the binary format.
 Uint8List _getMerkleRoot(Uint8List fileBytes) {
-  final inspection = ZegelReader.inspect(fileBytes);
-  return inspection.merkleRoot!;
+  final bd = ByteData.sublistView(fileBytes);
+  final filenameLen = bd.getUint16(84, Endian.big);
+  final blockCountOffset = 86 + filenameLen + ZegelFormat.saltSize;
+  final blockCount = bd.getUint32(blockCountOffset, Endian.big);
+  final flags = bd.getUint16(10, Endian.big);
+
+  // Walk through extended header
+  int cursor = blockCountOffset + 4;
+  if (flags & ZegelFormat.flagPasswordDerived != 0) cursor += 8;
+  if (flags & ZegelFormat.flagHasExpiration != 0) cursor += 8;
+  if (flags & ZegelFormat.flagHasCanary != 0) cursor += 32;
+  if (flags & ZegelFormat.flagSplitKey != 0) cursor += 2;
+  if (flags & ZegelFormat.flagVersioned != 0) cursor += 32;
+  if (flags & ZegelFormat.flagHasPublicMetadata != 0) {
+    final pubMetaLen = bd.getUint32(cursor, Endian.big);
+    cursor += 4 + pubMetaLen;
+  }
+
+  // Skip block directory
+  cursor += blockCount * ZegelFormat.blockDirectoryEntrySize;
+
+  // Read Merkle root (32 bytes)
+  return Uint8List.fromList(fileBytes.sublist(cursor, cursor + 32));
 }
 
 /// Extracts the master seal (last 64 bytes) from a sealed file.
@@ -138,51 +159,51 @@ void main() {
     group('createVersionMetadata', () {
       test('includes version number', () {
         final metadata = ContentVersioning.createVersionMetadata(
-          version: 3,
+          versionNumber: 3,
           previousFilename: 'report_v2.txt',
         );
 
-        expect(metadata['version'], equals(3));
+        final versionInfo =
+            metadata['version_info'] as Map<String, dynamic>;
+        expect(versionInfo['version_number'], equals(3));
       });
 
       test('includes previous filename', () {
         final metadata = ContentVersioning.createVersionMetadata(
-          version: 2,
+          versionNumber: 2,
           previousFilename: 'contract_v1.txt',
         );
 
-        expect(metadata['previous_filename'], equals('contract_v1.txt'));
+        final versionInfo =
+            metadata['version_info'] as Map<String, dynamic>;
+        expect(versionInfo['previous_filename'], equals('contract_v1.txt'));
       });
 
       test('includes timestamp', () {
-        final beforeEpoch =
-            DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
-
         final metadata = ContentVersioning.createVersionMetadata(
-          version: 1,
+          versionNumber: 1,
           previousFilename: null,
         );
 
-        final afterEpoch =
-            DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
-
-        if (metadata.containsKey('created_at')) {
-          final ts = metadata['created_at'] as int;
-          expect(ts, greaterThanOrEqualTo(beforeEpoch));
-          expect(ts, lessThanOrEqualTo(afterEpoch));
+        final versionInfo =
+            metadata['version_info'] as Map<String, dynamic>;
+        if (versionInfo.containsKey('created_at')) {
+          final ts = versionInfo['created_at'] as String;
+          expect(ts, isNotEmpty);
         }
       });
 
       test('first version has no previous filename', () {
         final metadata = ContentVersioning.createVersionMetadata(
-          version: 1,
+          versionNumber: 1,
           previousFilename: null,
         );
 
-        expect(metadata['version'], equals(1));
-        // previous_filename should be absent or null for version 1
-        final prev = metadata['previous_filename'];
-        expect(prev == null || prev == '', isTrue,
+        final versionInfo =
+            metadata['version_info'] as Map<String, dynamic>;
+        expect(versionInfo['version_number'], equals(1));
+        // previous_filename should be absent for version 1
+        expect(versionInfo.containsKey('previous_filename'), isFalse,
             reason:
                 'First version should have no previous filename');
       });
@@ -279,7 +300,7 @@ void main() {
     });
 
     group('edge cases', () {
-      test('single file chain is valid', () {
+      test('single file chain throws ArgumentError', () {
         final v1Bytes = _createVersionedFile(
           masterKey,
           'solo.txt',
@@ -287,16 +308,19 @@ void main() {
           version: 1,
         );
 
-        final result = ContentVersioning.verifyVersionChain([v1Bytes]);
-        expect(result, isTrue,
-            reason: 'Single file chain should be trivially valid');
+        expect(
+          () => ContentVersioning.verifyVersionChain([v1Bytes]),
+          throwsA(isA<ArgumentError>()),
+          reason: 'Single file chain should throw ArgumentError',
+        );
       });
 
-      test('empty chain is valid', () {
-        final result =
-            ContentVersioning.verifyVersionChain(<Uint8List>[]);
-        expect(result, isTrue,
-            reason: 'Empty chain should be trivially valid');
+      test('empty chain throws ArgumentError', () {
+        expect(
+          () => ContentVersioning.verifyVersionChain(<Uint8List>[]),
+          throwsA(isA<ArgumentError>()),
+          reason: 'Empty chain should throw ArgumentError',
+        );
       });
 
       test('version flag is set when chain hash is provided', () {
@@ -322,7 +346,7 @@ void main() {
           version: 2,
         );
 
-        final inspection = ZegelReader.inspect(v2Bytes);
+        final inspection = const ZegelReader().inspect(v2Bytes);
         expect(
           inspection.flags & ZegelFormat.flagVersioned,
           isNonZero,

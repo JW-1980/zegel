@@ -310,7 +310,7 @@ void main() {
         expect(merkleRoot, equals(_sha256(content)));
 
         // Encrypted block data at 228 through (end - 64)
-        final blockDataStart = 228;
+        const blockDataStart = 228;
         final blockDataEnd = fileBytes.length - 64;
         expect(blockDataEnd - blockDataStart, equals(ctLen));
 
@@ -351,7 +351,7 @@ void main() {
           'actor': 'user:1:admin@example.com',
           'action': 'sealed',
           'timestamp': 1706367600,
-          'details': {},
+          'details': <String, dynamic>{},
         };
         final entryJsonStr = jsonEncode(entryData);
         final entryJsonBytes = Uint8List.fromList(utf8.encode(entryJsonStr));

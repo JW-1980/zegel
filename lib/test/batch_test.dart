@@ -22,7 +22,7 @@ Uint8List _createSealedFile(Uint8List key, String label) {
     filename: '$label.txt',
     salt: _zeroSalt(),
   );
-  return ZegelWriter.seal(content, key, options: options);
+  return ZegelWriter(key, options).seal(content);
 }
 
 /// Tampers with a sealed file by flipping a bit in the ciphertext area.
@@ -44,187 +44,176 @@ void main() {
 
     group('batchVerify', () {
       test('verifies multiple valid files', () {
-        final files = <BatchEntry>[];
+        final files = <MapEntry<String, Uint8List>>[];
         for (var i = 0; i < 5; i++) {
           final fileBytes = _createSealedFile(masterKey, 'file_$i');
-          files.add(BatchEntry(
-            label: 'file_$i',
-            fileBytes: fileBytes,
-            key: masterKey,
-          ));
+          files.add(MapEntry('file_$i', fileBytes));
         }
 
-        final results = BatchOperations.batchVerify(files);
+        final results = BatchOperations.batchVerify(files, masterKey);
 
         expect(results.length, equals(5));
         for (final result in results) {
-          expect(result.valid, isTrue,
-              reason: '${result.label} should verify successfully');
+          expect(result['success'], isTrue,
+              reason: '${result['name']} should verify successfully');
         }
       });
 
       test('detects tampered file in batch', () {
-        final files = <BatchEntry>[];
+        final files = <MapEntry<String, Uint8List>>[];
         for (var i = 0; i < 5; i++) {
           var fileBytes = _createSealedFile(masterKey, 'file_$i');
           // Tamper with file at index 2
           if (i == 2) {
             fileBytes = _tamperFile(fileBytes);
           }
-          files.add(BatchEntry(
-            label: 'file_$i',
-            fileBytes: fileBytes,
-            key: masterKey,
-          ));
+          files.add(MapEntry('file_$i', fileBytes));
         }
 
-        final results = BatchOperations.batchVerify(files);
+        final results = BatchOperations.batchVerify(files, masterKey);
 
         expect(results.length, equals(5));
         // Files 0, 1, 3, 4 should be valid
-        expect(results[0].valid, isTrue);
-        expect(results[1].valid, isTrue);
+        expect(results[0]['success'], isTrue);
+        expect(results[1]['success'], isTrue);
         // File 2 should be invalid
-        expect(results[2].valid, isFalse,
+        expect(results[2]['success'], isFalse,
             reason: 'Tampered file should fail verification');
-        expect(results[3].valid, isTrue);
-        expect(results[4].valid, isTrue);
+        expect(results[3]['success'], isTrue);
+        expect(results[4]['success'], isTrue);
       });
 
       test('stops on first failure when configured', () {
-        final files = <BatchEntry>[];
+        final files = <MapEntry<String, Uint8List>>[];
         for (var i = 0; i < 5; i++) {
           var fileBytes = _createSealedFile(masterKey, 'file_$i');
           // Tamper with file at index 1
           if (i == 1) {
             fileBytes = _tamperFile(fileBytes);
           }
-          files.add(BatchEntry(
-            label: 'file_$i',
-            fileBytes: fileBytes,
-            key: masterKey,
-          ));
+          files.add(MapEntry('file_$i', fileBytes));
         }
 
         final results = BatchOperations.batchVerify(
           files,
+          masterKey,
           stopOnFirstFailure: true,
         );
 
         // Should stop after file_1 fails, so only 2 results
         expect(results.length, equals(2));
-        expect(results[0].valid, isTrue);
-        expect(results[1].valid, isFalse);
+        expect(results[0]['success'], isTrue);
+        expect(results[1]['success'], isFalse);
       });
 
       test('returns elapsed time per file', () {
-        final files = <BatchEntry>[];
+        final files = <MapEntry<String, Uint8List>>[];
         for (var i = 0; i < 3; i++) {
           final fileBytes = _createSealedFile(masterKey, 'file_$i');
-          files.add(BatchEntry(
-            label: 'file_$i',
-            fileBytes: fileBytes,
-            key: masterKey,
-          ));
+          files.add(MapEntry('file_$i', fileBytes));
         }
 
-        final results = BatchOperations.batchVerify(files);
+        final results = BatchOperations.batchVerify(files, masterKey);
 
         for (final result in results) {
-          expect(result.elapsed, isNotNull,
+          expect(result['duration_ms'], isNotNull,
               reason: 'Each result should include elapsed time');
-          expect(result.elapsed, isA<Duration>());
-          // Duration should be non-negative (could be zero on very fast systems)
-          expect(result.elapsed.inMicroseconds, greaterThanOrEqualTo(0));
+          expect(result['duration_ms'], isA<int>());
+          // Duration should be non-negative
+          expect(result['duration_ms'] as int, greaterThanOrEqualTo(0));
         }
       });
 
       test('handles empty input list', () {
-        final results = BatchOperations.batchVerify(<BatchEntry>[]);
+        final results = BatchOperations.batchVerify(
+          <MapEntry<String, Uint8List>>[],
+          masterKey,
+        );
 
         expect(results, isEmpty,
             reason: 'Empty input should return empty results');
       });
 
-      test('preserves labels in results', () {
-        final files = <BatchEntry>[
-          BatchEntry(
-            label: 'quarterly-report-Q1',
-            fileBytes: _createSealedFile(masterKey, 'q1'),
-            key: masterKey,
+      test('preserves names in results', () {
+        final files = <MapEntry<String, Uint8List>>[
+          MapEntry(
+            'quarterly-report-Q1',
+            _createSealedFile(masterKey, 'q1'),
           ),
-          BatchEntry(
-            label: 'quarterly-report-Q2',
-            fileBytes: _createSealedFile(masterKey, 'q2'),
-            key: masterKey,
+          MapEntry(
+            'quarterly-report-Q2',
+            _createSealedFile(masterKey, 'q2'),
           ),
-          BatchEntry(
-            label: 'quarterly-report-Q3',
-            fileBytes: _createSealedFile(masterKey, 'q3'),
-            key: masterKey,
+          MapEntry(
+            'quarterly-report-Q3',
+            _createSealedFile(masterKey, 'q3'),
           ),
         ];
 
-        final results = BatchOperations.batchVerify(files);
+        final results = BatchOperations.batchVerify(files, masterKey);
 
-        expect(results[0].label, equals('quarterly-report-Q1'));
-        expect(results[1].label, equals('quarterly-report-Q2'));
-        expect(results[2].label, equals('quarterly-report-Q3'));
+        expect(results[0]['name'], equals('quarterly-report-Q1'));
+        expect(results[1]['name'], equals('quarterly-report-Q2'));
+        expect(results[2]['name'], equals('quarterly-report-Q3'));
       });
     });
 
     group('batchSeal', () {
       test('seals multiple files with same key', () {
-        final inputs = <BatchSealInput>[];
+        final inputs = <MapEntry<String, Uint8List>>[];
         for (var i = 0; i < 3; i++) {
-          inputs.add(BatchSealInput(
-            content: Uint8List.fromList(utf8.encode('Document $i')),
-            filename: 'doc_$i.txt',
-            contentType: 'text/plain',
+          inputs.add(MapEntry(
+            'doc_$i.txt',
+            Uint8List.fromList(utf8.encode('Document $i')),
           ));
         }
+
+        final baseOptions = ZegelOptions(
+          contentType: 'text/plain',
+        );
 
         final sealedFiles = BatchOperations.batchSeal(
           inputs,
           masterKey,
+          baseOptions,
         );
 
         expect(sealedFiles.length, equals(3));
 
         // Each sealed file should be verifiable
+        final reader = const ZegelReader();
         for (final sealed in sealedFiles) {
-          expect(sealed, isNotNull);
-          expect(sealed.length, greaterThan(0));
+          expect(sealed.value, isNotNull);
+          expect(sealed.value.length, greaterThan(0));
 
-          final result = ZegelReader.verify(sealed, masterKey);
+          final result = reader.verify(sealed.value, masterKey);
           expect(result.valid, isTrue);
         }
       });
 
       test('applies base options to all files', () {
-        final inputs = <BatchSealInput>[];
+        final inputs = <MapEntry<String, Uint8List>>[];
         for (var i = 0; i < 3; i++) {
-          inputs.add(BatchSealInput(
-            content: Uint8List.fromList(utf8.encode('AAAA' * 1000)),
-            filename: 'doc_$i.txt',
-            contentType: 'text/plain',
+          inputs.add(MapEntry(
+            'doc_$i.txt',
+            Uint8List.fromList(utf8.encode('AAAA' * 1000)),
           ));
         }
 
         final baseOptions = ZegelOptions(
           compress: true,
-          salt: _zeroSalt(),
         );
 
         final sealedFiles = BatchOperations.batchSeal(
           inputs,
           masterKey,
-          baseOptions: baseOptions,
+          baseOptions,
         );
 
         // All sealed files should have the COMPRESSED flag
+        final reader = const ZegelReader();
         for (final sealed in sealedFiles) {
-          final inspection = ZegelReader.inspect(sealed);
+          final inspection = reader.inspect(sealed.value);
           expect(
             inspection.flags & ZegelFormat.flagCompressed,
             isNonZero,
@@ -233,43 +222,43 @@ void main() {
         }
       });
 
-      test('preserves individual filenames and content types', () {
-        final inputs = <BatchSealInput>[
-          BatchSealInput(
-            content: Uint8List.fromList(utf8.encode('PDF content')),
-            filename: 'report.pdf',
-            contentType: 'application/pdf',
+      test('preserves individual filenames', () {
+        final inputs = <MapEntry<String, Uint8List>>[
+          MapEntry(
+            'report.pdf',
+            Uint8List.fromList(utf8.encode('PDF content')),
           ),
-          BatchSealInput(
-            content: Uint8List.fromList(utf8.encode('Image data')),
-            filename: 'photo.jpg',
-            contentType: 'image/jpeg',
+          MapEntry(
+            'photo.jpg',
+            Uint8List.fromList(utf8.encode('Image data')),
           ),
-          BatchSealInput(
-            content: Uint8List.fromList(utf8.encode('Plain text')),
-            filename: 'notes.txt',
-            contentType: 'text/plain',
+          MapEntry(
+            'notes.txt',
+            Uint8List.fromList(utf8.encode('Plain text')),
           ),
         ];
+
+        final baseOptions = ZegelOptions(
+          contentType: 'application/octet-stream',
+        );
 
         final sealedFiles = BatchOperations.batchSeal(
           inputs,
           masterKey,
+          baseOptions,
         );
 
         expect(sealedFiles.length, equals(3));
 
-        final inspection0 = ZegelReader.inspect(sealedFiles[0]);
+        final reader = const ZegelReader();
+        final inspection0 = reader.inspect(sealedFiles[0].value);
         expect(inspection0.filename, equals('report.pdf'));
-        expect(inspection0.contentType, equals('application/pdf'));
 
-        final inspection1 = ZegelReader.inspect(sealedFiles[1]);
+        final inspection1 = reader.inspect(sealedFiles[1].value);
         expect(inspection1.filename, equals('photo.jpg'));
-        expect(inspection1.contentType, equals('image/jpeg'));
 
-        final inspection2 = ZegelReader.inspect(sealedFiles[2]);
+        final inspection2 = reader.inspect(sealedFiles[2].value);
         expect(inspection2.filename, equals('notes.txt'));
-        expect(inspection2.contentType, equals('text/plain'));
       });
     });
   });

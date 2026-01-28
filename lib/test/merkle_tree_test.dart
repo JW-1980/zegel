@@ -27,13 +27,13 @@ void main() {
     group('single leaf', () {
       test('root equals the leaf hash itself', () {
         final leaf = _sha256(Uint8List.fromList([1, 2, 3]));
-        final root = MerkleTree.computeRoot([leaf]);
+        final root = MerkleTree.buildRoot([leaf]);
         expect(root, equals(leaf));
       });
 
       test('single leaf root is 32 bytes', () {
         final leaf = _sha256(Uint8List.fromList([42]));
-        final root = MerkleTree.computeRoot([leaf]);
+        final root = MerkleTree.buildRoot([leaf]);
         expect(root.length, equals(32));
       });
     });
@@ -44,7 +44,7 @@ void main() {
         final leaf1 = _sha256(Uint8List.fromList([1]));
 
         final expectedRoot = _sha256(_concat(leaf0, leaf1));
-        final root = MerkleTree.computeRoot([leaf0, leaf1]);
+        final root = MerkleTree.buildRoot([leaf0, leaf1]);
 
         expect(root, equals(expectedRoot));
       });
@@ -53,7 +53,7 @@ void main() {
         final leaf0 = _sha256(Uint8List.fromList([10]));
         final leaf1 = _sha256(Uint8List.fromList([20]));
 
-        final root = MerkleTree.computeRoot([leaf0, leaf1]);
+        final root = MerkleTree.buildRoot([leaf0, leaf1]);
         expect(root.length, equals(32));
       });
 
@@ -61,8 +61,8 @@ void main() {
         final leaf0 = _sha256(Uint8List.fromList([0]));
         final leaf1 = _sha256(Uint8List.fromList([1]));
 
-        final root1 = MerkleTree.computeRoot([leaf0, leaf1]);
-        final root2 = MerkleTree.computeRoot([leaf1, leaf0]);
+        final root1 = MerkleTree.buildRoot([leaf0, leaf1]);
+        final root2 = MerkleTree.buildRoot([leaf1, leaf0]);
 
         expect(root1, isNot(equals(root2)));
       });
@@ -79,7 +79,7 @@ void main() {
         final right = _sha256(_concat(leaf2, leaf2)); // leaf2 duplicated
         final expectedRoot = _sha256(_concat(left, right));
 
-        final root = MerkleTree.computeRoot([leaf0, leaf1, leaf2]);
+        final root = MerkleTree.buildRoot([leaf0, leaf1, leaf2]);
         expect(root, equals(expectedRoot));
       });
     });
@@ -95,7 +95,7 @@ void main() {
         final right = _sha256(_concat(leaf2, leaf3));
         final expectedRoot = _sha256(_concat(left, right));
 
-        final root = MerkleTree.computeRoot([leaf0, leaf1, leaf2, leaf3]);
+        final root = MerkleTree.buildRoot([leaf0, leaf1, leaf2, leaf3]);
         expect(root, equals(expectedRoot));
       });
     });
@@ -117,7 +117,7 @@ void main() {
         // Level 3: root
         final expectedRoot = _sha256(_concat(n0123, n4567));
 
-        final root = MerkleTree.computeRoot(leaves);
+        final root = MerkleTree.buildRoot(leaves);
         expect(root, equals(expectedRoot));
       });
     });
@@ -125,7 +125,7 @@ void main() {
     group('edge cases', () {
       test('empty list throws ArgumentError', () {
         expect(
-          () => MerkleTree.computeRoot([]),
+          () => MerkleTree.buildRoot([]),
           throwsA(isA<ArgumentError>()),
         );
       });
@@ -137,7 +137,7 @@ void main() {
           return _sha256(data);
         });
 
-        final root = MerkleTree.computeRoot(leaves);
+        final root = MerkleTree.buildRoot(leaves);
         expect(root.length, equals(32));
       });
 
@@ -148,7 +148,7 @@ void main() {
           return _sha256(data);
         });
 
-        final root = MerkleTree.computeRoot(leaves);
+        final root = MerkleTree.buildRoot(leaves);
         expect(root.length, equals(32));
       });
     });
@@ -157,9 +157,9 @@ void main() {
       test('same inputs always produce the same root', () {
         final leaves = List.generate(5, (i) => _leafHash(i));
 
-        final root1 = MerkleTree.computeRoot(leaves);
-        final root2 = MerkleTree.computeRoot(leaves);
-        final root3 = MerkleTree.computeRoot(leaves);
+        final root1 = MerkleTree.buildRoot(leaves);
+        final root2 = MerkleTree.buildRoot(leaves);
+        final root3 = MerkleTree.buildRoot(leaves);
 
         expect(root1, equals(root2));
         expect(root2, equals(root3));
@@ -169,8 +169,8 @@ void main() {
         final leaves1 = List.generate(3, (i) => _leafHash(i));
         final leaves2 = List.generate(3, (i) => _leafHash(i + 10));
 
-        final root1 = MerkleTree.computeRoot(leaves1);
-        final root2 = MerkleTree.computeRoot(leaves2);
+        final root1 = MerkleTree.buildRoot(leaves1);
+        final root2 = MerkleTree.buildRoot(leaves2);
 
         expect(root1, isNot(equals(root2)));
       });
@@ -179,8 +179,8 @@ void main() {
         final leaves3 = List.generate(3, (i) => _leafHash(i));
         final leaves4 = List.generate(4, (i) => _leafHash(i));
 
-        final root3 = MerkleTree.computeRoot(leaves3);
-        final root4 = MerkleTree.computeRoot(leaves4);
+        final root3 = MerkleTree.buildRoot(leaves3);
+        final root4 = MerkleTree.buildRoot(leaves4);
 
         expect(root3, isNot(equals(root4)));
       });
@@ -189,40 +189,46 @@ void main() {
     group('inclusion proofs', () {
       test('verifies inclusion of first leaf in two-leaf tree', () {
         final leaves = [_leafHash(0), _leafHash(1)];
-        final root = MerkleTree.computeRoot(leaves);
+        final root = MerkleTree.buildRoot(leaves);
 
-        final proof = MerkleTree.computeInclusionProof(0, leaves);
-        final verified = MerkleTree.verifyInclusionProof(
-          leaves[0],
-          proof,
+        final proof = MerkleTree.generateProof(leaves, 0);
+        final verified = MerkleTree.verifyInclusion(
           root,
+          leaves[0],
+          0,
+          proof,
+          leaves.length,
         );
         expect(verified, isTrue);
       });
 
       test('verifies inclusion of second leaf in two-leaf tree', () {
         final leaves = [_leafHash(0), _leafHash(1)];
-        final root = MerkleTree.computeRoot(leaves);
+        final root = MerkleTree.buildRoot(leaves);
 
-        final proof = MerkleTree.computeInclusionProof(1, leaves);
-        final verified = MerkleTree.verifyInclusionProof(
-          leaves[1],
-          proof,
+        final proof = MerkleTree.generateProof(leaves, 1);
+        final verified = MerkleTree.verifyInclusion(
           root,
+          leaves[1],
+          1,
+          proof,
+          leaves.length,
         );
         expect(verified, isTrue);
       });
 
       test('verifies inclusion at each position in 8-leaf tree', () {
         final leaves = List.generate(8, (i) => _leafHash(i));
-        final root = MerkleTree.computeRoot(leaves);
+        final root = MerkleTree.buildRoot(leaves);
 
         for (var i = 0; i < 8; i++) {
-          final proof = MerkleTree.computeInclusionProof(i, leaves);
-          final verified = MerkleTree.verifyInclusionProof(
-            leaves[i],
-            proof,
+          final proof = MerkleTree.generateProof(leaves, i);
+          final verified = MerkleTree.verifyInclusion(
             root,
+            leaves[i],
+            i,
+            proof,
+            leaves.length,
           );
           expect(verified, isTrue,
               reason: 'Inclusion proof failed for leaf at index $i');
@@ -231,14 +237,16 @@ void main() {
 
       test('verifies inclusion at each position in odd-count tree', () {
         final leaves = List.generate(5, (i) => _leafHash(i));
-        final root = MerkleTree.computeRoot(leaves);
+        final root = MerkleTree.buildRoot(leaves);
 
         for (var i = 0; i < 5; i++) {
-          final proof = MerkleTree.computeInclusionProof(i, leaves);
-          final verified = MerkleTree.verifyInclusionProof(
-            leaves[i],
-            proof,
+          final proof = MerkleTree.generateProof(leaves, i);
+          final verified = MerkleTree.verifyInclusion(
             root,
+            leaves[i],
+            i,
+            proof,
+            leaves.length,
           );
           expect(verified, isTrue,
               reason: 'Inclusion proof failed for leaf at index $i');
@@ -247,14 +255,16 @@ void main() {
 
       test('rejects wrong leaf with valid proof', () {
         final leaves = [_leafHash(0), _leafHash(1)];
-        final root = MerkleTree.computeRoot(leaves);
+        final root = MerkleTree.buildRoot(leaves);
 
-        final proof = MerkleTree.computeInclusionProof(0, leaves);
+        final proof = MerkleTree.generateProof(leaves, 0);
         // Try verifying with the wrong leaf
-        final verified = MerkleTree.verifyInclusionProof(
-          _leafHash(99),
-          proof,
+        final verified = MerkleTree.verifyInclusion(
           root,
+          _leafHash(99),
+          0,
+          proof,
+          leaves.length,
         );
         expect(verified, isFalse);
       });
@@ -263,21 +273,29 @@ void main() {
         final leaves = [_leafHash(0), _leafHash(1)];
         final wrongRoot = _sha256(Uint8List(32)); // wrong root
 
-        final proof = MerkleTree.computeInclusionProof(0, leaves);
-        final verified = MerkleTree.verifyInclusionProof(
-          leaves[0],
-          proof,
+        final proof = MerkleTree.generateProof(leaves, 0);
+        final verified = MerkleTree.verifyInclusion(
           wrongRoot,
+          leaves[0],
+          0,
+          proof,
+          leaves.length,
         );
         expect(verified, isFalse);
       });
 
       test('single leaf inclusion proof is trivial', () {
         final leaf = _leafHash(0);
-        final root = MerkleTree.computeRoot([leaf]);
+        final root = MerkleTree.buildRoot([leaf]);
 
-        final proof = MerkleTree.computeInclusionProof(0, [leaf]);
-        final verified = MerkleTree.verifyInclusionProof(leaf, proof, root);
+        final proof = MerkleTree.generateProof([leaf], 0);
+        final verified = MerkleTree.verifyInclusion(
+          root,
+          leaf,
+          0,
+          proof,
+          1,
+        );
         expect(verified, isTrue);
       });
     });

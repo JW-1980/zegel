@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:test/test.dart';
@@ -32,10 +31,11 @@ Uint8List _createThreeBlockFile(Uint8List key) {
 /// Helper to compute offsets for filename "multi.bin" (9 bytes), N blocks.
 Map<String, int> _offsetsForMulti(int blockCount) {
   const filenameLen = 9; // "multi.bin"
-  final saltOffset = 86 + filenameLen;
-  final blockCountOffset = saltOffset + 32;
-  final directoryOffset = blockCountOffset + 4;
-  final merkleRootOffset = directoryOffset + (blockCount * 65);
+  const saltOffset = 86 + filenameLen;
+  const blockCountOffset = saltOffset + 32;
+  const directoryOffset = blockCountOffset + 4;
+  final merkleRootOffset =
+      directoryOffset + (blockCount * ZegelFormat.blockDirectoryEntrySize);
   return {
     'salt': saltOffset,
     'blockCount': blockCountOffset,
@@ -57,7 +57,8 @@ void main() {
         final fileBytes = _createThreeBlockFile(masterKey);
 
         // Verify original file is valid first
-        final originalResult = ZegelReader().verify(fileBytes, masterKey);
+        final originalResult =
+            const ZegelReader().verify(fileBytes, masterKey);
         expect(originalResult.valid, isTrue);
 
         // Redact block 1
@@ -73,7 +74,8 @@ void main() {
             Redaction.redactBlocks(fileBytes, masterKey, [1]);
 
         // Redacted file should still verify
-        final result = ZegelReader().verify(redactedBytes, masterKey);
+        final result =
+            const ZegelReader().verify(redactedBytes, masterKey);
         expect(result.valid, isTrue,
             reason: 'Redacted file should verify (Merkle root preserved)');
       });
@@ -83,7 +85,8 @@ void main() {
         final redactedBytes =
             Redaction.redactBlocks(fileBytes, masterKey, [1]);
 
-        final result = ZegelReader().verify(redactedBytes, masterKey);
+        final result =
+            const ZegelReader().verify(redactedBytes, masterKey);
         expect(result.valid, isTrue);
 
         // The result should indicate which blocks are redacted
@@ -105,7 +108,8 @@ void main() {
 
         final offsets = _offsetsForMulti(3);
         // Block 1 is the second directory entry (index 1)
-        final block1TypeOffset = offsets['directory']! + 1 * 65;
+        final block1TypeOffset =
+            offsets['directory']! + 1 * ZegelFormat.blockDirectoryEntrySize;
         expect(redactedBytes[block1TypeOffset],
             equals(ZegelFormat.blockRedacted));
       });
@@ -115,9 +119,10 @@ void main() {
 
         // Read original block 1 hash from directory
         final offsets = _offsetsForMulti(3);
-        final block1HashOffset = offsets['directory']! + 1 * 65 + 1;
-        final originalHash =
-            Uint8List.fromList(fileBytes.sublist(block1HashOffset, block1HashOffset + 32));
+        final block1HashOffset =
+            offsets['directory']! + 1 * ZegelFormat.blockDirectoryEntrySize + 1;
+        final originalHash = Uint8List.fromList(
+            fileBytes.sublist(block1HashOffset, block1HashOffset + 32));
 
         // Redact block 1
         final redactedBytes =
@@ -155,7 +160,7 @@ void main() {
         final redactedBytes =
             Redaction.redactBlocks(fileBytes, masterKey, [1]);
 
-        final inspection = ZegelReader().inspect(redactedBytes);
+        final inspection = const ZegelReader().inspect(redactedBytes);
         expect(
           inspection.flags & ZegelFormat.flagHasRedactions,
           isNonZero,
@@ -166,7 +171,7 @@ void main() {
       test('original file does not have HAS_REDACTIONS flag', () {
         final fileBytes = _createThreeBlockFile(masterKey);
 
-        final inspection = ZegelReader().inspect(fileBytes);
+        final inspection = const ZegelReader().inspect(fileBytes);
         expect(
           inspection.flags & ZegelFormat.flagHasRedactions,
           equals(0),
@@ -182,7 +187,8 @@ void main() {
             Redaction.redactBlocks(fileBytes, masterKey, [1]);
 
         // Verify the redacted file is valid first
-        final validResult = ZegelReader().verify(redactedBytes, masterKey);
+        final validResult =
+            const ZegelReader().verify(redactedBytes, masterKey);
         expect(validResult.valid, isTrue);
 
         // Now tamper with block 0's ciphertext
@@ -192,8 +198,9 @@ void main() {
         final tampered = Uint8List.fromList(redactedBytes);
         tampered[blockDataStart] ^= 0x01;
 
+        // Tampered file should fail verification (throws ZegelTamperedException)
         expect(
-          () => ZegelReader().verify(tampered, masterKey),
+          () => const ZegelReader().verify(tampered, masterKey),
           throwsA(isA<ZegelTamperedException>()),
           reason:
               'Tampering with non-redacted block should fail verification',
@@ -207,7 +214,8 @@ void main() {
         final redactedBytes =
             Redaction.redactBlocks(fileBytes, masterKey, [0, 2]);
 
-        final result = ZegelReader().verify(redactedBytes, masterKey);
+        final result =
+            const ZegelReader().verify(redactedBytes, masterKey);
         expect(result.valid, isTrue);
 
         final offsets = _offsetsForMulti(3);
@@ -215,10 +223,14 @@ void main() {
         expect(redactedBytes[offsets['directory']!],
             equals(ZegelFormat.blockRedacted));
         // Block 1 should still be CONTENT
-        expect(redactedBytes[offsets['directory']! + 65],
+        expect(
+            redactedBytes[offsets['directory']! +
+                ZegelFormat.blockDirectoryEntrySize],
             equals(ZegelFormat.blockContent));
         // Block 2 should be REDACTED
-        expect(redactedBytes[offsets['directory']! + 130],
+        expect(
+            redactedBytes[offsets['directory']! +
+                2 * ZegelFormat.blockDirectoryEntrySize],
             equals(ZegelFormat.blockRedacted));
       });
 
@@ -228,14 +240,12 @@ void main() {
             Redaction.redactBlocks(fileBytes, masterKey, [0, 1, 2]);
 
         // Should still verify (Merkle root preserved)
-        final result = ZegelReader().verify(redactedBytes, masterKey);
+        final result =
+            const ZegelReader().verify(redactedBytes, masterKey);
         expect(result.valid, isTrue);
 
-        // Extract should show all blocks as redacted
-        final extractResult =
-            ZegelReader().verify(redactedBytes, masterKey);
-        expect(extractResult.valid, isTrue);
-        expect(extractResult.redactedBlocks, containsAll([0, 1, 2]));
+        // All blocks should be marked as redacted
+        expect(result.redactedBlocks, containsAll([0, 1, 2]));
       });
     });
 
@@ -260,17 +270,15 @@ void main() {
         final redactedBytes =
             Redaction.redactBlocks(fileBytes, masterKey, [1]);
 
-        final result = ZegelReader().verify(redactedBytes, masterKey);
+        final result =
+            const ZegelReader().verify(redactedBytes, masterKey);
         expect(result.valid, isTrue);
 
-        final extractResult =
-            ZegelReader().verify(redactedBytes, masterKey);
-        expect(extractResult.valid, isTrue);
         // Metadata should still be accessible
-        expect(extractResult.metadata, isNotNull);
-        expect(extractResult.metadata!['sealed_by'], equals('test'));
+        expect(result.metadata, isNotNull);
+        expect(result.metadata!['sealed_by'], equals('test'));
         // Block 1 should be marked as redacted
-        expect(extractResult.redactedBlocks, contains(1));
+        expect(result.redactedBlocks, contains(1));
       });
     });
 
@@ -282,9 +290,9 @@ void main() {
 
         // Seals should differ (ciphertext changed, flags may have changed)
         final originalSeal =
-            fileBytes.sublist(fileBytes.length - 64);
+            fileBytes.sublist(fileBytes.length - ZegelFormat.sealSize);
         final redactedSeal =
-            redactedBytes.sublist(redactedBytes.length - 64);
+            redactedBytes.sublist(redactedBytes.length - ZegelFormat.sealSize);
 
         expect(redactedSeal, isNot(equals(originalSeal)),
             reason:
@@ -303,9 +311,11 @@ void main() {
         final ct0Len =
             ByteData.sublistView(fileBytes, dirStart + 33, dirStart + 37)
                 .getUint32(0, Endian.big);
-        final ct1Len =
-            ByteData.sublistView(fileBytes, dirStart + 65 + 33, dirStart + 65 + 37)
-                .getUint32(0, Endian.big);
+        final ct1Len = ByteData.sublistView(
+                fileBytes,
+                dirStart + ZegelFormat.blockDirectoryEntrySize + 33,
+                dirStart + ZegelFormat.blockDirectoryEntrySize + 37)
+            .getUint32(0, Endian.big);
 
         final block1Start = merkleRootEnd + ct0Len;
         final block1End = block1Start + ct1Len;
