@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:zegel_app/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import '../services/file_service.dart';
@@ -38,7 +38,6 @@ class _DiscloseScreenState extends State<DiscloseScreen>
 
   // Extract tab state
   String? _extractFilePath;
-  String? _tokenFilePath;
   DisclosureToken? _loadedToken;
   bool _isExtracting = false;
   String? _extractStatus;
@@ -178,7 +177,6 @@ class _DiscloseScreenState extends State<DiscloseScreen>
       final content = await File(path).readAsString();
       final token = DisclosureToken.fromJsonString(content);
       setState(() {
-        _tokenFilePath = path;
         _loadedToken = token;
         _extractStatus = null;
         _extractIsError = false;
