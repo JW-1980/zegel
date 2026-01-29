@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:zegel_app/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import '../services/file_service.dart';
@@ -97,7 +97,6 @@ class _ExtractScreenState extends State<ExtractScreen> {
 
     try {
       final zegelService = context.read<ZegelService>();
-      final fileService = context.read<FileService>();
 
       // Use a temp path then show save dialog
       final suggestedName =
@@ -129,7 +128,7 @@ class _ExtractScreenState extends State<ExtractScreen> {
       }
 
       // The actual extraction would write the file
-      final success = await zegelService.extract(
+      await zegelService.extract(
         _filePath!,
         _hexKey,
         suggestedName,
