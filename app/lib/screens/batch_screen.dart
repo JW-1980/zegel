@@ -45,7 +45,7 @@ class _BatchScreenState extends State<BatchScreen>
         bottom: TabBar(
           controller: _tabController,
           labelColor: theme.colorScheme.onPrimary,
-          unselectedLabelColor: theme.colorScheme.onPrimary.withOpacity(0.7),
+          unselectedLabelColor: theme.colorScheme.onPrimary.withValues(alpha:0.7),
           indicatorColor: theme.colorScheme.onPrimary,
           tabs: [
             Tab(text: l10n.batchVerifyTab),

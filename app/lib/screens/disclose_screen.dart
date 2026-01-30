@@ -38,7 +38,6 @@ class _DiscloseScreenState extends State<DiscloseScreen>
 
   // Extract tab state
   String? _extractFilePath;
-  String? _tokenFilePath;
   DisclosureToken? _loadedToken;
   bool _isExtracting = false;
   String? _extractStatus;
@@ -178,7 +177,6 @@ class _DiscloseScreenState extends State<DiscloseScreen>
       final content = await File(path).readAsString();
       final token = DisclosureToken.fromJsonString(content);
       setState(() {
-        _tokenFilePath = path;
         _loadedToken = token;
         _extractStatus = null;
         _extractIsError = false;
@@ -256,7 +254,7 @@ class _DiscloseScreenState extends State<DiscloseScreen>
         bottom: TabBar(
           controller: _tabController,
           labelColor: theme.colorScheme.onPrimary,
-          unselectedLabelColor: theme.colorScheme.onPrimary.withOpacity(0.6),
+          unselectedLabelColor: theme.colorScheme.onPrimary.withValues(alpha:0.6),
           indicatorColor: theme.colorScheme.onPrimary,
           tabs: const [
             Tab(text: 'Generate Token'),
@@ -441,7 +439,7 @@ class _DiscloseScreenState extends State<DiscloseScreen>
               child: Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.red.withOpacity(0.1),
+                  color: Colors.red.withValues(alpha:0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -678,13 +676,13 @@ class _DiscloseScreenState extends State<DiscloseScreen>
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: _extractIsError
-                      ? Colors.red.withOpacity(0.1)
-                      : Colors.green.withOpacity(0.1),
+                      ? Colors.red.withValues(alpha:0.1)
+                      : Colors.green.withValues(alpha:0.1),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
                     color: _extractIsError
-                        ? Colors.red.withOpacity(0.3)
-                        : Colors.green.withOpacity(0.3),
+                        ? Colors.red.withValues(alpha:0.3)
+                        : Colors.green.withValues(alpha:0.3),
                   ),
                 ),
                 child: Row(

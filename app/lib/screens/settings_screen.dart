@@ -24,7 +24,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _isLoadingKeys = true;
   String _selectedBlockSize = '65536';
   String _defaultClassification = 'INTERNAL';
-  String _tsaUrl = '';
   bool _preserveMediaMetadata = false;
   bool _anonymousMode = false;
 
@@ -103,6 +102,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
 
     if (confirmed == true) {
+      if (!mounted) return;
       final name = nameController.text.trim();
       final key = keyController.text.trim();
 
@@ -160,6 +160,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
 
     if (confirmed == true) {
+      if (!mounted) return;
       final keyService = context.read<KeyService>();
       await keyService.deleteKey(name);
       await _loadKeys();
@@ -195,6 +196,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
 
     if (newName != null && newName.isNotEmpty && newName != oldName) {
+      if (!mounted) return;
       final keyService = context.read<KeyService>();
       await keyService.renameKey(oldName, newName);
       await _loadKeys();
@@ -475,7 +477,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       hintText: l10n.settingsTsaUrlHint,
                       border: const OutlineInputBorder(),
                     ),
-                    onChanged: (v) => setState(() => _tsaUrl = v),
+                    onChanged: (_) {},
                   ),
                 ],
               ),
@@ -543,11 +545,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ],
                   ),
                   const Divider(),
-                  _AboutRow(label: 'Application', value: 'Zegel'),
-                  _AboutRow(label: 'Version', value: '1.3.0'),
-                  _AboutRow(label: 'Format Version', value: '1.2'),
-                  _AboutRow(label: 'File Extension', value: '.zgl'),
-                  _AboutRow(label: 'MIME Type', value: 'application/x-zgl'),
+                  const _AboutRow(label: 'Application', value: 'Zegel'),
+                  const _AboutRow(label: 'Version', value: '1.3.0'),
+                  const _AboutRow(label: 'Format Version', value: '1.2'),
+                  const _AboutRow(label: 'File Extension', value: '.zgl'),
+                  const _AboutRow(label: 'MIME Type', value: 'application/x-zgl'),
                   const SizedBox(height: 8),
                   const _AboutRow(
                     label: 'Code License',

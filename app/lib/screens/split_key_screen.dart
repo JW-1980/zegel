@@ -166,7 +166,7 @@ class _SplitKeyScreenState extends State<SplitKeyScreen>
         bottom: TabBar(
           controller: _tabController,
           labelColor: theme.colorScheme.onPrimary,
-          unselectedLabelColor: theme.colorScheme.onPrimary.withOpacity(0.6),
+          unselectedLabelColor: theme.colorScheme.onPrimary.withValues(alpha:0.6),
           indicatorColor: theme.colorScheme.onPrimary,
           tabs: const [
             Tab(text: 'Split Key'),
@@ -302,7 +302,7 @@ class _SplitKeyScreenState extends State<SplitKeyScreen>
               padding: const EdgeInsets.all(12),
               margin: const EdgeInsets.only(bottom: 16),
               decoration: BoxDecoration(
-                color: Colors.red.withOpacity(0.1),
+                color: Colors.red.withValues(alpha:0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
@@ -349,7 +349,7 @@ class _SplitKeyScreenState extends State<SplitKeyScreen>
                             CircleAvatar(
                               radius: 14,
                               backgroundColor:
-                                  theme.colorScheme.primary.withOpacity(0.1),
+                                  theme.colorScheme.primary.withValues(alpha:0.1),
                               child: Text(
                                 '${index + 1}',
                                 style: TextStyle(
@@ -405,10 +405,10 @@ class _SplitKeyScreenState extends State<SplitKeyScreen>
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: Colors.orange.withOpacity(0.1),
+                        color: Colors.orange.withValues(alpha:0.1),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: Colors.orange.withOpacity(0.3),
+                          color: Colors.orange.withValues(alpha:0.3),
                         ),
                       ),
                       child: Row(
@@ -493,7 +493,7 @@ class _SplitKeyScreenState extends State<SplitKeyScreen>
                           CircleAvatar(
                             radius: 14,
                             backgroundColor:
-                                theme.colorScheme.primary.withOpacity(0.1),
+                                theme.colorScheme.primary.withValues(alpha:0.1),
                             child: Text(
                               '${index + 1}',
                               style: TextStyle(
@@ -566,7 +566,7 @@ class _SplitKeyScreenState extends State<SplitKeyScreen>
               padding: const EdgeInsets.all(12),
               margin: const EdgeInsets.only(bottom: 16),
               decoration: BoxDecoration(
-                color: Colors.red.withOpacity(0.1),
+                color: Colors.red.withValues(alpha:0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(

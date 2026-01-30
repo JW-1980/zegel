@@ -148,7 +148,7 @@ class _AuditEntryTile extends StatelessWidget {
                   Expanded(
                     child: Container(
                       width: 2,
-                      color: colorScheme.outline.withOpacity(0.3),
+                      color: colorScheme.outline.withValues(alpha: 0.3),
                     ),
                   ),
                 Container(
@@ -158,7 +158,7 @@ class _AuditEntryTile extends StatelessWidget {
                     shape: BoxShape.circle,
                     color: color,
                     border: Border.all(
-                      color: color.withOpacity(0.3),
+                      color: color.withValues(alpha: 0.3),
                       width: 3,
                     ),
                   ),
@@ -167,7 +167,7 @@ class _AuditEntryTile extends StatelessWidget {
                   Expanded(
                     child: Container(
                       width: 2,
-                      color: colorScheme.outline.withOpacity(0.3),
+                      color: colorScheme.outline.withValues(alpha: 0.3),
                     ),
                   ),
               ],
@@ -245,7 +245,7 @@ class _AuditEntryTile extends StatelessWidget {
                     style: theme.textTheme.bodySmall?.copyWith(
                       fontFamily: 'monospace',
                       fontSize: 10,
-                      color: colorScheme.onSurfaceVariant.withOpacity(0.6),
+                      color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
                     ),
                   ),
                 ],
