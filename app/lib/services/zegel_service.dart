@@ -1,3 +1,4 @@
+import 'package:zegel/zegel.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
@@ -586,15 +587,24 @@ class ZegelService {
     String authority, {
     String? caveat,
   }) async {
-    // Delegate to the zegel library.
-    throw UnimplementedError(
-      'Classify operation requires the zegel core library. '
-      'Ensure package:zegel is properly linked in pubspec.yaml.',
+    final file = File(filePath);
+    if (!await file.exists()) {
+      throw FileSystemException('File does not exist', filePath);
+    }
+
+    final metadata = Classification.createClassificationMetadata(
+      level: level,
+      authority: authority,
+      caveat: caveat,
+    );
+
+    final outputPath = '$filePath.classification.json';
+    await File(outputPath).writeAsString(
+      const JsonEncoder.withIndent('  ').convert(metadata),
     );
   }
 
   /// Declassifies a .zgl file to a lower classification level.
-  ///
   /// Optionally redacts specified blocks during declassification.
   Future<void> declassify(
     String filePath,
