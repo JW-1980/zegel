@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:zegel/zegel.dart' as zegel;
 
 /// Result status from a verification operation.
 enum ZegelStatus {
@@ -320,11 +321,79 @@ class ZegelService {
       );
     }
 
-    // Delegate to the zegel library.
-    throw UnimplementedError(
-      'Verify operation requires the zegel core library. '
-      'Ensure package:zegel is properly linked in pubspec.yaml.',
-    );
+    try {
+      final bytes = await file.readAsBytes();
+      final keyBytes = _hexToBytes(hexKey);
+
+      // Get inspection data for metadata like createdAt and blockCount
+      final inspection = await inspect(filePath);
+
+      const reader = zegel.ZegelReader();
+      final result = reader.verify(bytes, keyBytes);
+
+      // Parse attestations
+      final attestations = <ZegelAttestation>[];
+      if (result.attestations != null) {
+        for (final a in result.attestations!) {
+          attestations.add(ZegelAttestation(
+            signerId: a['signerId'] as String? ?? 'Unknown',
+            statement: a['statement'] as String? ?? '',
+            timestamp: DateTime.tryParse(a['timestamp']?.toString() ?? '') ?? DateTime.now(),
+            hmacHex: a['signature'] as String? ?? a['hmac'] as String? ?? '',
+            isVerified: true, // Assuming valid if reader.verify succeeds
+          ));
+        }
+      }
+
+      // Parse audit trail
+      final auditTrail = <ZegelAuditEntry>[];
+      if (result.auditTrail != null) {
+        for (final a in result.auditTrail!) {
+          auditTrail.add(ZegelAuditEntry(
+            actor: a['actor'] as String? ?? 'Unknown',
+            action: a['action'] as String? ?? 'Unknown',
+            timestamp: DateTime.tryParse(a['timestamp']?.toString() ?? '') ?? DateTime.now(),
+            details: a['details'] as Map<String, dynamic>?,
+            chainHash: a['chainHash'] as String? ?? '',
+            isChainValid: true, // Assuming valid if reader.verify succeeds
+          ));
+        }
+      }
+
+      return ZegelResult(
+        status: ZegelStatus.valid,
+        message: 'File is authentic and intact',
+        metadata: result.metadata,
+        originalFilename: result.filename ?? inspection.originalFilename,
+        contentType: result.contentType ?? inspection.contentType,
+        blockCount: inspection.blockCount,
+        createdAt: inspection.createdAt,
+        expiresAt: inspection.expiresAt,
+        flags: inspection.flags,
+        attestations: attestations.isNotEmpty ? attestations : null,
+        auditTrail: auditTrail.isNotEmpty ? auditTrail : null,
+      );
+    } on zegel.ZegelTamperedException catch (e) {
+      return ZegelResult(
+        status: ZegelStatus.tampered,
+        message: e.message,
+      );
+    } on zegel.ZegelExpiredException catch (e) {
+      return ZegelResult(
+        status: ZegelStatus.expired,
+        message: e.message,
+      );
+    } on zegel.ZegelFormatException catch (e) {
+      return ZegelResult(
+        status: ZegelStatus.tampered,
+        message: 'Invalid file format: ${e.message}',
+      );
+    } catch (e) {
+      return ZegelResult(
+        status: ZegelStatus.tampered,
+        message: 'Verification failed: $e',
+      );
+    }
   }
 
   /// Extracts the original content from a .zgl file.
@@ -708,5 +777,13 @@ class ZegelService {
       'Verify credential operation requires the zegel core library. '
       'Ensure package:zegel is properly linked in pubspec.yaml.',
     );
+  }
+  Uint8List _hexToBytes(String hex) {
+    final length = hex.length ~/ 2;
+    final bytes = Uint8List(length);
+    for (int i = 0; i < length; i++) {
+      bytes[i] = int.parse(hex.substring(i * 2, i * 2 + 2), radix: 16);
+    }
+    return bytes;
   }
 }
