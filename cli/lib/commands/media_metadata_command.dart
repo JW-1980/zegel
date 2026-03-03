@@ -192,7 +192,7 @@ class MediaMetadataViewCommand extends Command<int> {
     final fileBytes = Uint8List.fromList(file.readAsBytesSync());
 
     // Verify and extract the file.
-    final reader = const ZegelReader();
+    const reader = ZegelReader();
     ZegelResult result;
     try {
       result = reader.verify(fileBytes, masterKey);

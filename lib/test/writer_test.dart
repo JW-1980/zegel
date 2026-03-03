@@ -311,11 +311,11 @@ void main() {
       });
 
       test('random salt is generated when not provided', () {
-        final options1 = ZegelOptions(
+        const options1 = ZegelOptions(
           contentType: 'text/plain',
           filename: 'hello.txt',
         );
-        final options2 = ZegelOptions(
+        const options2 = ZegelOptions(
           contentType: 'text/plain',
           filename: 'hello.txt',
         );

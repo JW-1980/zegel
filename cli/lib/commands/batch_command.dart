@@ -52,13 +52,12 @@ class BatchVerifyCommand extends Command<int> {
 
     final dir = Directory(dirPath);
     if (!dir.existsSync()) {
-      stderr.writeln(Ansi.error('Error:') + ' Directory not found: $dirPath');
+      stderr.writeln('${Ansi.error('Error:')} Directory not found: $dirPath');
       return 1;
     }
 
     final key = parseKeyFromArgs(argResults!);
     final stopOnFailure = argResults!['stop-on-failure'] as bool;
-    final verbose = argResults!['verbose'] as bool;
 
     final files = dir.listSync()
         .whereType<File>()
@@ -85,7 +84,11 @@ class BatchVerifyCommand extends Command<int> {
 
     for (final r in results) {
       final success = r['success'] as bool;
-      if (success) passed++; else failed++;
+      if (success) {
+        passed++;
+      } else {
+        failed++;
+      }
       rows.add([
         r['name'] as String,
         success ? Ansi.success('VALID') : Ansi.error('FAILED'),
@@ -149,7 +152,7 @@ class BatchSealCommand extends Command<int> {
 
     final dir = Directory(dirPath);
     if (!dir.existsSync()) {
-      stderr.writeln(Ansi.error('Error:') + ' Directory not found: $dirPath');
+      stderr.writeln('${Ansi.error('Error:')} Directory not found: $dirPath');
       return 1;
     }
 

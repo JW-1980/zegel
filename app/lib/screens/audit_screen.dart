@@ -1,8 +1,9 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -82,7 +83,7 @@ class _AuditScreenState extends State<AuditScreen> {
   Future<void> _pickFile() async {
     final fileService = context.read<FileService>();
     final path = await fileService.pickFile(
-      allowedExtensions: ['zgl'],
+      type: FileType.any,
     );
     if (path != null) {
       await _setFile(path);

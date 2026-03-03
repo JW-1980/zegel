@@ -103,7 +103,7 @@ class VerifyCommand extends Command<int> {
     final quiet = argResults!['quiet'] as bool;
 
     // Create reader and verify.
-    final reader = const ZegelReader();
+    const reader = ZegelReader();
 
     try {
       final result = reader.verify(fileBytes, masterKey);
