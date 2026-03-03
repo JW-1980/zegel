@@ -1,0 +1,11 @@
+/Future<bool> verifyVersionChain(String filePath) async {/,/    );/c\
+  Future<bool> verifyVersionChain(List<String> filePaths) async {\
+    final fileBytesList = <Uint8List>[];\
+    for (final path in filePaths) {\
+      final file = File(path);\
+      if (!await file.exists()) {\
+        throw FileSystemException('File does not exist', path);\
+      }\
+      fileBytesList.add(await file.readAsBytes());\
+    }\
+    return ContentVersioning.verifyVersionChain(fileBytesList);\
