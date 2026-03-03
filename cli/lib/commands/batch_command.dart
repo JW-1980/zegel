@@ -171,21 +171,21 @@ class BatchSealCommand extends Command<int> {
     stdout.writeln('Sealing ${files.length} file(s)...');
     int sealed = 0;
 
-    for (final file in files) {
+    await Future.wait(files.map((file) async {
       final name = file.path.split(Platform.pathSeparator).last;
-      final content = Uint8List.fromList(file.readAsBytesSync());
+      final content = Uint8List.fromList(await file.readAsBytes());
       final writer = ZegelWriter(key, ZegelOptions(
         contentType: contentType ?? 'application/octet-stream',
         filename: name,
         compress: compress,
         enableKeyCommitment: true,
       ));
-      final sealedBytes = writer.seal(content);
-      File('${outputDir.path}${Platform.pathSeparator}$name.zgl')
-          .writeAsBytesSync(sealedBytes);
+      final sealedBytes = await Future.microtask(() => writer.seal(content));
+      await File('${outputDir.path}${Platform.pathSeparator}$name.zgl')
+          .writeAsBytes(sealedBytes);
       stdout.writeln('  ${Ansi.success("✓")} $name -> $name.zgl');
-      sealed++;
-    }
+    }));
+    sealed = files.length;
 
     stdout.writeln();
     stdout.writeln('${Ansi.success("$sealed file(s) sealed")} to $outputPath');
