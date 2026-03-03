@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:zegel/zegel.dart' as zegel;
 
 /// Result status from a verification operation.
 enum ZegelStatus {
@@ -199,10 +200,8 @@ class DisclosureToken {
   Map<String, dynamic> toJson() => {
         'version': version,
         'merkle_root': merkleRoot,
-        'block_keys': blockKeys
-            .map((k, v) => MapEntry(k.toString(), v)),
-        'created_at':
-            createdAt.millisecondsSinceEpoch ~/ 1000,
+        'block_keys': blockKeys.map((k, v) => MapEntry(k.toString(), v)),
+        'created_at': createdAt.millisecondsSinceEpoch ~/ 1000,
       };
 
   factory DisclosureToken.fromJson(Map<String, dynamic> json) {
@@ -352,10 +351,50 @@ class ZegelService {
     }
 
     // Delegate to the zegel library.
-    throw UnimplementedError(
-      'Inspect operation requires the zegel core library. '
-      'Ensure package:zegel is properly linked in pubspec.yaml.',
-    );
+    try {
+      final bytes = await file.readAsBytes();
+      const zegelReader = zegel.ZegelReader();
+      final inspection = zegelReader.inspect(bytes);
+
+      final versionParts = inspection.version.split('.');
+      final versionMajor =
+          versionParts.isNotEmpty ? int.tryParse(versionParts[0]) ?? 1 : 1;
+      final versionMinor =
+          versionParts.length > 1 ? int.tryParse(versionParts[1]) ?? 2 : 2;
+
+      return ZegelInspection(
+        versionMajor: versionMajor,
+        versionMinor: versionMinor,
+        flags: inspection.flags,
+        createdAt: DateTime.fromMillisecondsSinceEpoch(
+            inspection.timestamp * 1000,
+            isUtc: true),
+        contentType: inspection.contentType ?? 'application/octet-stream',
+        originalFilename: inspection.filename ?? 'unknown',
+        blockCount: inspection.blockCount,
+        expiresAt: inspection.expirationTimestamp != null
+            ? DateTime.fromMillisecondsSinceEpoch(
+                inspection.expirationTimestamp! * 1000,
+                isUtc: true)
+            : null,
+        publicMetadata: inspection.publicMetadata,
+        hasMetadata: inspection.flags & zegel.ZegelFormat.flagHasMetadata != 0,
+        isCompressed: inspection.flags & zegel.ZegelFormat.flagCompressed != 0,
+        hasExpiration:
+            inspection.flags & zegel.ZegelFormat.flagHasExpiration != 0,
+        hasCanary: inspection.flags & zegel.ZegelFormat.flagHasCanary != 0,
+        hasRedactions:
+            inspection.flags & zegel.ZegelFormat.flagHasRedactions != 0,
+        isSplitKey: inspection.flags & zegel.ZegelFormat.flagSplitKey != 0,
+        hasSelectiveDisclosure:
+            inspection.flags & zegel.ZegelFormat.flagSelectiveDisclosure != 0,
+        isVersioned: inspection.flags & zegel.ZegelFormat.flagVersioned != 0,
+        splitKeyThreshold: inspection.splitKeyParams?['threshold'],
+        splitKeyTotal: inspection.splitKeyParams?['total'],
+      );
+    } catch (e) {
+      throw FormatException('Failed to inspect file: $e');
+    }
   }
 
   /// Redacts the specified blocks from a .zgl file.
