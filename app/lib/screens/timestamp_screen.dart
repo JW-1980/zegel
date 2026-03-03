@@ -1,9 +1,10 @@
+import 'dart:typed_data';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
-import 'package:zegel/zegel.dart';
+import 'package:zegel/zegel.dart' hide ZegelInspection, ZegelResult, ZegelBlockInfo, DisclosureToken;
 
 import '../services/file_service.dart';
 import '../widgets/key_input.dart';
@@ -210,11 +211,11 @@ class _TimestampScreenState extends State<TimestampScreen>
     if (flags & ZegelFormat.flagVersioned != 0) cursor += 32;
     if (flags & ZegelFormat.flagHasPublicMetadata != 0) {
       final pubMetaLen = bd.getUint32(cursor, Endian.big);
-      cursor += 4 + pubMetaLen;
+      cursor += (4 + pubMetaLen).toInt();
     }
 
     // Skip block directory
-    cursor += blockCount * ZegelFormat.blockDirectoryEntrySize;
+    cursor += (blockCount * ZegelFormat.blockDirectoryEntrySize).toInt();
 
     // Merkle root is here (32 bytes)
     return Uint8List.fromList(

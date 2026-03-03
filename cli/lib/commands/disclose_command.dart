@@ -220,7 +220,7 @@ class DiscloseCommand extends Command<int> {
 
     // Write token as JSON.
     final jsonString = const JsonEncoder.withIndent('  ').convert(token);
-    final outputFile = File(outputPath!);
+    final outputFile = File(outputPath);
     outputFile.writeAsStringSync('$jsonString\n');
 
     // Print success message.

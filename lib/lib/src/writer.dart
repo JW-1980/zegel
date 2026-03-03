@@ -424,7 +424,7 @@ class ZegelWriter {
             ? Uint8List.fromList(utf8.encode(options.filename!))
             : Uint8List(0);
     if (fnBytes.length > ZegelFormat.maxFilenameLength) {
-      throw ZegelFormatException(
+      throw const ZegelFormatException(
         'Filename exceeds maximum of ${ZegelFormat.maxFilenameLength} bytes',
       );
     }

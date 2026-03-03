@@ -1,12 +1,13 @@
+import 'dart:typed_data';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
-import 'package:zegel/zegel.dart';
+import 'package:zegel/zegel.dart' hide ZegelResult, ZegelBlockInfo, DisclosureToken;
 
 import '../services/file_service.dart';
-import '../services/zegel_service.dart';
+import '../services/zegel_service.dart' hide ZegelInspection;
 import '../widgets/key_input.dart';
 
 /// Screen for viewing media metadata from sealed image/video files.

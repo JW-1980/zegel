@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
-import "package:zegel/zegel.dart";
+import 'package:zegel/zegel.dart' hide ZegelInspection, ZegelResult;
 
 
 /// Result status from a verification operation.

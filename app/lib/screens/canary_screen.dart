@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
-import 'package:zegel/zegel.dart';
+import 'package:zegel/zegel.dart' hide ZegelInspection, ZegelResult, ZegelBlockInfo, DisclosureToken;
 
 import '../services/file_service.dart';
 import '../services/key_service.dart';
@@ -100,9 +100,7 @@ class _CanaryScreenState extends State<CanaryScreen>
 
   Future<void> _pickIdentifyFile() async {
     final fileService = context.read<FileService>();
-    final path = await fileService.pickFile(
-      allowedExtensions: ['zgl'],
-    );
+    final path = await fileService.pickZegelFile();
     if (path != null) {
       setState(() {
         _identifyFilePath = path;
