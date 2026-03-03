@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:zegel/zegel.dart' as zegel;
 
 /// Result status from a verification operation.
 enum ZegelStatus {
@@ -404,11 +405,32 @@ class ZegelService {
       throw ArgumentError('At least one share is required.');
     }
 
-    // Delegate to the zegel library.
-    throw UnimplementedError(
-      'Reconstruct key operation requires the zegel core library. '
-      'Ensure package:zegel is properly linked in pubspec.yaml.',
-    );
+    try {
+      final List<Uint8List> shareBytesList = [];
+      for (final shareHex in shares) {
+        final hexStr = shareHex.trim();
+        if (hexStr.length % 2 != 0) {
+          throw FormatException('Invalid hex string length: ${hexStr.length}');
+        }
+        final bytes = Uint8List(hexStr.length ~/ 2);
+        for (int i = 0; i < bytes.length; i++) {
+          final byteStr = hexStr.substring(i * 2, i * 2 + 2);
+          bytes[i] = int.parse(byteStr, radix: 16);
+        }
+        shareBytesList.add(bytes);
+      }
+
+      final threshold = shareBytesList.length;
+      final secret = zegel.ShamirSecretSharing.reconstruct(shareBytesList, threshold);
+
+      final buffer = StringBuffer();
+      for (final byte in secret) {
+        buffer.write(byte.toRadixString(16).padLeft(2, '0'));
+      }
+      return buffer.toString();
+    } catch (e) {
+      throw ArgumentError('Failed to reconstruct key: $e');
+    }
   }
 
   /// Creates an attestation (co-signature) for a .zgl file.
