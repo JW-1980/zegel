@@ -304,6 +304,7 @@ class ZegelReader {
     final List<int> redactedBlocks = <int>[];
     final List<int> disclosedIndices = <int>[];
 
+
     for (int i = 0; i < h.blockCount; i++) {
       final _DirEntry entry = h.directory[i];
       final Uint8List ciphertext = Uint8List.sublistView(
@@ -496,6 +497,7 @@ class ZegelReader {
         <Map<String, dynamic>>[];
     final List<int> redactedBlocks = <int>[];
     final List<int> disclosedIndices = <int>[];
+
 
     for (int i = 0; i < h.blockCount; i++) {
       final _DirEntry entry = h.directory[i];
