@@ -98,7 +98,7 @@ class VerifyCommand extends Command<int> {
       );
     }
 
-    final fileBytes = Uint8List.fromList(file.readAsBytesSync());
+    final fileBytes = await file.readAsBytes();
     final verbose = argResults!['verbose'] as bool;
     final quiet = argResults!['quiet'] as bool;
 
