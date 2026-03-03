@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import "package:zegel/zegel.dart";
+
 
 /// Result status from a verification operation.
 enum ZegelStatus {
@@ -450,11 +452,22 @@ class ZegelService {
     DisclosureToken token,
     String outputPath,
   ) async {
-    // Delegate to the zegel library.
-    throw UnimplementedError(
-      'Token extraction requires the zegel core library. '
-      'Ensure package:zegel is properly linked in pubspec.yaml.',
-    );
+    final file = File(filePath);
+    if (!await file.exists()) {
+      throw FileSystemException('File does not exist', filePath);
+    }
+
+    final bytes = await file.readAsBytes();
+    final reader = const ZegelReader();
+    final result = reader.extractWithToken(bytes, token.toJson());
+
+    final content = result.content;
+    if (content != null) {
+      final outFile = File(outputPath);
+      await outFile.writeAsBytes(content);
+      return content;
+    }
+    return Uint8List(0);
   }
 
   /// Lists all blocks in a .zgl file with their type and metadata.
