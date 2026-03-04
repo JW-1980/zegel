@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:args/command_runner.dart';
 import 'package:zegel/zegel.dart';
@@ -49,7 +48,7 @@ class ProvenanceVerifyCommand extends Command<int> {
     final key = parseKeyFromArgs(argResults!);
     final provFile = File(provPath);
     if (!provFile.existsSync()) {
-      stderr.writeln(Ansi.error('Error:') + ' Provenance file not found: $provPath');
+      stderr.writeln("${Ansi.error('Error:')} Provenance file not found: $provPath");
       return 1;
     }
 

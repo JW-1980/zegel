@@ -55,7 +55,7 @@ class ManifestCreateCommand extends Command<int> {
     final key = parseKeyFromArgs(argResults!);
     final dir = Directory(dirPath);
     if (!dir.existsSync()) {
-      stderr.writeln(Ansi.error('Error:') + ' Directory not found: $dirPath');
+      stderr.writeln('${Ansi.error('Error:')} Directory not found: $dirPath');
       return 1;
     }
 
@@ -82,7 +82,7 @@ class ManifestCreateCommand extends Command<int> {
       const JsonEncoder.withIndent('  ').convert(manifest),
     );
 
-    stdout.writeln(Ansi.success('Manifest created') + ' with ${entries.length} file(s)');
+    stdout.writeln("${Ansi.success('Manifest created')} with ${entries.length} file(s)");
     stdout.writeln('  Output: $outputPath');
     return 0;
   }
@@ -130,7 +130,7 @@ class ManifestVerifyCommand extends Command<int> {
     final key = parseKeyFromArgs(argResults!);
     final manifestFile = File(manifestPath);
     if (!manifestFile.existsSync()) {
-      stderr.writeln(Ansi.error('Error:') + ' Manifest not found: $manifestPath');
+      stderr.writeln("${Ansi.error('Error:')} Manifest not found: $manifestPath");
       return 1;
     }
 
@@ -138,10 +138,10 @@ class ManifestVerifyCommand extends Command<int> {
 
     // Verify manifest signature
     if (!ZegelManifest.verify(manifest, key)) {
-      stderr.writeln(Ansi.error('Error:') + ' Manifest signature is invalid');
+      stderr.writeln("${Ansi.error('Error:')} Manifest signature is invalid");
       return 1;
     }
-    stdout.writeln(Ansi.success('✓') + ' Manifest signature valid');
+    stdout.writeln("${Ansi.success('✓')} Manifest signature valid");
 
     // Check files
     final dir = Directory(dirPath);

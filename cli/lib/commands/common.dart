@@ -329,8 +329,7 @@ String formatFileSize(int bytes) {
 
 /// Formats a DateTime as an ISO 8601 string.
 String formatTimestamp(DateTime dt) {
-  return dt.toUtc().toIso8601String().replaceFirst('T', ' ').split('.').first +
-      ' UTC';
+  return '${dt.toUtc().toIso8601String().replaceFirst('T', ' ').split('.').first} UTC';
 }
 
 /// Parses a date string in YYYY-MM-DD format to a DateTime.
