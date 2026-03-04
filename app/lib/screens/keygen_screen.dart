@@ -213,7 +213,7 @@ class _KeygenScreenState extends State<KeygenScreen> {
                       text: 'Consider printing and storing in a safe',
                     ),
                     _SecurityTip(
-                      icon: Icons.share_off,
+                      icon: Icons.phonelink_erase,
                       text: 'Never share your key via email or messaging',
                     ),
                   ],

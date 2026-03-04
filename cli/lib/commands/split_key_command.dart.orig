@@ -112,7 +112,7 @@ class SplitKeyCommand extends Command<int> {
     }
 
     // Create output directory if it does not exist.
-    final dir = Directory(outputDir);
+    final dir = Directory(outputDir!);
     if (!dir.existsSync()) {
       dir.createSync(recursive: true);
     }

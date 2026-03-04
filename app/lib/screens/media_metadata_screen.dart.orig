@@ -64,7 +64,6 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
       return;
     }
 
-    final zegelService = context.read<ZegelService>();
     setState(() {
       _isLoading = true;
       _metadata = null;

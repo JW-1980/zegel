@@ -231,7 +231,7 @@ class RedactCommand extends Command<int> {
     );
 
     // Write redacted file.
-    final outputFile = File(outputPath);
+    final outputFile = File(outputPath!);
     outputFile.writeAsBytesSync(redactedBytes);
 
     // Print success message.

@@ -100,9 +100,7 @@ class _CanaryScreenState extends State<CanaryScreen>
 
   Future<void> _pickIdentifyFile() async {
     final fileService = context.read<FileService>();
-    final path = await fileService.pickFile(
-      allowedExtensions: ['zgl'],
-    );
+    final path = await fileService.pickZegelFile();
     if (path != null) {
       setState(() {
         _identifyFilePath = path;

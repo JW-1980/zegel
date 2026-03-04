@@ -58,7 +58,6 @@ class BatchVerifyCommand extends Command<int> {
 
     final key = parseKeyFromArgs(argResults!);
     final stopOnFailure = argResults!['stop-on-failure'] as bool;
-    final verbose = argResults!['verbose'] as bool;
 
     final files = dir.listSync()
         .whereType<File>()

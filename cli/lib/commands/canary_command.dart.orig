@@ -534,8 +534,9 @@ class CanaryIdentifyCommand extends Command<int> {
 
     // Verify the file first.
     final reader = const ZegelReader();
+    ZegelResult result;
     try {
-      reader.verify(fileBytes, masterKey);
+      result = reader.verify(fileBytes, masterKey);
     } on ZegelException catch (e) {
       exitError('File verification failed: ${e.message}');
     }

@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:zegel/zegel.dart' hide ZegelInspection;
+import 'package:zegel/zegel.dart' hide ZegelInspection, ZegelStatus, ZegelResult, ZegelAttestation, ZegelAuditEntry;
 
 /// Result status from a verification operation.
 enum ZegelStatus {

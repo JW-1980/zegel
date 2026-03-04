@@ -1,0 +1,11 @@
+--- cli/lib/commands/redact_command.dart
++++ cli/lib/commands/redact_command.dart
+@@ -231,7 +231,7 @@
+       return 1;
+     }
+
+-    final modifiedBytes = Redaction.redactBlocks(file.readAsBytesSync(), key!, blockIndices);
++    final modifiedBytes = Redaction.redactBlocks(file.readAsBytesSync(), key, blockIndices);
+
+     if (inplace) {
+       file.writeAsBytesSync(modifiedBytes);
