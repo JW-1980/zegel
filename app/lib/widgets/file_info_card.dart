@@ -118,8 +118,7 @@ class FileInfoCard extends StatelessWidget {
               ],
             ),
             const Divider(),
-            if (filename != null)
-              _InfoRow(label: 'Filename', value: filename!),
+            if (filename != null) _InfoRow(label: 'Filename', value: filename!),
             if (fileSize != null)
               _InfoRow(label: 'Size', value: _formatFileSize(fileSize!)),
             if (contentType != null)
@@ -195,8 +194,7 @@ class FileInfoCard extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Colors.amber.withOpacity(0.15),
                       borderRadius: BorderRadius.circular(4),
-                      border:
-                          Border.all(color: Colors.amber.withOpacity(0.5)),
+                      border: Border.all(color: Colors.amber.withOpacity(0.5)),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,

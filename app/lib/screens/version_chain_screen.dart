@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:zegel/zegel.dart';
+import 'dart:typed_data';
 
 import '../services/file_service.dart';
 
@@ -90,7 +91,7 @@ class _VersionChainScreenState extends State<VersionChainScreen> {
 
     try {
       final fileService = context.read<FileService>();
-      final reader = const ZegelReader();
+      const reader = ZegelReader();
       final versions = <_VersionEntry>[];
       final fileBytesList = <Uint8List>[];
 
@@ -116,8 +117,8 @@ class _VersionChainScreenState extends State<VersionChainScreen> {
         Map<String, dynamic>? versionInfo;
         if (inspection.publicMetadata != null &&
             inspection.publicMetadata!.containsKey('version_info')) {
-          versionInfo =
-              inspection.publicMetadata!['version_info'] as Map<String, dynamic>?;
+          versionInfo = inspection.publicMetadata!['version_info']
+              as Map<String, dynamic>?;
         }
 
         versions.add(_VersionEntry(
@@ -183,7 +184,7 @@ class _VersionChainScreenState extends State<VersionChainScreen> {
       final filenameLen = bd.getUint16(84, Endian.big);
       final blockCountOffset = 86 + filenameLen + ZegelFormat.saltSize;
 
-      int cursor = blockCountOffset + 4;
+      int cursor = (blockCountOffset + 4).toInt();
       if (flags & ZegelFormat.flagPasswordDerived != 0) cursor += 8;
       if (flags & ZegelFormat.flagHasExpiration != 0) cursor += 8;
       if (flags & ZegelFormat.flagHasCanary != 0) cursor += 32;
@@ -316,7 +317,8 @@ class _VersionChainScreenState extends State<VersionChainScreen> {
                           return ListTile(
                             key: ValueKey(path),
                             leading: CircleAvatar(
-                              backgroundColor: theme.colorScheme.primaryContainer,
+                              backgroundColor:
+                                  theme.colorScheme.primaryContainer,
                               child: Text(
                                 '${index + 1}',
                                 style: TextStyle(
@@ -329,7 +331,9 @@ class _VersionChainScreenState extends State<VersionChainScreen> {
                               overflow: TextOverflow.ellipsis,
                             ),
                             subtitle: Text(
-                              index == 0 ? 'First version' : 'Version ${index + 1}',
+                              index == 0
+                                  ? 'First version'
+                                  : 'Version ${index + 1}',
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: theme.colorScheme.onSurfaceVariant,
                               ),
@@ -461,7 +465,8 @@ class _VersionChainScreenState extends State<VersionChainScreen> {
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.timeline, color: theme.colorScheme.primary),
+                          Icon(Icons.timeline,
+                              color: theme.colorScheme.primary),
                           const SizedBox(width: 8),
                           Text(
                             'Version Timeline',
@@ -506,9 +511,7 @@ class _VersionChainScreenState extends State<VersionChainScreen> {
                       Container(
                         width: 2,
                         height: 20,
-                        color: version.isChainValid
-                            ? Colors.green
-                            : Colors.red,
+                        color: version.isChainValid ? Colors.green : Colors.red,
                       ),
                     Container(
                       width: 24,

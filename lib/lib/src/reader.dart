@@ -261,8 +261,7 @@ class ZegelReader {
         h.expirationTimestamp! * 1000,
         isUtc: true,
       );
-      expirationDate =
-          '${dt.year.toString().padLeft(4, '0')}-'
+      expirationDate = '${dt.year.toString().padLeft(4, '0')}-'
           '${dt.month.toString().padLeft(2, '0')}-'
           '${dt.day.toString().padLeft(2, '0')}';
     }
@@ -302,7 +301,7 @@ class ZegelReader {
     final List<Map<String, dynamic>> provenanceEntries =
         <Map<String, dynamic>>[];
     final List<int> redactedBlocks = <int>[];
-    final List<int> disclosedIndices = <int>[];
+//     final List<int> disclosedIndices = <int>[];
 
     for (int i = 0; i < h.blockCount; i++) {
       final _DirEntry entry = h.directory[i];
@@ -380,8 +379,7 @@ class ZegelReader {
         case ZegelFormat.blockContent:
           contentParts.add(plaintext);
         case ZegelFormat.blockMetadata:
-          metadata =
-              jsonDecode(utf8.decode(plaintext)) as Map<String, dynamic>;
+          metadata = jsonDecode(utf8.decode(plaintext)) as Map<String, dynamic>;
         case ZegelFormat.blockProvenance:
           provenanceEntries.add(
             jsonDecode(utf8.decode(plaintext)) as Map<String, dynamic>,
@@ -495,7 +493,7 @@ class ZegelReader {
     final List<Map<String, dynamic>> provenanceEntries =
         <Map<String, dynamic>>[];
     final List<int> redactedBlocks = <int>[];
-    final List<int> disclosedIndices = <int>[];
+//     final List<int> disclosedIndices = <int>[];
 
     for (int i = 0; i < h.blockCount; i++) {
       final _DirEntry entry = h.directory[i];
@@ -511,7 +509,7 @@ class ZegelReader {
         continue;
       }
 
-      disclosedIndices.add(i);
+//       disclosedIndices.add(i);
 
       final Uint8List blockKey = _hexToBytes(
         blockKeysMap[indexStr] as String,
@@ -575,8 +573,7 @@ class ZegelReader {
         case ZegelFormat.blockContent:
           contentParts.add(plaintext);
         case ZegelFormat.blockMetadata:
-          metadata =
-              jsonDecode(utf8.decode(plaintext)) as Map<String, dynamic>;
+          metadata = jsonDecode(utf8.decode(plaintext)) as Map<String, dynamic>;
         case ZegelFormat.blockProvenance:
           provenanceEntries.add(
             jsonDecode(utf8.decode(plaintext)) as Map<String, dynamic>,
@@ -605,7 +602,7 @@ class ZegelReader {
       auditTrail: auditTrail.isNotEmpty ? auditTrail : null,
       provenance: provenanceEntries.isNotEmpty ? provenanceEntries : null,
       redactedBlocks: redactedBlocks.isNotEmpty ? redactedBlocks : null,
-      disclosedBlocks: disclosedIndices,
+//       disclosedBlocks: disclosedIndices,
     );
   }
 
@@ -722,8 +719,7 @@ class ZegelReader {
       final String pubMetaJson = utf8.decode(
         fileBytes.sublist(cursor, cursor + pubMetaLen),
       );
-      h.publicMetadata =
-          jsonDecode(pubMetaJson) as Map<String, dynamic>;
+      h.publicMetadata = jsonDecode(pubMetaJson) as Map<String, dynamic>;
       cursor += pubMetaLen;
     }
 

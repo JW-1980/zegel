@@ -99,8 +99,7 @@ class _ExtractScreenState extends State<ExtractScreen> {
       final zegelService = context.read<ZegelService>();
 
       // Use a temp path then show save dialog
-      final suggestedName =
-          _inspection?.originalFilename ?? 'extracted_file';
+      final suggestedName = _inspection?.originalFilename ?? 'extracted_file';
 
       // First verify and extract to bytes via the zegel service
       final result = await zegelService.verify(_filePath!, _hexKey);

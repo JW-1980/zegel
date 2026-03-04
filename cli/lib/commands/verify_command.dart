@@ -103,14 +103,13 @@ class VerifyCommand extends Command<int> {
     final quiet = argResults!['quiet'] as bool;
 
     // Create reader and verify.
-    final reader = const ZegelReader();
+    const reader = ZegelReader();
 
     try {
       final result = reader.verify(fileBytes, masterKey);
 
       // Check attestation policy if specified.
-      final policyStr =
-          argResults!['check-attestation-policy'] as String?;
+      final policyStr = argResults!['check-attestation-policy'] as String?;
       if (policyStr != null && policyStr.isNotEmpty) {
         final requiredRoles = policyStr
             .split(',')

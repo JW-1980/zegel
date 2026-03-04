@@ -68,6 +68,7 @@ class _AttestScreenState extends State<AttestScreen> {
   Future<void> _pickFile() async {
     final fileService = context.read<FileService>();
     final path = await fileService.pickFile(
+      type: FileType.custom,
       allowedExtensions: ['zgl'],
     );
     if (path != null) {
@@ -364,7 +365,7 @@ class _AttestScreenState extends State<AttestScreen> {
                     ),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<String>(
-                      value: _selectedRole,
+                      initialValue: _selectedRole,
                       decoration: const InputDecoration(
                         labelText: 'Role',
                         prefixIcon: Icon(Icons.badge),

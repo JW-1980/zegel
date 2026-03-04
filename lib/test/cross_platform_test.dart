@@ -70,8 +70,8 @@ void main() {
       });
 
       test('flags are 0x0000', () {
-        final flags = ByteData.sublistView(fileBytes, 10, 12)
-            .getUint16(0, Endian.big);
+        final flags =
+            ByteData.sublistView(fileBytes, 10, 12).getUint16(0, Endian.big);
         expect(flags, equals(0x0000));
       });
 
@@ -87,8 +87,8 @@ void main() {
       });
 
       test('filename length is 9 (big-endian)', () {
-        final fnLen = ByteData.sublistView(fileBytes, 84, 86)
-            .getUint16(0, Endian.big);
+        final fnLen =
+            ByteData.sublistView(fileBytes, 84, 86).getUint16(0, Endian.big);
         expect(fnLen, equals(9));
       });
 
@@ -103,8 +103,8 @@ void main() {
       });
 
       test('block count is 1', () {
-        final bc = ByteData.sublistView(fileBytes, 127, 131)
-            .getUint32(0, Endian.big);
+        final bc =
+            ByteData.sublistView(fileBytes, 127, 131).getUint32(0, Endian.big);
         expect(bc, equals(1));
       });
 
@@ -218,8 +218,7 @@ void main() {
           filename: 'hello.txt',
           salt: _zeroSalt(),
         );
-        final fileBytes =
-            ZegelWriter(masterKey, options).seal(content);
+        final fileBytes = ZegelWriter(masterKey, options).seal(content);
 
         final seal = fileBytes.sublist(fileBytes.length - 64);
         expect(seal.length, equals(64));
@@ -237,8 +236,7 @@ void main() {
           filename: 'hello.txt',
           salt: _zeroSalt(),
         );
-        final fileBytes =
-            ZegelWriter(masterKey, options).seal(content);
+        final fileBytes = ZegelWriter(masterKey, options).seal(content);
 
         // Offset 0-7: Magic (8 bytes)
         expect(fileBytes.sublist(0, 8), equals(ZegelFormat.magic));
@@ -250,13 +248,13 @@ void main() {
         expect(fileBytes[9], equals(2));
 
         // Offset 10-11: Flags (uint16 BE)
-        final flags = ByteData.sublistView(fileBytes, 10, 12)
-            .getUint16(0, Endian.big);
+        final flags =
+            ByteData.sublistView(fileBytes, 10, 12).getUint16(0, Endian.big);
         expect(flags, equals(0));
 
         // Offset 12-19: Timestamp (uint64 BE)
-        final ts = ByteData.sublistView(fileBytes, 12, 20)
-            .getUint64(0, Endian.big);
+        final ts =
+            ByteData.sublistView(fileBytes, 12, 20).getUint64(0, Endian.big);
         expect(ts, greaterThan(0));
 
         // Offset 20-83: Content-Type (64 bytes, null-padded)
@@ -264,8 +262,8 @@ void main() {
         expect(ctField.length, equals(64));
 
         // Offset 84-85: Filename length (uint16 BE)
-        final fnLen = ByteData.sublistView(fileBytes, 84, 86)
-            .getUint16(0, Endian.big);
+        final fnLen =
+            ByteData.sublistView(fileBytes, 84, 86).getUint16(0, Endian.big);
         expect(fnLen, equals(9)); // "hello.txt"
 
         // Offset 86-94: Filename
@@ -276,8 +274,8 @@ void main() {
         expect(fileBytes.sublist(95, 127), equals(_zeroSalt()));
 
         // Offset 127-130: Block count (uint32 BE)
-        final blockCount = ByteData.sublistView(fileBytes, 127, 131)
-            .getUint32(0, Endian.big);
+        final blockCount =
+            ByteData.sublistView(fileBytes, 127, 131).getUint32(0, Endian.big);
         expect(blockCount, equals(1));
 
         // Offset 131: Start of block directory
@@ -289,8 +287,8 @@ void main() {
         expect(blockHash.length, equals(32));
 
         // Ciphertext length at 164-167 (uint32 BE)
-        final ctLen = ByteData.sublistView(fileBytes, 164, 168)
-            .getUint32(0, Endian.big);
+        final ctLen =
+            ByteData.sublistView(fileBytes, 164, 168).getUint32(0, Endian.big);
         expect(ctLen, greaterThan(0));
 
         // IV at 168-179 (12 bytes)
@@ -335,10 +333,12 @@ void main() {
       test('specific GF(256) inverse values', () {
         // Known inverses in GF(256) with 0x11B
         expect(ShamirSecretSharing.gfInverse(1), equals(1));
-        expect(ShamirSecretSharing.gfMultiply(
-            2, ShamirSecretSharing.gfInverse(2)), equals(1));
-        expect(ShamirSecretSharing.gfMultiply(
-            3, ShamirSecretSharing.gfInverse(3)), equals(1));
+        expect(
+            ShamirSecretSharing.gfMultiply(2, ShamirSecretSharing.gfInverse(2)),
+            equals(1));
+        expect(
+            ShamirSecretSharing.gfMultiply(3, ShamirSecretSharing.gfInverse(3)),
+            equals(1));
       });
     });
 
@@ -385,7 +385,8 @@ void main() {
         // mac = HMAC-SHA256(key, recipient_id || pack_uint32_be(block_index))
         final message = Uint8List(recipientId.length + 4);
         message.setAll(0, recipientId);
-        ByteData.sublistView(message, recipientId.length, recipientId.length + 4)
+        ByteData.sublistView(
+                message, recipientId.length, recipientId.length + 4)
             .setUint32(0, blockIndex, Endian.big);
 
         final mac = _hmacSha256(key, message);

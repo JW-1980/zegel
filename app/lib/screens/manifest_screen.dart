@@ -288,9 +288,7 @@ class _ManifestCreateTabState extends State<_ManifestCreateTab> {
                     )
                   : const Icon(Icons.create_new_folder),
               label: Text(
-                _isCreating
-                    ? l10n.manifestCreating
-                    : l10n.manifestCreateAction,
+                _isCreating ? l10n.manifestCreating : l10n.manifestCreateAction,
                 style: const TextStyle(fontSize: 16),
               ),
             ),

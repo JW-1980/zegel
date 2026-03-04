@@ -194,9 +194,7 @@ class _AuditEntryTile extends StatelessWidget {
                       const Spacer(),
                       // Chain hash verification indicator
                       Icon(
-                        entry.isChainValid
-                            ? Icons.link
-                            : Icons.link_off,
+                        entry.isChainValid ? Icons.link : Icons.link_off,
                         size: 14,
                         color: entry.isChainValid
                             ? const Color(0xFF2E7D32)

@@ -93,7 +93,7 @@ class PartyManager extends StatelessWidget {
                     ),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
-                      value: selectedRole,
+                      initialValue: selectedRole,
                       decoration: InputDecoration(
                         labelText: l10n.contractPartyRole,
                         border: const OutlineInputBorder(),
@@ -245,8 +245,7 @@ class PartyManager extends StatelessWidget {
               contentPadding: EdgeInsets.zero,
               leading: CircleAvatar(
                 radius: 18,
-                backgroundColor:
-                    theme.colorScheme.primary.withOpacity(0.1),
+                backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
                 child: Icon(
                   _roleIcon(party.role),
                   size: 20,

@@ -45,27 +45,27 @@ class _ContractScreenState extends State<ContractScreen> {
   void _initWorkflowSteps() {
     _workflowSteps.clear();
     _workflowSteps.addAll([
-      WorkflowStep(
+      const WorkflowStep(
         title: 'Seal Contract',
         description: 'Owner seals the contract document',
         status: WorkflowStepStatus.pending,
       ),
-      WorkflowStep(
+      const WorkflowStep(
         title: 'Distribute to Parties',
         description: 'Distribute with canary traps per recipient',
         status: WorkflowStepStatus.pending,
       ),
-      WorkflowStep(
+      const WorkflowStep(
         title: 'Collect Attestations',
         description: 'Each party reviews and attests',
         status: WorkflowStepStatus.pending,
       ),
-      WorkflowStep(
+      const WorkflowStep(
         title: 'Check Attestation Policy',
         description: 'Verify all required roles have attested',
         status: WorkflowStepStatus.pending,
       ),
-      WorkflowStep(
+      const WorkflowStep(
         title: 'Extract for Closing',
         description: 'Extract original document for final closing',
         status: WorkflowStepStatus.pending,
@@ -122,18 +122,19 @@ class _ContractScreenState extends State<ContractScreen> {
       // Build metadata with party information
       final metadata = <String, dynamic>{
         'document_type': 'contract',
-        'parties': _parties.map((p) => {
-          'name': p.name,
-          'role': p.role,
-        }).toList(),
+        'parties': _parties
+            .map((p) => {
+                  'name': p.name,
+                  'role': p.role,
+                })
+            .toList(),
       };
 
       final options = SealOptions(
         compress: true,
         enableSelectiveDisclosure: true,
         metadata: metadata,
-        splitKeyThreshold:
-            _enableSplitKey ? _splitKeyThreshold : null,
+        splitKeyThreshold: _enableSplitKey ? _splitKeyThreshold : null,
         splitKeyTotal: _enableSplitKey ? _splitKeyTotal : null,
       );
 
@@ -210,12 +211,11 @@ class _ContractScreenState extends State<ContractScreen> {
 
       if (result.attestations != null && result.attestations!.isNotEmpty) {
         // Check if all required roles have attested
-        final attestedRoles = result.attestations!
-            .map((a) => a.signerId)
-            .toSet();
+        final attestedRoles =
+            result.attestations!.map((a) => a.signerId).toSet();
         final requiredRoles = _parties.map((p) => p.name).toSet();
-        final allAttested = requiredRoles
-            .every((role) => attestedRoles.contains(role));
+        final allAttested =
+            requiredRoles.every(attestedRoles.contains);
 
         if (mounted) {
           setState(() {
@@ -336,8 +336,7 @@ class _ContractScreenState extends State<ContractScreen> {
                     ),
                     const SizedBox(height: 8),
                     KeyInput(
-                      onKeyChanged: (key) =>
-                          setState(() => _ownerKeyHex = key),
+                      onKeyChanged: (key) => setState(() => _ownerKeyHex = key),
                     ),
                   ],
                 ),
@@ -409,8 +408,8 @@ class _ContractScreenState extends State<ContractScreen> {
                                 hintText: 'e.g. 5',
                               ),
                               keyboardType: TextInputType.number,
-                              onChanged: (v) => setState(() =>
-                                  _splitKeyTotal = int.tryParse(v) ?? 3),
+                              onChanged: (v) => setState(
+                                  () => _splitKeyTotal = int.tryParse(v) ?? 3),
                             ),
                           ),
                         ],
@@ -431,8 +430,7 @@ class _ContractScreenState extends State<ContractScreen> {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.checklist,
-                            color: theme.colorScheme.primary),
+                        Icon(Icons.checklist, color: theme.colorScheme.primary),
                         const SizedBox(width: 8),
                         Text(
                           l10n.contractWorkflowLabel,

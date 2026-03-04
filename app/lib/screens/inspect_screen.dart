@@ -67,7 +67,7 @@ class _InspectScreenState extends State<InspectScreen> {
       }
 
       final bytes = await file.readAsBytes();
-      final reader = const ZegelReader();
+      const reader = ZegelReader();
       final inspection = reader.inspect(bytes);
 
       if (mounted) {
@@ -378,9 +378,8 @@ class _InspectScreenState extends State<InspectScreen> {
               // Expiration (if present)
               if (_inspection!.expirationTimestamp != null) ...[
                 Card(
-                  color: _isExpired()
-                      ? Colors.red.shade50
-                      : Colors.orange.shade50,
+                  color:
+                      _isExpired() ? Colors.red.shade50 : Colors.orange.shade50,
                   child: Padding(
                     padding: const EdgeInsets.all(16),
                     child: Column(
@@ -419,9 +418,7 @@ class _InspectScreenState extends State<InspectScreen> {
                         Row(
                           children: [
                             Icon(
-                              _isExpired()
-                                  ? Icons.warning
-                                  : Icons.timer,
+                              _isExpired() ? Icons.warning : Icons.timer,
                               size: 16,
                               color: _isExpired()
                                   ? Colors.red

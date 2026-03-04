@@ -319,7 +319,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                   const SizedBox(height: 12),
                   DropdownButtonFormField<String>(
-                    value: _selectedBlockSize,
+                    initialValue: _selectedBlockSize,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                     ),
@@ -420,23 +420,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                   const SizedBox(height: 12),
                   DropdownButtonFormField<String>(
-                    value: _defaultClassification,
+                    initialValue: _defaultClassification,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                     ),
                     items: const [
-                      DropdownMenuItem(
-                          value: 'PUBLIC', child: Text('PUBLIC')),
+                      DropdownMenuItem(value: 'PUBLIC', child: Text('PUBLIC')),
                       DropdownMenuItem(
                           value: 'INTERNAL', child: Text('INTERNAL')),
                       DropdownMenuItem(
-                          value: 'CONFIDENTIAL',
-                          child: Text('CONFIDENTIAL')),
+                          value: 'CONFIDENTIAL', child: Text('CONFIDENTIAL')),
+                      DropdownMenuItem(value: 'SECRET', child: Text('SECRET')),
                       DropdownMenuItem(
-                          value: 'SECRET', child: Text('SECRET')),
-                      DropdownMenuItem(
-                          value: 'TOP_SECRET',
-                          child: Text('TOP SECRET')),
+                          value: 'TOP_SECRET', child: Text('TOP SECRET')),
                     ],
                     onChanged: (value) {
                       if (value != null) {
@@ -514,8 +510,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     title: Text(l10n.settingsAnonymousMode),
                     subtitle: Text(l10n.settingsAnonymousModeDesc),
                     value: _anonymousMode,
-                    onChanged: (v) =>
-                        setState(() => _anonymousMode = v),
+                    onChanged: (v) => setState(() => _anonymousMode = v),
                   ),
                 ],
               ),
@@ -532,7 +527,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.info_outline, color: theme.colorScheme.primary),
+                      Icon(Icons.info_outline,
+                          color: theme.colorScheme.primary),
                       const SizedBox(width: 8),
                       Text(
                         'About',
@@ -543,11 +539,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ],
                   ),
                   const Divider(),
-                  _AboutRow(label: 'Application', value: 'Zegel'),
-                  _AboutRow(label: 'Version', value: '1.3.0'),
-                  _AboutRow(label: 'Format Version', value: '1.2'),
-                  _AboutRow(label: 'File Extension', value: '.zgl'),
-                  _AboutRow(label: 'MIME Type', value: 'application/x-zgl'),
+                  const _AboutRow(label: 'Application', value: 'Zegel'),
+                  const _AboutRow(label: 'Version', value: '1.3.0'),
+                  const _AboutRow(label: 'Format Version', value: '1.2'),
+                  const _AboutRow(label: 'File Extension', value: '.zgl'),
+                  const _AboutRow(label: 'MIME Type', value: 'application/x-zgl'),
                   const SizedBox(height: 8),
                   const _AboutRow(
                     label: 'Code License',

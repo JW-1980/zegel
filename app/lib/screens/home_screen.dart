@@ -222,8 +222,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       Icon(
                         Icons.shield_outlined,
                         size: 48,
-                        color: theme.colorScheme.onSurfaceVariant
-                            .withOpacity(0.3),
+                        color:
+                            theme.colorScheme.onSurfaceVariant.withOpacity(0.3),
                       ),
                       const SizedBox(height: 12),
                       Text(
@@ -341,11 +341,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
           // Core
           sectionHeader(l10n.drawerCoreSection),
-          drawerItem(Icons.lock, l10n.sealAction, () => _navigateToSeal()),
-          drawerItem(
-              Icons.verified_user, l10n.verifyAction, () => _navigateToVerify()),
-          drawerItem(
-              Icons.file_download, l10n.extractAction, () => _navigateToExtract()),
+          drawerItem(Icons.lock, l10n.sealAction, _navigateToSeal),
+          drawerItem(Icons.verified_user, l10n.verifyAction,
+              _navigateToVerify),
+          drawerItem(Icons.file_download, l10n.extractAction,
+              _navigateToExtract),
           drawerItem(Icons.search, l10n.inspectAction,
               () => _navigateTo(const InspectScreen())),
 
@@ -407,7 +407,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
           // Settings
           drawerItem(
-              Icons.settings, l10n.settingsTitle, () => _navigateToSettings()),
+              Icons.settings, l10n.settingsTitle, _navigateToSettings),
         ],
       ),
     );

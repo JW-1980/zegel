@@ -144,7 +144,8 @@ class _ExcerptGenerateTabState extends State<_ExcerptGenerateTab> {
         _hexKey,
         _selectedBlocks.toList()..sort(),
       );
-      final savedPath = await fileService.saveFile(proofJson, 'excerpt_proof.json');
+      final savedPath =
+          await fileService.saveFile(proofJson, 'excerpt_proof.json');
       if (savedPath != null && mounted) {
         setState(() {
           _statusMessage = 'Excerpt proof saved.';
@@ -255,8 +256,7 @@ class _ExcerptGenerateTabState extends State<_ExcerptGenerateTab> {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.view_list,
-                            color: theme.colorScheme.primary),
+                        Icon(Icons.view_list, color: theme.colorScheme.primary),
                         const SizedBox(width: 8),
                         Text(
                           l10n.excerptSelectBlocks,
@@ -425,9 +425,8 @@ class _ExcerptVerifyTabState extends State<_ExcerptVerifyTab> {
       if (mounted) {
         setState(() {
           _isValid = valid;
-          _statusMessage = valid
-              ? 'Excerpt proof is VALID'
-              : 'Excerpt proof is INVALID';
+          _statusMessage =
+              valid ? 'Excerpt proof is VALID' : 'Excerpt proof is INVALID';
         });
       }
     } catch (e) {
@@ -546,9 +545,7 @@ class _ExcerptVerifyTabState extends State<_ExcerptVerifyTab> {
           SizedBox(
             height: 50,
             child: ElevatedButton.icon(
-              onPressed: _isVerifying ||
-                      _filePath == null ||
-                      _proofPath == null
+              onPressed: _isVerifying || _filePath == null || _proofPath == null
                   ? null
                   : _verifyProof,
               icon: _isVerifying
@@ -560,9 +557,7 @@ class _ExcerptVerifyTabState extends State<_ExcerptVerifyTab> {
                     )
                   : const Icon(Icons.verified),
               label: Text(
-                _isVerifying
-                    ? l10n.excerptVerifying
-                    : l10n.excerptVerifyAction,
+                _isVerifying ? l10n.excerptVerifying : l10n.excerptVerifyAction,
                 style: const TextStyle(fontSize: 16),
               ),
             ),

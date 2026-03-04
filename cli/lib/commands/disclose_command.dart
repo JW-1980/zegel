@@ -154,7 +154,7 @@ class DiscloseCommand extends Command<int> {
     }
 
     // Verify the file first.
-    final reader = const ZegelReader();
+    const reader = ZegelReader();
     try {
       reader.verify(fileBytes, masterKey);
     } on ZegelException catch (e) {
@@ -171,8 +171,7 @@ class DiscloseCommand extends Command<int> {
         rawHeader.expirationTimestamp! * 1000,
         isUtc: true,
       );
-      expirationDateStr =
-          '${dt.year.toString().padLeft(4, '0')}-'
+      expirationDateStr = '${dt.year.toString().padLeft(4, '0')}-'
           '${dt.month.toString().padLeft(2, '0')}-'
           '${dt.day.toString().padLeft(2, '0')}';
     }
@@ -220,7 +219,7 @@ class DiscloseCommand extends Command<int> {
 
     // Write token as JSON.
     final jsonString = const JsonEncoder.withIndent('  ').convert(token);
-    final outputFile = File(outputPath!);
+    final outputFile = File(outputPath);
     outputFile.writeAsStringSync('$jsonString\n');
 
     // Print success message.
@@ -301,8 +300,7 @@ class ExtractWithTokenCommand extends Command<int> {
       '  zegel extract-with-token doc.zgl -t token.json -o output.pdf --force';
 
   @override
-  final String invocation =
-      'zegel extract-with-token <file.zgl> [options]';
+  final String invocation = 'zegel extract-with-token <file.zgl> [options]';
 
   ExtractWithTokenCommand() {
     argParser.addOption(
@@ -392,7 +390,7 @@ class ExtractWithTokenCommand extends Command<int> {
     final metadataOnly = argResults!['metadata-only'] as bool;
 
     // Extract using the token via the library's reader.
-    final reader = const ZegelReader();
+    const reader = ZegelReader();
     ZegelResult result;
     try {
       result = reader.extractWithToken(fileBytes, token);

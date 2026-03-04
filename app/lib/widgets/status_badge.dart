@@ -166,7 +166,7 @@ class AnimatedBuilder extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListenableBuilder(
       listenable: listenable,
-      builder: (context, child) => builder(context, child),
+      builder: builder,
     );
   }
 }

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:zegel/zegel.dart';
+import 'dart:typed_data';
 
 import '../services/file_service.dart';
 import '../widgets/key_input.dart';
@@ -65,8 +66,8 @@ class _TimestampScreenState extends State<TimestampScreen>
       return;
     }
     if (_hexKey.length != 64) {
-      setState(() =>
-          _errorMessage = 'Please enter a valid 64-character hex key.');
+      setState(
+          () => _errorMessage = 'Please enter a valid 64-character hex key.');
       return;
     }
 
@@ -84,7 +85,7 @@ class _TimestampScreenState extends State<TimestampScreen>
       }
 
       final bytes = await file.readAsBytes();
-      final reader = const ZegelReader();
+      const reader = ZegelReader();
       final inspection = reader.inspect(bytes);
 
       // Extract Merkle root and master seal from file
@@ -130,8 +131,8 @@ class _TimestampScreenState extends State<TimestampScreen>
       return;
     }
     if (_hexKey.length != 64) {
-      setState(() =>
-          _errorMessage = 'Please enter a valid 64-character hex key.');
+      setState(
+          () => _errorMessage = 'Please enter a valid 64-character hex key.');
       return;
     }
     if (_timestampToken == null) {
@@ -202,7 +203,7 @@ class _TimestampScreenState extends State<TimestampScreen>
     final flags = bd.getUint16(10, Endian.big);
 
     // Calculate directory start after extended header
-    int cursor = blockCountOffset + 4;
+    int cursor = (blockCountOffset + 4).toInt();
     if (flags & ZegelFormat.flagPasswordDerived != 0) cursor += 8;
     if (flags & ZegelFormat.flagHasExpiration != 0) cursor += 8;
     if (flags & ZegelFormat.flagHasCanary != 0) cursor += 32;
@@ -210,11 +211,11 @@ class _TimestampScreenState extends State<TimestampScreen>
     if (flags & ZegelFormat.flagVersioned != 0) cursor += 32;
     if (flags & ZegelFormat.flagHasPublicMetadata != 0) {
       final pubMetaLen = bd.getUint32(cursor, Endian.big);
-      cursor += 4 + pubMetaLen;
+      cursor += (4 + pubMetaLen).toInt();
     }
 
     // Skip block directory
-    cursor += blockCount * ZegelFormat.blockDirectoryEntrySize;
+    cursor += (blockCount * ZegelFormat.blockDirectoryEntrySize).toInt();
 
     // Merkle root is here (32 bytes)
     return Uint8List.fromList(
@@ -517,7 +518,8 @@ class _TimestampScreenState extends State<TimestampScreen>
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.verified_user, color: theme.colorScheme.primary),
+                      Icon(Icons.verified_user,
+                          color: theme.colorScheme.primary),
                       const SizedBox(width: 8),
                       Text(
                         'File to Verify',
@@ -625,8 +627,9 @@ class _TimestampScreenState extends State<TimestampScreen>
           SizedBox(
             height: 50,
             child: ElevatedButton.icon(
-              onPressed:
-                  (_isLoading || _timestampToken == null) ? null : _verifyTimestamp,
+              onPressed: (_isLoading || _timestampToken == null)
+                  ? null
+                  : _verifyTimestamp,
               icon: _isLoading
                   ? const SizedBox(
                       width: 20,

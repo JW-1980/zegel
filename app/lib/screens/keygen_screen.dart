@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -80,7 +79,8 @@ class _KeygenScreenState extends State<KeygenScreen> {
       final keyService = context.read<KeyService>();
 
       // Save as raw 32 bytes
-      final bytes = Uint8List.fromList(keyService.hexToBytes(_generatedKeyHex!));
+      final bytes =
+          Uint8List.fromList(keyService.hexToBytes(_generatedKeyHex!));
       final savedPath = await fileService.saveFile(bytes, 'zegel_key.bin');
 
       if (savedPath != null && mounted) {
@@ -200,20 +200,20 @@ class _KeygenScreenState extends State<KeygenScreen> {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    _SecurityTip(
+                    const _SecurityTip(
                       icon: Icons.backup,
                       text: 'Store multiple backups in secure locations',
                     ),
-                    _SecurityTip(
+                    const _SecurityTip(
                       icon: Icons.lock,
                       text: 'Use a password manager for digital backup',
                     ),
-                    _SecurityTip(
+                    const _SecurityTip(
                       icon: Icons.print,
                       text: 'Consider printing and storing in a safe',
                     ),
-                    _SecurityTip(
-                      icon: Icons.share_off,
+                    const _SecurityTip(
+                      icon: Icons.mobile_off,
                       text: 'Never share your key via email or messaging',
                     ),
                   ],
@@ -277,17 +277,17 @@ class _KeygenScreenState extends State<KeygenScreen> {
                       const Divider(),
 
                       // Key properties
-                      _KeyProperty(
+                      const _KeyProperty(
                         label: 'Algorithm',
                         value: 'AES-256-GCM',
                         icon: Icons.security,
                       ),
-                      _KeyProperty(
+                      const _KeyProperty(
                         label: 'Key Size',
                         value: '256 bits (32 bytes)',
                         icon: Icons.straighten,
                       ),
-                      _KeyProperty(
+                      const _KeyProperty(
                         label: 'Source',
                         value: 'Cryptographically Secure RNG',
                         icon: Icons.shuffle,
@@ -315,9 +315,7 @@ class _KeygenScreenState extends State<KeygenScreen> {
                           children: [
                             Expanded(
                               child: SelectableText(
-                                _obscureKey
-                                    ? '*' * 64
-                                    : _generatedKeyHex!,
+                                _obscureKey ? '*' * 64 : _generatedKeyHex!,
                                 style: TextStyle(
                                   fontFamily: 'monospace',
                                   fontSize: 12,
@@ -362,9 +360,7 @@ class _KeygenScreenState extends State<KeygenScreen> {
                           children: [
                             Expanded(
                               child: SelectableText(
-                                _obscureKey
-                                    ? '*' * 44
-                                    : _generatedKeyBase64!,
+                                _obscureKey ? '*' * 44 : _generatedKeyBase64!,
                                 style: TextStyle(
                                   fontFamily: 'monospace',
                                   fontSize: 12,
@@ -471,9 +467,8 @@ class _KeygenScreenState extends State<KeygenScreen> {
                                 ),
                                 const SizedBox(width: 8),
                                 ElevatedButton(
-                                  onPressed: _isSaving
-                                      ? null
-                                      : _saveToSecureStorage,
+                                  onPressed:
+                                      _isSaving ? null : _saveToSecureStorage,
                                   child: const Text('Save'),
                                 ),
                               ],

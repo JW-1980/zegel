@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
-import "package:zegel/zegel.dart";
+import 'package:zegel/zegel.dart' as zegel_core;
 
 /// Result status from a verification operation.
 enum ZegelStatus {
@@ -200,10 +200,8 @@ class DisclosureToken {
   Map<String, dynamic> toJson() => {
         'version': version,
         'merkle_root': merkleRoot,
-        'block_keys': blockKeys
-            .map((k, v) => MapEntry(k.toString(), v)),
-        'created_at':
-            createdAt.millisecondsSinceEpoch ~/ 1000,
+        'block_keys': blockKeys.map((k, v) => MapEntry(k.toString(), v)),
+        'created_at': createdAt.millisecondsSinceEpoch ~/ 1000,
       };
 
   factory DisclosureToken.fromJson(Map<String, dynamic> json) {
@@ -303,11 +301,13 @@ class ZegelService {
     final String filename = file.uri.pathSegments.last;
     final Uint8List content = await file.readAsBytes();
 
-    final zegelOptions = ZegelOptions(
+    final zegelOptions = zegel_core.ZegelOptions(
       filename: filename,
       compress: options.compress,
       expiration: options.expirationDate,
-      recipientId: options.recipientId != null ? _hexToBytes(options.recipientId!) : null,
+      recipientId: options.recipientId != null
+          ? _hexToBytes(options.recipientId!)
+          : null,
       splitKeyThreshold: options.splitKeyThreshold,
       splitKeyTotal: options.splitKeyTotal,
       enableSelectiveDisclosure: options.enableSelectiveDisclosure,
@@ -315,7 +315,7 @@ class ZegelService {
       blockSize: options.blockSize,
     );
 
-    final writer = ZegelWriter(masterKey, zegelOptions);
+    final writer = zegel_core.ZegelWriter(masterKey, zegelOptions);
     return writer.seal(content);
   }
 

@@ -132,7 +132,7 @@ class TimestampCreateCommand extends Command<int> {
     final fileBytes = Uint8List.fromList(file.readAsBytesSync());
 
     // Verify the file first.
-    final reader = const ZegelReader();
+    const reader = ZegelReader();
     try {
       reader.verify(fileBytes, masterKey);
     } on ZegelException catch (e) {
@@ -215,7 +215,8 @@ class TimestampCreateCommand extends Command<int> {
     timestampToken['created'] = DateTime.now().toUtc().toIso8601String();
 
     // Output the token.
-    final tokenJson = const JsonEncoder.withIndent('  ').convert(timestampToken);
+    final tokenJson =
+        const JsonEncoder.withIndent('  ').convert(timestampToken);
 
     if (outputPath != null && outputPath.isNotEmpty) {
       final outputFile = File(outputPath);
@@ -328,7 +329,7 @@ class TimestampVerifyCommand extends Command<int> {
     final fileBytes = Uint8List.fromList(file.readAsBytesSync());
 
     // Verify the file first.
-    final reader = const ZegelReader();
+    const reader = ZegelReader();
     try {
       reader.verify(fileBytes, masterKey);
     } on ZegelException catch (e) {

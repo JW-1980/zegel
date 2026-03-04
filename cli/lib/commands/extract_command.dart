@@ -97,7 +97,7 @@ class ExtractCommand extends Command<int> {
     final fileBytes = Uint8List.fromList(file.readAsBytesSync());
 
     // Create reader and verify/extract.
-    final reader = const ZegelReader();
+    const reader = ZegelReader();
     ZegelResult result;
 
     try {
@@ -145,8 +145,7 @@ class ExtractCommand extends Command<int> {
     // Check regulatory hold if requested.
     final checkRegulatoryHold = argResults!['check-regulatory-hold'] as bool;
     if (checkRegulatoryHold && inspection.publicMetadata != null) {
-      final holdTimestamp =
-          inspection.publicMetadata!['regulatory_hold_until'];
+      final holdTimestamp = inspection.publicMetadata!['regulatory_hold_until'];
       if (holdTimestamp != null) {
         final holdDate = DateTime.fromMillisecondsSinceEpoch(
           (holdTimestamp as int) * 1000,

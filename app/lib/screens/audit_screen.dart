@@ -82,6 +82,7 @@ class _AuditScreenState extends State<AuditScreen> {
   Future<void> _pickFile() async {
     final fileService = context.read<FileService>();
     final path = await fileService.pickFile(
+      type: FileType.custom,
       allowedExtensions: ['zgl'],
     );
     if (path != null) {
@@ -192,14 +193,16 @@ class _AuditScreenState extends State<AuditScreen> {
       final newEntry = AuditTrail.createEntry(
         _actor.trim(),
         _action,
-        details: _details.isNotEmpty ? Map<String, dynamic>.from(_details) : null,
+        details:
+            _details.isNotEmpty ? Map<String, dynamic>.from(_details) : null,
         previousChainHash: previousChainHash,
       );
 
       // For demo purposes, show success and refresh
       // In production, this would write the entry to the file
       setState(() {
-        _statusMessage = 'Audit entry created (chain hash: ${(newEntry['chain_hash'] as String).substring(0, 16)}...)';
+        _statusMessage =
+            'Audit entry created (chain hash: ${(newEntry['chain_hash'] as String).substring(0, 16)}...)';
         _isError = false;
         _actorController.clear();
         _actor = '';
@@ -393,7 +396,8 @@ class _AuditScreenState extends State<AuditScreen> {
                                   : 'Chain Integrity Broken',
                               style: theme.textTheme.titleSmall?.copyWith(
                                 fontWeight: FontWeight.bold,
-                                color: _isChainValid ? Colors.green : Colors.red,
+                                color:
+                                    _isChainValid ? Colors.green : Colors.red,
                               ),
                             ),
                             Text(
@@ -463,7 +467,7 @@ class _AuditScreenState extends State<AuditScreen> {
                     ),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<String>(
-                      value: _action,
+                      initialValue: _action,
                       decoration: const InputDecoration(
                         labelText: 'Action',
                         prefixIcon: Icon(Icons.play_arrow),

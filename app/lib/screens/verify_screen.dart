@@ -61,8 +61,8 @@ class _VerifyScreenState extends State<VerifyScreen> {
       return;
     }
     if (_hexKey.length != 64) {
-      setState(() =>
-          _errorMessage = 'Please enter a valid 64-character hex key.');
+      setState(
+          () => _errorMessage = 'Please enter a valid 64-character hex key.');
       return;
     }
 
@@ -252,8 +252,7 @@ class _VerifyScreenState extends State<VerifyScreen> {
                     padding: const EdgeInsets.all(16),
                     child: Row(
                       children: [
-                        Icon(Icons.security,
-                            color: theme.colorScheme.primary),
+                        Icon(Icons.security, color: theme.colorScheme.primary),
                         const SizedBox(width: 8),
                         Text(
                           l10n.verifyClassificationLabel,
@@ -263,8 +262,7 @@ class _VerifyScreenState extends State<VerifyScreen> {
                         ),
                         const Spacer(),
                         ClassificationBadge(
-                          level: _result!.metadata!['classification']
-                              as String,
+                          level: _result!.metadata!['classification'] as String,
                         ),
                       ],
                     ),
@@ -366,8 +364,7 @@ class _VerifyScreenState extends State<VerifyScreen> {
                             const SizedBox(width: 8),
                             Text(
                               l10n.verifyAttestationPolicy,
-                              style:
-                                  theme.textTheme.titleMedium?.copyWith(
+                              style: theme.textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -377,8 +374,7 @@ class _VerifyScreenState extends State<VerifyScreen> {
                         Row(
                           children: [
                             Icon(
-                              _result!.attestations!
-                                      .every((a) => a.isVerified)
+                              _result!.attestations!.every((a) => a.isVerified)
                                   ? Icons.check_circle
                                   : Icons.warning,
                               color: _result!.attestations!
@@ -388,8 +384,7 @@ class _VerifyScreenState extends State<VerifyScreen> {
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              _result!.attestations!
-                                      .every((a) => a.isVerified)
+                              _result!.attestations!.every((a) => a.isVerified)
                                   ? l10n.verifyAllAttestationsValid
                                   : l10n.verifySomeAttestationsInvalid,
                               style: TextStyle(
@@ -457,16 +452,14 @@ class _VerifyScreenState extends State<VerifyScreen> {
                               : Icons.expand_more,
                         ),
                         onTap: () {
-                          setState(() =>
-                              _provenanceExpanded = !_provenanceExpanded);
+                          setState(
+                              () => _provenanceExpanded = !_provenanceExpanded);
                         },
                       ),
                       if (_provenanceExpanded)
                         Padding(
-                          padding:
-                              const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                          child: AuditTrailView(
-                              entries: _result!.auditTrail!),
+                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                          child: AuditTrailView(entries: _result!.auditTrail!),
                         ),
                     ],
                   ),

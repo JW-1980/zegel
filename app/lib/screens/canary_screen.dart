@@ -35,7 +35,7 @@ class _CanaryScreenState extends State<CanaryScreen>
   String? _embedFilePath;
   String _masterKey = '';
   final List<_RecipientEntry> _recipients = [];
-  bool _isEmbedding = false;
+  final bool _isEmbedding = false;
 
   // Identify tab state
   String? _identifyFilePath;
@@ -48,7 +48,8 @@ class _CanaryScreenState extends State<CanaryScreen>
   String? _statusMessage;
   bool _isError = false;
 
-  final TextEditingController _recipientNameController = TextEditingController();
+  final TextEditingController _recipientNameController =
+      TextEditingController();
   final TextEditingController _candidateIdController = TextEditingController();
 
   @override
@@ -101,6 +102,7 @@ class _CanaryScreenState extends State<CanaryScreen>
   Future<void> _pickIdentifyFile() async {
     final fileService = context.read<FileService>();
     final path = await fileService.pickFile(
+      type: FileType.custom,
       allowedExtensions: ['zgl'],
     );
     if (path != null) {
@@ -168,7 +170,8 @@ class _CanaryScreenState extends State<CanaryScreen>
 
     try {
       final keyService = context.read<KeyService>();
-      final masterKeyBytes = Uint8List.fromList(keyService.hexToBytes(_identifyKey));
+      final masterKeyBytes =
+          Uint8List.fromList(keyService.hexToBytes(_identifyKey));
 
       // Convert candidate IDs to bytes
       final candidateIdBytes = _candidateIds

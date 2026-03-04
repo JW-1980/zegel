@@ -68,11 +68,13 @@ class _KeyInputState extends State<KeyInput> {
       return;
     }
     if (value.length != 64) {
-      setState(() => _errorText = 'Key must be 64 hex characters (${value.length}/64)');
+      setState(() =>
+          _errorText = 'Key must be 64 hex characters (${value.length}/64)');
       return;
     }
     if (!RegExp(r'^[0-9a-fA-F]{64}$').hasMatch(value)) {
-      setState(() => _errorText = 'Key must contain only hexadecimal characters (0-9, a-f)');
+      setState(() => _errorText =
+          'Key must contain only hexadecimal characters (0-9, a-f)');
       return;
     }
     setState(() => _errorText = null);

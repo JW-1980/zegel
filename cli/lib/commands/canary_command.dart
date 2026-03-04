@@ -134,7 +134,7 @@ class CanaryEmbedCommand extends Command<int> {
     final fileBytes = Uint8List.fromList(file.readAsBytesSync());
 
     // Verify the file first.
-    final reader = const ZegelReader();
+    const reader = ZegelReader();
     try {
       reader.verify(fileBytes, masterKey);
     } on ZegelException catch (e) {
@@ -181,8 +181,7 @@ class CanaryEmbedCommand extends Command<int> {
         header.expirationTimestamp! * 1000,
         isUtc: true,
       );
-      expirationDateStr =
-          '${dt.year.toString().padLeft(4, '0')}-'
+      expirationDateStr = '${dt.year.toString().padLeft(4, '0')}-'
           '${dt.month.toString().padLeft(2, '0')}-'
           '${dt.day.toString().padLeft(2, '0')}';
     }
@@ -228,7 +227,8 @@ class CanaryEmbedCommand extends Command<int> {
         final padding = CanaryTrap.generatePadding(masterKey, recipientId, i);
         final paddedPlaintext = Uint8List(plaintext.length + padding.length);
         paddedPlaintext.setRange(0, plaintext.length, plaintext);
-        paddedPlaintext.setRange(plaintext.length, paddedPlaintext.length, padding);
+        paddedPlaintext.setRange(
+            plaintext.length, paddedPlaintext.length, padding);
         plaintext = paddedPlaintext;
       }
 
@@ -533,10 +533,10 @@ class CanaryIdentifyCommand extends Command<int> {
     final fileBytes = Uint8List.fromList(file.readAsBytesSync());
 
     // Verify the file first.
-    final reader = const ZegelReader();
-    ZegelResult result;
+    const reader = ZegelReader();
+//     ZegelResult result;
     try {
-      result = reader.verify(fileBytes, masterKey);
+      reader.verify(fileBytes, masterKey);
     } on ZegelException catch (e) {
       exitError('File verification failed: ${e.message}');
     }
@@ -559,8 +559,7 @@ class CanaryIdentifyCommand extends Command<int> {
         rawHeader.expirationTimestamp! * 1000,
         isUtc: true,
       );
-      expirationDateStr =
-          '${dt.year.toString().padLeft(4, '0')}-'
+      expirationDateStr = '${dt.year.toString().padLeft(4, '0')}-'
           '${dt.month.toString().padLeft(2, '0')}-'
           '${dt.day.toString().padLeft(2, '0')}';
     }
