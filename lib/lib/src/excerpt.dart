@@ -31,7 +31,7 @@ class ExcerptProof {
       'block_index': blockIndex,
       'block_hash': _bytesToHex(leafHashes[blockIndex]),
       'merkle_root': _bytesToHex(root),
-      'proof': proof.map((p) => _bytesToHex(p)).toList(),
+      'proof': proof.map(_bytesToHex).toList(),
       'total_leaves': leafHashes.length,
     };
   }

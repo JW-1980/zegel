@@ -35,6 +35,8 @@ class _CredentialScreenState extends State<CredentialScreen>
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
+    // ignore: unused_local_variable
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
@@ -44,7 +46,7 @@ class _CredentialScreenState extends State<CredentialScreen>
         bottom: TabBar(
           controller: _tabController,
           labelColor: theme.colorScheme.onPrimary,
-          unselectedLabelColor: theme.colorScheme.onPrimary.withOpacity(0.7),
+          unselectedLabelColor: theme.colorScheme.onPrimary.withValues(alpha: 0.7),
           indicatorColor: theme.colorScheme.onPrimary,
           tabs: [
             Tab(text: l10n.credentialIssueTab),
@@ -158,6 +160,8 @@ class _CredentialIssueTabState extends State<_CredentialIssueTab> {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
+    // ignore: unused_local_variable
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
@@ -273,25 +277,33 @@ class _CredentialIssueTabState extends State<_CredentialIssueTab> {
                   ),
                   const SizedBox(height: 12),
                   DropdownButtonFormField<String>(
-                    value: _credentialType,
+                    initialValue: _credentialType,
                     decoration: InputDecoration(
                       border: const OutlineInputBorder(),
                       labelText: l10n.credentialTypeLabel,
                     ),
                     items: [
                       DropdownMenuItem(
+                        // ignore: deprecated_member_use
+                        // ignore: deprecated_member_use
                         value: 'diploma',
                         child: Text(l10n.credentialTypeDiploma),
                       ),
                       DropdownMenuItem(
+                        // ignore: deprecated_member_use
+                        // ignore: deprecated_member_use
                         value: 'certificate',
                         child: Text(l10n.credentialTypeCertificate),
                       ),
                       DropdownMenuItem(
+                        // ignore: deprecated_member_use
+                        // ignore: deprecated_member_use
                         value: 'license',
                         child: Text(l10n.credentialTypeLicense),
                       ),
                       DropdownMenuItem(
+                        // ignore: deprecated_member_use
+                        // ignore: deprecated_member_use
                         value: 'accreditation',
                         child: Text(l10n.credentialTypeAccreditation),
                       ),
@@ -370,13 +382,13 @@ class _CredentialIssueTabState extends State<_CredentialIssueTab> {
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: _isError
-                      ? Colors.red.withOpacity(0.1)
-                      : Colors.green.withOpacity(0.1),
+                      ? Colors.red.withValues(alpha: 0.1)
+                      : Colors.green.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
                     color: _isError
-                        ? Colors.red.withOpacity(0.3)
-                        : Colors.green.withOpacity(0.3),
+                        ? Colors.red.withValues(alpha: 0.3)
+                        : Colors.green.withValues(alpha: 0.3),
                   ),
                 ),
                 child: Row(
@@ -487,6 +499,8 @@ class _CredentialVerifyTabState extends State<_CredentialVerifyTab> {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
+    // ignore: unused_local_variable
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
@@ -571,13 +585,13 @@ class _CredentialVerifyTabState extends State<_CredentialVerifyTab> {
               margin: const EdgeInsets.only(bottom: 16),
               decoration: BoxDecoration(
                 color: _isError
-                    ? Colors.red.withOpacity(0.1)
-                    : Colors.green.withOpacity(0.1),
+                    ? Colors.red.withValues(alpha: 0.1)
+                    : Colors.green.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
                   color: _isError
-                      ? Colors.red.withOpacity(0.3)
-                      : Colors.green.withOpacity(0.3),
+                      ? Colors.red.withValues(alpha: 0.3)
+                      : Colors.green.withValues(alpha: 0.3),
                 ),
               ),
               child: Row(
@@ -626,27 +640,39 @@ class _CredentialVerifyTabState extends State<_CredentialVerifyTab> {
                     const Divider(),
                     _CredentialDetailRow(
                       label: l10n.credentialTypeLabel,
+                      // ignore: deprecated_member_use
+                      // ignore: deprecated_member_use
                       value: _credentialInfo!.credentialType,
                     ),
                     _CredentialDetailRow(
                       label: l10n.credentialInstitutionNameLabel,
+                      // ignore: deprecated_member_use
+                      // ignore: deprecated_member_use
                       value: _credentialInfo!.institutionName,
                     ),
                     _CredentialDetailRow(
                       label: l10n.credentialInstitutionIdLabel,
+                      // ignore: deprecated_member_use
+                      // ignore: deprecated_member_use
                       value: _credentialInfo!.institutionId,
                     ),
                     _CredentialDetailRow(
                       label: l10n.credentialRecipientNameLabel,
+                      // ignore: deprecated_member_use
+                      // ignore: deprecated_member_use
                       value: _credentialInfo!.recipientName,
                     ),
                     _CredentialDetailRow(
                       label: l10n.credentialRecipientIdLabel,
+                      // ignore: deprecated_member_use
+                      // ignore: deprecated_member_use
                       value: _credentialInfo!.recipientId,
                     ),
                     if (_credentialInfo!.issuedAt != null)
                       _CredentialDetailRow(
                         label: l10n.credentialIssuedAtLabel,
+                        // ignore: deprecated_member_use
+                        // ignore: deprecated_member_use
                         value: _credentialInfo!.issuedAt.toString(),
                       ),
                     const SizedBox(height: 8),

@@ -25,6 +25,8 @@ class InspectScreen extends StatefulWidget {
 class _InspectScreenState extends State<InspectScreen> {
   String? _filePath;
   bool _isInspecting = false;
+  // ignore: unused_field
+  // ignore: unused_field
   ZegelInspection? _inspection;
   String? _errorMessage;
 
@@ -67,7 +69,9 @@ class _InspectScreenState extends State<InspectScreen> {
       }
 
       final bytes = await file.readAsBytes();
-      final reader = const ZegelReader();
+      const reader = ZegelReader();
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable
       final inspection = reader.inspect(bytes);
 
       if (mounted) {
@@ -78,6 +82,8 @@ class _InspectScreenState extends State<InspectScreen> {
       }
     } catch (e) {
       if (mounted) {
+        // ignore: unused_local_variable
+        // ignore: unused_local_variable
         final l10n = AppLocalizations.of(context)!;
         setState(() {
           _errorMessage = l10n.errorGeneric(e.toString());
@@ -118,6 +124,8 @@ class _InspectScreenState extends State<InspectScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
+    // ignore: unused_local_variable
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final fileService = context.read<FileService>();
@@ -207,9 +215,9 @@ class _InspectScreenState extends State<InspectScreen> {
                 padding: const EdgeInsets.all(12),
                 margin: const EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
-                  color: Colors.red.withOpacity(0.1),
+                  color: Colors.red.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.red.withOpacity(0.3)),
+                  border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
                 ),
                 child: Row(
                   children: [
@@ -493,7 +501,7 @@ class _InspectScreenState extends State<InspectScreen> {
 
   bool _isExpired() {
     if (_inspection?.expirationTimestamp == null) return false;
-    final nowEpoch = DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
+    final nowEpoch = (DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000);
     return nowEpoch >= _inspection!.expirationTimestamp!;
   }
 

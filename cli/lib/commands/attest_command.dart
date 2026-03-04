@@ -175,7 +175,7 @@ class AttestCommand extends Command<int> {
     }
 
     // Verify the file first using the library.
-    final reader = const ZegelReader();
+    const reader = ZegelReader();
     ZegelResult result;
     try {
       result = reader.verify(fileBytes, masterKey);

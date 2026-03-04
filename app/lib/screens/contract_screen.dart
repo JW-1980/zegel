@@ -45,27 +45,27 @@ class _ContractScreenState extends State<ContractScreen> {
   void _initWorkflowSteps() {
     _workflowSteps.clear();
     _workflowSteps.addAll([
-      WorkflowStep(
+      const WorkflowStep(
         title: 'Seal Contract',
         description: 'Owner seals the contract document',
         status: WorkflowStepStatus.pending,
       ),
-      WorkflowStep(
+      const WorkflowStep(
         title: 'Distribute to Parties',
         description: 'Distribute with canary traps per recipient',
         status: WorkflowStepStatus.pending,
       ),
-      WorkflowStep(
+      const WorkflowStep(
         title: 'Collect Attestations',
         description: 'Each party reviews and attests',
         status: WorkflowStepStatus.pending,
       ),
-      WorkflowStep(
+      const WorkflowStep(
         title: 'Check Attestation Policy',
         description: 'Verify all required roles have attested',
         status: WorkflowStepStatus.pending,
       ),
-      WorkflowStep(
+      const WorkflowStep(
         title: 'Extract for Closing',
         description: 'Extract original document for final closing',
         status: WorkflowStepStatus.pending,
@@ -215,7 +215,7 @@ class _ContractScreenState extends State<ContractScreen> {
             .toSet();
         final requiredRoles = _parties.map((p) => p.name).toSet();
         final allAttested = requiredRoles
-            .every((role) => attestedRoles.contains(role));
+            .every(attestedRoles.contains);
 
         if (mounted) {
           setState(() {
@@ -264,6 +264,8 @@ class _ContractScreenState extends State<ContractScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
+    // ignore: unused_local_variable
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
@@ -381,6 +383,8 @@ class _ContractScreenState extends State<ContractScreen> {
                     ),
                     SwitchListTile(
                       title: Text(l10n.contractEnableSplitKey),
+                      // ignore: deprecated_member_use
+                      // ignore: deprecated_member_use
                       value: _enableSplitKey,
                       onChanged: _isProcessing
                           ? null
@@ -461,13 +465,13 @@ class _ContractScreenState extends State<ContractScreen> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: _isError
-                        ? Colors.red.withOpacity(0.1)
-                        : Colors.green.withOpacity(0.1),
+                        ? Colors.red.withValues(alpha: 0.1)
+                        : Colors.green.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
                       color: _isError
-                          ? Colors.red.withOpacity(0.3)
-                          : Colors.green.withOpacity(0.3),
+                          ? Colors.red.withValues(alpha: 0.3)
+                          : Colors.green.withValues(alpha: 0.3),
                     ),
                   ),
                   child: Row(

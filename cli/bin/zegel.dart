@@ -1,27 +1,26 @@
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
-
-import 'package:zegel_cli/commands/seal_command.dart';
-import 'package:zegel_cli/commands/verify_command.dart';
+import 'package:zegel_cli/commands/attest_command.dart';
+import 'package:zegel_cli/commands/audit_command.dart';
+import 'package:zegel_cli/commands/batch_command.dart';
+import 'package:zegel_cli/commands/canary_command.dart';
+import 'package:zegel_cli/commands/classify_command.dart';
+import 'package:zegel_cli/commands/disclose_command.dart';
+import 'package:zegel_cli/commands/excerpt_command.dart';
 import 'package:zegel_cli/commands/extract_command.dart';
+import 'package:zegel_cli/commands/hierarchical_split_key_command.dart';
 import 'package:zegel_cli/commands/inspect_command.dart';
 import 'package:zegel_cli/commands/keygen_command.dart';
-import 'package:zegel_cli/commands/redact_command.dart';
-import 'package:zegel_cli/commands/split_key_command.dart';
-import 'package:zegel_cli/commands/attest_command.dart';
-import 'package:zegel_cli/commands/disclose_command.dart';
-import 'package:zegel_cli/commands/batch_command.dart';
 import 'package:zegel_cli/commands/manifest_command.dart';
-import 'package:zegel_cli/commands/classify_command.dart';
-import 'package:zegel_cli/commands/excerpt_command.dart';
-import 'package:zegel_cli/commands/version_chain_command.dart';
-import 'package:zegel_cli/commands/provenance_command.dart';
-import 'package:zegel_cli/commands/audit_command.dart';
-import 'package:zegel_cli/commands/canary_command.dart';
-import 'package:zegel_cli/commands/hierarchical_split_key_command.dart';
 import 'package:zegel_cli/commands/media_metadata_command.dart';
+import 'package:zegel_cli/commands/provenance_command.dart';
+import 'package:zegel_cli/commands/redact_command.dart';
+import 'package:zegel_cli/commands/seal_command.dart';
+import 'package:zegel_cli/commands/split_key_command.dart';
 import 'package:zegel_cli/commands/timestamp_command.dart';
+import 'package:zegel_cli/commands/verify_command.dart';
+import 'package:zegel_cli/commands/version_chain_command.dart';
 
 /// Application version.
 const String version = '1.3.0';

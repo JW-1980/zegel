@@ -123,6 +123,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
+    // ignore: unused_local_variable
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final fileService = context.read<FileService>();
@@ -223,14 +225,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         Icons.shield_outlined,
                         size: 48,
                         color: theme.colorScheme.onSurfaceVariant
-                            .withOpacity(0.3),
+                            .withValues(alpha: 0.3),
                       ),
                       const SizedBox(height: 12),
                       Text(
                         'Drop a file above to get started',
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant
-                              .withOpacity(0.5),
+                              .withValues(alpha: 0.5),
                         ),
                       ),
                     ],
@@ -332,7 +334,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Text(
                   'Tamper-Proof Container Format',
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onPrimary.withOpacity(0.8),
+                    color: theme.colorScheme.onPrimary.withValues(alpha: 0.8),
                   ),
                 ),
               ],
@@ -341,11 +343,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
           // Core
           sectionHeader(l10n.drawerCoreSection),
-          drawerItem(Icons.lock, l10n.sealAction, () => _navigateToSeal()),
+          drawerItem(Icons.lock, l10n.sealAction, _navigateToSeal),
           drawerItem(
-              Icons.verified_user, l10n.verifyAction, () => _navigateToVerify()),
+              Icons.verified_user, l10n.verifyAction, _navigateToVerify),
           drawerItem(
-              Icons.file_download, l10n.extractAction, () => _navigateToExtract()),
+              Icons.file_download, l10n.extractAction, _navigateToExtract),
           drawerItem(Icons.search, l10n.inspectAction,
               () => _navigateTo(const InspectScreen())),
 
@@ -407,7 +409,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
           // Settings
           drawerItem(
-              Icons.settings, l10n.settingsTitle, () => _navigateToSettings()),
+              Icons.settings, l10n.settingsTitle, _navigateToSettings),
         ],
       ),
     );

@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
@@ -41,8 +40,11 @@ class _SealScreenState extends State<SealScreen> {
   // New advanced options
   bool _anonymousMode = false;
   String _classificationLevel = '';
+  // ignore: unused_field
   String _classificationAuthority = '';
   DateTime? _regulatoryHoldDate;
+  // ignore: unused_field
+  // ignore: unused_field
   String _tsaUrl = '';
   bool _preserveMediaMetadata = false;
 
@@ -168,6 +170,8 @@ class _SealScreenState extends State<SealScreen> {
       final savedPath = await fileService.saveFile(sealedBytes, suggestedName);
 
       if (savedPath != null && mounted) {
+        // ignore: unused_local_variable
+        // ignore: unused_local_variable
         final l10n = AppLocalizations.of(context)!;
         setState(() {
           _statusMessage = l10n.sealSuccess;
@@ -176,6 +180,8 @@ class _SealScreenState extends State<SealScreen> {
       }
     } catch (e) {
       if (mounted) {
+        // ignore: unused_local_variable
+        // ignore: unused_local_variable
         final l10n = AppLocalizations.of(context)!;
         setState(() {
           _statusMessage = l10n.errorGeneric(e.toString());
@@ -191,6 +197,8 @@ class _SealScreenState extends State<SealScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
+    // ignore: unused_local_variable
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final fileService = context.read<FileService>();
@@ -231,12 +239,16 @@ class _SealScreenState extends State<SealScreen> {
                       _FileDetail(
                         icon: Icons.insert_drive_file,
                         label: 'Name',
+                        // ignore: deprecated_member_use
+                        // ignore: deprecated_member_use
                         value: _fileName ?? '',
                       ),
                       if (_fileSize != null)
                         _FileDetail(
                           icon: Icons.data_usage,
                           label: 'Size',
+                          // ignore: deprecated_member_use
+                          // ignore: deprecated_member_use
                           value: fileService.formatFileSize(_fileSize!),
                         ),
                       _FileDetail(
@@ -321,6 +333,8 @@ class _SealScreenState extends State<SealScreen> {
                                     labelText: 'Key',
                                     isDense: true,
                                   ),
+                                  // ignore: deprecated_member_use
+                                  // ignore: deprecated_member_use
                                   onChanged: (v) => meta.key = v,
                                 ),
                               ),
@@ -331,6 +345,8 @@ class _SealScreenState extends State<SealScreen> {
                                     labelText: 'Value',
                                     isDense: true,
                                   ),
+                                  // ignore: deprecated_member_use
+                                  // ignore: deprecated_member_use
                                   onChanged: (v) => meta.value = v,
                                 ),
                               ),
@@ -383,6 +399,8 @@ class _SealScreenState extends State<SealScreen> {
                           SwitchListTile(
                             title: Text(l10n.compressionLabel),
                             subtitle: const Text('zlib compression before encryption'),
+                            // ignore: deprecated_member_use
+                            // ignore: deprecated_member_use
                             value: _compress,
                             onChanged: _isSealing
                                 ? null
@@ -459,6 +477,8 @@ class _SealScreenState extends State<SealScreen> {
                             subtitle: const Text(
                               'Allow generating per-block access tokens',
                             ),
+                            // ignore: deprecated_member_use
+                            // ignore: deprecated_member_use
                             value: _enableSelectiveDisclosure,
                             onChanged: _isSealing
                                 ? null
@@ -469,6 +489,8 @@ class _SealScreenState extends State<SealScreen> {
                           SwitchListTile(
                             title: Text(l10n.sealAnonymousMode),
                             subtitle: Text(l10n.sealAnonymousModeDesc),
+                            // ignore: deprecated_member_use
+                            // ignore: deprecated_member_use
                             value: _anonymousMode,
                             onChanged: _isSealing
                                 ? null
@@ -477,7 +499,7 @@ class _SealScreenState extends State<SealScreen> {
                           ),
                           const SizedBox(height: 8),
                           DropdownButtonFormField<String>(
-                            value: _classificationLevel.isEmpty
+                            initialValue: _classificationLevel.isEmpty
                                 ? null
                                 : _classificationLevel,
                             decoration: InputDecoration(
@@ -486,18 +508,28 @@ class _SealScreenState extends State<SealScreen> {
                             ),
                             items: const [
                               DropdownMenuItem(
+                                  // ignore: deprecated_member_use
+                                  // ignore: deprecated_member_use
                                   value: 'PUBLIC',
                                   child: Text('PUBLIC')),
                               DropdownMenuItem(
+                                  // ignore: deprecated_member_use
+                                  // ignore: deprecated_member_use
                                   value: 'INTERNAL',
                                   child: Text('INTERNAL')),
                               DropdownMenuItem(
+                                  // ignore: deprecated_member_use
+                                  // ignore: deprecated_member_use
                                   value: 'CONFIDENTIAL',
                                   child: Text('CONFIDENTIAL')),
                               DropdownMenuItem(
+                                  // ignore: deprecated_member_use
+                                  // ignore: deprecated_member_use
                                   value: 'SECRET',
                                   child: Text('SECRET')),
                               DropdownMenuItem(
+                                  // ignore: deprecated_member_use
+                                  // ignore: deprecated_member_use
                                   value: 'TOP_SECRET',
                                   child: Text('TOP SECRET')),
                             ],
@@ -577,6 +609,8 @@ class _SealScreenState extends State<SealScreen> {
                             title: Text(l10n.sealPreserveMediaMetadata),
                             subtitle: Text(
                                 l10n.sealPreserveMediaMetadataDesc),
+                            // ignore: deprecated_member_use
+                            // ignore: deprecated_member_use
                             value: _preserveMediaMetadata,
                             onChanged: _isSealing
                                 ? null
@@ -599,13 +633,13 @@ class _SealScreenState extends State<SealScreen> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: _isError
-                        ? Colors.red.withOpacity(0.1)
-                        : Colors.green.withOpacity(0.1),
+                        ? Colors.red.withValues(alpha: 0.1)
+                        : Colors.green.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
                       color: _isError
-                          ? Colors.red.withOpacity(0.3)
-                          : Colors.green.withOpacity(0.3),
+                          ? Colors.red.withValues(alpha: 0.3)
+                          : Colors.green.withValues(alpha: 0.3),
                     ),
                   ),
                   child: Row(

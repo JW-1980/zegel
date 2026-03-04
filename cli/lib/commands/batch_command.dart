@@ -52,13 +52,13 @@ class BatchVerifyCommand extends Command<int> {
 
     final dir = Directory(dirPath);
     if (!dir.existsSync()) {
-      stderr.writeln(Ansi.error('Error:') + ' Directory not found: $dirPath');
+      stderr.writeln('${Ansi.error('Error:')} Directory not found: $dirPath');
       return 1;
     }
 
     final key = parseKeyFromArgs(argResults!);
     final stopOnFailure = argResults!['stop-on-failure'] as bool;
-    final verbose = argResults!['verbose'] as bool;
+
 
     final files = dir.listSync()
         .whereType<File>()
@@ -85,7 +85,11 @@ class BatchVerifyCommand extends Command<int> {
 
     for (final r in results) {
       final success = r['success'] as bool;
-      if (success) passed++; else failed++;
+      if (success) {
+        passed++;
+      } else {
+        failed++;
+      }
       rows.add([
         r['name'] as String,
         success ? Ansi.success('VALID') : Ansi.error('FAILED'),
@@ -149,7 +153,7 @@ class BatchSealCommand extends Command<int> {
 
     final dir = Directory(dirPath);
     if (!dir.existsSync()) {
-      stderr.writeln(Ansi.error('Error:') + ' Directory not found: $dirPath');
+      stderr.writeln('${Ansi.error('Error:')} Directory not found: $dirPath');
       return 1;
     }
 
@@ -171,21 +175,21 @@ class BatchSealCommand extends Command<int> {
     stdout.writeln('Sealing ${files.length} file(s)...');
     int sealed = 0;
 
-    for (final file in files) {
+    await Future.wait(files.map((file) async {
       final name = file.path.split(Platform.pathSeparator).last;
-      final content = Uint8List.fromList(file.readAsBytesSync());
+      final content = Uint8List.fromList(await file.readAsBytes());
       final writer = ZegelWriter(key, ZegelOptions(
         contentType: contentType ?? 'application/octet-stream',
         filename: name,
         compress: compress,
         enableKeyCommitment: true,
       ));
-      final sealedBytes = writer.seal(content);
-      File('${outputDir.path}${Platform.pathSeparator}$name.zgl')
-          .writeAsBytesSync(sealedBytes);
+      final sealedBytes = await Future.microtask(() => writer.seal(content));
+      await File('${outputDir.path}${Platform.pathSeparator}$name.zgl')
+          .writeAsBytes(sealedBytes);
       stdout.writeln('  ${Ansi.success("✓")} $name -> $name.zgl');
-      sealed++;
-    }
+    }));
+    sealed = files.length;
 
     stdout.writeln();
     stdout.writeln('${Ansi.success("$sealed file(s) sealed")} to $outputPath');

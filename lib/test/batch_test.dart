@@ -168,7 +168,7 @@ void main() {
           ));
         }
 
-        final baseOptions = ZegelOptions(
+        const baseOptions = ZegelOptions(
           contentType: 'text/plain',
         );
 
@@ -181,7 +181,7 @@ void main() {
         expect(sealedFiles.length, equals(3));
 
         // Each sealed file should be verifiable
-        final reader = const ZegelReader();
+        const reader = ZegelReader();
         for (final sealed in sealedFiles) {
           expect(sealed.value, isNotNull);
           expect(sealed.value.length, greaterThan(0));
@@ -200,7 +200,7 @@ void main() {
           ));
         }
 
-        final baseOptions = ZegelOptions(
+        const baseOptions = ZegelOptions(
           compress: true,
         );
 
@@ -211,7 +211,7 @@ void main() {
         );
 
         // All sealed files should have the COMPRESSED flag
-        final reader = const ZegelReader();
+        const reader = ZegelReader();
         for (final sealed in sealedFiles) {
           final inspection = reader.inspect(sealed.value);
           expect(
@@ -238,7 +238,7 @@ void main() {
           ),
         ];
 
-        final baseOptions = ZegelOptions(
+        const baseOptions = ZegelOptions(
           contentType: 'application/octet-stream',
         );
 
@@ -250,7 +250,7 @@ void main() {
 
         expect(sealedFiles.length, equals(3));
 
-        final reader = const ZegelReader();
+        const reader = ZegelReader();
         final inspection0 = reader.inspect(sealedFiles[0].value);
         expect(inspection0.filename, equals('report.pdf'));
 

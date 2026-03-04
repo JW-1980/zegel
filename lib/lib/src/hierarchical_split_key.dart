@@ -65,7 +65,7 @@ class HierarchicalSplitKey {
     final List<Uint8List> intermediateKeys = <Uint8List>[];
     final Random rng = Random.secure();
 
-    Uint8List xorAccumulator = Uint8List(32);
+    final Uint8List xorAccumulator = Uint8List(32);
     for (int i = 0; i < levels.length - 1; i++) {
       final Uint8List key = Uint8List(32);
       for (int j = 0; j < 32; j++) {
@@ -131,7 +131,7 @@ class HierarchicalSplitKey {
     }
 
     // Reconstruct each intermediate key and XOR them together.
-    Uint8List masterKey = Uint8List(32);
+    final Uint8List masterKey = Uint8List(32);
 
     for (final ShareLevel level in levels) {
       final LevelShares? ls = shareMap[level.classification];

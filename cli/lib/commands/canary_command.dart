@@ -134,7 +134,7 @@ class CanaryEmbedCommand extends Command<int> {
     final fileBytes = Uint8List.fromList(file.readAsBytesSync());
 
     // Verify the file first.
-    final reader = const ZegelReader();
+    const reader = ZegelReader();
     try {
       reader.verify(fileBytes, masterKey);
     } on ZegelException catch (e) {
@@ -533,10 +533,10 @@ class CanaryIdentifyCommand extends Command<int> {
     final fileBytes = Uint8List.fromList(file.readAsBytesSync());
 
     // Verify the file first.
-    final reader = const ZegelReader();
-    ZegelResult result;
+    const reader = ZegelReader();
+
     try {
-      result = reader.verify(fileBytes, masterKey);
+      reader.verify(fileBytes, masterKey);
     } on ZegelException catch (e) {
       exitError('File verification failed: ${e.message}');
     }

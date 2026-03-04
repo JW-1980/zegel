@@ -32,6 +32,8 @@ class _VerifyScreenState extends State<VerifyScreen> {
   bool _isVerifying = false;
   ZegelResult? _result;
   String? _errorMessage;
+  // ignore: unused_field
+  // ignore: unused_field
   ZegelInspection? _inspection;
   bool _provenanceExpanded = false;
 
@@ -93,6 +95,8 @@ class _VerifyScreenState extends State<VerifyScreen> {
       }
     } catch (e) {
       if (mounted) {
+        // ignore: unused_local_variable
+        // ignore: unused_local_variable
         final l10n = AppLocalizations.of(context)!;
         setState(() {
           _errorMessage = l10n.errorGeneric(e.toString());
@@ -116,6 +120,8 @@ class _VerifyScreenState extends State<VerifyScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
+    // ignore: unused_local_variable
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final fileService = context.read<FileService>();
@@ -216,9 +222,9 @@ class _VerifyScreenState extends State<VerifyScreen> {
                 padding: const EdgeInsets.all(12),
                 margin: const EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
-                  color: Colors.red.withOpacity(0.1),
+                  color: Colors.red.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.red.withOpacity(0.3)),
+                  border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
                 ),
                 child: Row(
                   children: [

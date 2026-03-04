@@ -110,7 +110,7 @@ class AuditViewCommand extends Command<int> {
     final fileBytes = Uint8List.fromList(file.readAsBytesSync());
 
     // Verify the file first.
-    final reader = const ZegelReader();
+    const reader = ZegelReader();
     ZegelResult result;
     try {
       result = reader.verify(fileBytes, masterKey);
@@ -264,7 +264,7 @@ class AuditAddCommand extends Command<int> {
     final fileBytes = Uint8List.fromList(file.readAsBytesSync());
 
     // Verify the file first.
-    final reader = const ZegelReader();
+    const reader = ZegelReader();
     ZegelResult result;
     try {
       result = reader.verify(fileBytes, masterKey);
@@ -633,7 +633,7 @@ class AuditVerifyChainCommand extends Command<int> {
     final fileBytes = Uint8List.fromList(file.readAsBytesSync());
 
     // Verify the file first.
-    final reader = const ZegelReader();
+    const reader = ZegelReader();
     ZegelResult result;
     try {
       result = reader.verify(fileBytes, masterKey);

@@ -118,7 +118,7 @@ void main() {
       });
 
       test('all flags fit within uint16', () {
-        final allFlags = ZegelFormat.flagHasMetadata |
+        const allFlags = ZegelFormat.flagHasMetadata |
             ZegelFormat.flagCompressed |
             ZegelFormat.flagPasswordDerived |
             ZegelFormat.flagHasKeyCommitment |

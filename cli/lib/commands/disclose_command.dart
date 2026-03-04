@@ -154,7 +154,7 @@ class DiscloseCommand extends Command<int> {
     }
 
     // Verify the file first.
-    final reader = const ZegelReader();
+    const reader = ZegelReader();
     try {
       reader.verify(fileBytes, masterKey);
     } on ZegelException catch (e) {
@@ -220,7 +220,7 @@ class DiscloseCommand extends Command<int> {
 
     // Write token as JSON.
     final jsonString = const JsonEncoder.withIndent('  ').convert(token);
-    final outputFile = File(outputPath!);
+    final outputFile = File(outputPath);
     outputFile.writeAsStringSync('$jsonString\n');
 
     // Print success message.
@@ -392,7 +392,7 @@ class ExtractWithTokenCommand extends Command<int> {
     final metadataOnly = argResults!['metadata-only'] as bool;
 
     // Extract using the token via the library's reader.
-    final reader = const ZegelReader();
+    const reader = ZegelReader();
     ZegelResult result;
     try {
       result = reader.extractWithToken(fileBytes, token);

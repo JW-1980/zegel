@@ -97,7 +97,7 @@ class ExtractCommand extends Command<int> {
     final fileBytes = Uint8List.fromList(file.readAsBytesSync());
 
     // Create reader and verify/extract.
-    final reader = const ZegelReader();
+    const reader = ZegelReader();
     ZegelResult result;
 
     try {
