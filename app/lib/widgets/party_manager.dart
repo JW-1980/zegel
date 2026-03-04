@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
+import 'package:flutter/services.dart';
 
 /// Represents a party involved in a contract workflow.
 class ContractParty {
@@ -246,7 +246,7 @@ class PartyManager extends StatelessWidget {
               leading: CircleAvatar(
                 radius: 18,
                 backgroundColor:
-                    theme.colorScheme.primary.withOpacity(0.1),
+                    theme.colorScheme.primary.withValues(alpha: 0.1),
                 child: Icon(
                   _roleIcon(party.role),
                   size: 20,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 import '../services/zegel_service.dart';
+import 'package:intl/intl.dart';
 
 /// Displays an attestation (co-signature) as a badge.
 ///
@@ -28,14 +28,14 @@ class AttestationBadge extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
         side: BorderSide(
-          color: badgeColor.withOpacity(0.3),
+          color: badgeColor.withValues(alpha: 0.3),
           width: 1,
         ),
       ),
       child: ExpansionTile(
         leading: CircleAvatar(
           radius: 16,
-          backgroundColor: badgeColor.withOpacity(0.1),
+          backgroundColor: badgeColor.withValues(alpha: 0.1),
           child: Icon(
             isVerified ? Icons.check_circle : Icons.cancel,
             color: badgeColor,

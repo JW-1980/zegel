@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 import '../services/zegel_service.dart';
 import 'classification_badge.dart';
+import 'package:intl/intl.dart';
 
 /// A card displaying detailed file metadata.
 ///
@@ -193,10 +193,10 @@ class FileInfoCard extends StatelessWidget {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                     decoration: BoxDecoration(
-                      color: Colors.amber.withOpacity(0.15),
+                      color: Colors.amber.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(4),
                       border:
-                          Border.all(color: Colors.amber.withOpacity(0.5)),
+                          Border.all(color: Colors.amber.withValues(alpha: 0.5)),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,

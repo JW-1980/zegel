@@ -1,8 +1,8 @@
-import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
+import 'dart:convert';
 
 import 'package:zegel/zegel.dart';
+import 'dart:io';
 
 /// Result status from a verification operation.
 enum ZegelStatus {

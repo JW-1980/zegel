@@ -125,7 +125,7 @@ void main() {
         final fileB = ZegelWriter(masterKey, optionsB).seal(content);
 
         // Both files should verify correctly
-        const reader = ZegelReader();
+        const reader = const ZegelReader();
         final resultA = reader.verify(fileA, masterKey);
         final resultB = reader.verify(fileB, masterKey);
 

@@ -123,7 +123,7 @@ class _StatusBadgeState extends State<StatusBadge>
                   height: 120,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: color.withOpacity(0.1),
+                    color: color.withValues(alpha: 0.1),
                     border: Border.all(color: color, width: 3),
                   ),
                   child: Icon(

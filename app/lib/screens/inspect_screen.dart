@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
@@ -6,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:zegel/zegel.dart';
 
 import '../services/file_service.dart';
+import 'dart:io';
 
 /// Screen for inspecting .zgl files without requiring the master key.
 ///
@@ -207,9 +207,9 @@ class _InspectScreenState extends State<InspectScreen> {
                 padding: const EdgeInsets.all(12),
                 margin: const EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
-                  color: Colors.red.withOpacity(0.1),
+                  color: Colors.red.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.red.withOpacity(0.3)),
+                  border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
                 ),
                 child: Row(
                   children: [
