@@ -68,7 +68,7 @@ class _AttestScreenState extends State<AttestScreen> {
   Future<void> _pickFile() async {
     final fileService = context.read<FileService>();
     final path = await fileService.pickFile(
-      allowedExtensions: ['zgl'],
+      // allowedExtensions: ['zgl'],
     );
     if (path != null) {
       await _setFile(path);

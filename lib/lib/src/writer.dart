@@ -345,7 +345,7 @@ class ZegelWriter {
         ? Uint8List.fromList(utf8.encode(options.filename!))
         : Uint8List(0);
     if (fnBytes.length > ZegelFormat.maxFilenameLength) {
-      throw ZegelFormatException(
+      throw const ZegelFormatException(
         'Filename exceeds maximum of ${ZegelFormat.maxFilenameLength} bytes',
       );
     }
@@ -391,9 +391,9 @@ class ZegelWriter {
       dataSize += pt.length;
     }
 
-    final int merkleSize = 32;
+    const int merkleSize = 32;
     final int keyCommitmentSize = options.enableKeyCommitment ? 32 : 0;
-    final int masterSealSize = 64;
+    const int masterSealSize = 64;
 
     final int preSealBytesLength = headerSize +
         extHeaderSize +
@@ -616,23 +616,4 @@ class ZegelWriter {
   }
 
   /// Packs [value] as a 2-byte big-endian unsigned integer.
-  static Uint8List _packUint16BE(int value) {
-    final ByteData bd = ByteData(2);
-    bd.setUint16(0, value, Endian.big);
-    return bd.buffer.asUint8List();
-  }
-
-  /// Packs [value] as a 4-byte big-endian unsigned integer.
-  static Uint8List _packUint32BE(int value) {
-    final ByteData bd = ByteData(4);
-    bd.setUint32(0, value, Endian.big);
-    return bd.buffer.asUint8List();
-  }
-
-  /// Packs [value] as an 8-byte big-endian unsigned integer.
-  static Uint8List _packUint64BE(int value) {
-    final ByteData bd = ByteData(8);
-    bd.setUint64(0, value, Endian.big);
-    return bd.buffer.asUint8List();
-  }
 }

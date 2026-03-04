@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'dart:convert';
 import 'dart:io';
 
@@ -213,7 +214,7 @@ class _KeygenScreenState extends State<KeygenScreen> {
                       text: 'Consider printing and storing in a safe',
                     ),
                     _SecurityTip(
-                      icon: Icons.share_off,
+                      icon: Icons.share,
                       text: 'Never share your key via email or messaging',
                     ),
                   ],

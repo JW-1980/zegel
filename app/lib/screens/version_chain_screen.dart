@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -162,7 +163,7 @@ class _VersionChainScreenState extends State<VersionChainScreen> {
       }
     } catch (e) {
       if (mounted) {
-        final l10n = AppLocalizations.of(context)!;
+        final l10n = AppLocalizations.of(context)!; // ignore: unused_local_variable
         setState(() {
           _errorMessage = l10n.errorGeneric(e.toString());
           _isLoading = false;
@@ -183,7 +184,7 @@ class _VersionChainScreenState extends State<VersionChainScreen> {
       final filenameLen = bd.getUint16(84, Endian.big);
       final blockCountOffset = 86 + filenameLen + ZegelFormat.saltSize;
 
-      int cursor = blockCountOffset + 4;
+      int cursor = (blockCountOffset + 4).toInt();
       if (flags & ZegelFormat.flagPasswordDerived != 0) cursor += 8;
       if (flags & ZegelFormat.flagHasExpiration != 0) cursor += 8;
       if (flags & ZegelFormat.flagHasCanary != 0) cursor += 32;
@@ -216,7 +217,7 @@ class _VersionChainScreenState extends State<VersionChainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context)!; // ignore: unused_local_variable
     final theme = Theme.of(context);
     final fileService = context.read<FileService>();
 

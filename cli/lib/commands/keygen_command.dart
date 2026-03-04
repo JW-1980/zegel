@@ -153,7 +153,7 @@ class KeygenCommand extends Command<int> {
       );
     }
 
-    final dir = Directory(outputDir!);
+    final dir = Directory(outputDir);
     if (!dir.existsSync()) {
       dir.createSync(recursive: true);
     }

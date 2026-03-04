@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -85,7 +86,7 @@ class _TimestampScreenState extends State<TimestampScreen>
 
       final bytes = await file.readAsBytes();
       final reader = const ZegelReader();
-      final inspection = reader.inspect(bytes);
+      // final inspection = reader.inspect(bytes);
 
       // Extract Merkle root and master seal from file
       // The Merkle root is at a known position after the block directory
@@ -202,23 +203,23 @@ class _TimestampScreenState extends State<TimestampScreen>
     final flags = bd.getUint16(10, Endian.big);
 
     // Calculate directory start after extended header
-    int cursor = blockCountOffset + 4;
+    int cursor = (blockCountOffset + 4).toInt();
     if (flags & ZegelFormat.flagPasswordDerived != 0) cursor += 8;
     if (flags & ZegelFormat.flagHasExpiration != 0) cursor += 8;
     if (flags & ZegelFormat.flagHasCanary != 0) cursor += 32;
     if (flags & ZegelFormat.flagSplitKey != 0) cursor += 2;
     if (flags & ZegelFormat.flagVersioned != 0) cursor += 32;
     if (flags & ZegelFormat.flagHasPublicMetadata != 0) {
-      final pubMetaLen = bd.getUint32(cursor, Endian.big);
-      cursor += 4 + pubMetaLen;
+      final pubMetaLen = bd.getUint32(cursor.toInt(), Endian.big);
+      cursor += (4 + pubMetaLen).toInt();
     }
 
     // Skip block directory
-    cursor += blockCount * ZegelFormat.blockDirectoryEntrySize;
+    cursor += (blockCount * ZegelFormat.blockDirectoryEntrySize).toInt();
 
     // Merkle root is here (32 bytes)
     return Uint8List.fromList(
-      bytes.sublist(cursor, cursor + ZegelFormat.hashSize),
+      bytes.sublist(cursor.toInt(), (cursor + ZegelFormat.hashSize).toInt()),
     );
   }
 

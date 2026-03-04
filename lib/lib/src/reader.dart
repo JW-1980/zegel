@@ -302,7 +302,7 @@ class ZegelReader {
     final List<Map<String, dynamic>> provenanceEntries =
         <Map<String, dynamic>>[];
     final List<int> redactedBlocks = <int>[];
-    final List<int> disclosedIndices = <int>[];
+
 
     for (int i = 0; i < h.blockCount; i++) {
       final _DirEntry entry = h.directory[i];
@@ -495,7 +495,7 @@ class ZegelReader {
     final List<Map<String, dynamic>> provenanceEntries =
         <Map<String, dynamic>>[];
     final List<int> redactedBlocks = <int>[];
-    final List<int> disclosedIndices = <int>[];
+
 
     for (int i = 0; i < h.blockCount; i++) {
       final _DirEntry entry = h.directory[i];
@@ -511,7 +511,7 @@ class ZegelReader {
         continue;
       }
 
-      disclosedIndices.add(i);
+
 
       final Uint8List blockKey = _hexToBytes(
         blockKeysMap[indexStr] as String,
@@ -605,7 +605,7 @@ class ZegelReader {
       auditTrail: auditTrail.isNotEmpty ? auditTrail : null,
       provenance: provenanceEntries.isNotEmpty ? provenanceEntries : null,
       redactedBlocks: redactedBlocks.isNotEmpty ? redactedBlocks : null,
-      disclosedBlocks: disclosedIndices,
+      disclosedBlocks: null,
     );
   }
 

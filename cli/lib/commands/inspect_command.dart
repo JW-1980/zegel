@@ -85,7 +85,7 @@ class InspectCommand extends Command<int> {
     // Inspect header using the library.
     ZegelInspection inspection;
     try {
-      final reader = const ZegelReader();
+      const reader = ZegelReader();
       inspection = reader.inspect(fileBytes);
     } on ZegelFormatException catch (e) {
       exitError('Invalid .zgl file: ${e.message}');

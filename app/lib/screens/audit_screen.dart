@@ -82,7 +82,7 @@ class _AuditScreenState extends State<AuditScreen> {
   Future<void> _pickFile() async {
     final fileService = context.read<FileService>();
     final path = await fileService.pickFile(
-      allowedExtensions: ['zgl'],
+      // allowedExtensions: ['zgl'],
     );
     if (path != null) {
       await _setFile(path);
