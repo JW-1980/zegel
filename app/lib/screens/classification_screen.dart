@@ -425,7 +425,6 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: _isError
-<<<<<<< /tmp/.tmpXrtCos/ours
                       ? Colors.red.withValues(alpha:0.1)
                       : Colors.green.withValues(alpha:0.1),
                   borderRadius: BorderRadius.circular(8),
@@ -433,7 +432,6 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
                     color: _isError
                         ? Colors.red.withValues(alpha:0.3)
                         : Colors.green.withValues(alpha:0.3),
-=======
                       ? Colors.red.withValues(alpha: 0.1)
                       : Colors.green.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
@@ -441,7 +439,6 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
                     color: _isError
                         ? Colors.red.withValues(alpha: 0.3)
                         : Colors.green.withValues(alpha: 0.3),
->>>>>>> /tmp/.tmpXrtCos/theirs
                   ),
                 ),
                 child: Row(

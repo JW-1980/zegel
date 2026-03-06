@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
-<<<<<<< ours
 ||||||| original
 
 import 'package:zegel_cli/commands/seal_command.dart';
@@ -11,9 +10,7 @@ import 'package:zegel_cli/commands/inspect_command.dart';
 import 'package:zegel_cli/commands/keygen_command.dart';
 import 'package:zegel_cli/commands/redact_command.dart';
 import 'package:zegel_cli/commands/split_key_command.dart';
-=======
 
->>>>>>> theirs
 import 'package:zegel_cli/commands/attest_command.dart';
 import 'package:zegel_cli/commands/audit_command.dart';
 import 'package:zegel_cli/commands/batch_command.dart';

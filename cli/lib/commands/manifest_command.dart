@@ -82,14 +82,11 @@ class ManifestCreateCommand extends Command<int> {
       const JsonEncoder.withIndent('  ').convert(manifest),
     );
 
-<<<<<<< ours
     stdout.writeln('${Ansi.success('Manifest created')} with ${entries.length} file(s)');
 ||||||| original
     stdout.writeln(Ansi.success('Manifest created') + ' with ${entries.length} file(s)');
-=======
     stdout.writeln(
         '${Ansi.success('Manifest created')} with ${entries.length} file(s)');
->>>>>>> theirs
     stdout.writeln('  Output: $outputPath');
     return 0;
   }
@@ -136,14 +133,11 @@ class ManifestVerifyCommand extends Command<int> {
     final key = parseKeyFromArgs(argResults!);
     final manifestFile = File(manifestPath);
     if (!manifestFile.existsSync()) {
-<<<<<<< ours
       stderr.writeln('${Ansi.error('Error:')} Manifest not found: $manifestPath');
 ||||||| original
       stderr.writeln(Ansi.error('Error:') + ' Manifest not found: $manifestPath');
-=======
       stderr
           .writeln('${Ansi.error('Error:')} Manifest not found: $manifestPath');
->>>>>>> theirs
       return 1;
     }
 

@@ -1,7 +1,4 @@
-<<<<<<< /tmp/.tmpX4e0ve/ours
-=======
 
->>>>>>> /tmp/.tmpX4e0ve/theirs
 import 'package:flutter/material.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
@@ -595,7 +592,6 @@ class _SealScreenState extends State<SealScreen> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: _isError
-<<<<<<< /tmp/.tmpX4e0ve/ours
                         ? Colors.red.withValues(alpha:0.1)
                         : Colors.green.withValues(alpha:0.1),
                     borderRadius: BorderRadius.circular(8),
@@ -603,7 +599,6 @@ class _SealScreenState extends State<SealScreen> {
                       color: _isError
                           ? Colors.red.withValues(alpha:0.3)
                           : Colors.green.withValues(alpha:0.3),
-=======
                         ? Colors.red.withValues(alpha: 0.1)
                         : Colors.green.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
@@ -611,7 +606,6 @@ class _SealScreenState extends State<SealScreen> {
                       color: _isError
                           ? Colors.red.withValues(alpha: 0.3)
                           : Colors.green.withValues(alpha: 0.3),
->>>>>>> /tmp/.tmpX4e0ve/theirs
                     ),
                   ),
                   child: Row(

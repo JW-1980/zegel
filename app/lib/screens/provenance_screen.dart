@@ -1,10 +1,7 @@
-<<<<<<< ours
 import 'dart:typed_data';
 
 ||||||| original
-=======
 import 'dart:typed_data';
->>>>>>> theirs
 import 'package:flutter/material.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';

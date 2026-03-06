@@ -57,11 +57,8 @@ class BatchVerifyCommand extends Command<int> {
 
     final key = parseKeyFromArgs(argResults!);
     final stopOnFailure = argResults!['stop-on-failure'] as bool;
-<<<<<<< /tmp/.tmpKVOIn7/ours
 
-=======
 //     final verbose = argResults!['verbose'] as bool;
->>>>>>> /tmp/.tmpKVOIn7/theirs
 
     final files = dir
         .listSync()
@@ -187,7 +184,6 @@ class BatchSealCommand extends Command<int> {
 
     await Future.wait(files.map((file) async {
       final name = file.path.split(Platform.pathSeparator).last;
-<<<<<<< /tmp/.tmpKVOIn7/ours
       final content = Uint8List.fromList(await file.readAsBytes());
       final writer = ZegelWriter(key, ZegelOptions(
         contentType: contentType ?? 'application/octet-stream',
@@ -198,7 +194,6 @@ class BatchSealCommand extends Command<int> {
       final sealedBytes = await Future.microtask(() => writer.seal(content));
       await File('${outputDir.path}${Platform.pathSeparator}$name.zgl')
           .writeAsBytes(sealedBytes);
-=======
       final content = Uint8List.fromList(file.readAsBytesSync());
       final writer = ZegelWriter(
           key,
@@ -211,7 +206,6 @@ class BatchSealCommand extends Command<int> {
       final sealedBytes = writer.seal(content);
       File('${outputDir.path}${Platform.pathSeparator}$name.zgl')
           .writeAsBytesSync(sealedBytes);
->>>>>>> /tmp/.tmpKVOIn7/theirs
       stdout.writeln('  ${Ansi.success("✓")} $name -> $name.zgl');
     }));
     sealed = files.length;

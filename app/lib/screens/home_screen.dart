@@ -345,15 +345,12 @@ class _HomeScreenState extends State<HomeScreen> {
           drawerItem(
               Icons.verified_user, l10n.verifyAction, _navigateToVerify),
           drawerItem(
-<<<<<<< ours
               Icons.file_download, l10n.extractAction, () => _navigateToExtract()),
           drawerItem(Icons.search, l10n.inspectAction,
               () => _navigateTo(const InspectScreen())),
 ||||||| original
               Icons.file_download, l10n.extractAction, () => _navigateToExtract()),
-=======
               Icons.file_download, l10n.extractAction, _navigateToExtract),
->>>>>>> theirs
 
           const Divider(),
 

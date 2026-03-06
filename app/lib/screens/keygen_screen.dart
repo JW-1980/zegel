@@ -219,16 +219,13 @@ class _KeygenScreenState extends State<KeygenScreen> {
                       icon: Icons.print,
                       text: 'Consider printing and storing in a safe',
                     ),
-<<<<<<< ours
                     _SecurityTip(
                       icon: Icons.share,
 ||||||| original
                     _SecurityTip(
                       icon: Icons.share_off,
-=======
                     const _SecurityTip(
                       icon: Icons.share,
->>>>>>> theirs
                       text: 'Never share your key via email or messaging',
                     ),
                   ],

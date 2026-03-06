@@ -12,10 +12,8 @@ import 'key_derivation.dart';
 import 'merkle_tree.dart';
 import 'shamir.dart';
 
-// =============================================================================
-// ZegelOptions
-// =============================================================================
-
+// ======================================================================// ZegelOptions
+// ======================================================================
 /// Configuration options for creating a sealed .zgl file.
 ///
 /// All fields are optional. At a minimum, providing [contentType] is
@@ -156,10 +154,8 @@ class ZegelOptions {
   final bool preserveMediaMetadata;
 }
 
-// =============================================================================
-// ZegelWriter
-// =============================================================================
-
+// ======================================================================// ZegelWriter
+// ======================================================================
 /// Creates sealed .zgl files.
 ///
 /// The writer takes a 32-byte master key and a [ZegelOptions] configuration,
@@ -197,10 +193,8 @@ class ZegelWriter {
   Uint8List seal(Uint8List content) {
     final Random secureRandom = Random.secure();
 
-    // =========================================================================
-    // 1. Determine flags
-    // =========================================================================
-    int flags = 0;
+    // ==================================================================    // 1. Determine flags
+    // ==================================================================    int flags = 0;
     if (options.metadata != null) {
       flags |= ZegelFormat.flagHasMetadata;
     }
@@ -232,25 +226,19 @@ class ZegelWriter {
       flags |= ZegelFormat.flagVersioned;
     }
 
-    // =========================================================================
-    // 2. Generate or use provided salt
-    // =========================================================================
-    final Uint8List salt = options.salt != null
+    // ==================================================================    // 2. Generate or use provided salt
+    // ==================================================================    final Uint8List salt = options.salt != null
         ? Uint8List.fromList(options.salt!)
         : _randomBytes(secureRandom, ZegelFormat.saltSize);
 
-    // =========================================================================
-    // 3. Split content into chunks
-    // =========================================================================
-    final List<Uint8List> contentChunks = _splitContent(content);
+    // ==================================================================    // 3. Split content into chunks
+    // ==================================================================    final List<Uint8List> contentChunks = _splitContent(content);
 
     // Count leading non-content blocks so canary knows actual block index.
     final int contentStartIndex = (options.metadata != null) ? 1 : 0;
 
-    // =========================================================================
-    // 4. Apply canary padding to each content chunk (before compression)
-    // =========================================================================
-    if (options.recipientId != null) {
+    // ==================================================================    // 4. Apply canary padding to each content chunk (before compression)
+    // ==================================================================    if (options.recipientId != null) {
       for (int i = 0; i < contentChunks.length; i++) {
         final int blockIndex = contentStartIndex + i;
         final Uint8List padding = CanaryTrap.generatePadding(
@@ -267,10 +255,8 @@ class ZegelWriter {
       }
     }
 
-    // =========================================================================
-    // 5. Compress content chunks (after canary padding, before hashing)
-    // =========================================================================
-    if (options.compress) {
+    // ==================================================================    // 5. Compress content chunks (after canary padding, before hashing)
+    // ==================================================================    if (options.compress) {
       const ZLibEncoder encoder = ZLibEncoder();
       for (int i = 0; i < contentChunks.length; i++) {
         contentChunks[i] = Uint8List.fromList(
@@ -279,10 +265,8 @@ class ZegelWriter {
       }
     }
 
-    // =========================================================================
-    // 6. Assemble all block plaintexts and types
-    // =========================================================================
-    final List<Uint8List> plaintexts = <Uint8List>[];
+    // ==================================================================    // 6. Assemble all block plaintexts and types
+    // ==================================================================    final List<Uint8List> plaintexts = <Uint8List>[];
     final List<int> blockTypes = <int>[];
 
     // Metadata block: always block 0 when present.
@@ -311,23 +295,17 @@ class ZegelWriter {
       blockTypes.add(ZegelFormat.blockDisclosureIndex);
     }
 
-    // =========================================================================
-    // 7. Compute leaf hashes
-    // =========================================================================
-    final List<Uint8List> leafHashes = <Uint8List>[];
+    // ==================================================================    // 7. Compute leaf hashes
+    // ==================================================================    final List<Uint8List> leafHashes = <Uint8List>[];
     for (final Uint8List pt in plaintexts) {
       leafHashes.add(Uint8List.fromList(sha256.convert(pt).bytes));
     }
 
-    // =========================================================================
-    // 8. Build Merkle tree
-    // =========================================================================
-    final Uint8List merkleRoot = MerkleTree.buildRoot(leafHashes);
+    // ==================================================================    // 8. Build Merkle tree
+    // ==================================================================    final Uint8List merkleRoot = MerkleTree.buildRoot(leafHashes);
 
-    // =========================================================================
-    // 9. Derive expiration date string for HKDF
-    // =========================================================================
-    String? expirationDate;
+    // ==================================================================    // 9. Derive expiration date string for HKDF
+    // ==================================================================    String? expirationDate;
     if (options.expiration != null) {
       final DateTime dt = options.expiration!.toUtc();
       expirationDate = '${dt.year.toString().padLeft(4, '0')}-'
@@ -335,10 +313,8 @@ class ZegelWriter {
           '${dt.day.toString().padLeft(2, '0')}';
     }
 
-    // =========================================================================
-    // 10. Calculate sizes and allocate exact buffer
-    // =========================================================================
-    // Header (magic: 8, version: 2, flags: 2, timestamp: 8, contentType: 64, filenameLen: 2, salt: 32, blockCount: 4) = 122
+    // ==================================================================    // 10. Calculate sizes and allocate exact buffer
+    // ==================================================================    // Header (magic: 8, version: 2, flags: 2, timestamp: 8, contentType: 64, filenameLen: 2, salt: 32, blockCount: 4) = 122
     int headerSize = 122;
 
     final Uint8List fnBytes = options.filename != null
@@ -408,10 +384,8 @@ class ZegelWriter {
         finalFile.buffer, finalFile.offsetInBytes, finalFile.length);
     int offset = 0;
 
-    // =========================================================================
-    // 11. Write Header
-    // =========================================================================
-    finalFile.setRange(offset, offset + 8, ZegelFormat.magic);
+    // ==================================================================    // 11. Write Header
+    // ==================================================================    finalFile.setRange(offset, offset + 8, ZegelFormat.magic);
     offset += 8;
 
     bd.setUint8(offset++, ZegelFormat.versionMajor);
@@ -420,7 +394,6 @@ class ZegelWriter {
     bd.setUint16(offset, flags, Endian.big);
     offset += 2;
 
-<<<<<<< ours
     // Created timestamp (uint64 BE, Unix epoch seconds).
     final int nowEpoch = DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
     builder.add(_packUint64BE(nowEpoch));
@@ -429,11 +402,9 @@ class ZegelWriter {
     final int nowEpoch =
         DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
     builder.add(_packUint64BE(nowEpoch));
-=======
     final int nowEpoch = DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
     bd.setUint64(offset, nowEpoch, Endian.big);
     offset += 8;
->>>>>>> theirs
 
     final Uint8List ctPadded = Uint8List(ZegelFormat.contentTypeSize);
     if (options.contentType != null) {
@@ -446,7 +417,6 @@ class ZegelWriter {
     finalFile.setRange(offset, offset + 64, ctPadded);
     offset += 64;
 
-<<<<<<< ours
     // Filename length (uint16 BE) + filename (variable).
     final Uint8List fnBytes = options.filename != null
         ? Uint8List.fromList(utf8.encode(options.filename!))
@@ -469,10 +439,8 @@ class ZegelWriter {
       );
     }
     builder.add(_packUint16BE(fnBytes.length));
-=======
     bd.setUint16(offset, fnBytes.length, Endian.big);
     offset += 2;
->>>>>>> theirs
     if (fnBytes.isNotEmpty) {
       finalFile.setRange(offset, offset + fnBytes.length, fnBytes);
       offset += fnBytes.length;
@@ -516,10 +484,8 @@ class ZegelWriter {
       offset += pubMetaBytes.length;
     }
 
-    // =========================================================================
-    // 12. Write Directory and Encrypt Blocks
-    // =========================================================================
-    int dirOffset = offset;
+    // ==================================================================    // 12. Write Directory and Encrypt Blocks
+    // ==================================================================    int dirOffset = offset;
     int dataOffset = dirOffset + directorySize + merkleSize + keyCommitmentSize;
 
     final List<Uint8List> blockKeys = <Uint8List>[];
@@ -590,10 +556,8 @@ class ZegelWriter {
       throw Exception('Data offset mismatch');
     }
 
-    // =========================================================================
-    // 13. Compute and append master seal
-    // =========================================================================
-    final Uint8List preSealBytesView = Uint8List.view(
+    // ==================================================================    // 13. Compute and append master seal
+    // ==================================================================    final Uint8List preSealBytesView = Uint8List.view(
         finalFile.buffer, finalFile.offsetInBytes, preSealBytesLength);
 
     final Uint8List sealKey = KeyDerivation.computeSealKey(
@@ -619,10 +583,8 @@ class ZegelWriter {
     return ShamirSecretSharing.split(masterKey, threshold, total);
   }
 
-  // ===========================================================================
-  // Private helpers
-  // ===========================================================================
-
+  // ====================================================================  // Private helpers
+  // ====================================================================
   /// Splits [content] into chunks of [options.blockSize] bytes.
   ///
   /// The last chunk may be smaller. Empty content produces a single empty

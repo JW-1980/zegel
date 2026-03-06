@@ -1,11 +1,8 @@
 
 import 'package:flutter/material.dart';
-<<<<<<< ours
 
 ||||||| original
 import 'package:flutter/services.dart';
-=======
->>>>>>> theirs
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:zegel/zegel.dart';
@@ -71,13 +68,10 @@ class _AttestScreenState extends State<AttestScreen> {
   Future<void> _pickFile() async {
     final fileService = context.read<FileService>();
     final path = await fileService.pickFile(
-<<<<<<< ours
       type: FileType.any,
 ||||||| original
       allowedExtensions: ['zgl'],
-=======
 
->>>>>>> theirs
     );
     if (path != null) {
       await _setFile(path);

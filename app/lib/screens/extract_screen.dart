@@ -97,13 +97,10 @@ class _ExtractScreenState extends State<ExtractScreen> {
 
     try {
       final zegelService = context.read<ZegelService>();
-<<<<<<< ours
 
 ||||||| original
       final fileService = context.read<FileService>();
 
-=======
->>>>>>> theirs
       // Use a temp path then show save dialog
       final suggestedName =
           _inspection?.originalFilename ?? 'extracted_file';

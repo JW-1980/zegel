@@ -532,15 +532,12 @@ class CanaryIdentifyCommand extends Command<int> {
     final fileBytes = Uint8List.fromList(file.readAsBytesSync());
 
     // Verify the file first.
-<<<<<<< ours
     const reader = ZegelReader();
 
 ||||||| original
     final reader = const ZegelReader();
     ZegelResult result;
-=======
     final reader = const ZegelReader();
->>>>>>> theirs
     try {
       reader.verify(fileBytes, masterKey);
     } on ZegelException catch (e) {

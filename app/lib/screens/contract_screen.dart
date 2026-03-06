@@ -461,7 +461,6 @@ class _ContractScreenState extends State<ContractScreen> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: _isError
-<<<<<<< /tmp/.tmpLtqF6j/ours
                         ? Colors.red.withValues(alpha:0.1)
                         : Colors.green.withValues(alpha:0.1),
                     borderRadius: BorderRadius.circular(8),
@@ -469,7 +468,6 @@ class _ContractScreenState extends State<ContractScreen> {
                       color: _isError
                           ? Colors.red.withValues(alpha:0.3)
                           : Colors.green.withValues(alpha:0.3),
-=======
                         ? Colors.red.withValues(alpha: 0.1)
                         : Colors.green.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
@@ -477,7 +475,6 @@ class _ContractScreenState extends State<ContractScreen> {
                       color: _isError
                           ? Colors.red.withValues(alpha: 0.3)
                           : Colors.green.withValues(alpha: 0.3),
->>>>>>> /tmp/.tmpLtqF6j/theirs
                     ),
                   ),
                   child: Row(

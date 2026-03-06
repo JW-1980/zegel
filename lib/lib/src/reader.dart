@@ -34,10 +34,8 @@ import 'merkle_tree.dart'
 ;
 
 
-// =============================================================================
-// Result types
-// =============================================================================
-
+// ======================================================================// Result types
+// ======================================================================
 /// Result of verifying and extracting a .zgl file.
 class ZegelResult
 {
@@ -143,6 +141,7 @@ class ZegelInspection
     this.publicMetadata,
     this.splitKeyParams,
     this.expirationTimestamp,
+    this.blocks = const [],
 
 }
 
@@ -195,13 +194,16 @@ class ZegelInspection
 ;
 
 
+  /// Information about each block in the directory.
+  final List<Map<String, dynamic>> blocks
+;
+
+
 }
 
 
-// =============================================================================
-// Internal helpers
-// =============================================================================
-
+// ======================================================================// Internal helpers
+// ======================================================================
 /// Parsed block directory entry (internal).
 class _DirEntry
 {
@@ -348,10 +350,8 @@ class _ParsedHeader
 }
 
 
-// =============================================================================
-// ZegelReader
-// =============================================================================
-
+// ======================================================================// ZegelReader
+// ======================================================================
 /// Reads, verifies, and extracts .zgl files.
 ///
 /// The reader supports three modes of access:
@@ -381,15 +381,11 @@ class ZegelReader
   /// Throws [ZegelExpiredException] if the file's cryptographic expiration
   /// has passed.
   ZegelResult verify(Uint8List fileBytes, Uint8List masterKey) {
-    // =========================================================================
-    // 1-4. Parse header, extended header, block directory
-    // =========================================================================
-    final _ParsedHeader h = _parseAll(fileBytes);
+    // ==================================================================    // 1-4. Parse header, extended header, block directory
+    // ==================================================================    final _ParsedHeader h = _parseAll(fileBytes);
 
-    // =========================================================================
-    // 5. Check expiration
-    // =========================================================================
-    if (h.expirationTimestamp != null) {
+    // ==================================================================    // 5. Check expiration
+    // ==================================================================    if (h.expirationTimestamp != null) {
       final int nowEpoch =
           DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
       if (nowEpoch >= h.expirationTimestamp!) {
@@ -405,10 +401,8 @@ h.expirationTimestamp
       }
     }
 
-    // =========================================================================
-    // 6. Verify master seal (HMAC-SHA512)
-    // =========================================================================
-    final Uint8List preSealBytes = Uint8List.sublistView(
+    // ==================================================================    // 6. Verify master seal (HMAC-SHA512)
+    // ==================================================================    final Uint8List preSealBytes = Uint8List.sublistView(
       fileBytes,
       0,
       fileBytes.length - ZegelFormat.sealSize,
@@ -432,27 +426,23 @@ h.expirationTimestamp
       throw const ZegelTamperedException('Master seal verification failed');
     }
 
-    // =========================================================================
-    // 7. Verify Merkle tree
-    // =========================================================================
-    final List<Uint8List> leafHashes =
-        h.directory.map((_DirEntry e) => e.hash).toList();
+    // ==================================================================    // 7. Verify Merkle tree
+    // ==================================================================    final List<Uint8List> leafHashes = h.directory
+        .map((_DirEntry e) => e.hash)
+        .toList();
     final Uint8List computedRoot = MerkleTree.buildRoot(leafHashes);
 
     if (!_constantTimeEquals(computedRoot, h.merkleRoot)) {
       throw const ZegelTamperedException('Merkle root mismatch');
     }
 
-    // =========================================================================
-    // 8. Build expiration date string for HKDF info
-    // =========================================================================
-    String? expirationDate;
+    // ==================================================================    // 8. Build expiration date string for HKDF info
+    // ==================================================================    String? expirationDate;
     if (h.expirationTimestamp != null) {
       final DateTime dt = DateTime.fromMillisecondsSinceEpoch(
         h.expirationTimestamp! * 1000,
         isUtc: true,
       );
-<<<<<<< ours
       expirationDate =
           '$
 {
@@ -480,17 +470,13 @@ dt.day.toString().padLeft(2, '0')
           '${dt.year.toString().padLeft(4, '0')}-'
           '${dt.month.toString().padLeft(2, '0')}-'
           '${dt.day.toString().padLeft(2, '0')}';
-=======
       expirationDate = '${dt.year.toString().padLeft(4, '0')}-'
           '${dt.month.toString().padLeft(2, '0')}-'
           '${dt.day.toString().padLeft(2, '0')}';
->>>>>>> theirs
     }
 
-    // =========================================================================
-    // 9. Verify key commitment (if present)
-    // =========================================================================
-    if (h.flags & ZegelFormat.flagHasKeyCommitment != 0) {
+    // ==================================================================    // 9. Verify key commitment (if present)
+    // ==================================================================    if (h.flags & ZegelFormat.flagHasKeyCommitment != 0) {
       final List<Uint8List> blockKeys = <Uint8List>[];
       for (int i = 0; i < h.blockCount; i++) {
         blockKeys.add(
@@ -503,18 +489,17 @@ dt.day.toString().padLeft(2, '0')
           ),
         );
       }
-      final Uint8List computedCommitment =
-          KeyDerivation.computeKeyCommitment(blockKeys);
+      final Uint8List computedCommitment = KeyDerivation.computeKeyCommitment(
+        blockKeys,
+      );
 
       if (!_constantTimeEquals(computedCommitment, h.keyCommitment!)) {
         throw const ZegelTamperedException('Key commitment mismatch');
       }
     }
 
-    // =========================================================================
-    // 10. Decrypt each block, verify hashes, decompress, strip canary
-    // =========================================================================
-    int dataOffset = h.dataStart;
+    // ==================================================================    // 10. Decrypt each block, verify hashes, decompress, strip canary
+    // ==================================================================    int dataOffset = h.dataStart;
     final BytesBuilder contentParts = BytesBuilder();
     Map<String, dynamic>? metadata;
     final List<Map<String, dynamic>> attestations = <Map<String, dynamic>>[];
@@ -522,12 +507,9 @@ dt.day.toString().padLeft(2, '0')
     final List<Map<String, dynamic>> provenanceEntries =
         <Map<String, dynamic>>[];
     final List<int> redactedBlocks = <int>[];
-<<<<<<< ours
 ||||||| original
     final List<int> disclosedIndices = <int>[];
-=======
 //     final List<int> disclosedIndices = <int>[];
->>>>>>> theirs
 
 
     for (int i = 0; i < h.blockCount; i++) {
@@ -626,10 +608,8 @@ dt.day.toString().padLeft(2, '0')
       }
     }
 
-    // =========================================================================
-    // 11. Build result
-    // =========================================================================
-    return ZegelResult(
+    // ==================================================================    // 11. Build result
+    // ==================================================================    return ZegelResult(
       valid: true,
       content: contentParts.toBytes(),
       metadata: metadata,
@@ -661,6 +641,15 @@ dt.day.toString().padLeft(2, '0')
       };
     }
 
+    final blocks = <Map<String, dynamic>>[];
+    for (int i = 0; i < h.blockCount; i++) {
+      blocks.add({
+        'index': i,
+        'type': h.directory[i].type,
+        'ciphertextLen': h.directory[i].ciphertextLen,
+      });
+    }
+
     return ZegelInspection(
       version: '$
 {
@@ -683,6 +672,7 @@ h.versionMinor
       publicMetadata: h.publicMetadata,
       splitKeyParams: splitKeyParams,
       expirationTimestamp: h.expirationTimestamp,
+      blocks: blocks,
     );
   }
 
@@ -732,12 +722,9 @@ h.versionMinor
     final List<Map<String, dynamic>> provenanceEntries =
         <Map<String, dynamic>>[];
     final List<int> redactedBlocks = <int>[];
-<<<<<<< ours
 ||||||| original
     final List<int> disclosedIndices = <int>[];
-=======
 //     final List<int> disclosedIndices = <int>[];
->>>>>>> theirs
 
 
     for (int i = 0; i < h.blockCount; i++) {
@@ -754,18 +741,13 @@ h.versionMinor
         continue;
       }
 
-<<<<<<< ours
       final List<int> disclosedIndices = <int>[];
           disclosedIndices.add(i);
 ||||||| original
       disclosedIndices.add(i);
-=======
 //       disclosedIndices.add(i);
->>>>>>> theirs
 
-      final Uint8List blockKey = _hexToBytes(
-        blockKeysMap[indexStr] as String,
-      );
+      final Uint8List blockKey = _hexToBytes(blockKeysMap[indexStr] as String);
       final int bOffset = blockDataOffsets[i];
       final Uint8List ciphertext = Uint8List.sublistView(
         fileBytes,
@@ -854,20 +836,15 @@ h.versionMinor
       auditTrail: auditTrail.isNotEmpty ? auditTrail : null,
       provenance: provenanceEntries.isNotEmpty ? provenanceEntries : null,
       redactedBlocks: redactedBlocks.isNotEmpty ? redactedBlocks : null,
-<<<<<<< ours
       disclosedBlocks: null,
 ||||||| original
       disclosedBlocks: disclosedIndices,
-=======
 //       disclosedBlocks: disclosedIndices,
->>>>>>> theirs
     );
   }
 
-  // ===========================================================================
-  // Internal parsing
-  // ===========================================================================
-
+  // ====================================================================  // Internal parsing
+  // ====================================================================
   /// Parses the complete file structure: header, extended header, block
   /// directory, Merkle root, and key commitment.
   _ParsedHeader _parseAll(Uint8List fileBytes) {

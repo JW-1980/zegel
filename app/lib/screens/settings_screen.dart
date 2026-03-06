@@ -24,13 +24,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _isLoadingKeys = true;
   String _selectedBlockSize = '65536';
   String _defaultClassification = 'INTERNAL';
-<<<<<<< ours
 ||||||| original
   String _tsaUrl = '';
-=======
   // ignore: unused_field
   String _tsaUrl = '';
->>>>>>> theirs
   bool _preserveMediaMetadata = false;
   bool _anonymousMode = false;
 
@@ -512,17 +509,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       hintText: l10n.settingsTsaUrlHint,
                       border: const OutlineInputBorder(),
                     ),
-<<<<<<< ours
                     onChanged: (_) {},
 ||||||| original
                     onChanged: (v) => setState(() => _tsaUrl = v),
-=======
                     // ignore: deprecated_member_use
                     // ignore: deprecated_member_use
                     // ignore: deprecated_member_use
                     // ignore: deprecated_member_use
                           onChanged: (v) => setState(() => _tsaUrl = v),
->>>>>>> theirs
                   ),
                 ],
               ),
@@ -594,7 +588,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ],
                   ),
                   const Divider(),
-<<<<<<< ours
                   const _AboutRow(label: 'Application', value: 'Zegel'),
                   const _AboutRow(label: 'Version', value: '1.3.0'),
                   const _AboutRow(label: 'Format Version', value: '1.2'),
@@ -606,7 +599,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   _AboutRow(label: 'Format Version', value: '1.2'),
                   _AboutRow(label: 'File Extension', value: '.zgl'),
                   _AboutRow(label: 'MIME Type', value: 'application/x-zgl'),
-=======
                   const _AboutRow(label: 'Application', // ignore: deprecated_member_use
  value: 'Zegel'),
                   const _AboutRow(label: 'Version', // ignore: deprecated_member_use
@@ -617,7 +609,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
  value: '.zgl'),
                   const _AboutRow(label: 'MIME Type', // ignore: deprecated_member_use
  value: 'application/x-zgl'),
->>>>>>> theirs
                   const SizedBox(height: 8),
                   const _AboutRow(
                     label: 'Code License',

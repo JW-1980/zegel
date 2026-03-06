@@ -251,15 +251,12 @@ class PartyManager extends StatelessWidget {
               contentPadding: EdgeInsets.zero,
               leading: CircleAvatar(
                 radius: 18,
-<<<<<<< ours
                 backgroundColor:
                     theme.colorScheme.primary.withValues(alpha: 0.1),
 ||||||| original
                 backgroundColor:
                     theme.colorScheme.primary.withOpacity(0.1),
-=======
                 backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
->>>>>>> theirs
                 child: Icon(
                   _roleIcon(party.role),
                   size: 20,

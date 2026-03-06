@@ -51,14 +51,11 @@ class VersionChainVerifyCommand extends Command<int> {
     for (int i = 0; i < filePaths.length; i++) {
       final file = File(filePaths[i]);
       if (!file.existsSync()) {
-<<<<<<< ours
         stderr.writeln('${Ansi.error('Error:')} File not found: ${filePaths[i]}');
 ||||||| original
         stderr.writeln(Ansi.error('Error:') + ' File not found: ${filePaths[i]}');
-=======
         stderr
             .writeln('${Ansi.error('Error:')} File not found: ${filePaths[i]}');
->>>>>>> theirs
         return 1;
       }
 
