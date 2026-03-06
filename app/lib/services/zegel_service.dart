@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:zegel/zegel.dart' as zegel_core;
+
 /// Result status from a verification operation.
 enum ZegelStatus {
   /// File is intact and has not been tampered with.
@@ -464,11 +466,30 @@ class ZegelService {
     String filePath,
     String hexKey,
   ) async {
-    // Delegate to the zegel library.
-    throw UnimplementedError(
-      'Block listing requires the zegel core library. '
-      'Ensure package:zegel is properly linked in pubspec.yaml.',
-    );
+    final file = File(filePath);
+    if (!await file.exists()) {
+      throw FileSystemException('File does not exist', filePath);
+    }
+
+    final bytes = await file.readAsBytes();
+    final inspection = const zegel_core.ZegelReader().inspect(bytes);
+
+    final blocks = <ZegelBlockInfo>[];
+    for (final b in inspection.blocks) {
+      final index = b['index'] as int;
+      final type = b['type'] as int;
+      final length = b['ciphertextLen'] as int;
+
+      blocks.add(ZegelBlockInfo(
+        index: index,
+        blockType: type,
+        blockTypeName: blockTypeName(type),
+        ciphertextLength: length,
+        isRedacted: type == 0x06,
+      ));
+    }
+
+    return blocks;
   }
 
   /// Returns a human-readable name for a block type value.

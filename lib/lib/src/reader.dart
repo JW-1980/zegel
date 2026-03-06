@@ -78,6 +78,7 @@ class ZegelInspection {
     this.publicMetadata,
     this.splitKeyParams,
     this.expirationTimestamp,
+    this.blocks = const [],
   });
 
   /// Format version string (e.g. `"1.2"`).
@@ -106,6 +107,9 @@ class ZegelInspection {
 
   /// Expiration timestamp as Unix epoch seconds.
   final int? expirationTimestamp;
+
+  /// Information about each block in the directory.
+  final List<Map<String, dynamic>> blocks;
 }
 
 // =============================================================================
@@ -244,8 +248,9 @@ class ZegelReader {
     // =========================================================================
     // 7. Verify Merkle tree
     // =========================================================================
-    final List<Uint8List> leafHashes =
-        h.directory.map((_DirEntry e) => e.hash).toList();
+    final List<Uint8List> leafHashes = h.directory
+        .map((_DirEntry e) => e.hash)
+        .toList();
     final Uint8List computedRoot = MerkleTree.buildRoot(leafHashes);
 
     if (!_constantTimeEquals(computedRoot, h.merkleRoot)) {
@@ -283,8 +288,9 @@ class ZegelReader {
           ),
         );
       }
-      final Uint8List computedCommitment =
-          KeyDerivation.computeKeyCommitment(blockKeys);
+      final Uint8List computedCommitment = KeyDerivation.computeKeyCommitment(
+        blockKeys,
+      );
 
       if (!_constantTimeEquals(computedCommitment, h.keyCommitment!)) {
         throw const ZegelTamperedException('Key commitment mismatch');
@@ -380,8 +386,7 @@ class ZegelReader {
         case ZegelFormat.blockContent:
           contentParts.add(plaintext);
         case ZegelFormat.blockMetadata:
-          metadata =
-              jsonDecode(utf8.decode(plaintext)) as Map<String, dynamic>;
+          metadata = jsonDecode(utf8.decode(plaintext)) as Map<String, dynamic>;
         case ZegelFormat.blockProvenance:
           provenanceEntries.add(
             jsonDecode(utf8.decode(plaintext)) as Map<String, dynamic>,
@@ -436,6 +441,15 @@ class ZegelReader {
       };
     }
 
+    final blocks = <Map<String, dynamic>>[];
+    for (int i = 0; i < h.blockCount; i++) {
+      blocks.add({
+        'index': i,
+        'type': h.directory[i].type,
+        'ciphertextLen': h.directory[i].ciphertextLen,
+      });
+    }
+
     return ZegelInspection(
       version: '${h.versionMajor}.${h.versionMinor}',
       flags: h.flags,
@@ -446,6 +460,7 @@ class ZegelReader {
       publicMetadata: h.publicMetadata,
       splitKeyParams: splitKeyParams,
       expirationTimestamp: h.expirationTimestamp,
+      blocks: blocks,
     );
   }
 
@@ -513,9 +528,7 @@ class ZegelReader {
 
       disclosedIndices.add(i);
 
-      final Uint8List blockKey = _hexToBytes(
-        blockKeysMap[indexStr] as String,
-      );
+      final Uint8List blockKey = _hexToBytes(blockKeysMap[indexStr] as String);
       final int bOffset = blockDataOffsets[i];
       final Uint8List ciphertext = Uint8List.sublistView(
         fileBytes,
@@ -575,8 +588,7 @@ class ZegelReader {
         case ZegelFormat.blockContent:
           contentParts.add(plaintext);
         case ZegelFormat.blockMetadata:
-          metadata =
-              jsonDecode(utf8.decode(plaintext)) as Map<String, dynamic>;
+          metadata = jsonDecode(utf8.decode(plaintext)) as Map<String, dynamic>;
         case ZegelFormat.blockProvenance:
           provenanceEntries.add(
             jsonDecode(utf8.decode(plaintext)) as Map<String, dynamic>,
@@ -722,8 +734,7 @@ class ZegelReader {
       final String pubMetaJson = utf8.decode(
         fileBytes.sublist(cursor, cursor + pubMetaLen),
       );
-      h.publicMetadata =
-          jsonDecode(pubMetaJson) as Map<String, dynamic>;
+      h.publicMetadata = jsonDecode(pubMetaJson) as Map<String, dynamic>;
       cursor += pubMetaLen;
     }
 
