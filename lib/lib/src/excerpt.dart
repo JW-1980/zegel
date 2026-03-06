@@ -21,7 +21,8 @@ class ExcerptProof {
     int blockIndex,
   ) {
     if (blockIndex < 0 || blockIndex >= leafHashes.length) {
-      throw RangeError('Block index $blockIndex out of range [0, ${leafHashes.length})');
+      throw RangeError(
+          'Block index $blockIndex out of range [0, ${leafHashes.length})');
     }
 
     final proof = MerkleTree.generateProof(leafHashes, blockIndex);
@@ -31,7 +32,7 @@ class ExcerptProof {
       'block_index': blockIndex,
       'block_hash': _bytesToHex(leafHashes[blockIndex]),
       'merkle_root': _bytesToHex(root),
-      'proof': proof.map((p) => _bytesToHex(p)).toList(),
+      'proof': proof.map(_bytesToHex).toList(),
       'total_leaves': leafHashes.length,
     };
   }

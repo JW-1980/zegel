@@ -132,7 +132,13 @@ class Classification {
     }
 
     // Verify and extract the original file.
+<<<<<<< ours
+    const ZegelReader reader = ZegelReader();
+||||||| original
     final ZegelReader reader = ZegelReader();
+=======
+    final ZegelReader reader = const ZegelReader();
+>>>>>>> theirs
     final ZegelResult result = reader.verify(fileBytes, masterKey);
 
     if (!result.valid) {

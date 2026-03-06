@@ -133,7 +133,11 @@ class _RedactScreenState extends State<RedactScreen> {
                       'Block $i',
                       style: const TextStyle(fontSize: 12),
                     ),
-                    backgroundColor: Colors.red.withOpacity(0.1),
+<<<<<<< /tmp/.tmpN2ZWRI/ours
+                    backgroundColor: Colors.red.withValues(alpha:0.1),
+=======
+                    backgroundColor: Colors.red.withValues(alpha: 0.1),
+>>>>>>> /tmp/.tmpN2ZWRI/theirs
                     visualDensity: VisualDensity.compact,
                   );
                 }).toList(),
@@ -162,6 +166,7 @@ class _RedactScreenState extends State<RedactScreen> {
     );
 
     if (confirmed != true) return;
+    if (!mounted) return;
 
     setState(() {
       _isRedacting = true;
@@ -226,9 +231,15 @@ class _RedactScreenState extends State<RedactScreen> {
               padding: const EdgeInsets.all(12),
               margin: const EdgeInsets.only(bottom: 16),
               decoration: BoxDecoration(
-                color: Colors.orange.withOpacity(0.1),
+<<<<<<< /tmp/.tmpN2ZWRI/ours
+                color: Colors.orange.withValues(alpha:0.1),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.orange.withOpacity(0.3)),
+                border: Border.all(color: Colors.orange.withValues(alpha:0.3)),
+=======
+                color: Colors.orange.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
+>>>>>>> /tmp/.tmpN2ZWRI/theirs
               ),
               child: Row(
                 children: [
@@ -425,13 +436,23 @@ class _RedactScreenState extends State<RedactScreen> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: _isError
-                        ? Colors.red.withOpacity(0.1)
-                        : Colors.green.withOpacity(0.1),
+<<<<<<< /tmp/.tmpN2ZWRI/ours
+                        ? Colors.red.withValues(alpha:0.1)
+                        : Colors.green.withValues(alpha:0.1),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
                       color: _isError
-                          ? Colors.red.withOpacity(0.3)
-                          : Colors.green.withOpacity(0.3),
+                          ? Colors.red.withValues(alpha:0.3)
+                          : Colors.green.withValues(alpha:0.3),
+=======
+                        ? Colors.red.withValues(alpha: 0.1)
+                        : Colors.green.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: _isError
+                          ? Colors.red.withValues(alpha: 0.3)
+                          : Colors.green.withValues(alpha: 0.3),
+>>>>>>> /tmp/.tmpN2ZWRI/theirs
                     ),
                   ),
                   child: Row(

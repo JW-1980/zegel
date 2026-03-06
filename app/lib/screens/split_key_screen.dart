@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../services/zegel_service.dart';
 import '../widgets/key_input.dart';
+import 'package:flutter/services.dart';
 
 /// Screen for splitting and reconstructing keys using Shamir's Secret Sharing.
 ///
@@ -166,7 +166,11 @@ class _SplitKeyScreenState extends State<SplitKeyScreen>
         bottom: TabBar(
           controller: _tabController,
           labelColor: theme.colorScheme.onPrimary,
-          unselectedLabelColor: theme.colorScheme.onPrimary.withOpacity(0.6),
+<<<<<<< /tmp/.tmpCvTJfj/ours
+          unselectedLabelColor: theme.colorScheme.onPrimary.withValues(alpha:0.6),
+=======
+          unselectedLabelColor: theme.colorScheme.onPrimary.withValues(alpha: 0.6),
+>>>>>>> /tmp/.tmpCvTJfj/theirs
           indicatorColor: theme.colorScheme.onPrimary,
           tabs: const [
             Tab(text: 'Split Key'),
@@ -302,7 +306,11 @@ class _SplitKeyScreenState extends State<SplitKeyScreen>
               padding: const EdgeInsets.all(12),
               margin: const EdgeInsets.only(bottom: 16),
               decoration: BoxDecoration(
-                color: Colors.red.withOpacity(0.1),
+<<<<<<< /tmp/.tmpCvTJfj/ours
+                color: Colors.red.withValues(alpha:0.1),
+=======
+                color: Colors.red.withValues(alpha: 0.1),
+>>>>>>> /tmp/.tmpCvTJfj/theirs
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
@@ -349,7 +357,11 @@ class _SplitKeyScreenState extends State<SplitKeyScreen>
                             CircleAvatar(
                               radius: 14,
                               backgroundColor:
-                                  theme.colorScheme.primary.withOpacity(0.1),
+<<<<<<< /tmp/.tmpCvTJfj/ours
+                                  theme.colorScheme.primary.withValues(alpha:0.1),
+=======
+                                  theme.colorScheme.primary.withValues(alpha: 0.1),
+>>>>>>> /tmp/.tmpCvTJfj/theirs
                               child: Text(
                                 '${index + 1}',
                                 style: TextStyle(
@@ -405,10 +417,17 @@ class _SplitKeyScreenState extends State<SplitKeyScreen>
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: Colors.orange.withOpacity(0.1),
+<<<<<<< /tmp/.tmpCvTJfj/ours
+                        color: Colors.orange.withValues(alpha:0.1),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: Colors.orange.withOpacity(0.3),
+                          color: Colors.orange.withValues(alpha:0.3),
+=======
+                        color: Colors.orange.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: Colors.orange.withValues(alpha: 0.3),
+>>>>>>> /tmp/.tmpCvTJfj/theirs
                         ),
                       ),
                       child: Row(
@@ -493,7 +512,11 @@ class _SplitKeyScreenState extends State<SplitKeyScreen>
                           CircleAvatar(
                             radius: 14,
                             backgroundColor:
-                                theme.colorScheme.primary.withOpacity(0.1),
+<<<<<<< /tmp/.tmpCvTJfj/ours
+                                theme.colorScheme.primary.withValues(alpha:0.1),
+=======
+                                theme.colorScheme.primary.withValues(alpha: 0.1),
+>>>>>>> /tmp/.tmpCvTJfj/theirs
                             child: Text(
                               '${index + 1}',
                               style: TextStyle(
@@ -566,7 +589,11 @@ class _SplitKeyScreenState extends State<SplitKeyScreen>
               padding: const EdgeInsets.all(12),
               margin: const EdgeInsets.only(bottom: 16),
               decoration: BoxDecoration(
-                color: Colors.red.withOpacity(0.1),
+<<<<<<< /tmp/.tmpCvTJfj/ours
+                color: Colors.red.withValues(alpha:0.1),
+=======
+                color: Colors.red.withValues(alpha: 0.1),
+>>>>>>> /tmp/.tmpCvTJfj/theirs
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(

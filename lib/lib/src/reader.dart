@@ -1,23 +1,53 @@
-import 'dart:convert';
-import 'dart:typed_data';
+import 'dart:convert'
+;
 
-import 'package:archive/archive.dart';
-import 'package:crypto/crypto.dart';
-import 'package:pointycastle/export.dart';
 
-import 'canary.dart';
-import 'format.dart';
-import 'key_derivation.dart';
-import 'merkle_tree.dart';
+import 'dart:typed_data'
+;
+
+
+import 'package:archive/archive.dart'
+;
+
+
+import 'package:crypto/crypto.dart'
+;
+
+
+import 'package:pointycastle/export.dart'
+;
+
+
+import 'canary.dart'
+;
+
+
+import 'format.dart'
+;
+
+
+import 'key_derivation.dart'
+;
+
+
+import 'merkle_tree.dart'
+;
+
 
 // =============================================================================
 // Result types
 // =============================================================================
 
 /// Result of verifying and extracting a .zgl file.
-class ZegelResult {
+class ZegelResult
+{
+
+
   /// Creates a [ZegelResult].
-  const ZegelResult({
+  const ZegelResult(
+{
+
+
     required this.valid,
     this.content,
     this.metadata,
@@ -29,46 +59,81 @@ class ZegelResult {
     this.provenance,
     this.redactedBlocks,
     this.disclosedBlocks,
-  });
 
-  /// Whether all cryptographic checks passed.
-  final bool valid;
-
-  /// Extracted content bytes (only non-null when [valid] is `true`).
-  final Uint8List? content;
-
-  /// Decrypted metadata from block 0 (if `HAS_METADATA` flag was set).
-  final Map<String, dynamic>? metadata;
-
-  /// Original filename from the header.
-  final String? filename;
-
-  /// Content-Type from the header.
-  final String? contentType;
-
-  /// Public metadata from the extended header (readable without the key).
-  final Map<String, dynamic>? publicMetadata;
-
-  /// Attestation entries (block type 0x07).
-  final List<Map<String, dynamic>>? attestations;
-
-  /// Audit trail entries (block type 0x09).
-  final List<Map<String, dynamic>>? auditTrail;
-
-  /// Provenance entries (block type 0x05).
-  final List<Map<String, dynamic>>? provenance;
-
-  /// Zero-based indices of redacted blocks (block type 0x06).
-  final List<int>? redactedBlocks;
-
-  /// Zero-based indices of blocks successfully disclosed (only for selective disclosure).
-  final List<int>? disclosedBlocks;
 }
 
+)
+;
+
+
+  /// Whether all cryptographic checks passed.
+  final bool valid
+;
+
+
+  /// Extracted content bytes (only non-null when [valid] is `true`).
+  final Uint8List? content
+;
+
+
+  /// Decrypted metadata from block 0 (if `HAS_METADATA` flag was set).
+  final Map<String, dynamic>? metadata
+;
+
+
+  /// Original filename from the header.
+  final String? filename
+;
+
+
+  /// Content-Type from the header.
+  final String? contentType
+;
+
+
+  /// Public metadata from the extended header (readable without the key).
+  final Map<String, dynamic>? publicMetadata
+;
+
+
+  /// Attestation entries (block type 0x07).
+  final List<Map<String, dynamic>>? attestations
+;
+
+
+  /// Audit trail entries (block type 0x09).
+  final List<Map<String, dynamic>>? auditTrail
+;
+
+
+  /// Provenance entries (block type 0x05).
+  final List<Map<String, dynamic>>? provenance
+;
+
+
+  /// Zero-based indices of redacted blocks (block type 0x06).
+  final List<int>? redactedBlocks
+;
+
+
+  /// Zero-based indices of blocks successfully disclosed (only for selective disclosure).
+  final List<int>? disclosedBlocks
+;
+
+
+}
+
+
 /// Header-only inspection result (no master key required).
-class ZegelInspection {
+class ZegelInspection
+{
+
+
   /// Creates a [ZegelInspection].
-  const ZegelInspection({
+  const ZegelInspection(
+{
+
+
     required this.version,
     required this.flags,
     required this.timestamp,
@@ -78,95 +143,210 @@ class ZegelInspection {
     this.publicMetadata,
     this.splitKeyParams,
     this.expirationTimestamp,
-  });
+
+}
+
+)
+;
+
 
   /// Format version string (e.g. `"1.2"`).
-  final String version;
+  final String version
+;
+
 
   /// Raw flags bitmask (uint16).
-  final int flags;
+  final int flags
+;
+
 
   /// File creation time as Unix epoch seconds.
-  final int timestamp;
+  final int timestamp
+;
+
 
   /// Content-Type from the header.
-  final String? contentType;
+  final String? contentType
+;
+
 
   /// Original filename.
-  final String? filename;
+  final String? filename
+;
+
 
   /// Total number of blocks in the file.
-  final int blockCount;
+  final int blockCount
+;
+
 
   /// Public metadata from the extended header.
-  final Map<String, dynamic>? publicMetadata;
+  final Map<String, dynamic>? publicMetadata
+;
+
 
   /// Shamir split-key parameters: `{'threshold': M, 'total': N}`.
-  final Map<String, int>? splitKeyParams;
+  final Map<String, int>? splitKeyParams
+;
+
 
   /// Expiration timestamp as Unix epoch seconds.
-  final int? expirationTimestamp;
+  final int? expirationTimestamp
+;
+
+
 }
+
 
 // =============================================================================
 // Internal helpers
 // =============================================================================
 
 /// Parsed block directory entry (internal).
-class _DirEntry {
-  const _DirEntry({
+class _DirEntry
+{
+
+
+  const _DirEntry(
+{
+
+
     required this.type,
     required this.hash,
     required this.ciphertextLen,
     required this.iv,
     required this.tag,
-  });
 
-  final int type;
-  final Uint8List hash;
-  final int ciphertextLen;
-  final Uint8List iv;
-  final Uint8List tag;
 }
+
+)
+;
+
+
+  final int type
+;
+
+
+  final Uint8List hash
+;
+
+
+  final int ciphertextLen
+;
+
+
+  final Uint8List iv
+;
+
+
+  final Uint8List tag
+;
+
+
+}
+
 
 /// Parsed header and extended header (internal).
-class _ParsedHeader {
-  _ParsedHeader();
+class _ParsedHeader
+{
 
-  int versionMajor = 0;
-  int versionMinor = 0;
-  int flags = 0;
-  int timestamp = 0;
-  String contentType = '';
-  String filename = '';
-  Uint8List salt = Uint8List(0);
-  int blockCount = 0;
+
+  _ParsedHeader()
+;
+
+
+  int versionMajor = 0
+;
+
+
+  int versionMinor = 0
+;
+
+
+  int flags = 0
+;
+
+
+  int timestamp = 0
+;
+
+
+  String contentType = ''
+;
+
+
+  String filename = ''
+;
+
+
+  Uint8List salt = Uint8List(0)
+;
+
+
+  int blockCount = 0
+;
+
 
   // Extended header fields.
-  int? argon2TimeCost;
-  int? argon2MemoryCost;
-  int? expirationTimestamp;
-  Uint8List? recipientId;
-  int? splitKeyThreshold;
-  int? splitKeyTotal;
-  Uint8List? versionChainHash;
-  Map<String, dynamic>? publicMetadata;
+  int? argon2TimeCost
+;
+
+
+  int? argon2MemoryCost
+;
+
+
+  int? expirationTimestamp
+;
+
+
+  Uint8List? recipientId
+;
+
+
+  int? splitKeyThreshold
+;
+
+
+  int? splitKeyTotal
+;
+
+
+  Uint8List? versionChainHash
+;
+
+
+  Map<String, dynamic>? publicMetadata
+;
+
 
   // Byte offset where the block directory starts.
-  int directoryStart = 0;
+  int directoryStart = 0
+;
+
 
   // Parsed block directory.
-  List<_DirEntry> directory = <_DirEntry>[];
+  List<_DirEntry> directory = <_DirEntry>[]
+;
+
 
   // Merkle root.
-  Uint8List merkleRoot = Uint8List(0);
+  Uint8List merkleRoot = Uint8List(0)
+;
+
 
   // Key commitment (if present).
-  Uint8List? keyCommitment;
+  Uint8List? keyCommitment
+;
+
 
   // Byte offset where encrypted block data starts.
-  int dataStart = 0;
+  int dataStart = 0
+;
+
+
 }
+
 
 // =============================================================================
 // ZegelReader
@@ -180,9 +360,14 @@ class _ParsedHeader {
 /// - [inspect]: Header-only inspection without the master key.
 /// - [extractWithToken]: Selective disclosure using a token (requires only the
 ///   per-block keys included in the token, not the master key).
-class ZegelReader {
+class ZegelReader
+{
+
+
   /// Creates a [ZegelReader].
-  const ZegelReader();
+  const ZegelReader()
+;
+
 
   /// Fully verifies and extracts a .zgl file.
   ///
@@ -209,7 +394,13 @@ class ZegelReader {
           DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
       if (nowEpoch >= h.expirationTimestamp!) {
         throw ZegelExpiredException(
-          'File expired at epoch ${h.expirationTimestamp}',
+          'File expired at epoch $
+{
+
+h.expirationTimestamp
+}
+
+',
         );
       }
     }
@@ -261,10 +452,39 @@ class ZegelReader {
         h.expirationTimestamp! * 1000,
         isUtc: true,
       );
+<<<<<<< ours
+      expirationDate =
+          '$
+{
+
+dt.year.toString().padLeft(4, '0')
+}
+
+-'
+          '$
+{
+
+dt.month.toString().padLeft(2, '0')
+}
+
+-'
+          '$
+{
+
+dt.day.toString().padLeft(2, '0')
+}
+
+';
+||||||| original
       expirationDate =
           '${dt.year.toString().padLeft(4, '0')}-'
           '${dt.month.toString().padLeft(2, '0')}-'
           '${dt.day.toString().padLeft(2, '0')}';
+=======
+      expirationDate = '${dt.year.toString().padLeft(4, '0')}-'
+          '${dt.month.toString().padLeft(2, '0')}-'
+          '${dt.day.toString().padLeft(2, '0')}';
+>>>>>>> theirs
     }
 
     // =========================================================================
@@ -302,7 +522,13 @@ class ZegelReader {
     final List<Map<String, dynamic>> provenanceEntries =
         <Map<String, dynamic>>[];
     final List<int> redactedBlocks = <int>[];
+<<<<<<< ours
+||||||| original
     final List<int> disclosedIndices = <int>[];
+=======
+//     final List<int> disclosedIndices = <int>[];
+>>>>>>> theirs
+
 
     for (int i = 0; i < h.blockCount; i++) {
       final _DirEntry entry = h.directory[i];
@@ -380,8 +606,7 @@ class ZegelReader {
         case ZegelFormat.blockContent:
           contentParts.add(plaintext);
         case ZegelFormat.blockMetadata:
-          metadata =
-              jsonDecode(utf8.decode(plaintext)) as Map<String, dynamic>;
+          metadata = jsonDecode(utf8.decode(plaintext)) as Map<String, dynamic>;
         case ZegelFormat.blockProvenance:
           provenanceEntries.add(
             jsonDecode(utf8.decode(plaintext)) as Map<String, dynamic>,
@@ -437,7 +662,19 @@ class ZegelReader {
     }
 
     return ZegelInspection(
-      version: '${h.versionMajor}.${h.versionMinor}',
+      version: '$
+{
+
+h.versionMajor
+}
+
+.$
+{
+
+h.versionMinor
+}
+
+',
       flags: h.flags,
       timestamp: h.timestamp,
       contentType: h.contentType.isNotEmpty ? h.contentType : null,
@@ -495,7 +732,13 @@ class ZegelReader {
     final List<Map<String, dynamic>> provenanceEntries =
         <Map<String, dynamic>>[];
     final List<int> redactedBlocks = <int>[];
+<<<<<<< ours
+||||||| original
     final List<int> disclosedIndices = <int>[];
+=======
+//     final List<int> disclosedIndices = <int>[];
+>>>>>>> theirs
+
 
     for (int i = 0; i < h.blockCount; i++) {
       final _DirEntry entry = h.directory[i];
@@ -511,7 +754,14 @@ class ZegelReader {
         continue;
       }
 
+<<<<<<< ours
+      final List<int> disclosedIndices = <int>[];
+          disclosedIndices.add(i);
+||||||| original
       disclosedIndices.add(i);
+=======
+//       disclosedIndices.add(i);
+>>>>>>> theirs
 
       final Uint8List blockKey = _hexToBytes(
         blockKeysMap[indexStr] as String,
@@ -575,8 +825,7 @@ class ZegelReader {
         case ZegelFormat.blockContent:
           contentParts.add(plaintext);
         case ZegelFormat.blockMetadata:
-          metadata =
-              jsonDecode(utf8.decode(plaintext)) as Map<String, dynamic>;
+          metadata = jsonDecode(utf8.decode(plaintext)) as Map<String, dynamic>;
         case ZegelFormat.blockProvenance:
           provenanceEntries.add(
             jsonDecode(utf8.decode(plaintext)) as Map<String, dynamic>,
@@ -605,7 +854,13 @@ class ZegelReader {
       auditTrail: auditTrail.isNotEmpty ? auditTrail : null,
       provenance: provenanceEntries.isNotEmpty ? provenanceEntries : null,
       redactedBlocks: redactedBlocks.isNotEmpty ? redactedBlocks : null,
+<<<<<<< ours
+      disclosedBlocks: null,
+||||||| original
       disclosedBlocks: disclosedIndices,
+=======
+//       disclosedBlocks: disclosedIndices,
+>>>>>>> theirs
     );
   }
 
@@ -722,8 +977,7 @@ class ZegelReader {
       final String pubMetaJson = utf8.decode(
         fileBytes.sublist(cursor, cursor + pubMetaLen),
       );
-      h.publicMetadata =
-          jsonDecode(pubMetaJson) as Map<String, dynamic>;
+      h.publicMetadata = jsonDecode(pubMetaJson) as Map<String, dynamic>;
       cursor += pubMetaLen;
     }
 

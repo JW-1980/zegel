@@ -44,7 +44,11 @@ class _ManifestScreenState extends State<ManifestScreen>
         bottom: TabBar(
           controller: _tabController,
           labelColor: theme.colorScheme.onPrimary,
-          unselectedLabelColor: theme.colorScheme.onPrimary.withOpacity(0.7),
+<<<<<<< /tmp/.tmpCC51NZ/ours
+          unselectedLabelColor: theme.colorScheme.onPrimary.withValues(alpha:0.7),
+=======
+          unselectedLabelColor: theme.colorScheme.onPrimary.withValues(alpha: 0.7),
+>>>>>>> /tmp/.tmpCC51NZ/theirs
           indicatorColor: theme.colorScheme.onPrimary,
           tabs: [
             Tab(text: l10n.manifestCreateTab),
@@ -252,13 +256,23 @@ class _ManifestCreateTabState extends State<_ManifestCreateTab> {
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: _isError
-                      ? Colors.red.withOpacity(0.1)
-                      : Colors.green.withOpacity(0.1),
+<<<<<<< /tmp/.tmpCC51NZ/ours
+                      ? Colors.red.withValues(alpha:0.1)
+                      : Colors.green.withValues(alpha:0.1),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
                     color: _isError
-                        ? Colors.red.withOpacity(0.3)
-                        : Colors.green.withOpacity(0.3),
+                        ? Colors.red.withValues(alpha:0.3)
+                        : Colors.green.withValues(alpha:0.3),
+=======
+                      ? Colors.red.withValues(alpha: 0.1)
+                      : Colors.green.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: _isError
+                        ? Colors.red.withValues(alpha: 0.3)
+                        : Colors.green.withValues(alpha: 0.3),
+>>>>>>> /tmp/.tmpCC51NZ/theirs
                   ),
                 ),
                 child: Row(
@@ -497,13 +511,23 @@ class _ManifestVerifyTabState extends State<_ManifestVerifyTab> {
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: _isError
-                      ? Colors.red.withOpacity(0.1)
-                      : Colors.green.withOpacity(0.1),
+<<<<<<< /tmp/.tmpCC51NZ/ours
+                      ? Colors.red.withValues(alpha:0.1)
+                      : Colors.green.withValues(alpha:0.1),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
                     color: _isError
-                        ? Colors.red.withOpacity(0.3)
-                        : Colors.green.withOpacity(0.3),
+                        ? Colors.red.withValues(alpha:0.3)
+                        : Colors.green.withValues(alpha:0.3),
+=======
+                      ? Colors.red.withValues(alpha: 0.1)
+                      : Colors.green.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: _isError
+                        ? Colors.red.withValues(alpha: 0.3)
+                        : Colors.green.withValues(alpha: 0.3),
+>>>>>>> /tmp/.tmpCC51NZ/theirs
                   ),
                 ),
                 child: Row(

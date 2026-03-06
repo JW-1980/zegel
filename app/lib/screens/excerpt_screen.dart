@@ -44,7 +44,11 @@ class _ExcerptScreenState extends State<ExcerptScreen>
         bottom: TabBar(
           controller: _tabController,
           labelColor: theme.colorScheme.onPrimary,
-          unselectedLabelColor: theme.colorScheme.onPrimary.withOpacity(0.7),
+<<<<<<< /tmp/.tmph6P8zW/ours
+          unselectedLabelColor: theme.colorScheme.onPrimary.withValues(alpha:0.7),
+=======
+          unselectedLabelColor: theme.colorScheme.onPrimary.withValues(alpha: 0.7),
+>>>>>>> /tmp/.tmph6P8zW/theirs
           indicatorColor: theme.colorScheme.onPrimary,
           tabs: [
             Tab(text: l10n.excerptGenerateTab),
@@ -311,13 +315,23 @@ class _ExcerptGenerateTabState extends State<_ExcerptGenerateTab> {
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: _isError
-                      ? Colors.red.withOpacity(0.1)
-                      : Colors.green.withOpacity(0.1),
+<<<<<<< /tmp/.tmph6P8zW/ours
+                      ? Colors.red.withValues(alpha:0.1)
+                      : Colors.green.withValues(alpha:0.1),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
                     color: _isError
-                        ? Colors.red.withOpacity(0.3)
-                        : Colors.green.withOpacity(0.3),
+                        ? Colors.red.withValues(alpha:0.3)
+                        : Colors.green.withValues(alpha:0.3),
+=======
+                      ? Colors.red.withValues(alpha: 0.1)
+                      : Colors.green.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: _isError
+                        ? Colors.red.withValues(alpha: 0.3)
+                        : Colors.green.withValues(alpha: 0.3),
+>>>>>>> /tmp/.tmph6P8zW/theirs
                   ),
                 ),
                 child: Row(
@@ -580,7 +594,11 @@ class _ExcerptVerifyTabState extends State<_ExcerptVerifyTab> {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: (_isValid! ? Colors.green : Colors.red)
-                          .withOpacity(0.1),
+<<<<<<< /tmp/.tmph6P8zW/ours
+                          .withValues(alpha:0.1),
+=======
+                          .withValues(alpha: 0.1),
+>>>>>>> /tmp/.tmph6P8zW/theirs
                       border: Border.all(
                         color: _isValid! ? Colors.green : Colors.red,
                         width: 3,

@@ -235,10 +235,9 @@ class ZegelWriter {
     // =========================================================================
     // 2. Generate or use provided salt
     // =========================================================================
-    final Uint8List salt =
-        options.salt != null
-            ? Uint8List.fromList(options.salt!)
-            : _randomBytes(secureRandom, ZegelFormat.saltSize);
+    final Uint8List salt = options.salt != null
+        ? Uint8List.fromList(options.salt!)
+        : _randomBytes(secureRandom, ZegelFormat.saltSize);
 
     // =========================================================================
     // 3. Split content into chunks
@@ -331,19 +330,199 @@ class ZegelWriter {
     String? expirationDate;
     if (options.expiration != null) {
       final DateTime dt = options.expiration!.toUtc();
-      expirationDate =
-          '${dt.year.toString().padLeft(4, '0')}-'
+      expirationDate = '${dt.year.toString().padLeft(4, '0')}-'
           '${dt.month.toString().padLeft(2, '0')}-'
           '${dt.day.toString().padLeft(2, '0')}';
     }
 
     // =========================================================================
-    // 10. Derive per-block keys and encrypt each block
+    // 10. Calculate sizes and allocate exact buffer
     // =========================================================================
+    // Header (magic: 8, version: 2, flags: 2, timestamp: 8, contentType: 64, filenameLen: 2, salt: 32, blockCount: 4) = 122
+    int headerSize = 122;
+
+    final Uint8List fnBytes = options.filename != null
+        ? Uint8List.fromList(utf8.encode(options.filename!))
+        : Uint8List(0);
+    if (fnBytes.length > ZegelFormat.maxFilenameLength) {
+      throw const ZegelFormatException(
+        'Filename exceeds maximum of ${ZegelFormat.maxFilenameLength} bytes',
+      );
+    }
+    headerSize += fnBytes.length;
+
+    int extHeaderSize = 0;
+    if (flags & ZegelFormat.flagPasswordDerived != 0) {
+      extHeaderSize += 8; // 4 + 4
+    }
+    if (flags & ZegelFormat.flagHasExpiration != 0) {
+      extHeaderSize += 8;
+    }
+    if (flags & ZegelFormat.flagHasCanary != 0) {
+      if (options.recipientId!.length != 32) {
+        throw const ZegelFormatException(
+            'Recipient ID must be exactly 32 bytes');
+      }
+      extHeaderSize += 32;
+    }
+    if (flags & ZegelFormat.flagSplitKey != 0) {
+      extHeaderSize += 2; // 1 + 1
+    }
+    if (flags & ZegelFormat.flagVersioned != 0) {
+      if (options.versionChainHash!.length != 32) {
+        throw const ZegelFormatException(
+            'Version chain hash must be exactly 32 bytes');
+      }
+      extHeaderSize += 32;
+    }
+
+    Uint8List? pubMetaBytes;
+    if (flags & ZegelFormat.flagHasPublicMetadata != 0) {
+      pubMetaBytes =
+          Uint8List.fromList(utf8.encode(jsonEncode(options.publicMetadata!)));
+      extHeaderSize += 4 + pubMetaBytes.length;
+    }
+
+    // Directory: per block (type: 1, hash: 32, ct_len: 4, iv: 12, tag: 16) = 65
+    final int directorySize = plaintexts.length * 65;
+
+    int dataSize = 0;
+    for (final pt in plaintexts) {
+      dataSize += pt.length;
+    }
+
+    const int merkleSize = 32;
+    final int keyCommitmentSize = options.enableKeyCommitment ? 32 : 0;
+    const int masterSealSize = 64;
+
+    final int preSealBytesLength = headerSize +
+        extHeaderSize +
+        directorySize +
+        merkleSize +
+        keyCommitmentSize +
+        dataSize;
+    final int totalSize = preSealBytesLength + masterSealSize;
+
+    final Uint8List finalFile = Uint8List(totalSize);
+    final ByteData bd = ByteData.view(
+        finalFile.buffer, finalFile.offsetInBytes, finalFile.length);
+    int offset = 0;
+
+    // =========================================================================
+    // 11. Write Header
+    // =========================================================================
+    finalFile.setRange(offset, offset + 8, ZegelFormat.magic);
+    offset += 8;
+
+    bd.setUint8(offset++, ZegelFormat.versionMajor);
+    bd.setUint8(offset++, ZegelFormat.versionMinor);
+
+    bd.setUint16(offset, flags, Endian.big);
+    offset += 2;
+
+<<<<<<< ours
+    // Created timestamp (uint64 BE, Unix epoch seconds).
+    final int nowEpoch = DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
+    builder.add(_packUint64BE(nowEpoch));
+||||||| original
+    // Created timestamp (uint64 BE, Unix epoch seconds).
+    final int nowEpoch =
+        DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
+    builder.add(_packUint64BE(nowEpoch));
+=======
+    final int nowEpoch = DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
+    bd.setUint64(offset, nowEpoch, Endian.big);
+    offset += 8;
+>>>>>>> theirs
+
+    final Uint8List ctPadded = Uint8List(ZegelFormat.contentTypeSize);
+    if (options.contentType != null) {
+      final List<int> ctEncoded = utf8.encode(options.contentType!);
+      final int ctCopyLen = ctEncoded.length < ZegelFormat.contentTypeSize
+          ? ctEncoded.length
+          : ZegelFormat.contentTypeSize;
+      ctPadded.setRange(0, ctCopyLen, ctEncoded);
+    }
+    finalFile.setRange(offset, offset + 64, ctPadded);
+    offset += 64;
+
+<<<<<<< ours
+    // Filename length (uint16 BE) + filename (variable).
+    final Uint8List fnBytes = options.filename != null
+        ? Uint8List.fromList(utf8.encode(options.filename!))
+        : Uint8List(0);
+    if (fnBytes.length > ZegelFormat.maxFilenameLength) {
+      throw const ZegelFormatException(
+        'Filename exceeds maximum of ${ZegelFormat.maxFilenameLength} bytes',
+      );
+    }
+    builder.add(_packUint16BE(fnBytes.length));
+||||||| original
+    // Filename length (uint16 BE) + filename (variable).
+    final Uint8List fnBytes =
+        options.filename != null
+            ? Uint8List.fromList(utf8.encode(options.filename!))
+            : Uint8List(0);
+    if (fnBytes.length > ZegelFormat.maxFilenameLength) {
+      throw ZegelFormatException(
+        'Filename exceeds maximum of ${ZegelFormat.maxFilenameLength} bytes',
+      );
+    }
+    builder.add(_packUint16BE(fnBytes.length));
+=======
+    bd.setUint16(offset, fnBytes.length, Endian.big);
+    offset += 2;
+>>>>>>> theirs
+    if (fnBytes.isNotEmpty) {
+      finalFile.setRange(offset, offset + fnBytes.length, fnBytes);
+      offset += fnBytes.length;
+    }
+
+    finalFile.setRange(offset, offset + 32, salt);
+    offset += 32;
+
+    bd.setUint32(offset, plaintexts.length, Endian.big);
+    offset += 4;
+
+    // --- Extended Header ---
+    if (flags & ZegelFormat.flagPasswordDerived != 0) {
+      bd.setUint32(offset, options.argon2TimeCost!, Endian.big);
+      offset += 4;
+      bd.setUint32(offset, options.argon2MemoryCost!, Endian.big);
+      offset += 4;
+    }
+    if (flags & ZegelFormat.flagHasExpiration != 0) {
+      final int expEpoch =
+          options.expiration!.toUtc().millisecondsSinceEpoch ~/ 1000;
+      bd.setUint64(offset, expEpoch, Endian.big);
+      offset += 8;
+    }
+    if (flags & ZegelFormat.flagHasCanary != 0) {
+      finalFile.setRange(offset, offset + 32, options.recipientId!);
+      offset += 32;
+    }
+    if (flags & ZegelFormat.flagSplitKey != 0) {
+      bd.setUint8(offset++, options.splitKeyThreshold!);
+      bd.setUint8(offset++, options.splitKeyTotal!);
+    }
+    if (flags & ZegelFormat.flagVersioned != 0) {
+      finalFile.setRange(offset, offset + 32, options.versionChainHash!);
+      offset += 32;
+    }
+    if (flags & ZegelFormat.flagHasPublicMetadata != 0) {
+      bd.setUint32(offset, pubMetaBytes!.length, Endian.big);
+      offset += 4;
+      finalFile.setRange(offset, offset + pubMetaBytes.length, pubMetaBytes);
+      offset += pubMetaBytes.length;
+    }
+
+    // =========================================================================
+    // 12. Write Directory and Encrypt Blocks
+    // =========================================================================
+    int dirOffset = offset;
+    int dataOffset = dirOffset + directorySize + merkleSize + keyCommitmentSize;
+
     final List<Uint8List> blockKeys = <Uint8List>[];
-    final List<Uint8List> ivs = <Uint8List>[];
-    final List<Uint8List> ciphertexts = <Uint8List>[];
-    final List<Uint8List> gcmTags = <Uint8List>[];
 
     for (int i = 0; i < plaintexts.length; i++) {
       final Uint8List key = KeyDerivation.deriveBlockKey(
@@ -356,9 +535,7 @@ class ZegelWriter {
       blockKeys.add(key);
 
       final Uint8List iv = _randomBytes(secureRandom, ZegelFormat.ivSize);
-      ivs.add(iv);
 
-      // AES-256-GCM encrypt.
       final GCMBlockCipher cipher = GCMBlockCipher(AESEngine());
       cipher.init(
         true,
@@ -370,146 +547,54 @@ class ZegelWriter {
         ),
       );
       final Uint8List encrypted = cipher.process(plaintexts[i]);
-
-      // encrypted = ciphertext || tag (last 16 bytes).
       final int ctLen = encrypted.length - ZegelFormat.tagSize;
-      ciphertexts.add(Uint8List.fromList(encrypted.sublist(0, ctLen)));
-      gcmTags.add(Uint8List.fromList(encrypted.sublist(ctLen)));
+
+      // Write Directory Entry
+      bd.setUint8(dirOffset++, blockTypes[i]); // Block type
+      finalFile.setRange(dirOffset, dirOffset + 32, leafHashes[i]); // Hash
+      dirOffset += 32;
+      bd.setUint32(dirOffset, ctLen, Endian.big); // CT length
+      dirOffset += 4;
+      finalFile.setRange(dirOffset, dirOffset + 12, iv); // IV
+      dirOffset += 12;
+      finalFile.setRange(
+          dirOffset,
+          dirOffset + 16,
+          Uint8List.view(
+              encrypted.buffer, encrypted.offsetInBytes + ctLen, 16)); // Tag
+      dirOffset += 16;
+
+      // Write Data Entry
+      finalFile.setRange(dataOffset, dataOffset + ctLen,
+          Uint8List.view(encrypted.buffer, encrypted.offsetInBytes, ctLen));
+      dataOffset += ctLen;
     }
 
-    // =========================================================================
-    // 11. Compute key commitment (optional)
-    // =========================================================================
-    Uint8List? keyCommitment;
+    // --- Merkle Root ---
+    finalFile.setRange(dirOffset, dirOffset + 32, merkleRoot);
+    dirOffset += 32;
+
+    // --- Key Commitment ---
     if (options.enableKeyCommitment) {
-      keyCommitment = KeyDerivation.computeKeyCommitment(blockKeys);
+      final Uint8List keyCommitment =
+          KeyDerivation.computeKeyCommitment(blockKeys);
+      finalFile.setRange(dirOffset, dirOffset + 32, keyCommitment);
+      dirOffset += 32;
     }
 
-    // =========================================================================
-    // 12. Build the binary file
-    // =========================================================================
-    final BytesBuilder builder = BytesBuilder();
-
-    // --- Header ---
-
-    // Magic bytes (8).
-    builder.add(ZegelFormat.magic);
-
-    // Version major (1) + minor (1).
-    builder.addByte(ZegelFormat.versionMajor);
-    builder.addByte(ZegelFormat.versionMinor);
-
-    // Flags (uint16 BE).
-    builder.add(_packUint16BE(flags));
-
-    // Created timestamp (uint64 BE, Unix epoch seconds).
-    final int nowEpoch =
-        DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
-    builder.add(_packUint64BE(nowEpoch));
-
-    // Content-Type (64 bytes, UTF-8, null-padded).
-    final Uint8List ctPadded = Uint8List(ZegelFormat.contentTypeSize);
-    if (options.contentType != null) {
-      final List<int> ctEncoded = utf8.encode(options.contentType!);
-      final int ctCopyLen = ctEncoded.length < ZegelFormat.contentTypeSize
-          ? ctEncoded.length
-          : ZegelFormat.contentTypeSize;
-      ctPadded.setRange(0, ctCopyLen, ctEncoded);
+    // Verify offsets matched expectations
+    if (dirOffset != preSealBytesLength - dataSize) {
+      throw Exception('Directory offset mismatch');
     }
-    builder.add(ctPadded);
-
-    // Filename length (uint16 BE) + filename (variable).
-    final Uint8List fnBytes =
-        options.filename != null
-            ? Uint8List.fromList(utf8.encode(options.filename!))
-            : Uint8List(0);
-    if (fnBytes.length > ZegelFormat.maxFilenameLength) {
-      throw ZegelFormatException(
-        'Filename exceeds maximum of ${ZegelFormat.maxFilenameLength} bytes',
-      );
-    }
-    builder.add(_packUint16BE(fnBytes.length));
-    if (fnBytes.isNotEmpty) {
-      builder.add(fnBytes);
-    }
-
-    // Master salt (32 bytes).
-    builder.add(salt);
-
-    // Block count (uint32 BE).
-    builder.add(_packUint32BE(plaintexts.length));
-
-    // --- Extended Header (flag-dependent, in spec-defined order) ---
-
-    if (flags & ZegelFormat.flagPasswordDerived != 0) {
-      builder.add(_packUint32BE(options.argon2TimeCost!));
-      builder.add(_packUint32BE(options.argon2MemoryCost!));
-    }
-
-    if (flags & ZegelFormat.flagHasExpiration != 0) {
-      final int expEpoch =
-          options.expiration!.toUtc().millisecondsSinceEpoch ~/ 1000;
-      builder.add(_packUint64BE(expEpoch));
-    }
-
-    if (flags & ZegelFormat.flagHasCanary != 0) {
-      if (options.recipientId!.length != 32) {
-        throw const ZegelFormatException(
-          'Recipient ID must be exactly 32 bytes',
-        );
-      }
-      builder.add(options.recipientId!);
-    }
-
-    if (flags & ZegelFormat.flagSplitKey != 0) {
-      builder.addByte(options.splitKeyThreshold!);
-      builder.addByte(options.splitKeyTotal!);
-    }
-
-    if (flags & ZegelFormat.flagVersioned != 0) {
-      if (options.versionChainHash!.length != 32) {
-        throw const ZegelFormatException(
-          'Version chain hash must be exactly 32 bytes',
-        );
-      }
-      builder.add(options.versionChainHash!);
-    }
-
-    if (flags & ZegelFormat.flagHasPublicMetadata != 0) {
-      final Uint8List pubMetaBytes = Uint8List.fromList(
-        utf8.encode(jsonEncode(options.publicMetadata!)),
-      );
-      builder.add(_packUint32BE(pubMetaBytes.length));
-      builder.add(pubMetaBytes);
-    }
-
-    // --- Block Directory ---
-
-    for (int i = 0; i < plaintexts.length; i++) {
-      builder.addByte(blockTypes[i]); // Block type (1 byte).
-      builder.add(leafHashes[i]); // Plaintext hash (32 bytes).
-      builder.add(_packUint32BE(ciphertexts[i].length)); // CT length (4).
-      builder.add(ivs[i]); // IV/Nonce (12 bytes).
-      builder.add(gcmTags[i]); // Auth tag (16 bytes).
-    }
-
-    // --- Merkle Root (32 bytes) ---
-    builder.add(merkleRoot);
-
-    // --- Key Commitment (32 bytes, if enabled) ---
-    if (keyCommitment != null) {
-      builder.add(keyCommitment);
-    }
-
-    // --- Encrypted Block Data ---
-    for (final Uint8List ct in ciphertexts) {
-      builder.add(ct);
+    if (dataOffset != preSealBytesLength) {
+      throw Exception('Data offset mismatch');
     }
 
     // =========================================================================
     // 13. Compute and append master seal
     // =========================================================================
-    final Uint8List preSealBytes = builder.toBytes();
+    final Uint8List preSealBytesView = Uint8List.view(
+        finalFile.buffer, finalFile.offsetInBytes, preSealBytesLength);
 
     final Uint8List sealKey = KeyDerivation.computeSealKey(
       merkleRoot,
@@ -518,17 +603,10 @@ class ZegelWriter {
     );
     final Uint8List masterSeal = KeyDerivation.computeMasterSeal(
       sealKey,
-      preSealBytes,
+      preSealBytesView,
     );
 
-    // =========================================================================
-    // 14. Assemble final file
-    // =========================================================================
-    final Uint8List finalFile = Uint8List(
-      preSealBytes.length + masterSeal.length,
-    );
-    finalFile.setRange(0, preSealBytes.length, preSealBytes);
-    finalFile.setRange(preSealBytes.length, finalFile.length, masterSeal);
+    finalFile.setRange(preSealBytesLength, totalSize, masterSeal);
 
     return finalFile;
   }
@@ -559,7 +637,8 @@ class ZegelWriter {
       final int end = (offset + options.blockSize) < content.length
           ? offset + options.blockSize
           : content.length;
-      chunks.add(Uint8List.fromList(content.sublist(offset, end)));
+      chunks.add(Uint8List.view(
+          content.buffer, content.offsetInBytes + offset, end - offset));
       offset = end;
     }
     return chunks;
@@ -573,23 +652,4 @@ class ZegelWriter {
   }
 
   /// Packs [value] as a 2-byte big-endian unsigned integer.
-  static Uint8List _packUint16BE(int value) {
-    final ByteData bd = ByteData(2);
-    bd.setUint16(0, value, Endian.big);
-    return bd.buffer.asUint8List();
-  }
-
-  /// Packs [value] as a 4-byte big-endian unsigned integer.
-  static Uint8List _packUint32BE(int value) {
-    final ByteData bd = ByteData(4);
-    bd.setUint32(0, value, Endian.big);
-    return bd.buffer.asUint8List();
-  }
-
-  /// Packs [value] as an 8-byte big-endian unsigned integer.
-  static Uint8List _packUint64BE(int value) {
-    final ByteData bd = ByteData(8);
-    bd.setUint64(0, value, Endian.big);
-    return bd.buffer.asUint8List();
-  }
 }

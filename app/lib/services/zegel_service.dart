@@ -295,11 +295,19 @@ class ZegelService {
     String hexKey,
     SealOptions options,
   ) async {
+<<<<<<< ours
     final file = File(filePath);
     if (!await file.exists()) {
       throw FileSystemException('File does not exist', filePath);
     }
 
+||||||| original
+    final file = File(filePath);
+    final content = await file.readAsBytes();
+    final filename = filePath.split(Platform.pathSeparator).last;
+
+=======
+>>>>>>> theirs
     // Delegate to the zegel library.
     // The actual implementation calls into package:zegel.
     // For now, this is a placeholder that returns empty bytes
