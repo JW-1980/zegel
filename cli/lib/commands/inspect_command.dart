@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:args/command_runner.dart';
 import 'package:zegel/zegel.dart';
@@ -85,7 +84,7 @@ class InspectCommand extends Command<int> {
     // Inspect header using the library.
     ZegelInspection inspection;
     try {
-      final reader = const ZegelReader();
+      const reader = ZegelReader();
       inspection = reader.inspect(fileBytes);
     } on ZegelFormatException catch (e) {
       exitError('Invalid .zgl file: ${e.message}');
@@ -174,9 +173,7 @@ class InspectCommand extends Command<int> {
       );
       final now = DateTime.now().toUtc();
       final expired = now.isAfter(expiresAt);
-      final status = expired
-          ? Ansi.error('EXPIRED')
-          : Ansi.success('active');
+      final status = expired ? Ansi.error('EXPIRED') : Ansi.success('active');
       stdout.writeln(
         '    Expiration:    ${formatTimestamp(expiresAt)} ($status)',
       );
@@ -231,16 +228,14 @@ class InspectCommand extends Command<int> {
         if (authority != null) {
           stdout.writeln('    Authority:   $authority');
         }
-        final classDate =
-            inspection.publicMetadata!['classification_date'];
+        final classDate = inspection.publicMetadata!['classification_date'];
         if (classDate != null) {
           stdout.writeln('    Date:        $classDate');
         }
       }
 
       // Regulatory hold (from public metadata).
-      final holdTimestamp =
-          inspection.publicMetadata!['regulatory_hold_until'];
+      final holdTimestamp = inspection.publicMetadata!['regulatory_hold_until'];
       if (holdTimestamp != null) {
         final holdDate = DateTime.fromMillisecondsSinceEpoch(
           (holdTimestamp as int) * 1000,
@@ -295,7 +290,9 @@ class InspectCommand extends Command<int> {
     }
 
     // Block directory (from raw header).
-    if (showBlocks && rawHeader != null && rawHeader.blockDirectory.isNotEmpty) {
+    if (showBlocks &&
+        rawHeader != null &&
+        rawHeader.blockDirectory.isNotEmpty) {
       stdout.writeln();
       stdout.writeln(Ansi.header('  Block Directory:'));
       stdout.writeln(

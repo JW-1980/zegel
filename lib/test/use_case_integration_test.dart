@@ -124,7 +124,9 @@ void main() {
       masterKey = _testKey();
     });
 
-    test('full contract workflow: seal, attest by multiple parties, verify policy', () {
+    test(
+        'full contract workflow: seal, attest by multiple parties, verify policy',
+        () {
       // 1. Seal the contract
       final contractText = utf8.encode(
         'PURCHASE AGREEMENT\n'
@@ -451,12 +453,13 @@ void main() {
         universityKey,
       );
       expect(isValid, isTrue,
-          reason: 'Employer should be able to verify the university attestation');
+          reason:
+              'Employer should be able to verify the university attestation');
 
       // Employer can also inspect public metadata without the master key
       final inspection = const ZegelReader().inspect(fileBytes);
-      expect(inspection.publicMetadata!['issuer'],
-          equals('Technical University'));
+      expect(
+          inspection.publicMetadata!['issuer'], equals('Technical University'));
       expect(inspection.publicMetadata!['document_type'], equals('diploma'));
     });
   });
@@ -494,8 +497,7 @@ void main() {
       final inspection = const ZegelReader().inspect(fileBytes);
       final classInfo =
           inspection.publicMetadata!['classification'] as Map<String, dynamic>;
-      expect(classInfo['level'],
-          equals(ZegelFormat.classificationTopSecret));
+      expect(classInfo['level'], equals(ZegelFormat.classificationTopSecret));
       expect(classInfo['caveat'], equals('NOFORN'));
 
       // 3. Declassify to CONFIDENTIAL with redaction of block 0
@@ -509,8 +511,8 @@ void main() {
 
       // 4. Verify new classification level
       final declInspection = const ZegelReader().inspect(declassified);
-      final declClassInfo =
-          declInspection.publicMetadata!['classification'] as Map<String, dynamic>;
+      final declClassInfo = declInspection.publicMetadata!['classification']
+          as Map<String, dynamic>;
       expect(declClassInfo['level'],
           equals(ZegelFormat.classificationConfidential));
 
@@ -536,8 +538,7 @@ void main() {
 
     test('prove quote exists in sealed source', () {
       // A journalist seals a source document
-      final sourceText =
-          'The internal memo reveals that the budget was '
+      final sourceText = 'The internal memo reveals that the budget was '
           'overspent by EUR 2.5 million in the third quarter. '
           'Management attempted to conceal this by deferring '
           'expenses to the next fiscal year. '
@@ -571,8 +572,11 @@ void main() {
               'Third party should be able to verify the excerpt without the key');
 
       // Verify the Merkle root in the proof matches the file
-      expect(proof['merkle_root'],
-          equals(merkleRoot.map((b) => b.toRadixString(16).padLeft(2, '0')).join()));
+      expect(
+          proof['merkle_root'],
+          equals(merkleRoot
+              .map((b) => b.toRadixString(16).padLeft(2, '0'))
+              .join()));
     });
   });
 
@@ -618,8 +622,7 @@ void main() {
           'photographer': 'claims_adjuster@insurance.com',
         },
       );
-      final fileBytes =
-          ZegelWriter(masterKey, options).seal(photoContent);
+      final fileBytes = ZegelWriter(masterKey, options).seal(photoContent);
 
       // Extract and verify GPS is preserved
       final result = const ZegelReader().verify(fileBytes, masterKey);
@@ -656,8 +659,7 @@ void main() {
           filename: docName,
           salt: _zeroSalt(),
         );
-        final fileBytes =
-            ZegelWriter(masterKey, options).seal(content);
+        final fileBytes = ZegelWriter(masterKey, options).seal(content);
 
         sealedDocs.add(MapEntry(docName, fileBytes));
       }
@@ -715,8 +717,7 @@ void main() {
       );
 
       // Verify with reconstructed key
-      final verifyResult =
-          const ZegelReader().verify(fileBytes, reconstructed);
+      final verifyResult = const ZegelReader().verify(fileBytes, reconstructed);
       expect(verifyResult.valid, isTrue,
           reason: 'Reconstructed key should verify the file');
     });
@@ -737,11 +738,13 @@ void main() {
       final productData = Uint8List.fromList(
         utf8.encode('Product LOT-2026-001 certification data'),
       );
-      final sealedProduct = ZegelWriter(masterKey, ZegelOptions(
-        contentType: 'application/octet-stream',
-        filename: 'product_lot_2026_001.bin',
-        salt: _zeroSalt(),
-      )).seal(productData);
+      final sealedProduct = ZegelWriter(
+          masterKey,
+          ZegelOptions(
+            contentType: 'application/octet-stream',
+            filename: 'product_lot_2026_001.bin',
+            salt: _zeroSalt(),
+          )).seal(productData);
       final merkleRoot = _getMerkleRoot(sealedProduct);
 
       final signingKey = _signerKey('supply-chain');
@@ -906,8 +909,7 @@ void main() {
         filename: 'contract_draft1.txt',
         salt: _zeroSalt(),
       );
-      final draft1Bytes =
-          ZegelWriter(masterKey, draft1Options).seal(draft1);
+      final draft1Bytes = ZegelWriter(masterKey, draft1Options).seal(draft1);
 
       // Lawyer attests draft 1
       final lawyerKey = _signerKey('lawyer');
@@ -942,8 +944,7 @@ void main() {
         salt: _zeroSalt(),
         versionChainHash: chainHash,
       );
-      final draft2Bytes =
-          ZegelWriter(masterKey, draft2Options).seal(draft2);
+      final draft2Bytes = ZegelWriter(masterKey, draft2Options).seal(draft2);
 
       // Both parties attest draft 2
       final draft2Root = _getMerkleRoot(draft2Bytes);
@@ -1019,8 +1020,7 @@ void main() {
           'edition': '1/1',
         },
       );
-      final fileBytes =
-          ZegelWriter(masterKey, options).seal(artContent);
+      final fileBytes = ZegelWriter(masterKey, options).seal(artContent);
 
       // Creator attests
       final merkleRoot = _getMerkleRoot(fileBytes);
@@ -1036,8 +1036,7 @@ void main() {
 
       expect(attestation['role'], equals(ZegelFormat.roleOwner));
       expect(
-        Attestation.verifyRoleAttestation(
-            attestation, merkleRoot, artistKey),
+        Attestation.verifyRoleAttestation(attestation, merkleRoot, artistKey),
         isTrue,
       );
 
@@ -1185,21 +1184,17 @@ void main() {
               'Blocks 1-2 contain attorney-client privileged material',
         },
       );
-      final fileBytes =
-          ZegelWriter(masterKey, options).seal(evidence);
+      final fileBytes = ZegelWriter(masterKey, options).seal(evidence);
 
       // Verify original
-      final originalResult =
-          const ZegelReader().verify(fileBytes, masterKey);
+      final originalResult = const ZegelReader().verify(fileBytes, masterKey);
       expect(originalResult.valid, isTrue);
 
       // Redact privileged blocks (1 and 2)
-      final redacted =
-          Redaction.redactBlocks(fileBytes, masterKey, [1, 2]);
+      final redacted = Redaction.redactBlocks(fileBytes, masterKey, [1, 2]);
 
       // Redacted file still verifies
-      final redactedResult =
-          const ZegelReader().verify(redacted, masterKey);
+      final redactedResult = const ZegelReader().verify(redacted, masterKey);
       expect(redactedResult.valid, isTrue);
 
       // Privileged blocks are marked as redacted
@@ -1241,8 +1236,7 @@ void main() {
           'disclosure_number': 'ID-2026-001',
         },
       );
-      final fileBytes =
-          ZegelWriter(masterKey, options).seal(disclosure);
+      final fileBytes = ZegelWriter(masterKey, options).seal(disclosure);
 
       // Create a local trusted timestamp for the sealed file
       final merkleRoot = _getMerkleRoot(fileBytes);
@@ -1266,8 +1260,7 @@ void main() {
         masterSeal,
         tsaKey,
       );
-      expect(tsValid, isTrue,
-          reason: 'Trusted timestamp should verify');
+      expect(tsValid, isTrue, reason: 'Trusted timestamp should verify');
 
       // Verify the file itself
       final result = const ZegelReader().verify(fileBytes, masterKey);
