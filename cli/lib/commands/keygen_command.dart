@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:args/command_runner.dart';
 
@@ -126,7 +125,8 @@ class KeygenCommand extends Command<int> {
         stderr.writeln(Ansi.success('Key generated successfully.'));
         stderr.writeln();
         stderr.writeln('  File:   $outputPath');
-        stderr.writeln('  Format: ${rawOutput ? 'raw (32 bytes)' : 'hex (64 characters)'}');
+        stderr.writeln(
+            '  Format: ${rawOutput ? 'raw (32 bytes)' : 'hex (64 characters)'}');
         stderr.writeln('  Perms:  0600 (owner read/write only)');
         stderr.writeln();
         _printSecurityWarning();
@@ -153,7 +153,7 @@ class KeygenCommand extends Command<int> {
       );
     }
 
-    final dir = Directory(outputDir!);
+    final dir = Directory(outputDir);
     if (!dir.existsSync()) {
       dir.createSync(recursive: true);
     }

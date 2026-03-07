@@ -109,7 +109,7 @@ class WorkflowStepperWidget extends StatelessWidget {
                       height: 32,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: color.withOpacity(0.15),
+                        color: color.withValues(alpha: 0.15),
                         border: Border.all(color: color, width: 2),
                       ),
                       child: Center(
@@ -136,8 +136,8 @@ class WorkflowStepperWidget extends StatelessWidget {
                           width: 2,
                           margin: const EdgeInsets.symmetric(vertical: 2),
                           color: index < currentStep
-                              ? const Color(0xFF2E7D32).withOpacity(0.5)
-                              : theme.colorScheme.outline.withOpacity(0.2),
+                              ? const Color(0xFF2E7D32).withValues(alpha: 0.5)
+                              : theme.colorScheme.outline.withValues(alpha: 0.2),
                         ),
                       ),
                   ],
@@ -175,7 +175,7 @@ class WorkflowStepperWidget extends StatelessWidget {
                         SizedBox(
                           height: 2,
                           child: LinearProgressIndicator(
-                            backgroundColor: color.withOpacity(0.2),
+                            backgroundColor: color.withValues(alpha: 0.2),
                             color: color,
                           ),
                         ),

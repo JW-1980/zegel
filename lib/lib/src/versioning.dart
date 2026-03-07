@@ -90,7 +90,8 @@ class ContentVersioning {
       final _VersionInfo? prevInfo = _extractVersionInfo(fileBytesList[i - 1]);
       final _VersionInfo? currInfo = _extractVersionInfo(fileBytesList[i]);
 
-      if (prevInfo == null || prevInfo.merkleRoot == null ||
+      if (prevInfo == null ||
+          prevInfo.merkleRoot == null ||
           prevInfo.masterSeal == null) {
         return false;
       }

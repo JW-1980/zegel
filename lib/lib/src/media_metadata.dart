@@ -62,18 +62,24 @@ class MediaMetadata {
       return 'image/jpeg';
     }
     // PNG
-    if (content[0] == 0x89 && content[1] == 0x50 &&
-        content[2] == 0x4E && content[3] == 0x47) {
+    if (content[0] == 0x89 &&
+        content[1] == 0x50 &&
+        content[2] == 0x4E &&
+        content[3] == 0x47) {
       return 'image/png';
     }
     // PDF
-    if (content[0] == 0x25 && content[1] == 0x50 &&
-        content[2] == 0x44 && content[3] == 0x46) {
+    if (content[0] == 0x25 &&
+        content[1] == 0x50 &&
+        content[2] == 0x44 &&
+        content[3] == 0x46) {
       return 'application/pdf';
     }
     // ZIP (also DOCX, XLSX, etc.)
-    if (content[0] == 0x50 && content[1] == 0x4B &&
-        content[2] == 0x03 && content[3] == 0x04) {
+    if (content[0] == 0x50 &&
+        content[1] == 0x4B &&
+        content[2] == 0x03 &&
+        content[3] == 0x04) {
       return 'application/zip';
     }
     // GIF

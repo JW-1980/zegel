@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
@@ -60,9 +59,8 @@ Uint8List parseKeyFromArgs(
 /// Throws [FormatException] if the input is invalid.
 Uint8List hexDecode(String hex, {String label = 'value'}) {
   // Strip optional 0x prefix.
-  final cleaned = hex.startsWith('0x') || hex.startsWith('0X')
-      ? hex.substring(2)
-      : hex;
+  final cleaned =
+      hex.startsWith('0x') || hex.startsWith('0X') ? hex.substring(2) : hex;
 
   if (cleaned.length % 2 != 0) {
     throw FormatException(
@@ -329,8 +327,7 @@ String formatFileSize(int bytes) {
 
 /// Formats a DateTime as an ISO 8601 string.
 String formatTimestamp(DateTime dt) {
-  return dt.toUtc().toIso8601String().replaceFirst('T', ' ').split('.').first +
-      ' UTC';
+  return '${dt.toUtc().toIso8601String().replaceFirst('T', ' ').split('.').first} UTC';
 }
 
 /// Parses a date string in YYYY-MM-DD format to a DateTime.
@@ -600,4 +597,3 @@ String validateRole(String role) {
   }
   return normalized;
 }
-

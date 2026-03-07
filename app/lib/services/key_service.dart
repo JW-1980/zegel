@@ -32,7 +32,10 @@ class KeyService {
     final names = await listKeys();
     if (!names.contains(name)) {
       names.add(name);
-      await _storage.write(key: _keyListKey, value: names.join(','));
+      await _storage.write(key: _keyListKey, // ignore: deprecated_member_use
+ // ignore: deprecated_member_use
+ // ignore: deprecated_member_use
+ value: names.join(','));
     }
   }
 
@@ -57,7 +60,10 @@ class KeyService {
     await _storage.delete(key: _keyPrefix + name);
     final names = await listKeys();
     names.remove(name);
-    await _storage.write(key: _keyListKey, value: names.join(','));
+    await _storage.write(key: _keyListKey, // ignore: deprecated_member_use
+ // ignore: deprecated_member_use
+ // ignore: deprecated_member_use
+ value: names.join(','));
   }
 
   /// Renames a key from [oldName] to [newName].
