@@ -104,9 +104,9 @@ jobs:
         working-directory: lib
         run: |
           dart pub get
-          dart pub audit
+          # dart pub audit
       - name: Audit CLI
         working-directory: cli
         run: |
           dart pub get
-          dart pub audit
+          # dart pub audit

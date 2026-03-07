@@ -122,19 +122,18 @@ class _ContractScreenState extends State<ContractScreen> {
       // Build metadata with party information
       final metadata = <String, dynamic>{
         'document_type': 'contract',
-        'parties': _parties
-            .map((p) => {
-                  'name': p.name,
-                  'role': p.role,
-                })
-            .toList(),
+        'parties': _parties.map((p) => {
+          'name': p.name,
+          'role': p.role,
+        }).toList(),
       };
 
       final options = SealOptions(
         compress: true,
         enableSelectiveDisclosure: true,
         metadata: metadata,
-        splitKeyThreshold: _enableSplitKey ? _splitKeyThreshold : null,
+        splitKeyThreshold:
+            _enableSplitKey ? _splitKeyThreshold : null,
         splitKeyTotal: _enableSplitKey ? _splitKeyTotal : null,
       );
 
@@ -211,11 +210,12 @@ class _ContractScreenState extends State<ContractScreen> {
 
       if (result.attestations != null && result.attestations!.isNotEmpty) {
         // Check if all required roles have attested
-        final attestedRoles =
-            result.attestations!.map((a) => a.signerId).toSet();
+        final attestedRoles = result.attestations!
+            .map((a) => a.signerId)
+            .toSet();
         final requiredRoles = _parties.map((p) => p.name).toSet();
-        final allAttested =
-            requiredRoles.every(attestedRoles.contains);
+        final allAttested = requiredRoles
+            .every(attestedRoles.contains);
 
         if (mounted) {
           setState(() {
@@ -336,7 +336,8 @@ class _ContractScreenState extends State<ContractScreen> {
                     ),
                     const SizedBox(height: 8),
                     KeyInput(
-                      onKeyChanged: (key) => setState(() => _ownerKeyHex = key),
+                      onKeyChanged: (key) =>
+                          setState(() => _ownerKeyHex = key),
                     ),
                   ],
                 ),
@@ -408,8 +409,8 @@ class _ContractScreenState extends State<ContractScreen> {
                                 hintText: 'e.g. 5',
                               ),
                               keyboardType: TextInputType.number,
-                              onChanged: (v) => setState(
-                                  () => _splitKeyTotal = int.tryParse(v) ?? 3),
+                              onChanged: (v) => setState(() =>
+                                  _splitKeyTotal = int.tryParse(v) ?? 3),
                             ),
                           ),
                         ],
@@ -430,7 +431,8 @@ class _ContractScreenState extends State<ContractScreen> {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.checklist, color: theme.colorScheme.primary),
+                        Icon(Icons.checklist,
+                            color: theme.colorScheme.primary),
                         const SizedBox(width: 8),
                         Text(
                           l10n.contractWorkflowLabel,
@@ -459,13 +461,20 @@ class _ContractScreenState extends State<ContractScreen> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: _isError
-                        ? Colors.red.withOpacity(0.1)
-                        : Colors.green.withOpacity(0.1),
+                        ? Colors.red.withValues(alpha:0.1)
+                        : Colors.green.withValues(alpha:0.1),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
                       color: _isError
-                          ? Colors.red.withOpacity(0.3)
-                          : Colors.green.withOpacity(0.3),
+                          ? Colors.red.withValues(alpha:0.3)
+                          : Colors.green.withValues(alpha:0.3),
+                        ? Colors.red.withValues(alpha: 0.1)
+                        : Colors.green.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: _isError
+                          ? Colors.red.withValues(alpha: 0.3)
+                          : Colors.green.withValues(alpha: 0.3),
                     ),
                   ),
                   child: Row(

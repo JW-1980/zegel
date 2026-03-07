@@ -1,10 +1,11 @@
-import 'dart:io';
 import 'dart:typed_data';
 
+
 import 'package:flutter/material.dart';
+
+||||||| original
 import 'package:flutter/services.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:zegel/zegel.dart';
 
@@ -82,8 +83,10 @@ class _AuditScreenState extends State<AuditScreen> {
   Future<void> _pickFile() async {
     final fileService = context.read<FileService>();
     final path = await fileService.pickFile(
-      type: FileType.custom,
+      type: FileType.any,
+||||||| original
       allowedExtensions: ['zgl'],
+
     );
     if (path != null) {
       await _setFile(path);
@@ -193,16 +196,14 @@ class _AuditScreenState extends State<AuditScreen> {
       final newEntry = AuditTrail.createEntry(
         _actor.trim(),
         _action,
-        details:
-            _details.isNotEmpty ? Map<String, dynamic>.from(_details) : null,
+        details: _details.isNotEmpty ? Map<String, dynamic>.from(_details) : null,
         previousChainHash: previousChainHash,
       );
 
       // For demo purposes, show success and refresh
       // In production, this would write the entry to the file
       setState(() {
-        _statusMessage =
-            'Audit entry created (chain hash: ${(newEntry['chain_hash'] as String).substring(0, 16)}...)';
+        _statusMessage = 'Audit entry created (chain hash: ${(newEntry['chain_hash'] as String).substring(0, 16)}...)';
         _isError = false;
         _actorController.clear();
         _actor = '';
@@ -252,7 +253,7 @@ class _AuditScreenState extends State<AuditScreen> {
           children: [
             // Help text
             Card(
-              color: theme.colorScheme.primaryContainer.withOpacity(0.3),
+              color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
               child: Padding(
                 padding: const EdgeInsets.all(12),
                 child: Row(
@@ -375,8 +376,8 @@ class _AuditScreenState extends State<AuditScreen> {
             if (_auditEntries != null)
               Card(
                 color: _isChainValid
-                    ? Colors.green.withOpacity(0.1)
-                    : Colors.red.withOpacity(0.1),
+                    ? Colors.green.withValues(alpha: 0.1)
+                    : Colors.red.withValues(alpha: 0.1),
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Row(
@@ -396,8 +397,7 @@ class _AuditScreenState extends State<AuditScreen> {
                                   : 'Chain Integrity Broken',
                               style: theme.textTheme.titleSmall?.copyWith(
                                 fontWeight: FontWeight.bold,
-                                color:
-                                    _isChainValid ? Colors.green : Colors.red,
+                                color: _isChainValid ? Colors.green : Colors.red,
                               ),
                             ),
                             Text(
@@ -467,7 +467,7 @@ class _AuditScreenState extends State<AuditScreen> {
                     ),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<String>(
-                      initialValue: _action,
+                      value: _action,
                       decoration: const InputDecoration(
                         labelText: 'Action',
                         prefixIcon: Icon(Icons.play_arrow),
@@ -553,13 +553,13 @@ class _AuditScreenState extends State<AuditScreen> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: _isError
-                        ? Colors.red.withOpacity(0.1)
-                        : Colors.green.withOpacity(0.1),
+                        ? Colors.red.withValues(alpha: 0.1)
+                        : Colors.green.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
                       color: _isError
-                          ? Colors.red.withOpacity(0.3)
-                          : Colors.green.withOpacity(0.3),
+                          ? Colors.red.withValues(alpha: 0.3)
+                          : Colors.green.withValues(alpha: 0.3),
                     ),
                   ),
                   child: Row(

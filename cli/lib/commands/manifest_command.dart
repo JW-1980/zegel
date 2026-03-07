@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:args/command_runner.dart';
 import 'package:zegel/zegel.dart';
@@ -83,6 +82,9 @@ class ManifestCreateCommand extends Command<int> {
       const JsonEncoder.withIndent('  ').convert(manifest),
     );
 
+    stdout.writeln('${Ansi.success('Manifest created')} with ${entries.length} file(s)');
+||||||| original
+    stdout.writeln(Ansi.success('Manifest created') + ' with ${entries.length} file(s)');
     stdout.writeln(
         '${Ansi.success('Manifest created')} with ${entries.length} file(s)');
     stdout.writeln('  Output: $outputPath');
@@ -131,6 +133,9 @@ class ManifestVerifyCommand extends Command<int> {
     final key = parseKeyFromArgs(argResults!);
     final manifestFile = File(manifestPath);
     if (!manifestFile.existsSync()) {
+      stderr.writeln('${Ansi.error('Error:')} Manifest not found: $manifestPath');
+||||||| original
+      stderr.writeln(Ansi.error('Error:') + ' Manifest not found: $manifestPath');
       stderr
           .writeln('${Ansi.error('Error:')} Manifest not found: $manifestPath');
       return 1;

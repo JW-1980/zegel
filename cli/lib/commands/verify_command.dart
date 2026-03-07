@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:args/command_runner.dart';
 import 'package:zegel/zegel.dart';
@@ -98,7 +97,7 @@ class VerifyCommand extends Command<int> {
       );
     }
 
-    final fileBytes = Uint8List.fromList(file.readAsBytesSync());
+    final fileBytes = await file.readAsBytes();
     final verbose = argResults!['verbose'] as bool;
     final quiet = argResults!['quiet'] as bool;
 

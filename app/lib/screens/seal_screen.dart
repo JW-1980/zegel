@@ -40,9 +40,7 @@ class _SealScreenState extends State<SealScreen> {
   // New advanced options
   bool _anonymousMode = false;
   String _classificationLevel = '';
-  String _classificationAuthority = '';
   DateTime? _regulatoryHoldDate;
-  String _tsaUrl = '';
   bool _preserveMediaMetadata = false;
 
   // Metadata key-value pairs
@@ -149,7 +147,8 @@ class _SealScreenState extends State<SealScreen> {
         compress: _compress,
         expirationDate: _expirationDate,
         recipientId: _recipientId.isNotEmpty ? _recipientId : null,
-        splitKeyThreshold: _splitKeyThreshold > 0 ? _splitKeyThreshold : null,
+        splitKeyThreshold:
+            _splitKeyThreshold > 0 ? _splitKeyThreshold : null,
         splitKeyTotal: _splitKeyTotal > 0 ? _splitKeyTotal : null,
         enableSelectiveDisclosure: _enableSelectiveDisclosure,
         metadata: metadata,
@@ -161,7 +160,8 @@ class _SealScreenState extends State<SealScreen> {
         options,
       );
 
-      final suggestedName = '${_fileName ?? 'output'}.zgl';
+      final suggestedName =
+          '${_fileName ?? 'output'}.zgl';
       final savedPath = await fileService.saveFile(sealedBytes, suggestedName);
 
       if (savedPath != null && mounted) {
@@ -363,7 +363,9 @@ class _SealScreenState extends State<SealScreen> {
                       ),
                     ),
                     trailing: Icon(
-                      _showAdvanced ? Icons.expand_less : Icons.expand_more,
+                      _showAdvanced
+                          ? Icons.expand_less
+                          : Icons.expand_more,
                     ),
                     onTap: () {
                       setState(() => _showAdvanced = !_showAdvanced);
@@ -377,8 +379,7 @@ class _SealScreenState extends State<SealScreen> {
                           const Divider(),
                           SwitchListTile(
                             title: Text(l10n.compressionLabel),
-                            subtitle: const Text(
-                                'zlib compression before encryption'),
+                            subtitle: const Text('zlib compression before encryption'),
                             value: _compress,
                             onChanged: _isSealing
                                 ? null
@@ -398,13 +399,15 @@ class _SealScreenState extends State<SealScreen> {
                                   IconButton(
                                     icon: const Icon(Icons.clear),
                                     onPressed: () {
-                                      setState(() => _expirationDate = null);
+                                      setState(
+                                          () => _expirationDate = null);
                                     },
                                   ),
                                 IconButton(
                                   icon: const Icon(Icons.calendar_today),
-                                  onPressed:
-                                      _isSealing ? null : _pickExpirationDate,
+                                  onPressed: _isSealing
+                                      ? null
+                                      : _pickExpirationDate,
                                 ),
                               ],
                             ),
@@ -414,7 +417,8 @@ class _SealScreenState extends State<SealScreen> {
                               labelText: l10n.recipientLabel,
                               hintText: '64-character hex recipient ID',
                             ),
-                            onChanged: (v) => setState(() => _recipientId = v),
+                            onChanged: (v) =>
+                                setState(() => _recipientId = v),
                           ),
                           const SizedBox(height: 12),
                           Row(
@@ -440,7 +444,8 @@ class _SealScreenState extends State<SealScreen> {
                                   ),
                                   keyboardType: TextInputType.number,
                                   onChanged: (v) => setState(() =>
-                                      _splitKeyTotal = int.tryParse(v) ?? 0),
+                                      _splitKeyTotal =
+                                          int.tryParse(v) ?? 0),
                                 ),
                               ),
                             ],
@@ -464,11 +469,12 @@ class _SealScreenState extends State<SealScreen> {
                             value: _anonymousMode,
                             onChanged: _isSealing
                                 ? null
-                                : (v) => setState(() => _anonymousMode = v),
+                                : (v) =>
+                                    setState(() => _anonymousMode = v),
                           ),
                           const SizedBox(height: 8),
                           DropdownButtonFormField<String>(
-                            initialValue: _classificationLevel.isEmpty
+                            value: _classificationLevel.isEmpty
                                 ? null
                                 : _classificationLevel,
                             decoration: InputDecoration(
@@ -477,14 +483,17 @@ class _SealScreenState extends State<SealScreen> {
                             ),
                             items: const [
                               DropdownMenuItem(
-                                  value: 'PUBLIC', child: Text('PUBLIC')),
+                                  value: 'PUBLIC',
+                                  child: Text('PUBLIC')),
                               DropdownMenuItem(
-                                  value: 'INTERNAL', child: Text('INTERNAL')),
+                                  value: 'INTERNAL',
+                                  child: Text('INTERNAL')),
                               DropdownMenuItem(
                                   value: 'CONFIDENTIAL',
                                   child: Text('CONFIDENTIAL')),
                               DropdownMenuItem(
-                                  value: 'SECRET', child: Text('SECRET')),
+                                  value: 'SECRET',
+                                  child: Text('SECRET')),
                               DropdownMenuItem(
                                   value: 'TOP_SECRET',
                                   child: Text('TOP SECRET')),
@@ -501,8 +510,6 @@ class _SealScreenState extends State<SealScreen> {
                                 labelText: l10n.sealClassificationAuthority,
                                 hintText: l10n.sealClassificationAuthorityHint,
                               ),
-                              onChanged: (v) =>
-                                  setState(() => _classificationAuthority = v),
                             ),
                           ],
                           const SizedBox(height: 12),
@@ -528,18 +535,23 @@ class _SealScreenState extends State<SealScreen> {
                                       ? null
                                       : () async {
                                           final now = DateTime.now();
-                                          final picked = await showDatePicker(
+                                          final picked =
+                                              await showDatePicker(
                                             context: context,
-                                            initialDate: _regulatoryHoldDate ??
-                                                now.add(const Duration(
-                                                    days: 365 * 7)),
+                                            initialDate:
+                                                _regulatoryHoldDate ??
+                                                    now.add(
+                                                        const Duration(
+                                                            days: 365 * 7)),
                                             firstDate: now,
-                                            lastDate: now.add(const Duration(
-                                                days: 365 * 100)),
+                                            lastDate: now.add(
+                                                const Duration(
+                                                    days: 365 * 100)),
                                           );
                                           if (picked != null) {
                                             setState(() =>
-                                                _regulatoryHoldDate = picked);
+                                                _regulatoryHoldDate =
+                                                    picked);
                                           }
                                         },
                                 ),
@@ -552,17 +564,17 @@ class _SealScreenState extends State<SealScreen> {
                               labelText: l10n.sealTsaUrl,
                               hintText: l10n.sealTsaUrlHint,
                             ),
-                            onChanged: (v) => setState(() => _tsaUrl = v),
                           ),
                           const SizedBox(height: 8),
                           SwitchListTile(
                             title: Text(l10n.sealPreserveMediaMetadata),
-                            subtitle: Text(l10n.sealPreserveMediaMetadataDesc),
+                            subtitle: Text(
+                                l10n.sealPreserveMediaMetadataDesc),
                             value: _preserveMediaMetadata,
                             onChanged: _isSealing
                                 ? null
-                                : (v) =>
-                                    setState(() => _preserveMediaMetadata = v),
+                                : (v) => setState(
+                                    () => _preserveMediaMetadata = v),
                           ),
                         ],
                       ),
@@ -580,13 +592,20 @@ class _SealScreenState extends State<SealScreen> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: _isError
-                        ? Colors.red.withOpacity(0.1)
-                        : Colors.green.withOpacity(0.1),
+                        ? Colors.red.withValues(alpha:0.1)
+                        : Colors.green.withValues(alpha:0.1),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
                       color: _isError
-                          ? Colors.red.withOpacity(0.3)
-                          : Colors.green.withOpacity(0.3),
+                          ? Colors.red.withValues(alpha:0.3)
+                          : Colors.green.withValues(alpha:0.3),
+                        ? Colors.red.withValues(alpha: 0.1)
+                        : Colors.green.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: _isError
+                          ? Colors.red.withValues(alpha: 0.3)
+                          : Colors.green.withValues(alpha: 0.3),
                     ),
                   ),
                   child: Row(

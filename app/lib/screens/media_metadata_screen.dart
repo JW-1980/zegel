@@ -1,10 +1,11 @@
+import 'dart:typed_data';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
-import 'package:zegel/zegel.dart';
-import 'dart:typed_data';
+import 'package:zegel/zegel.dart' hide ZegelInspection;
+
 
 import '../services/file_service.dart';
 import '../services/zegel_service.dart';
@@ -59,8 +60,8 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
       return;
     }
     if (_hexKey.length != 64) {
-      setState(
-          () => _errorMessage = 'Please enter a valid 64-character hex key.');
+      setState(() =>
+          _errorMessage = 'Please enter a valid 64-character hex key.');
       return;
     }
 
@@ -77,7 +78,7 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
       }
 
       final bytes = await file.readAsBytes();
-      const reader = ZegelReader();
+      final reader = const ZegelReader();
 
       // First inspect the file
       final inspection = reader.inspect(bytes);
@@ -279,8 +280,8 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
                       ),
                       const Divider(),
                       if (_metadata!['filename'] != null)
-                        _buildInfoRow('Filename',
-                            _metadata!['filename'].toString(), theme),
+                        _buildInfoRow(
+                            'Filename', _metadata!['filename'].toString(), theme),
                       if (_metadata!['file_size'] != null)
                         _buildInfoRow(
                           'File Size',

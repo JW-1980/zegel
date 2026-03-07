@@ -48,7 +48,7 @@ class HierarchicalSplitKey {
   /// Returns a [HierarchicalShares] containing the shares grouped by
   /// classification level.
   static HierarchicalShares split(
-    Uint8List masterKey,
+    final Uint8List masterKey,
     List<ShareLevel> levels,
   ) {
     if (masterKey.length != 32) {

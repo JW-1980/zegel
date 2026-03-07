@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:args/command_runner.dart';
 import 'package:zegel/zegel.dart';
@@ -58,6 +57,7 @@ class BatchVerifyCommand extends Command<int> {
 
     final key = parseKeyFromArgs(argResults!);
     final stopOnFailure = argResults!['stop-on-failure'] as bool;
+
 //     final verbose = argResults!['verbose'] as bool;
 
     final files = dir
@@ -182,8 +182,18 @@ class BatchSealCommand extends Command<int> {
     stdout.writeln('Sealing ${files.length} file(s)...');
     int sealed = 0;
 
-    for (final file in files) {
+    await Future.wait(files.map((file) async {
       final name = file.path.split(Platform.pathSeparator).last;
+      final content = Uint8List.fromList(await file.readAsBytes());
+      final writer = ZegelWriter(key, ZegelOptions(
+        contentType: contentType ?? 'application/octet-stream',
+        filename: name,
+        compress: compress,
+        enableKeyCommitment: true,
+      ));
+      final sealedBytes = await Future.microtask(() => writer.seal(content));
+      await File('${outputDir.path}${Platform.pathSeparator}$name.zgl')
+          .writeAsBytes(sealedBytes);
       final content = Uint8List.fromList(file.readAsBytesSync());
       final writer = ZegelWriter(
           key,
@@ -197,8 +207,8 @@ class BatchSealCommand extends Command<int> {
       File('${outputDir.path}${Platform.pathSeparator}$name.zgl')
           .writeAsBytesSync(sealedBytes);
       stdout.writeln('  ${Ansi.success("✓")} $name -> $name.zgl');
-      sealed++;
-    }
+    }));
+    sealed = files.length;
 
     stdout.writeln();
     stdout.writeln('${Ansi.success("$sealed file(s) sealed")} to $outputPath');

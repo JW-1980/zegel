@@ -1,16 +1,16 @@
-import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+
+||||||| original
 import 'package:flutter/services.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:zegel/zegel.dart';
 
 import '../services/file_service.dart';
 import '../services/zegel_service.dart';
 import '../widgets/key_input.dart';
+import 'package:intl/intl.dart';
 
 /// Screen for adding attestations to sealed .zgl files.
 ///
@@ -68,8 +68,10 @@ class _AttestScreenState extends State<AttestScreen> {
   Future<void> _pickFile() async {
     final fileService = context.read<FileService>();
     final path = await fileService.pickFile(
-      type: FileType.custom,
+      type: FileType.any,
+||||||| original
       allowedExtensions: ['zgl'],
+
     );
     if (path != null) {
       await _setFile(path);
@@ -204,7 +206,7 @@ class _AttestScreenState extends State<AttestScreen> {
           children: [
             // Help text
             Card(
-              color: theme.colorScheme.primaryContainer.withOpacity(0.3),
+              color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
               child: Padding(
                 padding: const EdgeInsets.all(12),
                 child: Row(
@@ -365,7 +367,7 @@ class _AttestScreenState extends State<AttestScreen> {
                     ),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<String>(
-                      initialValue: _selectedRole,
+                      value: _selectedRole,
                       decoration: const InputDecoration(
                         labelText: 'Role',
                         prefixIcon: Icon(Icons.badge),
@@ -458,13 +460,13 @@ class _AttestScreenState extends State<AttestScreen> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: _isError
-                        ? Colors.red.withOpacity(0.1)
-                        : Colors.green.withOpacity(0.1),
+                        ? Colors.red.withValues(alpha: 0.1)
+                        : Colors.green.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
                       color: _isError
-                          ? Colors.red.withOpacity(0.3)
-                          : Colors.green.withOpacity(0.3),
+                          ? Colors.red.withValues(alpha: 0.3)
+                          : Colors.green.withValues(alpha: 0.3),
                     ),
                   ),
                   child: Row(
@@ -573,13 +575,13 @@ class _AttestationCard extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: isVerified
-            ? Colors.green.withOpacity(0.05)
-            : Colors.red.withOpacity(0.05),
+            ? Colors.green.withValues(alpha: 0.05)
+            : Colors.red.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
           color: isVerified
-              ? Colors.green.withOpacity(0.2)
-              : Colors.red.withOpacity(0.2),
+              ? Colors.green.withValues(alpha: 0.2)
+              : Colors.red.withValues(alpha: 0.2),
         ),
       ),
       child: Column(
@@ -615,7 +617,7 @@ class _AttestationCard extends StatelessWidget {
           Text(
             dateFormatter.format(attestation.timestamp),
             style: theme.textTheme.labelSmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
+              color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
             ),
           ),
         ],

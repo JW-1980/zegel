@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:args/command_runner.dart';
 import 'package:crypto/crypto.dart' as crypto;
@@ -181,7 +180,8 @@ class CanaryEmbedCommand extends Command<int> {
         header.expirationTimestamp! * 1000,
         isUtc: true,
       );
-      expirationDateStr = '${dt.year.toString().padLeft(4, '0')}-'
+      expirationDateStr =
+          '${dt.year.toString().padLeft(4, '0')}-'
           '${dt.month.toString().padLeft(2, '0')}-'
           '${dt.day.toString().padLeft(2, '0')}';
     }
@@ -227,8 +227,7 @@ class CanaryEmbedCommand extends Command<int> {
         final padding = CanaryTrap.generatePadding(masterKey, recipientId, i);
         final paddedPlaintext = Uint8List(plaintext.length + padding.length);
         paddedPlaintext.setRange(0, plaintext.length, plaintext);
-        paddedPlaintext.setRange(
-            plaintext.length, paddedPlaintext.length, padding);
+        paddedPlaintext.setRange(plaintext.length, paddedPlaintext.length, padding);
         plaintext = paddedPlaintext;
       }
 
@@ -534,7 +533,11 @@ class CanaryIdentifyCommand extends Command<int> {
 
     // Verify the file first.
     const reader = ZegelReader();
-//     ZegelResult result;
+
+||||||| original
+    final reader = const ZegelReader();
+    ZegelResult result;
+    final reader = const ZegelReader();
     try {
       reader.verify(fileBytes, masterKey);
     } on ZegelException catch (e) {
@@ -559,7 +562,8 @@ class CanaryIdentifyCommand extends Command<int> {
         rawHeader.expirationTimestamp! * 1000,
         isUtc: true,
       );
-      expirationDateStr = '${dt.year.toString().padLeft(4, '0')}-'
+      expirationDateStr =
+          '${dt.year.toString().padLeft(4, '0')}-'
           '${dt.month.toString().padLeft(2, '0')}-'
           '${dt.day.toString().padLeft(2, '0')}';
     }
