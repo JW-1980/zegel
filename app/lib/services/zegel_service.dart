@@ -1,11 +1,9 @@
-import 'package:zegel/zegel.dart';
 import 'dart:convert';
 import 'dart:isolate';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:zegel/zegel.dart' as zegel_core;
-
-import 'package:zegel/zegel.dart';
+import 'package:zegel/zegel.dart' as zegel;
 
 /// Result status from a verification operation.
 enum ZegelStatus {
@@ -435,11 +433,27 @@ class ZegelService {
     String hexKey,
     String outputPath,
   ) async {
-    // Delegate to the zegel library.
-    throw UnimplementedError(
-      'Extract operation requires the zegel core library. '
-      'Ensure package:zegel is properly linked in pubspec.yaml.',
-    );
+    final file = File(filePath);
+    if (!await file.exists()) {
+      return false;
+    }
+
+    try {
+      final fileBytes = await file.readAsBytes();
+      final keyBytes = _hexToBytes(hexKey);
+
+      final reader = const zegel.ZegelReader();
+      final result = reader.verify(fileBytes, keyBytes);
+
+      if (result.valid && result.content != null) {
+        final outFile = File(outputPath);
+        await outFile.writeAsBytes(result.content!);
+        return true;
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
   }
 
   /// Inspects a .zgl file without requiring the master key.
@@ -601,14 +615,17 @@ class ZegelService {
     }
   }
 
-  /// Converts a hex string to bytes.
-  Uint8List _hexToBytes(String hex) {
-    final length = hex.length ~/ 2;
-    final bytes = Uint8List(length);
-    for (int i = 0; i < length; i++) {
-      bytes[i] = int.parse(hex.substring(i * 2, i * 2 + 2), radix: 16);
+  /// Converts a hex string to a Uint8List.
+  Uint8List _hexToBytes(String hexStr) {
+    final length = hexStr.length;
+    if (length % 2 != 0) {
+      throw const FormatException('Invalid hex string');
     }
-    return bytes;
+    final result = Uint8List(length ~/ 2);
+    for (var i = 0; i < length; i += 2) {
+      result[i ~/ 2] = int.parse(hexStr.substring(i, i + 2), radix: 16);
+    }
+    return result;
   }
 
   // ===============================================================  // Batch operations
