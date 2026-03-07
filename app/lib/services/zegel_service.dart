@@ -5,6 +5,8 @@ import 'dart:typed_data';
 import 'package:zegel/zegel.dart' as zegel_core;
 import 'package:zegel/zegel.dart' as zegel;
 
+import 'package:zegel/zegel.dart';
+
 /// Result status from a verification operation.
 enum ZegelStatus {
   /// File is intact and has not been tampered with.
@@ -782,11 +784,31 @@ class ZegelService {
     String filePath,
     String hexKey,
   ) async {
-    // Delegate to the zegel library.
-    throw UnimplementedError(
-      'Verify provenance operation requires the zegel core library. '
-      'Ensure package:zegel is properly linked in pubspec.yaml.',
-    );
+    final file = File(filePath);
+    if (!await file.exists()) {
+      throw FileSystemException('File does not exist', filePath);
+    }
+
+    final bytes = await file.readAsBytes();
+    final keyBytes = _hexToBytes(hexKey);
+
+    final result = const ZegelReader().verify(bytes, keyBytes);
+    if (result.provenance == null || result.provenance!.isEmpty) {
+      return [];
+    }
+
+    final chainResult = ProvenanceVerification.verifyChain(result.provenance!, keyBytes);
+    final isValid = chainResult['valid'] == true;
+
+    return result.provenance!.map((entry) {
+      final timestamp = entry['timestamp'] as int;
+      return ProvenanceEvent(
+        actor: entry['actor'] as String,
+        action: entry['action'] as String,
+        timestamp: DateTime.fromMillisecondsSinceEpoch(timestamp * 1000, isUtc: true),
+        isSignatureVerified: isValid,
+      );
+    }).toList();
   }
 
   // ===============================================================  // Version chain operations
@@ -837,5 +859,14 @@ class ZegelService {
       'Verify credential operation requires the zegel core library. '
       'Ensure package:zegel is properly linked in pubspec.yaml.',
     );
+  }
+
+  Uint8List _hexToBytes(String hex) {
+    final int length = hex.length ~/ 2;
+    final Uint8List bytes = Uint8List(length);
+    for (int i = 0; i < length; i++) {
+      bytes[i] = int.parse(hex.substring(i * 2, i * 2 + 2), radix: 16);
+    }
+    return bytes;
   }
 }

@@ -5,10 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:zegel/zegel.dart' hide ZegelInspection;
-||||||| original
-import 'package:zegel/zegel.dart';
-import 'package:zegel/zegel.dart' hide ZegelInspection;
-import 'dart:typed_data';
 
 import '../services/file_service.dart';
 import '../services/zegel_service.dart';
