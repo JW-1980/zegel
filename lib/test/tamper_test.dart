@@ -222,8 +222,8 @@ void main() {
       test('truncate file by 1 byte -> fails', () {
         final fileBytes = _createValidFile();
 
-        final truncated = Uint8List.fromList(
-            fileBytes.sublist(0, fileBytes.length - 1));
+        final truncated =
+            Uint8List.fromList(fileBytes.sublist(0, fileBytes.length - 1));
 
         expect(
           () => const ZegelReader().verify(truncated, masterKey),
@@ -407,7 +407,8 @@ void main() {
         expect(
           () => const ZegelReader().verify(tampered, masterKey),
           throwsA(anything),
-          reason: 'Flipped auth tag should cause seal mismatch or decryption failure',
+          reason:
+              'Flipped auth tag should cause seal mismatch or decryption failure',
         );
       });
     });
