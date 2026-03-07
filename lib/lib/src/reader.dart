@@ -142,11 +142,38 @@ class ZegelInspection
     this.splitKeyParams,
     this.expirationTimestamp,
     this.blocks = const [],
+  });
 
+  /// Format version string (e.g. `"1.2"`).
+  final String version;
+
+  /// Raw flags bitmask (uint16).
+  final int flags;
+
+  /// File creation time as Unix epoch seconds.
+  final int timestamp;
+
+  /// Content-Type from the header.
+  final String? contentType;
+
+  /// Original filename.
+  final String? filename;
+
+  /// Total number of blocks in the file.
+  final int blockCount;
+
+  /// Public metadata from the extended header.
+  final Map<String, dynamic>? publicMetadata;
+
+  /// Shamir split-key parameters: `{'threshold': M, 'total': N}`.
+  final Map<String, int>? splitKeyParams;
+
+  /// Expiration timestamp as Unix epoch seconds.
+  final int? expirationTimestamp;
+
+  /// Information about each block in the directory.
+  final List<Map<String, dynamic>> blocks;
 }
-
-)
-;
 
 
   /// Format version string (e.g. `"1.2"`).
@@ -426,8 +453,10 @@ h.expirationTimestamp
       throw const ZegelTamperedException('Master seal verification failed');
     }
 
-    // ==================================================================    // 7. Verify Merkle tree
-    // ==================================================================    final List<Uint8List> leafHashes = h.directory
+    // =========================================================================
+    // 7. Verify Merkle tree
+    // =========================================================================
+    final List<Uint8List> leafHashes = h.directory
         .map((_DirEntry e) => e.hash)
         .toList();
     final Uint8List computedRoot = MerkleTree.buildRoot(leafHashes);
