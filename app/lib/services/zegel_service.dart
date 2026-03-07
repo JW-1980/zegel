@@ -285,6 +285,30 @@ class CredentialInfo {
 /// Zegel library. All file operations are asynchronous to keep the UI
 /// responsive during cryptographic operations.
 class ZegelService {
+
+  Uint8List _hexToBytes(String hexStr) {
+    final String cleanHex = hexStr.replaceAll(RegExp(r'[^0-9a-fA-F]'), '');
+    if (cleanHex.length % 2 != 0) {
+      throw ArgumentError('Invalid hex string length');
+    }
+    final Uint8List result = Uint8List(cleanHex.length ~/ 2);
+    for (int i = 0; i < result.length; i++) {
+      result[i] = int.parse(cleanHex.substring(i * 2, i * 2 + 2), radix: 16);
+    }
+    return result;
+  }
+
+  String _bytesToHex(Uint8List bytes) {
+    const String hexDigits = '0123456789abcdef';
+    final Uint16List codeUnits = Uint16List(bytes.length * 2);
+    for (int i = 0; i < bytes.length; i++) {
+      final int b = bytes[i];
+      codeUnits[i * 2] = hexDigits.codeUnitAt(b >> 4);
+      codeUnits[i * 2 + 1] = hexDigits.codeUnitAt(b & 0x0f);
+    }
+    return String.fromCharCodes(codeUnits);
+  }
+
   /// Seals a file with the given key and options.
   ///
   /// Returns the sealed bytes as a Uint8List.
@@ -545,11 +569,14 @@ class ZegelService {
       );
     }
 
-    // Delegate to the zegel library.
-    throw UnimplementedError(
-      'Split key operation requires the zegel core library. '
-      'Ensure package:zegel is properly linked in pubspec.yaml.',
+    final Uint8List keyBytes = _hexToBytes(hexKey);
+    final List<Uint8List> shares = ShamirSecretSharing.split(
+      keyBytes,
+      threshold,
+      totalShares,
     );
+
+    return shares.map((s) => _bytesToHex(s)).toList();
   }
 
   /// Reconstructs a key from the given shares.
@@ -565,7 +592,7 @@ class ZegelService {
       for (final shareHex in shares) {
         final hexStr = shareHex.trim();
         if (hexStr.length % 2 != 0) {
-          throw FormatException('Invalid hex string length: ${hexStr.length}');
+          throw FormatException('Invalid hex string length: \${hexStr.length}');
         }
         final bytes = Uint8List(hexStr.length ~/ 2);
         for (int i = 0; i < bytes.length; i++) {
@@ -584,7 +611,7 @@ class ZegelService {
       }
       return buffer.toString();
     } catch (e) {
-      throw ArgumentError('Failed to reconstruct key: $e');
+      throw ArgumentError('Failed to reconstruct key: \$e');
     }
   }
 
