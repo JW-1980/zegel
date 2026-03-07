@@ -536,10 +536,6 @@ dt.day.toString().padLeft(2, '0')
     final List<Map<String, dynamic>> provenanceEntries =
         <Map<String, dynamic>>[];
     final List<int> redactedBlocks = <int>[];
-||||||| original
-    final List<int> disclosedIndices = <int>[];
-//     final List<int> disclosedIndices = <int>[];
-
 
 
     for (int i = 0; i < h.blockCount; i++) {
@@ -752,10 +748,6 @@ h.versionMinor
     final List<Map<String, dynamic>> provenanceEntries =
         <Map<String, dynamic>>[];
     final List<int> redactedBlocks = <int>[];
-||||||| original
-    final List<int> disclosedIndices = <int>[];
-//     final List<int> disclosedIndices = <int>[];
-
 
 
     for (int i = 0; i < h.blockCount; i++) {
@@ -772,11 +764,7 @@ h.versionMinor
         continue;
       }
 
-      final List<int> disclosedIndices = <int>[];
-          disclosedIndices.add(i);
-||||||| original
-      disclosedIndices.add(i);
-//       disclosedIndices.add(i);
+
 
       final Uint8List blockKey = _hexToBytes(blockKeysMap[indexStr] as String);
       final int bOffset = blockDataOffsets[i];
@@ -868,9 +856,6 @@ h.versionMinor
       provenance: provenanceEntries.isNotEmpty ? provenanceEntries : null,
       redactedBlocks: redactedBlocks.isNotEmpty ? redactedBlocks : null,
       disclosedBlocks: null,
-||||||| original
-      disclosedBlocks: disclosedIndices,
-//       disclosedBlocks: disclosedIndices,
     );
   }
 

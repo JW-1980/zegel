@@ -37,9 +37,6 @@ class BatchOperations {
   }) {
     final results = <Map<String, dynamic>>[];
     const reader = ZegelReader();
-||||||| original
-    final reader = ZegelReader();
-    final reader = const ZegelReader();
 
     for (final entry in files) {
       final sw = Stopwatch()..start();
