@@ -512,6 +512,7 @@ dt.day.toString().padLeft(2, '0')
 //     final List<int> disclosedIndices = <int>[];
 
 
+
     for (int i = 0; i < h.blockCount; i++) {
       final _DirEntry entry = h.directory[i];
       final Uint8List ciphertext = Uint8List.sublistView(
@@ -725,6 +726,7 @@ h.versionMinor
 ||||||| original
     final List<int> disclosedIndices = <int>[];
 //     final List<int> disclosedIndices = <int>[];
+
 
 
     for (int i = 0; i < h.blockCount; i++) {
