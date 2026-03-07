@@ -58,10 +58,12 @@ class TrustedTimestamp {
     // Create the message to sign
     final combined = Uint8List(merkleRoot.length + masterSeal.length + 8);
     combined.setRange(0, merkleRoot.length, merkleRoot);
-    combined.setRange(merkleRoot.length, merkleRoot.length + masterSeal.length, masterSeal);
+    combined.setRange(
+        merkleRoot.length, merkleRoot.length + masterSeal.length, masterSeal);
     final bd = ByteData(8);
     bd.setUint64(0, epochSeconds, Endian.big);
-    combined.setRange(merkleRoot.length + masterSeal.length, combined.length, bd.buffer.asUint8List());
+    combined.setRange(merkleRoot.length + masterSeal.length, combined.length,
+        bd.buffer.asUint8List());
 
     final hmac = Hmac(sha256, signerKey);
     final signature = Uint8List.fromList(hmac.convert(combined).bytes);
@@ -89,10 +91,12 @@ class TrustedTimestamp {
 
     final combined = Uint8List(merkleRoot.length + masterSeal.length + 8);
     combined.setRange(0, merkleRoot.length, merkleRoot);
-    combined.setRange(merkleRoot.length, merkleRoot.length + masterSeal.length, masterSeal);
+    combined.setRange(
+        merkleRoot.length, merkleRoot.length + masterSeal.length, masterSeal);
     final bd = ByteData(8);
     bd.setUint64(0, epochSeconds, Endian.big);
-    combined.setRange(merkleRoot.length + masterSeal.length, combined.length, bd.buffer.asUint8List());
+    combined.setRange(merkleRoot.length + masterSeal.length, combined.length,
+        bd.buffer.asUint8List());
 
     final hmac = Hmac(sha256, signerKey);
     final computed = Uint8List.fromList(hmac.convert(combined).bytes);

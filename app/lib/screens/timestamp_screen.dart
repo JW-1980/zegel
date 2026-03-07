@@ -1,13 +1,17 @@
 import 'dart:typed_data';
 import 'dart:io';
+||||||| original
+import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
-import 'package:zegel/zegel.dart' hide ZegelInspection, ZegelResult, ZegelBlockInfo, DisclosureToken;
+import 'package:zegel/zegel.dart';
 
 import '../services/file_service.dart';
 import '../widgets/key_input.dart';
+import 'dart:io';
 
 /// Screen for timestamp management - requesting trusted timestamps
 /// and verifying existing timestamps.
@@ -86,7 +90,7 @@ class _TimestampScreenState extends State<TimestampScreen>
 
       final bytes = await file.readAsBytes();
       final reader = const ZegelReader();
-      final inspection = reader.inspect(bytes);
+      // final inspection = reader.inspect(bytes);
 
       // Extract Merkle root and master seal from file
       // The Merkle root is at a known position after the block directory
@@ -203,14 +207,14 @@ class _TimestampScreenState extends State<TimestampScreen>
     final flags = bd.getUint16(10, Endian.big);
 
     // Calculate directory start after extended header
-    int cursor = blockCountOffset + 4;
+    int cursor = (blockCountOffset + 4).toInt();
     if (flags & ZegelFormat.flagPasswordDerived != 0) cursor += 8;
     if (flags & ZegelFormat.flagHasExpiration != 0) cursor += 8;
     if (flags & ZegelFormat.flagHasCanary != 0) cursor += 32;
     if (flags & ZegelFormat.flagSplitKey != 0) cursor += 2;
     if (flags & ZegelFormat.flagVersioned != 0) cursor += 32;
     if (flags & ZegelFormat.flagHasPublicMetadata != 0) {
-      final pubMetaLen = bd.getUint32(cursor, Endian.big);
+      final pubMetaLen = bd.getUint32(cursor.toInt(), Endian.big);
       cursor += (4 + pubMetaLen).toInt();
     }
 
@@ -219,7 +223,7 @@ class _TimestampScreenState extends State<TimestampScreen>
 
     // Merkle root is here (32 bytes)
     return Uint8List.fromList(
-      bytes.sublist(cursor, cursor + ZegelFormat.hashSize),
+      bytes.sublist(cursor.toInt(), (cursor + ZegelFormat.hashSize).toInt()),
     );
   }
 
@@ -285,7 +289,7 @@ class _TimestampScreenState extends State<TimestampScreen>
         children: [
           // Info card
           Card(
-            color: theme.colorScheme.primaryContainer.withOpacity(0.3),
+            color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Row(
@@ -490,7 +494,7 @@ class _TimestampScreenState extends State<TimestampScreen>
         children: [
           // Info card
           Card(
-            color: theme.colorScheme.primaryContainer.withOpacity(0.3),
+            color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Row(
@@ -662,9 +666,9 @@ class _TimestampScreenState extends State<TimestampScreen>
       padding: const EdgeInsets.all(12),
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [

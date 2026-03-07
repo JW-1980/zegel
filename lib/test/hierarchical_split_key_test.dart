@@ -80,7 +80,11 @@ void main() {
           ),
           LevelShares(
             classification: ZegelFormat.classificationSecret,
-            shares: [secretShares[0], secretShares[2], secretShares[4]], // any 3 of 5
+            shares: [
+              secretShares[0],
+              secretShares[2],
+              secretShares[4]
+            ], // any 3 of 5
           ),
         ];
 
@@ -146,7 +150,10 @@ void main() {
               ),
               LevelShares(
                 classification: ZegelFormat.classificationSecret,
-                shares: [secretShares[0], secretShares[1]], // only 2 of required 3
+                shares: [
+                  secretShares[0],
+                  secretShares[1]
+                ], // only 2 of required 3
               ),
             ],
             levels,
@@ -232,7 +239,8 @@ void main() {
     });
 
     group('multi-level reconstruction consistency', () {
-      test('different share combinations at same level reconstruct same key', () {
+      test('different share combinations at same level reconstruct same key',
+          () {
         final levels = <ShareLevel>[
           ShareLevel(
             classification: ZegelFormat.classificationConfidential,
@@ -328,11 +336,12 @@ void main() {
 
         expect(splitResult.sharesByLevel.length, equals(3));
         expect(
-            splitResult.sharesByLevel[ZegelFormat.classificationInternal]!.length,
+            splitResult
+                .sharesByLevel[ZegelFormat.classificationInternal]!.length,
             equals(3));
         expect(
-            splitResult.sharesByLevel[ZegelFormat.classificationConfidential]!
-                .length,
+            splitResult
+                .sharesByLevel[ZegelFormat.classificationConfidential]!.length,
             equals(5));
         expect(
             splitResult.sharesByLevel[ZegelFormat.classificationSecret]!.length,
@@ -352,8 +361,8 @@ void main() {
 
         expect(splitResult.sharesByLevel.length, equals(1));
         expect(
-            splitResult.sharesByLevel[ZegelFormat.classificationConfidential]!
-                .length,
+            splitResult
+                .sharesByLevel[ZegelFormat.classificationConfidential]!.length,
             equals(5));
       });
     });

@@ -1,5 +1,8 @@
 import 'dart:typed_data';
 import 'dart:io';
+||||||| original
+import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
@@ -7,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:zegel/zegel.dart' hide ZegelInspection, ZegelResult, ZegelBlockInfo, DisclosureToken;
 
 import '../services/file_service.dart';
+import 'dart:io';
 
 /// Version information extracted from a .zgl file.
 class _VersionEntry {
@@ -163,9 +167,9 @@ class _VersionChainScreenState extends State<VersionChainScreen> {
       }
     } catch (e) {
       if (mounted) {
-        final l10n = AppLocalizations.of(context)!;
+
         setState(() {
-          _errorMessage = l10n.errorGeneric(e.toString());
+          _errorMessage = AppLocalizations.of(context)!.errorGeneric(e.toString());
           _isLoading = false;
         });
       }
@@ -217,7 +221,7 @@ class _VersionChainScreenState extends State<VersionChainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+
     final theme = Theme.of(context);
     final fileService = context.read<FileService>();
 
@@ -240,7 +244,7 @@ class _VersionChainScreenState extends State<VersionChainScreen> {
           children: [
             // Info card
             Card(
-              color: theme.colorScheme.primaryContainer.withOpacity(0.3),
+              color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Row(
@@ -384,9 +388,9 @@ class _VersionChainScreenState extends State<VersionChainScreen> {
                 padding: const EdgeInsets.all(12),
                 margin: const EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
-                  color: Colors.red.withOpacity(0.1),
+                  color: Colors.red.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.red.withOpacity(0.3)),
+                  border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
                 ),
                 child: Row(
                   children: [
@@ -537,7 +541,7 @@ class _VersionChainScreenState extends State<VersionChainScreen> {
                       Expanded(
                         child: Container(
                           width: 2,
-                          color: theme.colorScheme.outline.withOpacity(0.3),
+                          color: theme.colorScheme.outline.withValues(alpha: 0.3),
                         ),
                       ),
                   ],
@@ -550,10 +554,10 @@ class _VersionChainScreenState extends State<VersionChainScreen> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: theme.colorScheme.surfaceContainerHighest
-                        .withOpacity(0.3),
+                        .withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
-                      color: theme.colorScheme.outline.withOpacity(0.2),
+                      color: theme.colorScheme.outline.withValues(alpha: 0.2),
                     ),
                   ),
                   child: Column(

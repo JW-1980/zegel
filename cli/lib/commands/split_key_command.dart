@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:args/command_runner.dart';
 import 'package:zegel/zegel.dart';
@@ -150,7 +149,8 @@ class SplitKeyCommand extends Command<int> {
     stdout.writeln();
     stdout.writeln('  Threshold:  $threshold of $totalShares');
     stdout.writeln('  Share dir:  $outputDir');
-    stdout.writeln('  Format:     ${useHex ? 'hex (66 characters)' : 'raw (33 bytes)'}');
+    stdout.writeln(
+        '  Format:     ${useHex ? 'hex (66 characters)' : 'raw (33 bytes)'}');
     stdout.writeln('  Files:');
     for (var i = 0; i < shares.length; i++) {
       stdout.writeln('    share_${i + 1}.key');
@@ -188,8 +188,7 @@ class ReconstructCommand extends Command<int> {
   final String name = 'reconstruct';
 
   @override
-  String get description =>
-      'Reconstruct a master key from Shamir shares.\n'
+  String get description => 'Reconstruct a master key from Shamir shares.\n'
       '\n'
       'Reads M share files and uses Lagrange interpolation over GF(256)\n'
       'to reconstruct the original 32-byte master key.\n'

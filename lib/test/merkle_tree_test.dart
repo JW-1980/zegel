@@ -69,7 +69,8 @@ void main() {
     });
 
     group('three leaves (odd count)', () {
-      test('root = SHA-256(SHA-256(leaf0||leaf1) || SHA-256(leaf2||leaf2))', () {
+      test('root = SHA-256(SHA-256(leaf0||leaf1) || SHA-256(leaf2||leaf2))',
+          () {
         final leaf0 = _leafHash(0);
         final leaf1 = _leafHash(1);
         final leaf2 = _leafHash(2);

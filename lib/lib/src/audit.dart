@@ -51,7 +51,8 @@ class AuditTrail {
     final String entryJson = jsonEncode(entry);
     final Uint8List entryJsonBytes = Uint8List.fromList(utf8.encode(entryJson));
 
-    final Uint8List hashInput = Uint8List(prevHash.length + entryJsonBytes.length);
+    final Uint8List hashInput =
+        Uint8List(prevHash.length + entryJsonBytes.length);
     hashInput.setRange(0, prevHash.length, prevHash);
     hashInput.setRange(prevHash.length, hashInput.length, entryJsonBytes);
 
