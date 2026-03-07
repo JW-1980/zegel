@@ -83,8 +83,7 @@ void main() {
 
         final results = ZegelManifest.checkFiles(manifest, actualRoots);
         for (final entry in results.entries) {
-          expect(entry.value, isTrue,
-              reason: 'File ${entry.key} should match');
+          expect(entry.value, isTrue, reason: 'File ${entry.key} should match');
         }
       });
 

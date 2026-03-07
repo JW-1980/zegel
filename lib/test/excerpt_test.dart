@@ -12,8 +12,7 @@ List<Uint8List> _createMultiBlockLeafHashes(int blockCount) {
   for (var i = 0; i < blockCount; i++) {
     final blockContent =
         Uint8List.fromList(utf8.encode('Block $i: ${'X' * 13000}'));
-    leafHashes
-        .add(Uint8List.fromList(sha256.convert(blockContent).bytes));
+    leafHashes.add(Uint8List.fromList(sha256.convert(blockContent).bytes));
   }
   return leafHashes;
 }
@@ -75,8 +74,7 @@ void main() {
         final proofPath = proof['proof'] as List<dynamic>;
         expect(proofPath, isNotNull);
         expect(proofPath.isNotEmpty, isTrue,
-            reason:
-                'Multi-block tree should have non-empty Merkle proof path');
+            reason: 'Multi-block tree should have non-empty Merkle proof path');
 
         // Each sibling hash hex should be 64 chars (32 bytes)
         for (final sibling in proofPath) {
@@ -109,9 +107,8 @@ void main() {
         if (tamperedHash.isNotEmpty) {
           tamperedHash[0] ^= 0xFF;
         }
-        final tamperedHashHex = tamperedHash
-            .map((b) => b.toRadixString(16).padLeft(2, '0'))
-            .join();
+        final tamperedHashHex =
+            tamperedHash.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
 
         final tamperedProof = Map<String, dynamic>.from(proof);
         tamperedProof['block_hash'] = tamperedHashHex;
@@ -148,14 +145,12 @@ void main() {
         // No master key is involved.
         final isValid = ExcerptProof.verifyProof(proof, expectedRoot);
         expect(isValid, isTrue,
-            reason:
-                'Proof verification must work without the master key');
+            reason: 'Proof verification must work without the master key');
 
         // Additionally, confirm the proof's merkle_root matches the computed root
         final proofRootHex = proof['merkle_root'] as String;
-        final computedRootHex = expectedRoot
-            .map((b) => b.toRadixString(16).padLeft(2, '0'))
-            .join();
+        final computedRootHex =
+            expectedRoot.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
         expect(proofRootHex, equals(computedRootHex),
             reason: 'Proof root should match computed Merkle root');
       });
@@ -207,8 +202,7 @@ void main() {
         // because the leaf IS the root
         final proofPath = proof['proof'] as List<dynamic>;
         expect(proofPath, isEmpty,
-            reason:
-                'Single leaf tree needs no sibling hashes in the proof');
+            reason: 'Single leaf tree needs no sibling hashes in the proof');
       });
     });
 

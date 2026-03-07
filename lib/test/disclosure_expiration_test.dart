@@ -93,12 +93,11 @@ void main() {
         final fileBytes = _createMultiBlockFile(masterKey);
         final merkleRoot = _getMerkleRoot(fileBytes);
         final salt = _getSalt(fileBytes);
-        final futureEpoch =
-            DateTime.now()
-                    .add(const Duration(days: 365))
-                    .toUtc()
-                    .millisecondsSinceEpoch ~/
-                1000;
+        final futureEpoch = DateTime.now()
+                .add(const Duration(days: 365))
+                .toUtc()
+                .millisecondsSinceEpoch ~/
+            1000;
 
         final token = SelectiveDisclosure.generateToken(
           masterKey,
@@ -117,12 +116,11 @@ void main() {
         final fileBytes = _createMultiBlockFile(masterKey);
         final merkleRoot = _getMerkleRoot(fileBytes);
         final salt = _getSalt(fileBytes);
-        final pastEpoch =
-            DateTime.now()
-                    .subtract(const Duration(days: 1))
-                    .toUtc()
-                    .millisecondsSinceEpoch ~/
-                1000;
+        final pastEpoch = DateTime.now()
+                .subtract(const Duration(days: 1))
+                .toUtc()
+                .millisecondsSinceEpoch ~/
+            1000;
 
         final token = SelectiveDisclosure.generateToken(
           masterKey,
@@ -143,12 +141,11 @@ void main() {
         final fileBytes = _createMultiBlockFile(masterKey);
         final merkleRoot = _getMerkleRoot(fileBytes);
         final salt = _getSalt(fileBytes);
-        final pastEpoch =
-            DateTime.now()
-                    .subtract(const Duration(days: 1))
-                    .toUtc()
-                    .millisecondsSinceEpoch ~/
-                1000;
+        final pastEpoch = DateTime.now()
+                .subtract(const Duration(days: 1))
+                .toUtc()
+                .millisecondsSinceEpoch ~/
+            1000;
 
         final token = SelectiveDisclosure.generateToken(
           masterKey,
@@ -173,12 +170,11 @@ void main() {
         final fileBytes = _createMultiBlockFile(masterKey);
         final merkleRoot = _getMerkleRoot(fileBytes);
         final salt = _getSalt(fileBytes);
-        final futureEpoch =
-            DateTime.now()
-                    .add(const Duration(days: 30))
-                    .toUtc()
-                    .millisecondsSinceEpoch ~/
-                1000;
+        final futureEpoch = DateTime.now()
+                .add(const Duration(days: 30))
+                .toUtc()
+                .millisecondsSinceEpoch ~/
+            1000;
 
         final token = SelectiveDisclosure.generateToken(
           masterKey,
@@ -188,8 +184,7 @@ void main() {
           expiresAt: futureEpoch,
         );
 
-        final result =
-            const ZegelReader().extractWithToken(fileBytes, token);
+        final result = const ZegelReader().extractWithToken(fileBytes, token);
         expect(result.valid, isTrue,
             reason: 'Non-expired token should allow extraction');
       });
@@ -200,12 +195,11 @@ void main() {
         final fileBytes = _createMultiBlockFile(masterKey);
         final merkleRoot = _getMerkleRoot(fileBytes);
         final salt = _getSalt(fileBytes);
-        final expiresAt =
-            DateTime.now()
-                    .add(const Duration(hours: 24))
-                    .toUtc()
-                    .millisecondsSinceEpoch ~/
-                1000;
+        final expiresAt = DateTime.now()
+                .add(const Duration(hours: 24))
+                .toUtc()
+                .millisecondsSinceEpoch ~/
+            1000;
 
         final token = SelectiveDisclosure.generateToken(
           masterKey,
@@ -216,8 +210,7 @@ void main() {
         );
 
         expect(token.containsKey('expires_at'), isTrue,
-            reason:
-                'Token with expiration should include expires_at field');
+            reason: 'Token with expiration should include expires_at field');
         expect(token['expires_at'], equals(expiresAt));
       });
 
@@ -233,20 +226,18 @@ void main() {
         );
 
         expect(token.containsKey('expires_at'), isFalse,
-            reason:
-                'Token without expiration should not include expires_at');
+            reason: 'Token without expiration should not include expires_at');
       });
 
       test('token preserves all standard fields alongside expiration', () {
         final fileBytes = _createMultiBlockFile(masterKey);
         final merkleRoot = _getMerkleRoot(fileBytes);
         final salt = _getSalt(fileBytes);
-        final expiresAt =
-            DateTime.now()
-                    .add(const Duration(days: 7))
-                    .toUtc()
-                    .millisecondsSinceEpoch ~/
-                1000;
+        final expiresAt = DateTime.now()
+                .add(const Duration(days: 7))
+                .toUtc()
+                .millisecondsSinceEpoch ~/
+            1000;
 
         final token = SelectiveDisclosure.generateToken(
           masterKey,
@@ -270,8 +261,7 @@ void main() {
         final merkleRoot = _getMerkleRoot(fileBytes);
         final salt = _getSalt(fileBytes);
         // Expire exactly now (may be slightly in the past by execution time)
-        final nowEpoch =
-            DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
+        final nowEpoch = DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
 
         final token = SelectiveDisclosure.generateToken(
           masterKey,
