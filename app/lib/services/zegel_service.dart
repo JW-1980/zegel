@@ -1,6 +1,9 @@
 import 'dart:convert';
+import 'dart:isolate';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:zegel/zegel.dart' as zegel_core;
+import 'package:zegel/zegel.dart' as zegel;
 
 import 'package:zegel/zegel.dart';
 
@@ -201,10 +204,8 @@ class DisclosureToken {
   Map<String, dynamic> toJson() => {
         'version': version,
         'merkle_root': merkleRoot,
-        'block_keys': blockKeys
-            .map((k, v) => MapEntry(k.toString(), v)),
-        'created_at':
-            createdAt.millisecondsSinceEpoch ~/ 1000,
+        'block_keys': blockKeys.map((k, v) => MapEntry(k.toString(), v)),
+        'created_at': createdAt.millisecondsSinceEpoch ~/ 1000,
       };
 
   factory DisclosureToken.fromJson(Map<String, dynamic> json) {
@@ -300,6 +301,11 @@ class ZegelService {
       throw FileSystemException('File does not exist', filePath);
     }
 
+||||||| original
+    final file = File(filePath);
+    final content = await file.readAsBytes();
+    final filename = filePath.split(Platform.pathSeparator).last;
+
     // Delegate to the zegel library.
     // The actual implementation calls into package:zegel.
     // For now, this is a placeholder that returns empty bytes
@@ -322,11 +328,103 @@ class ZegelService {
       );
     }
 
-    // Delegate to the zegel library.
-    throw UnimplementedError(
-      'Verify operation requires the zegel core library. '
-      'Ensure package:zegel is properly linked in pubspec.yaml.',
-    );
+    try {
+      final bytes = await file.readAsBytes();
+
+      // Convert hex key to bytes
+      final keyBytes = _hexToBytes(hexKey);
+
+      // We pass the hex string directly or the raw bytes. It's better to pass the data needed for Isolate
+      // The heavy crypto verification is in a separate isolate to avoid blocking the UI
+      final Map<String, dynamic> resultData = await Isolate.run(() {
+        const reader = zegel_core.ZegelReader();
+        try {
+          final coreResult = reader.verify(bytes, keyBytes);
+          final inspection = reader.inspect(bytes);
+
+          return {
+            'valid': coreResult.valid,
+            'message': 'Verification successful',
+            'status': 'valid',
+            'metadata': coreResult.metadata ?? coreResult.publicMetadata,
+            'originalFilename': coreResult.filename ?? inspection.filename,
+            'contentType': coreResult.contentType ?? inspection.contentType,
+            'blockCount': inspection.blockCount,
+            'createdAt': inspection.timestamp,
+            'expiresAt': inspection.expirationTimestamp,
+            'flags': inspection.flags,
+            // Attestations and audit trails are complex structures, simplified here
+            // but normally they would be mapped fully
+          };
+        } on zegel_core.ZegelTamperedException catch (e) {
+          return {
+            'valid': false,
+            'message': e.toString(),
+            'status': 'tampered',
+          };
+        } on zegel_core.ZegelExpiredException catch (e) {
+          return {
+            'valid': false,
+            'message': e.toString(),
+            'status': 'expired',
+          };
+        } catch (e) {
+          return {
+            'valid': false,
+            'message': 'Error verifying file: $e',
+            'status': 'tampered',
+          };
+        }
+      });
+
+      ZegelStatus status;
+      if (resultData['status'] == 'valid') {
+        status = ZegelStatus.valid;
+      } else if (resultData['status'] == 'expired') {
+        status = ZegelStatus.expired;
+      } else {
+        status = ZegelStatus.tampered;
+      }
+
+      DateTime? createdAt;
+      if (resultData['createdAt'] != null) {
+        createdAt = DateTime.fromMillisecondsSinceEpoch(
+            resultData['createdAt'] as int,
+            isUtc: true);
+      }
+
+      DateTime? expiresAt;
+      if (resultData['expiresAt'] != null) {
+        expiresAt = DateTime.fromMillisecondsSinceEpoch(
+            resultData['expiresAt'] as int,
+            isUtc: true);
+      }
+
+      return ZegelResult(
+        status: status,
+        message: resultData['message'] as String,
+        metadata: resultData['metadata'] as Map<String, dynamic>?,
+        originalFilename: resultData['originalFilename'] as String?,
+        contentType: resultData['contentType'] as String?,
+        blockCount: resultData['blockCount'] as int?,
+        createdAt: createdAt,
+        expiresAt: expiresAt,
+        flags: resultData['flags'] as int?,
+      );
+    } catch (e) {
+      return ZegelResult(
+        status: ZegelStatus.tampered,
+        message: 'Error verifying file: $e',
+      );
+    }
+  }
+
+  Uint8List _hexToBytes(String hexStr) {
+    final result = Uint8List(hexStr.length ~/ 2);
+    for (int i = 0; i < result.length; i++) {
+      result[i] = int.parse(hexStr.substring(i * 2, i * 2 + 2), radix: 16);
+    }
+    return result;
   }
 
   /// Extracts the original content from a .zgl file.
@@ -337,11 +435,27 @@ class ZegelService {
     String hexKey,
     String outputPath,
   ) async {
-    // Delegate to the zegel library.
-    throw UnimplementedError(
-      'Extract operation requires the zegel core library. '
-      'Ensure package:zegel is properly linked in pubspec.yaml.',
-    );
+    final file = File(filePath);
+    if (!await file.exists()) {
+      return false;
+    }
+
+    try {
+      final fileBytes = await file.readAsBytes();
+      final keyBytes = _hexToBytes(hexKey);
+
+      final reader = const zegel.ZegelReader();
+      final result = reader.verify(fileBytes, keyBytes);
+
+      if (result.valid && result.content != null) {
+        final outFile = File(outputPath);
+        await outFile.writeAsBytes(result.content!);
+        return true;
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
   }
 
   /// Inspects a .zgl file without requiring the master key.
@@ -369,11 +483,13 @@ class ZegelService {
     String hexKey,
     List<int> blockIndices,
   ) async {
-    // Delegate to the zegel library.
-    throw UnimplementedError(
-      'Redact operation requires the zegel core library. '
-      'Ensure package:zegel is properly linked in pubspec.yaml.',
-    );
+    final file = File(filePath);
+    if (!await file.exists()) {
+      throw FileSystemException('File does not exist', filePath);
+    }
+    final fileBytes = await file.readAsBytes();
+    final masterKey = _hexToBytes(hexKey);
+    return Redaction.redactBlocks(fileBytes, masterKey, blockIndices);
   }
 
   /// Splits a key into N shares with threshold M using Shamir's Secret Sharing.
@@ -501,10 +617,21 @@ class ZegelService {
     }
   }
 
-  // ======================================================================
-  // Batch operations
-  // ======================================================================
+  /// Converts a hex string to a Uint8List.
+  Uint8List _hexToBytes(String hexStr) {
+    final length = hexStr.length;
+    if (length % 2 != 0) {
+      throw const FormatException('Invalid hex string');
+    }
+    final result = Uint8List(length ~/ 2);
+    for (var i = 0; i < length; i += 2) {
+      result[i ~/ 2] = int.parse(hexStr.substring(i, i + 2), radix: 16);
+    }
+    return result;
+  }
 
+  // ===============================================================  // Batch operations
+  // ===============================================================
   /// Verifies multiple .zgl files in batch.
   ///
   /// Returns a list of [ZegelResult] for each file.
@@ -543,10 +670,8 @@ class ZegelService {
     return results;
   }
 
-  // ======================================================================
-  // Manifest operations
-  // ======================================================================
-
+  // ===============================================================  // Manifest operations
+  // ===============================================================
   /// Creates a signed manifest of multiple files.
   ///
   /// Returns the manifest as JSON bytes.
@@ -577,10 +702,8 @@ class ZegelService {
     );
   }
 
-  // ======================================================================
-  // Classification operations
-  // ======================================================================
-
+  // ===============================================================  // Classification operations
+  // ===============================================================
   /// Sets or changes the classification level of a .zgl file.
   Future<void> classify(
     String filePath,
@@ -588,15 +711,24 @@ class ZegelService {
     String authority, {
     String? caveat,
   }) async {
-    // Delegate to the zegel library.
-    throw UnimplementedError(
-      'Classify operation requires the zegel core library. '
-      'Ensure package:zegel is properly linked in pubspec.yaml.',
+    final file = File(filePath);
+    if (!await file.exists()) {
+      throw FileSystemException('File does not exist', filePath);
+    }
+
+    final metadata = Classification.createClassificationMetadata(
+      level: level,
+      authority: authority,
+      caveat: caveat,
+    );
+
+    final outputPath = '$filePath.classification.json';
+    await File(outputPath).writeAsString(
+      const JsonEncoder.withIndent('  ').convert(metadata),
     );
   }
 
   /// Declassifies a .zgl file to a lower classification level.
-  ///
   /// Optionally redacts specified blocks during declassification.
   Future<void> declassify(
     String filePath,
@@ -611,10 +743,8 @@ class ZegelService {
     );
   }
 
-  // ======================================================================
-  // Excerpt proof operations
-  // ======================================================================
-
+  // ===============================================================  // Excerpt proof operations
+  // ===============================================================
   /// Generates a cryptographic excerpt proof for specific blocks.
   ///
   /// Returns the proof as JSON bytes.
@@ -645,10 +775,8 @@ class ZegelService {
     );
   }
 
-  // ======================================================================
-  // Provenance operations
-  // ======================================================================
-
+  // ===============================================================  // Provenance operations
+  // ===============================================================
   /// Reads and verifies the provenance chain from a .zgl file.
   ///
   /// Returns a list of provenance events with signature verification status.
@@ -683,25 +811,26 @@ class ZegelService {
     }).toList();
   }
 
-  // ======================================================================
-  // Version chain operations
-  // ======================================================================
-
-  /// Verifies the version chain hash of a .zgl file.
+  // ===============================================================  // Version chain operations
+  // ===============================================================
+  /// Verifies the version chain hash of a sequence of .zgl files.
   ///
   /// Returns true if the version chain is intact and unbroken.
-  Future<bool> verifyVersionChain(String filePath) async {
-    // Delegate to the zegel library.
-    throw UnimplementedError(
-      'Verify version chain operation requires the zegel core library. '
-      'Ensure package:zegel is properly linked in pubspec.yaml.',
-    );
+  Future<bool> verifyVersionChain(List<String> filePaths) async {
+    final fileBytesList = <Uint8List>[];
+    for (final path in filePaths) {
+      final file = File(path);
+      if (!await file.exists()) {
+        throw FileSystemException('File does not exist', path);
+      }
+      fileBytesList.add(await file.readAsBytes());
+    }
+    return ContentVersioning.verifyVersionChain(fileBytesList);
+
   }
 
-  // ======================================================================
-  // Credential operations
-  // ======================================================================
-
+  // ===============================================================  // Credential operations
+  // ===============================================================
   /// Issues a credential by sealing a document with attestation metadata.
   ///
   /// Returns the sealed credential bytes.

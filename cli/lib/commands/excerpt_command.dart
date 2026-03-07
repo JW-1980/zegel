@@ -1,9 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:args/command_runner.dart';
-import 'package:crypto/crypto.dart';
 import 'package:zegel/zegel.dart';
 
 import 'common.dart';
@@ -39,7 +37,9 @@ class ExcerptProofCommand extends Command<int> {
       throw UsageException('--file and --block are required.', usage);
     }
 
+||||||| original
     final key = parseKeyFromArgs(argResults!);
+    parseKeyFromArgs(argResults!);
     final blockIndex = int.parse(blockStr);
 
     final fileBytes = Uint8List.fromList(File(filePath).readAsBytesSync());

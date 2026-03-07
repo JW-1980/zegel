@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:args/command_runner.dart';
 import 'package:crypto/crypto.dart' as crypto;
@@ -110,7 +109,7 @@ class AuditViewCommand extends Command<int> {
     final fileBytes = Uint8List.fromList(file.readAsBytesSync());
 
     // Verify the file first.
-    final reader = const ZegelReader();
+    const reader = ZegelReader();
     ZegelResult result;
     try {
       result = reader.verify(fileBytes, masterKey);
@@ -264,7 +263,7 @@ class AuditAddCommand extends Command<int> {
     final fileBytes = Uint8List.fromList(file.readAsBytesSync());
 
     // Verify the file first.
-    final reader = const ZegelReader();
+    const reader = ZegelReader();
     ZegelResult result;
     try {
       result = reader.verify(fileBytes, masterKey);
@@ -340,8 +339,7 @@ class AuditAddCommand extends Command<int> {
         header.expirationTimestamp! * 1000,
         isUtc: true,
       );
-      expirationDateStr =
-          '${dt.year.toString().padLeft(4, '0')}-'
+      expirationDateStr = '${dt.year.toString().padLeft(4, '0')}-'
           '${dt.month.toString().padLeft(2, '0')}-'
           '${dt.day.toString().padLeft(2, '0')}';
     }
@@ -633,7 +631,7 @@ class AuditVerifyChainCommand extends Command<int> {
     final fileBytes = Uint8List.fromList(file.readAsBytesSync());
 
     // Verify the file first.
-    final reader = const ZegelReader();
+    const reader = ZegelReader();
     ZegelResult result;
     try {
       result = reader.verify(fileBytes, masterKey);
@@ -658,8 +656,10 @@ class AuditVerifyChainCommand extends Command<int> {
       stdout.writeln();
       stdout.writeln('  File:    $filePath');
       stdout.writeln('  Entries: ${auditTrail.length}');
-      stdout.writeln('  First:   ${auditTrail.first['action']} by ${auditTrail.first['actor']}');
-      stdout.writeln('  Last:    ${auditTrail.last['action']} by ${auditTrail.last['actor']}');
+      stdout.writeln(
+          '  First:   ${auditTrail.first['action']} by ${auditTrail.first['actor']}');
+      stdout.writeln(
+          '  Last:    ${auditTrail.last['action']} by ${auditTrail.last['actor']}');
       return 0;
     } else {
       stdout.writeln(Ansi.error('Audit chain is INVALID.'));
