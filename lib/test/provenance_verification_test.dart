@@ -74,8 +74,7 @@ void main() {
 
         final result = ProvenanceVerification.verifyChain(entries, signerKey);
         expect(result['valid'], isTrue,
-            reason:
-                'Chronologically ordered entries should pass verification');
+            reason: 'Chronologically ordered entries should pass verification');
       });
 
       test('fails for out-of-order timestamps', () {
@@ -180,8 +179,7 @@ void main() {
 
         // Verify each entry individually via verifyChain with single entry
         for (final entry in entries) {
-          final result =
-              ProvenanceVerification.verifyChain([entry], signerKey);
+          final result = ProvenanceVerification.verifyChain([entry], signerKey);
           expect(result['valid'], isTrue,
               reason: 'Entry signature should verify with correct key');
         }
@@ -193,8 +191,7 @@ void main() {
 
         // Verify each entry individually with the wrong key
         for (final entry in entries) {
-          final result =
-              ProvenanceVerification.verifyChain([entry], wrongKey);
+          final result = ProvenanceVerification.verifyChain([entry], wrongKey);
           final errors = result['errors'] as List<String>;
           expect(errors, isNotEmpty,
               reason: 'Entry signature should fail with wrong key');

@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:args/command_runner.dart';
 import 'package:zegel/zegel.dart';
@@ -171,8 +170,7 @@ class DiscloseCommand extends Command<int> {
         rawHeader.expirationTimestamp! * 1000,
         isUtc: true,
       );
-      expirationDateStr =
-          '${dt.year.toString().padLeft(4, '0')}-'
+      expirationDateStr = '${dt.year.toString().padLeft(4, '0')}-'
           '${dt.month.toString().padLeft(2, '0')}-'
           '${dt.day.toString().padLeft(2, '0')}';
     }
@@ -301,8 +299,7 @@ class ExtractWithTokenCommand extends Command<int> {
       '  zegel extract-with-token doc.zgl -t token.json -o output.pdf --force';
 
   @override
-  final String invocation =
-      'zegel extract-with-token <file.zgl> [options]';
+  final String invocation = 'zegel extract-with-token <file.zgl> [options]';
 
   ExtractWithTokenCommand() {
     argParser.addOption(

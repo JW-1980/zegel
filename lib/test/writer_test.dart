@@ -82,8 +82,8 @@ void main() {
         );
         final fileBytes = ZegelWriter(masterKey, options).seal(content);
 
-        final flagsValue = ByteData.sublistView(fileBytes, 10, 12)
-            .getUint16(0, Endian.big);
+        final flagsValue =
+            ByteData.sublistView(fileBytes, 10, 12).getUint16(0, Endian.big);
         expect(flagsValue, equals(0x0000));
       });
 
@@ -96,8 +96,8 @@ void main() {
         );
         final fileBytes = ZegelWriter(masterKey, options).seal(content);
 
-        final flagsValue = ByteData.sublistView(fileBytes, 10, 12)
-            .getUint16(0, Endian.big);
+        final flagsValue =
+            ByteData.sublistView(fileBytes, 10, 12).getUint16(0, Endian.big);
         expect(flagsValue & ZegelFormat.flagHasMetadata, isNonZero);
       });
 
@@ -110,8 +110,8 @@ void main() {
         );
         final fileBytes = ZegelWriter(masterKey, options).seal(content);
 
-        final flagsValue = ByteData.sublistView(fileBytes, 10, 12)
-            .getUint16(0, Endian.big);
+        final flagsValue =
+            ByteData.sublistView(fileBytes, 10, 12).getUint16(0, Endian.big);
         expect(flagsValue & ZegelFormat.flagCompressed, isNonZero);
       });
 
@@ -124,14 +124,13 @@ void main() {
         );
         final fileBytes = ZegelWriter(masterKey, options).seal(content);
 
-        final flagsValue = ByteData.sublistView(fileBytes, 10, 12)
-            .getUint16(0, Endian.big);
+        final flagsValue =
+            ByteData.sublistView(fileBytes, 10, 12).getUint16(0, Endian.big);
         expect(flagsValue & ZegelFormat.flagHasKeyCommitment, isNonZero);
       });
 
       test('expiration option sets HAS_EXPIRATION flag', () {
-        final futureDate =
-            DateTime.now().add(const Duration(days: 365));
+        final futureDate = DateTime.now().add(const Duration(days: 365));
         final options = ZegelOptions(
           contentType: 'text/plain',
           filename: 'hello.txt',
@@ -140,8 +139,8 @@ void main() {
         );
         final fileBytes = ZegelWriter(masterKey, options).seal(content);
 
-        final flagsValue = ByteData.sublistView(fileBytes, 10, 12)
-            .getUint16(0, Endian.big);
+        final flagsValue =
+            ByteData.sublistView(fileBytes, 10, 12).getUint16(0, Endian.big);
         expect(flagsValue & ZegelFormat.flagHasExpiration, isNonZero);
       });
 
@@ -154,8 +153,8 @@ void main() {
         );
         final fileBytes = ZegelWriter(masterKey, options).seal(content);
 
-        final flagsValue = ByteData.sublistView(fileBytes, 10, 12)
-            .getUint16(0, Endian.big);
+        final flagsValue =
+            ByteData.sublistView(fileBytes, 10, 12).getUint16(0, Endian.big);
         expect(flagsValue & ZegelFormat.flagHasPublicMetadata, isNonZero);
       });
 
@@ -170,8 +169,8 @@ void main() {
         );
         final fileBytes = ZegelWriter(masterKey, options).seal(content);
 
-        final flagsValue = ByteData.sublistView(fileBytes, 10, 12)
-            .getUint16(0, Endian.big);
+        final flagsValue =
+            ByteData.sublistView(fileBytes, 10, 12).getUint16(0, Endian.big);
         expect(flagsValue & ZegelFormat.flagHasMetadata, isNonZero);
         expect(flagsValue & ZegelFormat.flagCompressed, isNonZero);
         expect(flagsValue & ZegelFormat.flagHasKeyCommitment, isNonZero);
@@ -189,8 +188,8 @@ void main() {
         final fileBytes = ZegelWriter(masterKey, options).seal(content);
         final after = DateTime.now().millisecondsSinceEpoch ~/ 1000;
 
-        final timestamp = ByteData.sublistView(fileBytes, 12, 20)
-            .getUint64(0, Endian.big);
+        final timestamp =
+            ByteData.sublistView(fileBytes, 12, 20).getUint64(0, Endian.big);
 
         expect(timestamp, greaterThanOrEqualTo(before));
         expect(timestamp, lessThanOrEqualTo(after));
@@ -204,8 +203,8 @@ void main() {
         );
         final fileBytes = ZegelWriter(masterKey, options).seal(content);
 
-        final timestamp = ByteData.sublistView(fileBytes, 12, 20)
-            .getUint64(0, Endian.big);
+        final timestamp =
+            ByteData.sublistView(fileBytes, 12, 20).getUint64(0, Endian.big);
         expect(timestamp, greaterThan(0));
       });
     });
@@ -224,7 +223,8 @@ void main() {
 
         // First 10 bytes should be "text/plain"
         final textBytes = utf8.encode('text/plain');
-        expect(contentTypeBytes.sublist(0, textBytes.length), equals(textBytes));
+        expect(
+            contentTypeBytes.sublist(0, textBytes.length), equals(textBytes));
 
         // Remaining bytes should be null (0x00)
         for (var i = textBytes.length; i < 64; i++) {
@@ -257,8 +257,8 @@ void main() {
         );
         final fileBytes = ZegelWriter(masterKey, options).seal(content);
 
-        final filenameLen = ByteData.sublistView(fileBytes, 84, 86)
-            .getUint16(0, Endian.big);
+        final filenameLen =
+            ByteData.sublistView(fileBytes, 84, 86).getUint16(0, Endian.big);
         expect(filenameLen, equals(utf8.encode('hello.txt').length));
       });
 
@@ -270,8 +270,8 @@ void main() {
         );
         final fileBytes = ZegelWriter(masterKey, options).seal(content);
 
-        final filenameLen = ByteData.sublistView(fileBytes, 84, 86)
-            .getUint16(0, Endian.big);
+        final filenameLen =
+            ByteData.sublistView(fileBytes, 84, 86).getUint16(0, Endian.big);
         final filenameBytes = fileBytes.sublist(86, 86 + filenameLen);
         expect(utf8.decode(filenameBytes), equals('hello.txt'));
       });
@@ -284,8 +284,8 @@ void main() {
         );
         final fileBytes = ZegelWriter(masterKey, options).seal(content);
 
-        final filenameLen = ByteData.sublistView(fileBytes, 84, 86)
-            .getUint16(0, Endian.big);
+        final filenameLen =
+            ByteData.sublistView(fileBytes, 84, 86).getUint16(0, Endian.big);
         final filenameBytes = fileBytes.sublist(86, 86 + filenameLen);
         expect(utf8.decode(filenameBytes), equals('rapport\u00e9.txt'));
       });
@@ -366,8 +366,7 @@ void main() {
           filename: filename,
           salt: _zeroSalt(),
         );
-        final fileBytes =
-            ZegelWriter(masterKey, options).seal(largeContent);
+        final fileBytes = ZegelWriter(masterKey, options).seal(largeContent);
 
         final blockCount = ByteData.sublistView(
           fileBytes,
@@ -388,8 +387,7 @@ void main() {
           filename: filename,
           salt: _zeroSalt(),
         );
-        final fileBytes =
-            ZegelWriter(masterKey, options).seal(exactContent);
+        final fileBytes = ZegelWriter(masterKey, options).seal(exactContent);
 
         final blockCount = ByteData.sublistView(
           fileBytes,
@@ -433,8 +431,7 @@ void main() {
           filename: filename,
           salt: _zeroSalt(),
         );
-        final fileBytes =
-            ZegelWriter(masterKey, options).seal(largeContent);
+        final fileBytes = ZegelWriter(masterKey, options).seal(largeContent);
 
         final blockCount = ByteData.sublistView(
           fileBytes,
@@ -494,8 +491,8 @@ void main() {
         );
         final fileBytes = ZegelWriter(masterKey, options).seal(content);
 
-        final flagsValue = ByteData.sublistView(fileBytes, 10, 12)
-            .getUint16(0, Endian.big);
+        final flagsValue =
+            ByteData.sublistView(fileBytes, 10, 12).getUint16(0, Endian.big);
         expect(flagsValue & ZegelFormat.flagCompressed, isNonZero);
       });
 
@@ -508,8 +505,8 @@ void main() {
         );
         final fileBytes = ZegelWriter(masterKey, options).seal(content);
 
-        final flagsValue = ByteData.sublistView(fileBytes, 10, 12)
-            .getUint16(0, Endian.big);
+        final flagsValue =
+            ByteData.sublistView(fileBytes, 10, 12).getUint16(0, Endian.big);
         expect(flagsValue & ZegelFormat.flagCompressed, equals(0));
       });
     });

@@ -1,5 +1,8 @@
 import 'dart:typed_data';
 import 'dart:io';
+||||||| original
+import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
@@ -8,6 +11,7 @@ import 'package:zegel/zegel.dart';
 
 import '../services/file_service.dart';
 import '../widgets/key_input.dart';
+import 'dart:io';
 
 /// Screen for timestamp management - requesting trusted timestamps
 /// and verifying existing timestamps.
@@ -285,7 +289,7 @@ class _TimestampScreenState extends State<TimestampScreen>
         children: [
           // Info card
           Card(
-            color: theme.colorScheme.primaryContainer.withOpacity(0.3),
+            color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Row(
@@ -490,7 +494,7 @@ class _TimestampScreenState extends State<TimestampScreen>
         children: [
           // Info card
           Card(
-            color: theme.colorScheme.primaryContainer.withOpacity(0.3),
+            color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Row(
@@ -662,9 +666,9 @@ class _TimestampScreenState extends State<TimestampScreen>
       padding: const EdgeInsets.all(12),
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [

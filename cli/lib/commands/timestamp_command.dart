@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:args/command_runner.dart';
 import 'package:zegel/zegel.dart';
@@ -215,7 +214,8 @@ class TimestampCreateCommand extends Command<int> {
     timestampToken['created'] = DateTime.now().toUtc().toIso8601String();
 
     // Output the token.
-    final tokenJson = const JsonEncoder.withIndent('  ').convert(timestampToken);
+    final tokenJson =
+        const JsonEncoder.withIndent('  ').convert(timestampToken);
 
     if (outputPath != null && outputPath.isNotEmpty) {
       final outputFile = File(outputPath);

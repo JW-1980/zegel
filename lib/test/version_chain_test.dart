@@ -163,8 +163,7 @@ void main() {
           previousFilename: 'report_v2.txt',
         );
 
-        final versionInfo =
-            metadata['version_info'] as Map<String, dynamic>;
+        final versionInfo = metadata['version_info'] as Map<String, dynamic>;
         expect(versionInfo['version_number'], equals(3));
       });
 
@@ -174,8 +173,7 @@ void main() {
           previousFilename: 'contract_v1.txt',
         );
 
-        final versionInfo =
-            metadata['version_info'] as Map<String, dynamic>;
+        final versionInfo = metadata['version_info'] as Map<String, dynamic>;
         expect(versionInfo['previous_filename'], equals('contract_v1.txt'));
       });
 
@@ -185,8 +183,7 @@ void main() {
           previousFilename: null,
         );
 
-        final versionInfo =
-            metadata['version_info'] as Map<String, dynamic>;
+        final versionInfo = metadata['version_info'] as Map<String, dynamic>;
         if (versionInfo.containsKey('created_at')) {
           final ts = versionInfo['created_at'] as String;
           expect(ts, isNotEmpty);
@@ -199,13 +196,11 @@ void main() {
           previousFilename: null,
         );
 
-        final versionInfo =
-            metadata['version_info'] as Map<String, dynamic>;
+        final versionInfo = metadata['version_info'] as Map<String, dynamic>;
         expect(versionInfo['version_number'], equals(1));
         // previous_filename should be absent for version 1
         expect(versionInfo.containsKey('previous_filename'), isFalse,
-            reason:
-                'First version should have no previous filename');
+            reason: 'First version should have no previous filename');
       });
     });
 

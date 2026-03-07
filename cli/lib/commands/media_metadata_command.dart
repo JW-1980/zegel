@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:args/command_runner.dart';
 import 'package:zegel/zegel.dart';
@@ -126,7 +125,8 @@ class MediaMetadataExtractCommand extends Command<int> {
     stdout.writeln(Ansi.header('Media Metadata - $filePath'));
     stdout.writeln();
     stdout.writeln('  Filename:     ${metadata['filename']}');
-    stdout.writeln('  File size:    ${formatFileSize(metadata['file_size'] as int)}');
+    stdout.writeln(
+        '  File size:    ${formatFileSize(metadata['file_size'] as int)}');
     stdout.writeln('  Detected type: ${metadata['detected_type']}');
     stdout.writeln('  Content hash: ${metadata['content_hash']}');
 
@@ -266,7 +266,8 @@ class MediaMetadataViewCommand extends Command<int> {
       }
     }
 
-    if (rawHeader.publicMetadata != null && rawHeader.publicMetadata!.isNotEmpty) {
+    if (rawHeader.publicMetadata != null &&
+        rawHeader.publicMetadata!.isNotEmpty) {
       stdout.writeln();
       stdout.writeln(Ansi.header('Public Metadata:'));
       for (final entry in rawHeader.publicMetadata!.entries) {
