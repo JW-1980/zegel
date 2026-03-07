@@ -537,7 +537,6 @@ dt.day.toString().padLeft(2, '0')
         <Map<String, dynamic>>[];
     final List<int> redactedBlocks = <int>[];
 
-
     for (int i = 0; i < h.blockCount; i++) {
       final _DirEntry entry = h.directory[i];
       final Uint8List ciphertext = Uint8List.sublistView(

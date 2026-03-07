@@ -550,7 +550,7 @@ class ZegelWriter {
     if (dirOffset != preSealBytesLength - dataSize) {
       throw Exception('Directory offset mismatch');
     }
-    if (dataOffset != preSealBytesLength) {
+if (dataOffset != preSealBytesLength) {
       throw Exception('Data offset mismatch');
     }
 
