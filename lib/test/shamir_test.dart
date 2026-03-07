@@ -73,8 +73,7 @@ void main() {
           final inv = ShamirSecretSharing.gfInverse(a);
           final product = ShamirSecretSharing.gfMultiply(a, inv);
           expect(product, equals(1),
-              reason:
-                  '$a * inverse($a) = $a * $inv = $product, expected 1');
+              reason: '$a * inverse($a) = $a * $inv = $product, expected 1');
         }
       });
 
@@ -108,7 +107,8 @@ void main() {
         expect(shares.length, equals(3));
         for (final share in shares) {
           expect(share.length, equals(33),
-              reason: 'Each share should be 33 bytes (1 x-coord + 32 y-values)');
+              reason:
+                  'Each share should be 33 bytes (1 x-coord + 32 y-values)');
         }
       });
 
@@ -135,8 +135,7 @@ void main() {
         final key = _testKey();
         final shares = ShamirSecretSharing.split(key, 2, 3);
 
-        final reconstructed =
-            ShamirSecretSharing.reconstruct(shares, 2);
+        final reconstructed = ShamirSecretSharing.reconstruct(shares, 2);
         expect(reconstructed, equals(key));
       });
 
@@ -150,8 +149,7 @@ void main() {
         // The spec says: "fewer than M shares reveal no information"
         // This means using 1 share to guess the key should not work.
         // We test by passing insufficient shares to Lagrange interpolation.
-        final reconstructed =
-            ShamirSecretSharing.reconstruct([shares[0]], 1);
+        final reconstructed = ShamirSecretSharing.reconstruct([shares[0]], 1);
         // With threshold=1 (trivial case), the secret = share value at that point,
         // which is NOT the original key (key is at x=0, share is at x=1+)
         // Actually with M=1, the polynomial is f(x) = secret (constant),
@@ -164,7 +162,8 @@ void main() {
                 'Reconstructing with fewer shares than threshold should produce wrong key');
       });
 
-      test('split with threshold=3, total=5 -> reconstruct with shares 1,3,5', () {
+      test('split with threshold=3, total=5 -> reconstruct with shares 1,3,5',
+          () {
         final key = _testKey();
         final shares = ShamirSecretSharing.split(key, 3, 5);
 
@@ -184,14 +183,12 @@ void main() {
         expect(shares.length, equals(5));
 
         // All 5 shares needed
-        final reconstructed =
-            ShamirSecretSharing.reconstruct(shares, 5);
+        final reconstructed = ShamirSecretSharing.reconstruct(shares, 5);
         expect(reconstructed, equals(key));
 
         // 4 of 5 should fail
         final partial = shares.sublist(0, 4);
-        final wrongResult =
-            ShamirSecretSharing.reconstruct(partial, 4);
+        final wrongResult = ShamirSecretSharing.reconstruct(partial, 4);
         // With threshold=5, using 4 shares with threshold=4 gives wrong result
         // because the polynomial is degree 4, not 3
         expect(wrongResult, isNot(equals(key)));
@@ -238,8 +235,7 @@ void main() {
       test('M=2, N=2', () {
         final key = _filledKey(0xAB);
         final shares = ShamirSecretSharing.split(key, 2, 2);
-        final reconstructed =
-            ShamirSecretSharing.reconstruct(shares, 2);
+        final reconstructed = ShamirSecretSharing.reconstruct(shares, 2);
         expect(reconstructed, equals(key));
       });
 
@@ -250,8 +246,8 @@ void main() {
         // Any 2 of 10 should work
         for (var i = 0; i < 10; i++) {
           for (var j = i + 1; j < 10; j++) {
-            final reconstructed = ShamirSecretSharing.reconstruct(
-                [shares[i], shares[j]], 2);
+            final reconstructed =
+                ShamirSecretSharing.reconstruct([shares[i], shares[j]], 2);
             expect(reconstructed, equals(key),
                 reason: 'Shares $i and $j should reconstruct key');
           }
@@ -307,8 +303,8 @@ void main() {
         final key = Uint8List.fromList(
             List.generate(32, (i) => i.isEven ? 0xAA : 0x55));
         final shares = ShamirSecretSharing.split(key, 2, 4);
-        final reconstructed = ShamirSecretSharing.reconstruct(
-            [shares[1], shares[3]], 2);
+        final reconstructed =
+            ShamirSecretSharing.reconstruct([shares[1], shares[3]], 2);
         expect(reconstructed, equals(key));
       });
     });

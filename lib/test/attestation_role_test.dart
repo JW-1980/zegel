@@ -179,7 +179,11 @@ void main() {
 
         final result = Attestation.checkPolicy(
           attestations,
-          [ZegelFormat.roleSigner, ZegelFormat.roleNotary, ZegelFormat.roleAuditor],
+          [
+            ZegelFormat.roleSigner,
+            ZegelFormat.roleNotary,
+            ZegelFormat.roleAuditor
+          ],
           merkleRoot,
           signerKeys,
         );

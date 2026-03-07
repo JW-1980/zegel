@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:args/command_runner.dart';
 import 'package:zegel/zegel.dart';
@@ -98,19 +97,18 @@ class VerifyCommand extends Command<int> {
       );
     }
 
-    final fileBytes = Uint8List.fromList(file.readAsBytesSync());
+    final fileBytes = await file.readAsBytes();
     final verbose = argResults!['verbose'] as bool;
     final quiet = argResults!['quiet'] as bool;
 
     // Create reader and verify.
-    final reader = const ZegelReader();
+    const reader = ZegelReader();
 
     try {
       final result = reader.verify(fileBytes, masterKey);
 
       // Check attestation policy if specified.
-      final policyStr =
-          argResults!['check-attestation-policy'] as String?;
+      final policyStr = argResults!['check-attestation-policy'] as String?;
       if (policyStr != null && policyStr.isNotEmpty) {
         final requiredRoles = policyStr
             .split(',')
