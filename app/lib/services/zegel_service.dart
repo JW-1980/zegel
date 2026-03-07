@@ -572,11 +572,61 @@ class ZegelService {
     String hexKey,
     List<int> blockIndices,
   ) async {
-    // Delegate to the zegel library.
-    throw UnimplementedError(
-      'Disclosure token generation requires the zegel core library. '
-      'Ensure package:zegel is properly linked in pubspec.yaml.',
+    final file = File(filePath);
+    if (!await file.exists()) {
+      throw FileSystemException('File does not exist', filePath);
+    }
+
+    final fileBytes = await file.readAsBytes();
+
+    _RawZegelHeader rawHeader;
+    try {
+      rawHeader = _RawZegelHeader.parse(fileBytes);
+    } on FormatException catch (e) {
+      throw FormatException('Invalid .zgl file: ${e.message}');
+    }
+
+    for (final index in blockIndices) {
+      if (index < 0 || index >= rawHeader.blockCount) {
+        throw ArgumentError(
+          'Block index $index is out of range. '
+          'File has ${rawHeader.blockCount} blocks.',
+        );
+      }
+      if (rawHeader.blockDirectory[index].type == ZegelFormat.blockRedacted) {
+        throw ArgumentError(
+          'Block $index is redacted and cannot be disclosed.',
+        );
+      }
+    }
+
+    String? expirationDateStr;
+    if (rawHeader.expirationTimestamp != null) {
+      final dt = DateTime.fromMillisecondsSinceEpoch(
+        rawHeader.expirationTimestamp! * 1000,
+        isUtc: true,
+      );
+      expirationDateStr =
+          '${dt.year.toString().padLeft(4, '0')}-'
+          '${dt.month.toString().padLeft(2, '0')}-'
+          '${dt.day.toString().padLeft(2, '0')}';
+    }
+
+    final int length = hexKey.length ~/ 2;
+    final Uint8List masterKeyBytes = Uint8List(length);
+    for (int i = 0; i < length; i++) {
+      masterKeyBytes[i] = int.parse(hexKey.substring(i * 2, i * 2 + 2), radix: 16);
+    }
+
+    final tokenMap = SelectiveDisclosure.generateToken(
+      masterKeyBytes,
+      rawHeader.merkleRoot,
+      rawHeader.salt,
+      blockIndices,
+      expirationDate: expirationDateStr,
     );
+
+    return DisclosureToken.fromJson(tokenMap);
   }
 
   /// Extracts specific blocks using a disclosure token (no master key required).
@@ -887,5 +937,170 @@ class ZegelService {
       bytes[i] = int.parse(hex.substring(i * 2, i * 2 + 2), radix: 16);
     }
     return bytes;
+  }
+}
+
+
+// =============================================================================
+// Internal Header Parsers
+// =============================================================================
+
+/// A raw block directory entry parsed directly from a .zgl file.
+class _RawBlockEntry {
+  const _RawBlockEntry({
+    required this.type,
+    required this.plaintextHash,
+    required this.ciphertextLength,
+    required this.iv,
+    required this.tag,
+  });
+
+  final int type;
+  final Uint8List plaintextHash;
+  final int ciphertextLength;
+  final Uint8List iv;
+  final Uint8List tag;
+}
+
+/// Lightweight parsed header from raw .zgl bytes.
+class _RawZegelHeader {
+  _RawZegelHeader._();
+
+  late final int versionMajor;
+  late final int versionMinor;
+  late final int flags;
+  late final int timestamp;
+  late final String contentType;
+  late final String filename;
+  late final Uint8List salt;
+  late final int blockCount;
+  late final Uint8List merkleRoot;
+  late final List<_RawBlockEntry> blockDirectory;
+  late final int dataStart;
+
+  // Extended header fields (nullable).
+  int? argon2TimeCost;
+  int? argon2MemoryCost;
+  int? expirationTimestamp;
+  Uint8List? recipientId;
+  int? splitKeyThreshold;
+  int? splitKeyTotal;
+  Uint8List? versionChainHash;
+  Map<String, dynamic>? publicMetadata;
+  Uint8List? keyCommitment;
+
+  /// Parses a .zgl file's raw bytes and returns a [_RawZegelHeader].
+  ///
+  /// Throws [FormatException] if the binary structure is invalid.
+  static _RawZegelHeader parse(Uint8List fileBytes) {
+    final h = _RawZegelHeader._();
+    final bd = ByteData.sublistView(fileBytes);
+
+    if (fileBytes.length < 86) {
+      throw const FormatException('File too short for Zegel header.');
+    }
+
+    h.versionMajor = fileBytes[8];
+    h.versionMinor = fileBytes[9];
+    h.flags = bd.getUint16(10, Endian.big);
+    h.timestamp = bd.getUint64(12, Endian.big);
+
+    // Content-Type (64 bytes, null-padded).
+    final ctRaw = Uint8List.sublistView(fileBytes, 20, 84);
+    int ctEnd = ctRaw.indexOf(0);
+    if (ctEnd < 0) ctEnd = ctRaw.length;
+    h.contentType = utf8.decode(ctRaw.sublist(0, ctEnd));
+
+    // Filename.
+    final filenameLen = bd.getUint16(84, Endian.big);
+    h.filename = utf8.decode(fileBytes.sublist(86, 86 + filenameLen));
+
+    // Salt.
+    final saltOffset = 86 + filenameLen;
+    h.salt = Uint8List.fromList(
+      fileBytes.sublist(saltOffset, saltOffset + ZegelFormat.saltSize),
+    );
+
+    // Block count.
+    final blockCountOffset = saltOffset + ZegelFormat.saltSize;
+    h.blockCount = bd.getUint32(blockCountOffset, Endian.big);
+
+    // Extended header.
+    int cursor = blockCountOffset + 4;
+
+    if (h.flags & ZegelFormat.flagPasswordDerived != 0) {
+      h.argon2TimeCost = bd.getUint32(cursor, Endian.big);
+      cursor += 4;
+      h.argon2MemoryCost = bd.getUint32(cursor, Endian.big);
+      cursor += 4;
+    }
+
+    if (h.flags & ZegelFormat.flagHasExpiration != 0) {
+      h.expirationTimestamp = bd.getUint64(cursor, Endian.big);
+      cursor += 8;
+    }
+
+    if (h.flags & ZegelFormat.flagHasCanary != 0) {
+      h.recipientId = Uint8List.fromList(
+        fileBytes.sublist(cursor, cursor + 32),
+      );
+      cursor += 32;
+    }
+
+    if (h.flags & ZegelFormat.flagSplitKey != 0) {
+      h.splitKeyThreshold = fileBytes[cursor];
+      cursor += 1;
+      h.splitKeyTotal = fileBytes[cursor];
+      cursor += 1;
+    }
+
+    if (h.flags & ZegelFormat.flagVersioned != 0) {
+      h.versionChainHash = Uint8List.fromList(
+        fileBytes.sublist(cursor, cursor + 32),
+      );
+      cursor += 32;
+    }
+
+    if (h.flags & ZegelFormat.flagHasPublicMetadata != 0) {
+      final pubMetaLen = bd.getUint32(cursor, Endian.big);
+      cursor += 4;
+      final pubMetaJson = utf8.decode(
+        fileBytes.sublist(cursor, cursor + pubMetaLen),
+      );
+      h.publicMetadata = jsonDecode(pubMetaJson) as Map<String, dynamic>;
+      cursor += pubMetaLen;
+    }
+
+    // Block directory.
+    final directory = <_RawBlockEntry>[];
+    for (int i = 0; i < h.blockCount; i++) {
+      final eo = cursor;
+      directory.add(_RawBlockEntry(
+        type: fileBytes[eo],
+        plaintextHash: Uint8List.fromList(fileBytes.sublist(eo + 1, eo + 33)),
+        ciphertextLength: bd.getUint32(eo + 33, Endian.big),
+        iv: Uint8List.fromList(fileBytes.sublist(eo + 37, eo + 49)),
+        tag: Uint8List.fromList(fileBytes.sublist(eo + 49, eo + 65)),
+      ));
+      cursor += ZegelFormat.blockDirectoryEntrySize;
+    }
+    h.blockDirectory = directory;
+
+    // Merkle root.
+    h.merkleRoot = Uint8List.fromList(
+      fileBytes.sublist(cursor, cursor + ZegelFormat.hashSize),
+    );
+    cursor += ZegelFormat.hashSize;
+
+    // Key commitment (optional).
+    if (h.flags & ZegelFormat.flagHasKeyCommitment != 0) {
+      h.keyCommitment = Uint8List.fromList(
+        fileBytes.sublist(cursor, cursor + ZegelFormat.hashSize),
+      );
+      cursor += ZegelFormat.hashSize;
+    }
+
+    h.dataStart = cursor;
+    return h;
   }
 }
