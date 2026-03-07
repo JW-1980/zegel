@@ -1,7 +1,7 @@
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
+import 'dart:io';
 
 /// Service for picking and saving files using platform dialogs.
 class FileService {
@@ -25,7 +25,7 @@ class FileService {
   Future<String?> pickZegelFile() async {
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ['zgl'],
+
       allowMultiple: false,
     );
     if (result != null && result.files.isNotEmpty) {

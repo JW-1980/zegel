@@ -158,8 +158,7 @@ void main() {
           'sealed_by': 'test-suite',
           'document_id': 42,
         };
-        final fileBytes =
-            _sealTestFile(content, masterKey, metadata: metadata);
+        final fileBytes = _sealTestFile(content, masterKey, metadata: metadata);
 
         final result = const ZegelReader().verify(fileBytes, masterKey);
         expect(result.valid, isTrue);
@@ -180,8 +179,7 @@ void main() {
 
       test('file with metadata includes it in result', () {
         final metadata = {'key': 'value'};
-        final fileBytes =
-            _sealTestFile(content, masterKey, metadata: metadata);
+        final fileBytes = _sealTestFile(content, masterKey, metadata: metadata);
 
         final result = const ZegelReader().verify(fileBytes, masterKey);
         expect(result.valid, isTrue);
@@ -191,8 +189,7 @@ void main() {
 
       test('file with empty metadata map', () {
         final metadata = <String, dynamic>{};
-        final fileBytes =
-            _sealTestFile(content, masterKey, metadata: metadata);
+        final fileBytes = _sealTestFile(content, masterKey, metadata: metadata);
 
         // Empty metadata may or may not set the flag depending on implementation
         final result = const ZegelReader().verify(fileBytes, masterKey);
@@ -279,8 +276,7 @@ void main() {
 
         final inspection = const ZegelReader().inspect(fileBytes);
         expect(inspection.publicMetadata, isNotNull);
-        expect(
-            inspection.publicMetadata!['classification'], equals('public'));
+        expect(inspection.publicMetadata!['classification'], equals('public'));
       });
 
       test('inspect reports block count for valid file', () {

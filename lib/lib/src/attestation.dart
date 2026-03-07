@@ -62,10 +62,7 @@ class Attestation {
     final Uint8List statementBytes = Uint8List.fromList(utf8.encode(statement));
 
     final int messageLen =
-        merkleRoot.length +
-        signerIdBytes.length +
-        8 +
-        statementBytes.length;
+        merkleRoot.length + signerIdBytes.length + 8 + statementBytes.length;
     final Uint8List message = Uint8List(messageLen);
     int offset = 0;
 
@@ -117,10 +114,7 @@ class Attestation {
     final Uint8List statementBytes = Uint8List.fromList(utf8.encode(statement));
 
     final int messageLen =
-        merkleRoot.length +
-        signerIdBytes.length +
-        8 +
-        statementBytes.length;
+        merkleRoot.length + signerIdBytes.length + 8 + statementBytes.length;
     final Uint8List message = Uint8List(messageLen);
     int offset = 0;
 
@@ -193,8 +187,7 @@ class Attestation {
     final Uint8List roleBytes = Uint8List.fromList(utf8.encode(role));
     final Uint8List statementBytes = Uint8List.fromList(utf8.encode(statement));
 
-    final int messageLen =
-        merkleRoot.length +
+    final int messageLen = merkleRoot.length +
         signerIdBytes.length +
         8 +
         roleBytes.length +
@@ -255,8 +248,7 @@ class Attestation {
     final Uint8List roleBytes = Uint8List.fromList(utf8.encode(role));
     final Uint8List statementBytes = Uint8List.fromList(utf8.encode(statement));
 
-    final int messageLen =
-        merkleRoot.length +
+    final int messageLen = merkleRoot.length +
         signerIdBytes.length +
         8 +
         roleBytes.length +
@@ -324,11 +316,15 @@ class Attestation {
       if (signerKeys.containsKey(signerId)) {
         if (role != null && attestation.containsKey('role')) {
           isValid = verifyRoleAttestation(
-            attestation, merkleRoot, signerKeys[signerId]!,
+            attestation,
+            merkleRoot,
+            signerKeys[signerId]!,
           );
         } else {
           isValid = verifyAttestation(
-            attestation, merkleRoot, signerKeys[signerId]!,
+            attestation,
+            merkleRoot,
+            signerKeys[signerId]!,
           );
         }
       }

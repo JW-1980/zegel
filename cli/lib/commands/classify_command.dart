@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:args/command_runner.dart';
 import 'package:zegel/zegel.dart';
@@ -10,19 +9,19 @@ import 'common.dart';
 /// `zegel classify` - Set classification level on a .zgl file.
 class ClassifyCommand extends Command<int> {
   ClassifyCommand() {
-    argParser.addOption('file', abbr: 'f',
-      help: 'Path to the .zgl file.',
-      valueHelp: 'path');
-    argParser.addOption('level', abbr: 'l',
-      help: 'Classification level (PUBLIC, INTERNAL, CONFIDENTIAL, SECRET, TOP_SECRET).',
-      valueHelp: 'level');
+    argParser.addOption('file',
+        abbr: 'f', help: 'Path to the .zgl file.', valueHelp: 'path');
+    argParser.addOption('level',
+        abbr: 'l',
+        help:
+            'Classification level (PUBLIC, INTERNAL, CONFIDENTIAL, SECRET, TOP_SECRET).',
+        valueHelp: 'level');
     argParser.addOption('authority',
-      help: 'Authority setting the classification.',
-      valueHelp: 'name');
+        help: 'Authority setting the classification.', valueHelp: 'name');
     argParser.addMultiOption('caveats',
-      help: 'Handling caveats (e.g. NOFORN, REL_TO).',
-      valueHelp: 'caveat');
-    addOutputOption(argParser, help: 'Output file path for classified metadata.');
+        help: 'Handling caveats (e.g. NOFORN, REL_TO).', valueHelp: 'caveat');
+    addOutputOption(argParser,
+        help: 'Output file path for classified metadata.');
   }
 
   @override
@@ -57,7 +56,8 @@ class ClassifyCommand extends Command<int> {
     final level = argResults!['level'] as String?;
     final authority = argResults!['authority'] as String?;
     if (filePath == null || level == null || authority == null) {
-      throw UsageException('--file, --level, and --authority are required.', usage);
+      throw UsageException(
+          '--file, --level, and --authority are required.', usage);
     }
 
     final normalized = validateClassificationLevel(level);
@@ -69,7 +69,8 @@ class ClassifyCommand extends Command<int> {
       caveat: caveats.isNotEmpty ? caveats.join(', ') : null,
     );
 
-    final outputPath = argResults!['output'] as String? ?? '$filePath.classification.json';
+    final outputPath =
+        argResults!['output'] as String? ?? '$filePath.classification.json';
     File(outputPath).writeAsStringSync(
       const JsonEncoder.withIndent('  ').convert(metadata),
     );
@@ -87,20 +88,15 @@ class ClassifyCommand extends Command<int> {
 /// `zegel declassify` - Lower classification level.
 class DeclassifyCommand extends Command<int> {
   DeclassifyCommand() {
-    argParser.addOption('file', abbr: 'f',
-      help: 'Path to the classification JSON.',
-      valueHelp: 'path');
+    argParser.addOption('file',
+        abbr: 'f', help: 'Path to the classification JSON.', valueHelp: 'path');
     argParser.addOption('current-level',
-      help: 'Current classification level.',
-      valueHelp: 'level');
+        help: 'Current classification level.', valueHelp: 'level');
     argParser.addOption('new-level',
-      help: 'New (lower) classification level.',
-      valueHelp: 'level');
+        help: 'New (lower) classification level.', valueHelp: 'level');
     argParser.addOption('authority',
-      help: 'Authority approving declassification.',
-      valueHelp: 'name');
-    argParser.addOption('reason',
-      help: 'Reason for declassification.');
+        help: 'Authority approving declassification.', valueHelp: 'name');
+    argParser.addOption('reason', help: 'Reason for declassification.');
     addOutputOption(argParser);
   }
 
@@ -130,7 +126,7 @@ class DeclassifyCommand extends Command<int> {
     final authority = argResults!['authority'] as String?;
     if (currentLevel == null || newLevel == null || authority == null) {
       throw UsageException(
-        '--current-level, --new-level, and --authority are required.', usage);
+          '--current-level, --new-level, and --authority are required.', usage);
     }
 
     final normalizedCurrent = validateClassificationLevel(currentLevel);
@@ -154,12 +150,14 @@ class DeclassifyCommand extends Command<int> {
       if (reason != null) 'reason': reason,
     };
 
-    final outputPath = argResults!['output'] as String? ?? 'declassification.json';
+    final outputPath =
+        argResults!['output'] as String? ?? 'declassification.json';
     File(outputPath).writeAsStringSync(
       const JsonEncoder.withIndent('  ').convert(record),
     );
 
-    stdout.writeln('Declassification: $normalizedCurrent -> ${Ansi.success(normalizedNew)}');
+    stdout.writeln(
+        'Declassification: $normalizedCurrent -> ${Ansi.success(normalizedNew)}');
     stdout.writeln('  Authority: $authority');
     if (reason != null) stdout.writeln('  Reason: $reason');
     stdout.writeln('  Output: $outputPath');
