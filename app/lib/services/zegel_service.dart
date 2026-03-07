@@ -300,6 +300,11 @@ class ZegelService {
       throw FileSystemException('File does not exist', filePath);
     }
 
+||||||| original
+    final file = File(filePath);
+    final content = await file.readAsBytes();
+    final filename = filePath.split(Platform.pathSeparator).last;
+
     // Delegate to the zegel library.
     // The actual implementation calls into package:zegel.
     // For now, this is a placeholder that returns empty bytes
@@ -605,10 +610,8 @@ class ZegelService {
     return bytes;
   }
 
-  // ======================================================================
-  // Batch operations
-  // ======================================================================
-
+  // ===============================================================  // Batch operations
+  // ===============================================================
   /// Verifies multiple .zgl files in batch.
   ///
   /// Returns a list of [ZegelResult] for each file.
@@ -647,10 +650,8 @@ class ZegelService {
     return results;
   }
 
-  // ======================================================================
-  // Manifest operations
-  // ======================================================================
-
+  // ===============================================================  // Manifest operations
+  // ===============================================================
   /// Creates a signed manifest of multiple files.
   ///
   /// Returns the manifest as JSON bytes.
@@ -681,10 +682,8 @@ class ZegelService {
     );
   }
 
-  // ======================================================================
-  // Classification operations
-  // ======================================================================
-
+  // ===============================================================  // Classification operations
+  // ===============================================================
   /// Sets or changes the classification level of a .zgl file.
   Future<void> classify(
     String filePath,
@@ -715,10 +714,8 @@ class ZegelService {
     );
   }
 
-  // ======================================================================
-  // Excerpt proof operations
-  // ======================================================================
-
+  // ===============================================================  // Excerpt proof operations
+  // ===============================================================
   /// Generates a cryptographic excerpt proof for specific blocks.
   ///
   /// Returns the proof as JSON bytes.
@@ -749,10 +746,8 @@ class ZegelService {
     );
   }
 
-  // ======================================================================
-  // Provenance operations
-  // ======================================================================
-
+  // ===============================================================  // Provenance operations
+  // ===============================================================
   /// Reads and verifies the provenance chain from a .zgl file.
   ///
   /// Returns a list of provenance events with signature verification status.
@@ -767,10 +762,8 @@ class ZegelService {
     );
   }
 
-  // ======================================================================
-  // Version chain operations
-  // ======================================================================
-
+  // ===============================================================  // Version chain operations
+  // ===============================================================
   /// Verifies the version chain hash of a sequence of .zgl files.
   ///
   /// Returns true if the version chain is intact and unbroken.
@@ -787,10 +780,8 @@ class ZegelService {
 
   }
 
-  // ======================================================================
-  // Credential operations
-  // ======================================================================
-
+  // ===============================================================  // Credential operations
+  // ===============================================================
   /// Issues a credential by sealing a document with attestation metadata.
   ///
   /// Returns the sealed credential bytes.

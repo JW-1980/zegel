@@ -31,8 +31,7 @@ ZegelResult _roundtrip(
 
   // verify (also extracts content)
   final result = const ZegelReader().verify(fileBytes, key);
-  expect(result.valid, isTrue,
-      reason: 'Verification failed during roundtrip');
+  expect(result.valid, isTrue, reason: 'Verification failed during roundtrip');
 
   return result;
 }
@@ -153,7 +152,11 @@ void main() {
       });
 
       test('JSON content', () {
-        final jsonObj = {'key': 'value', 'number': 42, 'array': [1, 2, 3]};
+        final jsonObj = {
+          'key': 'value',
+          'number': 42,
+          'array': [1, 2, 3]
+        };
         final jsonStr = jsonEncode(jsonObj);
         final content = Uint8List.fromList(utf8.encode(jsonStr));
         final options = ZegelOptions(
@@ -243,7 +246,8 @@ void main() {
         expect(result.content, equals(content));
       });
 
-      test('compressed file is smaller than uncompressed for compressible data', () {
+      test('compressed file is smaller than uncompressed for compressible data',
+          () {
         final text = 'AAAA' * 10000;
         final content = Uint8List.fromList(utf8.encode(text));
 
@@ -293,14 +297,12 @@ void main() {
             'file_size': 7,
           },
         );
-        final fileBytes =
-            ZegelWriter(masterKey, options).seal(content);
+        final fileBytes = ZegelWriter(masterKey, options).seal(content);
 
         // Public metadata should be visible via inspect (no key)
         final inspection = const ZegelReader().inspect(fileBytes);
         expect(inspection.publicMetadata, isNotNull);
-        expect(
-            inspection.publicMetadata!['classification'], equals('public'));
+        expect(inspection.publicMetadata!['classification'], equals('public'));
 
         // Full extraction should also work
         final result = const ZegelReader().verify(fileBytes, masterKey);
@@ -330,8 +332,7 @@ void main() {
           salt: _zeroSalt(),
           expiration: DateTime.now().subtract(const Duration(days: 1)),
         );
-        final fileBytes =
-            ZegelWriter(masterKey, options).seal(content);
+        final fileBytes = ZegelWriter(masterKey, options).seal(content);
 
         // verify() throws ZegelExpiredException for expired files
         expect(
@@ -362,8 +363,7 @@ void main() {
           salt: _zeroSalt(),
           enableKeyCommitment: true,
         );
-        final fileBytes =
-            ZegelWriter(masterKey, options).seal(content);
+        final fileBytes = ZegelWriter(masterKey, options).seal(content);
 
         final inspection = const ZegelReader().inspect(fileBytes);
         expect(
@@ -381,8 +381,7 @@ void main() {
           filename: 'a.txt',
           salt: _zeroSalt(),
         );
-        final fileBytes =
-            ZegelWriter(masterKey, options).seal(content);
+        final fileBytes = ZegelWriter(masterKey, options).seal(content);
         final inspection = const ZegelReader().inspect(fileBytes);
         expect(inspection.filename, equals('a.txt'));
       });
@@ -396,8 +395,7 @@ void main() {
           filename: longName,
           salt: _zeroSalt(),
         );
-        final fileBytes =
-            ZegelWriter(masterKey, options).seal(content);
+        final fileBytes = ZegelWriter(masterKey, options).seal(content);
         final inspection = const ZegelReader().inspect(fileBytes);
         expect(inspection.filename, equals(longName));
       });
@@ -409,8 +407,7 @@ void main() {
           filename: 'rapport\u00e9_2026.txt',
           salt: _zeroSalt(),
         );
-        final fileBytes =
-            ZegelWriter(masterKey, options).seal(content);
+        final fileBytes = ZegelWriter(masterKey, options).seal(content);
         final inspection = const ZegelReader().inspect(fileBytes);
         expect(inspection.filename, equals('rapport\u00e9_2026.txt'));
       });
@@ -422,11 +419,9 @@ void main() {
           filename: 'my document (final) [v2].txt',
           salt: _zeroSalt(),
         );
-        final fileBytes =
-            ZegelWriter(masterKey, options).seal(content);
+        final fileBytes = ZegelWriter(masterKey, options).seal(content);
         final inspection = const ZegelReader().inspect(fileBytes);
-        expect(
-            inspection.filename, equals('my document (final) [v2].txt'));
+        expect(inspection.filename, equals('my document (final) [v2].txt'));
       });
     });
 
@@ -438,8 +433,7 @@ void main() {
           filename: 'test.txt',
           salt: _zeroSalt(),
         );
-        final fileBytes =
-            ZegelWriter(masterKey, options).seal(content);
+        final fileBytes = ZegelWriter(masterKey, options).seal(content);
         final inspection = const ZegelReader().inspect(fileBytes);
         expect(inspection.contentType, equals('text/plain'));
       });
@@ -451,8 +445,7 @@ void main() {
           filename: 'doc.pdf',
           salt: _zeroSalt(),
         );
-        final fileBytes =
-            ZegelWriter(masterKey, options).seal(content);
+        final fileBytes = ZegelWriter(masterKey, options).seal(content);
         final inspection = const ZegelReader().inspect(fileBytes);
         expect(inspection.contentType, equals('application/pdf'));
       });
@@ -464,8 +457,7 @@ void main() {
           filename: 'image.png',
           salt: _zeroSalt(),
         );
-        final fileBytes =
-            ZegelWriter(masterKey, options).seal(content);
+        final fileBytes = ZegelWriter(masterKey, options).seal(content);
         final inspection = const ZegelReader().inspect(fileBytes);
         expect(inspection.contentType, equals('image/png'));
       });
@@ -477,8 +469,7 @@ void main() {
           filename: 'data.bin',
           salt: _zeroSalt(),
         );
-        final fileBytes =
-            ZegelWriter(masterKey, options).seal(content);
+        final fileBytes = ZegelWriter(masterKey, options).seal(content);
         final inspection = const ZegelReader().inspect(fileBytes);
         expect(inspection.contentType, equals('application/octet-stream'));
       });
@@ -490,8 +481,7 @@ void main() {
           filename: 'test.txt',
           salt: _zeroSalt(),
         );
-        final fileBytes =
-            ZegelWriter(masterKey, options).seal(content);
+        final fileBytes = ZegelWriter(masterKey, options).seal(content);
         final inspection = const ZegelReader().inspect(fileBytes);
         expect(inspection.contentType, equals('text/plain; charset=utf-8'));
       });

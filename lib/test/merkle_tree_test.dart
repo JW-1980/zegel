@@ -69,7 +69,8 @@ void main() {
     });
 
     group('three leaves (odd count)', () {
-      test('root = SHA-256(SHA-256(leaf0||leaf1) || SHA-256(leaf2||leaf2))', () {
+      test('root = SHA-256(SHA-256(leaf0||leaf1) || SHA-256(leaf2||leaf2))',
+          () {
         final leaf0 = _leafHash(0);
         final leaf1 = _leafHash(1);
         final leaf2 = _leafHash(2);
@@ -102,7 +103,7 @@ void main() {
 
     group('eight leaves (three-level tree)', () {
       test('produces correct three-level tree root', () {
-        final leaves = List.generate(8, (i) => _leafHash(i));
+        final leaves = List.generate(8, _leafHash);
 
         // Level 1: pair adjacent leaves
         final n01 = _sha256(_concat(leaves[0], leaves[1]));
@@ -155,7 +156,7 @@ void main() {
 
     group('determinism', () {
       test('same inputs always produce the same root', () {
-        final leaves = List.generate(5, (i) => _leafHash(i));
+        final leaves = List.generate(5, _leafHash);
 
         final root1 = MerkleTree.buildRoot(leaves);
         final root2 = MerkleTree.buildRoot(leaves);
@@ -166,7 +167,7 @@ void main() {
       });
 
       test('different inputs produce different roots', () {
-        final leaves1 = List.generate(3, (i) => _leafHash(i));
+        final leaves1 = List.generate(3, _leafHash);
         final leaves2 = List.generate(3, (i) => _leafHash(i + 10));
 
         final root1 = MerkleTree.buildRoot(leaves1);
@@ -176,8 +177,8 @@ void main() {
       });
 
       test('adding a leaf changes the root', () {
-        final leaves3 = List.generate(3, (i) => _leafHash(i));
-        final leaves4 = List.generate(4, (i) => _leafHash(i));
+        final leaves3 = List.generate(3, _leafHash);
+        final leaves4 = List.generate(4, _leafHash);
 
         final root3 = MerkleTree.buildRoot(leaves3);
         final root4 = MerkleTree.buildRoot(leaves4);
@@ -218,7 +219,7 @@ void main() {
       });
 
       test('verifies inclusion at each position in 8-leaf tree', () {
-        final leaves = List.generate(8, (i) => _leafHash(i));
+        final leaves = List.generate(8, _leafHash);
         final root = MerkleTree.buildRoot(leaves);
 
         for (var i = 0; i < 8; i++) {
@@ -236,7 +237,7 @@ void main() {
       });
 
       test('verifies inclusion at each position in odd-count tree', () {
-        final leaves = List.generate(5, (i) => _leafHash(i));
+        final leaves = List.generate(5, _leafHash);
         final root = MerkleTree.buildRoot(leaves);
 
         for (var i = 0; i < 5; i++) {
