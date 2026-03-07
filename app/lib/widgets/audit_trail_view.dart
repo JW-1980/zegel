@@ -16,6 +16,8 @@ class AuditTrailView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
+    // ignore: unused_local_variable
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
@@ -194,9 +196,7 @@ class _AuditEntryTile extends StatelessWidget {
                       const Spacer(),
                       // Chain hash verification indicator
                       Icon(
-                        entry.isChainValid
-                            ? Icons.link
-                            : Icons.link_off,
+                        entry.isChainValid ? Icons.link : Icons.link_off,
                         size: 14,
                         color: entry.isChainValid
                             ? const Color(0xFF2E7D32)

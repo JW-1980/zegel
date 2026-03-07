@@ -23,8 +23,7 @@ class AttestCommand extends Command<int> {
   final String name = 'attest';
 
   @override
-  String get description =>
-      'Add a co-signature attestation to a .zgl file.\n'
+  String get description => 'Add a co-signature attestation to a .zgl file.\n'
       '\n'
       'Creates an HMAC-SHA256 attestation over the Merkle root, signer ID,\n'
       'timestamp, statement, and role. The attestation is stored as an\n'
@@ -174,7 +173,7 @@ class AttestCommand extends Command<int> {
     }
 
     // Verify the file first using the library.
-    final reader = const ZegelReader();
+    const reader = ZegelReader();
     ZegelResult result;
     try {
       result = reader.verify(fileBytes, masterKey);
@@ -263,8 +262,7 @@ class AttestCommand extends Command<int> {
         header.expirationTimestamp! * 1000,
         isUtc: true,
       );
-      expirationDateStr =
-          '${dt.year.toString().padLeft(4, '0')}-'
+      expirationDateStr = '${dt.year.toString().padLeft(4, '0')}-'
           '${dt.month.toString().padLeft(2, '0')}-'
           '${dt.day.toString().padLeft(2, '0')}';
     }
@@ -301,8 +299,7 @@ class AttestCommand extends Command<int> {
 
       // Decrypt.
       final cipher = _createGCMCipher(false, blockKey, entry.iv);
-      final Uint8List input =
-          Uint8List(ciphertext.length + entry.tag.length);
+      final Uint8List input = Uint8List(ciphertext.length + entry.tag.length);
       input.setRange(0, ciphertext.length, ciphertext);
       input.setRange(ciphertext.length, input.length, entry.tag);
       final Uint8List plaintext = cipher.process(input);

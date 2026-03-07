@@ -9,13 +9,13 @@ import 'common.dart';
 /// `zegel manifest-create` - Create a signed manifest for multiple .zgl files.
 class ManifestCreateCommand extends Command<int> {
   ManifestCreateCommand() {
-    argParser.addOption('directory', abbr: 'd',
-      help: 'Directory containing .zgl files to include.',
-      valueHelp: 'path');
+    argParser.addOption('directory',
+        abbr: 'd',
+        help: 'Directory containing .zgl files to include.',
+        valueHelp: 'path');
     addKeyOptions(argParser);
     argParser.addOption('signer-id',
-      help: 'Identifier of the manifest signer.',
-      valueHelp: 'id');
+        help: 'Identifier of the manifest signer.', valueHelp: 'id');
     addOutputOption(argParser, help: 'Output path for manifest JSON.');
   }
 
@@ -48,17 +48,18 @@ class ManifestCreateCommand extends Command<int> {
     final outputPath = argResults!['output'] as String?;
     if (dirPath == null || signerId == null || outputPath == null) {
       throw UsageException(
-        '--directory, --signer-id, and --output are required.', usage);
+          '--directory, --signer-id, and --output are required.', usage);
     }
 
     final key = parseKeyFromArgs(argResults!);
     final dir = Directory(dirPath);
     if (!dir.existsSync()) {
-      stderr.writeln(Ansi.error('Error:') + ' Directory not found: $dirPath');
+      stderr.writeln('${Ansi.error('Error:')} Directory not found: $dirPath');
       return 1;
     }
 
-    final files = dir.listSync()
+    final files = dir
+        .listSync()
         .whereType<File>()
         .where((f) => f.path.endsWith('.zgl'))
         .toList();
@@ -81,7 +82,11 @@ class ManifestCreateCommand extends Command<int> {
       const JsonEncoder.withIndent('  ').convert(manifest),
     );
 
+    stdout.writeln('${Ansi.success('Manifest created')} with ${entries.length} file(s)');
+||||||| original
     stdout.writeln(Ansi.success('Manifest created') + ' with ${entries.length} file(s)');
+    stdout.writeln(
+        '${Ansi.success('Manifest created')} with ${entries.length} file(s)');
     stdout.writeln('  Output: $outputPath');
     return 0;
   }
@@ -90,12 +95,12 @@ class ManifestCreateCommand extends Command<int> {
 /// `zegel manifest-verify` - Verify a manifest against .zgl files.
 class ManifestVerifyCommand extends Command<int> {
   ManifestVerifyCommand() {
-    argParser.addOption('manifest', abbr: 'm',
-      help: 'Path to the manifest JSON file.',
-      valueHelp: 'path');
-    argParser.addOption('directory', abbr: 'd',
-      help: 'Directory containing .zgl files to verify against.',
-      valueHelp: 'path');
+    argParser.addOption('manifest',
+        abbr: 'm', help: 'Path to the manifest JSON file.', valueHelp: 'path');
+    argParser.addOption('directory',
+        abbr: 'd',
+        help: 'Directory containing .zgl files to verify against.',
+        valueHelp: 'path');
     addKeyOptions(argParser);
   }
 
@@ -103,8 +108,7 @@ class ManifestVerifyCommand extends Command<int> {
   String get name => 'manifest-verify';
 
   @override
-  String get description =>
-      'Verify a manifest against .zgl files on disk.\n'
+  String get description => 'Verify a manifest against .zgl files on disk.\n'
       '\n'
       'Checks that the manifest signature is valid, then verifies\n'
       'that each file listed in the manifest exists in the directory\n'
@@ -129,23 +133,31 @@ class ManifestVerifyCommand extends Command<int> {
     final key = parseKeyFromArgs(argResults!);
     final manifestFile = File(manifestPath);
     if (!manifestFile.existsSync()) {
+      stderr.writeln('${Ansi.error('Error:')} Manifest not found: $manifestPath');
+||||||| original
       stderr.writeln(Ansi.error('Error:') + ' Manifest not found: $manifestPath');
+      stderr
+          .writeln('${Ansi.error('Error:')} Manifest not found: $manifestPath');
       return 1;
     }
 
-    final manifest = jsonDecode(manifestFile.readAsStringSync()) as Map<String, dynamic>;
+    final manifest =
+        jsonDecode(manifestFile.readAsStringSync()) as Map<String, dynamic>;
 
     // Verify manifest signature
     if (!ZegelManifest.verify(manifest, key)) {
-      stderr.writeln(Ansi.error('Error:') + ' Manifest signature is invalid');
+      stderr.writeln('${Ansi.error('Error:')} Manifest signature is invalid');
       return 1;
     }
-    stdout.writeln(Ansi.success('✓') + ' Manifest signature valid');
+    stdout.writeln('${Ansi.success('✓')} Manifest signature valid');
 
     // Check files
     final dir = Directory(dirPath);
     final actualRoots = <String, Uint8List>{};
-    for (final file in dir.listSync().whereType<File>().where((f) => f.path.endsWith('.zgl'))) {
+    for (final file in dir
+        .listSync()
+        .whereType<File>()
+        .where((f) => f.path.endsWith('.zgl'))) {
       final name = file.path.split(Platform.pathSeparator).last;
       final bytes = Uint8List.fromList(file.readAsBytesSync());
       final header = RawZegelHeader.parse(bytes);

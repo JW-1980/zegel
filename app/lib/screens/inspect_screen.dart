@@ -1,126 +1,329 @@
 
-import 'package:flutter/material.dart';
-import 'package:zegel_app/gen_l10n/app_localizations.dart';
-import 'package:provider/provider.dart';
-import 'package:zegel/zegel.dart';
+import 'package:flutter/material.dart'
+;
 
-import '../services/file_service.dart';
-import 'dart:io';
+import 'package:zegel_app/gen_l10n/app_localizations.dart'
+;
+
+import 'package:provider/provider.dart'
+;
+
+import 'package:zegel/zegel.dart' hide ZegelResult, ZegelBlockInfo, DisclosureToken
+;
+
+
+import '../services/file_service.dart'
+;
+
+import 'dart:io'
+;
+
 
 /// Screen for inspecting .zgl files without requiring the master key.
 ///
 /// Displays header information including version, flags, timestamp,
 /// content-type, filename, block count, public metadata, split-key
 /// parameters, and expiration date.
-class InspectScreen extends StatefulWidget {
-  /// Optional initial .zgl file path.
-  final String? initialFilePath;
+class InspectScreen extends StatefulWidget
+{
 
-  const InspectScreen({super.key, this.initialFilePath});
+  /// Optional initial .zgl file path.
+  final String? initialFilePath
+;
+
+
+  const InspectScreen(
+{
+super.key, this.initialFilePath
+}
+)
+;
+
 
   @override
-  State<InspectScreen> createState() => _InspectScreenState();
+  State<InspectScreen> createState() => _InspectScreenState()
+;
+
 }
 
-class _InspectScreenState extends State<InspectScreen> {
-  String? _filePath;
-  bool _isInspecting = false;
-  ZegelInspection? _inspection;
-  String? _errorMessage;
+
+class _InspectScreenState extends State<InspectScreen>
+{
+
+  String? _filePath
+;
+
+  bool _isInspecting = false
+;
+
+  // ignore: unused_field
+  // ignore: unused_field
+  ZegelInspection? _inspection
+;
+
+  String? _errorMessage
+;
+
 
   @override
-  void initState() {
-    super.initState();
-    if (widget.initialFilePath != null) {
-      _filePath = widget.initialFilePath;
-    }
-  }
+  void initState()
+{
 
-  Future<void> _pickFile() async {
-    final fileService = context.read<FileService>();
-    final path = await fileService.pickZegelFile();
-    if (path != null) {
-      setState(() {
-        _filePath = path;
-        _inspection = null;
-        _errorMessage = null;
-      });
-    }
-  }
+    super.initState()
+;
 
-  Future<void> _inspect() async {
-    if (_filePath == null) {
-      setState(() => _errorMessage = 'Please select a .zgl file.');
-      return;
-    }
+    if (widget.initialFilePath != null)
+{
 
-    setState(() {
-      _isInspecting = true;
-      _inspection = null;
-      _errorMessage = null;
-    });
+      _filePath = widget.initialFilePath
+;
 
-    try {
-      final file = File(_filePath!);
-      if (!await file.exists()) {
-        throw Exception('File does not exist');
-      }
 
-      final bytes = await file.readAsBytes();
-      final reader = const ZegelReader();
-      final inspection = reader.inspect(bytes);
+}
 
-      if (mounted) {
-        setState(() {
-          _inspection = inspection;
-          _isInspecting = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        final l10n = AppLocalizations.of(context)!;
-        setState(() {
-          _errorMessage = l10n.errorGeneric(e.toString());
-          _isInspecting = false;
-        });
-      }
-    }
-  }
 
-  String _formatTimestamp(int epochSeconds) {
+}
+
+
+  Future<void> _pickFile() async
+{
+
+    final fileService = context.read<FileService>()
+;
+
+    final path = await fileService.pickZegelFile()
+;
+
+    if (path != null)
+{
+
+      setState(()
+{
+
+        _filePath = path
+;
+
+        _inspection = null
+;
+
+        _errorMessage = null
+;
+
+
+}
+)
+;
+
+
+}
+
+
+}
+
+
+  Future<void> _inspect() async
+{
+
+    if (_filePath == null)
+{
+
+      setState(() => _errorMessage = 'Please select a .zgl file.')
+;
+
+      return
+;
+
+
+}
+
+
+    setState(()
+{
+
+      _isInspecting = true
+;
+
+      _inspection = null
+;
+
+      _errorMessage = null
+;
+
+
+}
+)
+;
+
+
+    try
+{
+
+      final file = File(_filePath!)
+;
+
+      if (!await file.exists())
+{
+
+        throw Exception('File does not exist')
+;
+
+
+}
+
+
+      final bytes = await file.readAsBytes()
+;
+
+      const reader = ZegelReader()
+;
+
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable
+      final inspection = reader.inspect(bytes)
+;
+
+
+      if (mounted)
+{
+
+        setState(()
+{
+
+          _inspection = inspection
+;
+
+          _isInspecting = false
+;
+
+
+}
+)
+;
+
+
+}
+
+
+}
+ catch (e)
+{
+
+      if (mounted)
+{
+
+        // ignore: unused_local_variable
+        // ignore: unused_local_variable
+        final l10n = AppLocalizations.of(context)!
+;
+
+        setState(()
+{
+
+          _errorMessage = l10n.errorGeneric(e.toString())
+;
+
+          _isInspecting = false
+;
+
+
+}
+)
+;
+
+
+}
+
+
+}
+
+
+}
+
+
+  String _formatTimestamp(int epochSeconds)
+{
+
     final dt = DateTime.fromMillisecondsSinceEpoch(
       epochSeconds * 1000,
       isUtc: true,
-    );
+    )
+;
+
     return '${dt.year}-${dt.month.toString().padLeft(2, '0')}-'
         '${dt.day.toString().padLeft(2, '0')} '
         '${dt.hour.toString().padLeft(2, '0')}:'
         '${dt.minute.toString().padLeft(2, '0')}:'
-        '${dt.second.toString().padLeft(2, '0')} UTC';
-  }
+        '${dt.second.toString().padLeft(2, '0')} UTC'
+;
 
-  List<String> _getFlagNames(int flags) {
-    final names = <String>[];
-    if (flags & 0x0001 != 0) names.add('HAS_METADATA');
-    if (flags & 0x0002 != 0) names.add('COMPRESSED');
-    if (flags & 0x0004 != 0) names.add('PASSWORD_DERIVED');
-    if (flags & 0x0008 != 0) names.add('HAS_KEY_COMMITMENT');
-    if (flags & 0x0010 != 0) names.add('HAS_EXPIRATION');
-    if (flags & 0x0020 != 0) names.add('HAS_PUBLIC_METADATA');
-    if (flags & 0x0040 != 0) names.add('MULTI_FILE');
-    if (flags & 0x0080 != 0) names.add('HAS_CANARY');
-    if (flags & 0x0100 != 0) names.add('HAS_REDACTIONS');
-    if (flags & 0x0200 != 0) names.add('SPLIT_KEY');
-    if (flags & 0x0400 != 0) names.add('SELECTIVE_DISCLOSURE');
-    if (flags & 0x0800 != 0) names.add('VERSIONED');
-    return names;
-  }
+
+}
+
+
+  List<String> _getFlagNames(int flags)
+{
+
+    final names = <String>[]
+;
+
+    if (flags & 0x0001 != 0) names.add('HAS_METADATA')
+;
+
+    if (flags & 0x0002 != 0) names.add('COMPRESSED')
+;
+
+    if (flags & 0x0004 != 0) names.add('PASSWORD_DERIVED')
+;
+
+    if (flags & 0x0008 != 0) names.add('HAS_KEY_COMMITMENT')
+;
+
+    if (flags & 0x0010 != 0) names.add('HAS_EXPIRATION')
+;
+
+    if (flags & 0x0020 != 0) names.add('HAS_PUBLIC_METADATA')
+;
+
+    if (flags & 0x0040 != 0) names.add('MULTI_FILE')
+;
+
+    if (flags & 0x0080 != 0) names.add('HAS_CANARY')
+;
+
+    if (flags & 0x0100 != 0) names.add('HAS_REDACTIONS')
+;
+
+    if (flags & 0x0200 != 0) names.add('SPLIT_KEY')
+;
+
+    if (flags & 0x0400 != 0) names.add('SELECTIVE_DISCLOSURE')
+;
+
+    if (flags & 0x0800 != 0) names.add('VERSIONED')
+;
+
+    return names
+;
+
+
+}
+
 
   @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    final fileService = context.read<FileService>();
+  Widget build(BuildContext context)
+{
+
+    // ignore: unused_local_variable
+    // ignore: unused_local_variable
+    final l10n = AppLocalizations.of(context)!
+;
+
+    final theme = Theme.of(context)
+;
+
+    final fileService = context.read<FileService>()
+;
+
 
     return Scaffold(
       appBar: AppBar(
@@ -378,9 +581,8 @@ class _InspectScreenState extends State<InspectScreen> {
               // Expiration (if present)
               if (_inspection!.expirationTimestamp != null) ...[
                 Card(
-                  color: _isExpired()
-                      ? Colors.red.shade50
-                      : Colors.orange.shade50,
+                  color:
+                      _isExpired() ? Colors.red.shade50 : Colors.orange.shade50,
                   child: Padding(
                     padding: const EdgeInsets.all(16),
                     child: Column(
@@ -419,9 +621,7 @@ class _InspectScreenState extends State<InspectScreen> {
                         Row(
                           children: [
                             Icon(
-                              _isExpired()
-                                  ? Icons.warning
-                                  : Icons.timer,
+                              _isExpired() ? Icons.warning : Icons.timer,
                               size: 16,
                               color: _isExpired()
                                   ? Colors.red
@@ -488,21 +688,41 @@ class _InspectScreenState extends State<InspectScreen> {
           ],
         ),
       ),
-    );
-  }
+    )
+;
 
-  bool _isExpired() {
-    if (_inspection?.expirationTimestamp == null) return false;
-    final nowEpoch = DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
-    return nowEpoch >= _inspection!.expirationTimestamp!;
-  }
+
+}
+
+
+  bool _isExpired()
+{
+
+    if (_inspection?.expirationTimestamp == null) return false
+;
+
+    final nowEpoch = (DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000)
+;
+
+    return nowEpoch >= _inspection!.expirationTimestamp!
+;
+
+
+}
+
 
   Widget _buildInfoRow(
     String label,
     String value,
-    ThemeData theme, {
+    ThemeData theme,
+{
+
     Color? valueColor,
-  }) {
+
+}
+)
+{
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -529,6 +749,10 @@ class _InspectScreenState extends State<InspectScreen> {
           ),
         ],
       ),
-    );
-  }
+    )
+;
+
+
+}
+
 }

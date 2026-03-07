@@ -255,6 +255,7 @@ class _DiscloseScreenState extends State<DiscloseScreen>
         bottom: TabBar(
           controller: _tabController,
           labelColor: theme.colorScheme.onPrimary,
+          unselectedLabelColor: theme.colorScheme.onPrimary.withValues(alpha:0.6),
           unselectedLabelColor: theme.colorScheme.onPrimary.withValues(alpha: 0.6),
           indicatorColor: theme.colorScheme.onPrimary,
           tabs: const [
@@ -440,6 +441,7 @@ class _DiscloseScreenState extends State<DiscloseScreen>
               child: Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
+                  color: Colors.red.withValues(alpha:0.1),
                   color: Colors.red.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -677,6 +679,13 @@ class _DiscloseScreenState extends State<DiscloseScreen>
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: _extractIsError
+                      ? Colors.red.withValues(alpha:0.1)
+                      : Colors.green.withValues(alpha:0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: _extractIsError
+                        ? Colors.red.withValues(alpha:0.3)
+                        : Colors.green.withValues(alpha:0.3),
                       ? Colors.red.withValues(alpha: 0.1)
                       : Colors.green.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),

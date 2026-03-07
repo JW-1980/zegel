@@ -40,9 +40,7 @@ class _SealScreenState extends State<SealScreen> {
   // New advanced options
   bool _anonymousMode = false;
   String _classificationLevel = '';
-  String _classificationAuthority = '';
   DateTime? _regulatoryHoldDate;
-  String _tsaUrl = '';
   bool _preserveMediaMetadata = false;
 
   // Metadata key-value pairs
@@ -512,8 +510,6 @@ class _SealScreenState extends State<SealScreen> {
                                 labelText: l10n.sealClassificationAuthority,
                                 hintText: l10n.sealClassificationAuthorityHint,
                               ),
-                              onChanged: (v) => setState(
-                                  () => _classificationAuthority = v),
                             ),
                           ],
                           const SizedBox(height: 12),
@@ -568,8 +564,6 @@ class _SealScreenState extends State<SealScreen> {
                               labelText: l10n.sealTsaUrl,
                               hintText: l10n.sealTsaUrlHint,
                             ),
-                            onChanged: (v) =>
-                                setState(() => _tsaUrl = v),
                           ),
                           const SizedBox(height: 8),
                           SwitchListTile(
@@ -598,6 +592,13 @@ class _SealScreenState extends State<SealScreen> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: _isError
+                        ? Colors.red.withValues(alpha:0.1)
+                        : Colors.green.withValues(alpha:0.1),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: _isError
+                          ? Colors.red.withValues(alpha:0.3)
+                          : Colors.green.withValues(alpha:0.3),
                         ? Colors.red.withValues(alpha: 0.1)
                         : Colors.green.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),

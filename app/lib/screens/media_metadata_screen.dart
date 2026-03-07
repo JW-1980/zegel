@@ -1,14 +1,15 @@
 import 'dart:typed_data';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
-import 'package:zegel/zegel.dart';
+import 'package:zegel/zegel.dart' hide ZegelInspection;
+
 
 import '../services/file_service.dart';
-import '../services/zegel_service.dart' hide ZegelInspection, ZegelResult;
+import '../services/zegel_service.dart';
 import '../widgets/key_input.dart';
-import 'dart:io';
 
 /// Screen for viewing media metadata from sealed image/video files.
 ///
@@ -30,7 +31,7 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
   bool _isLoading = false;
   Map<String, dynamic>? _metadata;
   String? _errorMessage;
-  var _inspection;
+  ZegelInspection? _inspection;
 
   @override
   void initState() {
@@ -238,9 +239,9 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
                 padding: const EdgeInsets.all(12),
                 margin: const EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
-                  color: Colors.red.withValues(alpha: 0.1),
+                  color: Colors.red.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
+                  border: Border.all(color: Colors.red.withOpacity(0.3)),
                 ),
                 child: Row(
                   children: [
@@ -346,7 +347,7 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
                             color: theme.colorScheme.surfaceContainerHighest,
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
-                              color: theme.colorScheme.outline.withValues(alpha: 0.3),
+                              color: theme.colorScheme.outline.withOpacity(0.3),
                             ),
                           ),
                           child: Center(
@@ -357,7 +358,7 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
                                   Icons.map,
                                   size: 48,
                                   color: theme.colorScheme.onSurfaceVariant
-                                      .withValues(alpha: 0.5),
+                                      .withOpacity(0.5),
                                 ),
                                 const SizedBox(height: 8),
                                 Text(

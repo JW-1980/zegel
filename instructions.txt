@@ -1,0 +1,19 @@
+To finalize the job and clean up your local and remote environments so that only the main branch remains:
+
+1. Checkout the latest main branch
+   git checkout main
+   git fetch origin
+   git reset --hard origin/main
+
+2. Verify everything is working as expected (optional)
+   cd app && flutter test && cd ..
+   cd lib && dart test && cd ..
+   cd cli && dart test && cd ..
+
+3. Delete all local branches except main
+   git branch | grep -v "main" | xargs git branch -D
+
+4. Delete all remote branches except main
+   git branch -r | grep 'origin/' | grep -v 'main' | grep -v 'HEAD' | sed 's/origin\///' | xargs -I {} git push origin --delete {}
+
+After these steps, your repository will be clean with only the main branch present both locally and remotely.

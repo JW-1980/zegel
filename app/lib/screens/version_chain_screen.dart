@@ -1,9 +1,13 @@
 import 'dart:typed_data';
+import 'dart:io';
+||||||| original
+import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
-import 'package:zegel/zegel.dart';
+import 'package:zegel/zegel.dart' hide ZegelInspection, ZegelResult, ZegelBlockInfo, DisclosureToken;
 
 import '../services/file_service.dart';
 import 'dart:io';
@@ -163,9 +167,9 @@ class _VersionChainScreenState extends State<VersionChainScreen> {
       }
     } catch (e) {
       if (mounted) {
-        final l10n = AppLocalizations.of(context)!;
+
         setState(() {
-          _errorMessage = l10n.errorGeneric(e.toString());
+          _errorMessage = AppLocalizations.of(context)!.errorGeneric(e.toString());
           _isLoading = false;
         });
       }
@@ -217,7 +221,7 @@ class _VersionChainScreenState extends State<VersionChainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+
     final theme = Theme.of(context);
     final fileService = context.read<FileService>();
 

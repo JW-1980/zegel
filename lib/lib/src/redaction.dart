@@ -73,7 +73,8 @@ class Redaction {
     }
 
     // Compute extended header size.
-    final int extHeaderSize = _computeExtendedHeaderSize(result, flags, blockCountOffset + 4);
+    final int extHeaderSize =
+        _computeExtendedHeaderSize(result, flags, blockCountOffset + 4);
 
     // Block directory starts after extended header.
     final int directoryStart = blockCountOffset + 4 + extHeaderSize;

@@ -25,11 +25,10 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
   String _classifyCaveat = '';
   String _declassifyLevel = 'PUBLIC';
   String _declassifyAuthority = '';
-  List<int> _redactBlockIndices = [];
+  final List<int> _redactBlockIndices = [];
   bool _isProcessing = false;
   String? _statusMessage;
   bool _isError = false;
-  ZegelInspection? _inspection;
 
   Future<void> _pickFile() async {
     final fileService = context.read<FileService>();
@@ -51,7 +50,6 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
       final inspection = await zegelService.inspect(_filePath!);
       if (mounted) {
         setState(() {
-          _inspection = inspection;
           _currentClassification =
               inspection.publicMetadata?['classification'] as String?;
         });
@@ -129,6 +127,7 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
     );
 
     if (confirmed != true) return;
+    if (!mounted) return;
 
     setState(() {
       _isProcessing = true;
@@ -426,6 +425,13 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: _isError
+                      ? Colors.red.withValues(alpha:0.1)
+                      : Colors.green.withValues(alpha:0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: _isError
+                        ? Colors.red.withValues(alpha:0.3)
+                        : Colors.green.withValues(alpha:0.3),
                       ? Colors.red.withValues(alpha: 0.1)
                       : Colors.green.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),

@@ -1,8 +1,13 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
 import 'app_localizations.dart';
 import 'dart:io';
 
+// ignore_for_file: type=lint
+
+/// The translations for English (`en`).
 class AppLocalizationsEn extends AppLocalizations {
-  AppLocalizationsEn([super.locale = 'en']);
+  AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
   String get appTitle => 'Zegel';
@@ -26,7 +31,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsTitle => 'Settings';
 
   @override
-  String get dropZoneHint => 'Drop a file here to seal, or a .zgl file to verify';
+  String get dropZoneHint =>
+      'Drop a file here to seal, or a .zgl file to verify';
 
   @override
   String get keyLabel => 'Master Key';
@@ -38,7 +44,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get generateKeyAction => 'Generate New Key';
 
   @override
-  String fileSelected(String filename) => 'File selected: $filename';
+  String fileSelected(String filename) {
+    return 'File selected: $filename';
+  }
 
   @override
   String get sealSuccess => 'File sealed successfully';
@@ -74,7 +82,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noFileSelected => 'No file selected';
 
   @override
-  String errorGeneric(String message) => 'An error occurred: $message';
+  String errorGeneric(String message) {
+    return 'An error occurred: $message';
+  }
 
   @override
   String get savedKeysTitle => 'Saved Keys';
@@ -209,13 +219,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get classificationDeclassifyAction => 'Declassify';
 
   @override
-  String get classificationDeclassifyAuthorityHint => 'e.g. Declassification Authority';
+  String get classificationDeclassifyAuthorityHint =>
+      'e.g. Declassification Authority';
 
   @override
   String get classificationDeclassifyWarningTitle => 'Confirm Declassification';
 
   @override
-  String get classificationDeclassifyWarningBody => 'Declassification will lower the security level of this document. This action is recorded in the audit trail and cannot be undone. Continue?';
+  String get classificationDeclassifyWarningBody =>
+      'Declassification will lower the security level of this document. This action is recorded in the audit trail and cannot be undone. Continue?';
 
   @override
   String get classificationPublic => 'PUBLIC';
@@ -269,7 +281,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get manifestFileDirectoryLabel => 'File Directory (optional)';
 
   @override
-  String get manifestFileDirectoryHint => 'Directory containing the manifest files for verification';
+  String get manifestFileDirectoryHint =>
+      'Directory containing the manifest files for verification';
 
   @override
   String get manifestVerifyAction => 'Verify Manifest';
@@ -422,10 +435,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get credentialIssuedAtLabel => 'Issued At';
 
   @override
-  String get credentialValidStatus => 'Credential is VALID - all attestations verified';
+  String get credentialValidStatus =>
+      'Credential is VALID - all attestations verified';
 
   @override
-  String get credentialInvalidStatus => 'Credential is INVALID - attestation verification failed';
+  String get credentialInvalidStatus =>
+      'Credential is INVALID - attestation verification failed';
 
   @override
   String get contractTitle => 'Contract Workflow';
@@ -440,7 +455,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get contractPartiesLabel => 'Contract Parties';
 
   @override
-  String get contractNoParties => 'No parties added. Tap the + button to add parties.';
+  String get contractNoParties =>
+      'No parties added. Tap the + button to add parties.';
 
   @override
   String get contractAddParty => 'Add Party';
@@ -494,13 +510,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsPreserveMediaMetadata => 'Preserve Media Metadata';
 
   @override
-  String get settingsPreserveMediaMetadataDesc => 'Keep EXIF, XMP, and other media metadata when sealing';
+  String get settingsPreserveMediaMetadataDesc =>
+      'Keep EXIF, XMP, and other media metadata when sealing';
 
   @override
   String get settingsAnonymousMode => 'Anonymous Mode';
 
   @override
-  String get settingsAnonymousModeDesc => 'Omit user identity from audit trail and provenance records';
+  String get settingsAnonymousModeDesc =>
+      'Omit user identity from audit trail and provenance records';
 
   @override
   String get sealAnonymousMode => 'Anonymous Mode';
@@ -533,13 +551,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sealPreserveMediaMetadata => 'Preserve Media Metadata';
 
   @override
-  String get sealPreserveMediaMetadataDesc => 'Keep EXIF/XMP data in sealed file';
+  String get sealPreserveMediaMetadataDesc =>
+      'Keep EXIF/XMP data in sealed file';
 
   @override
   String get verifyClassificationLabel => 'Classification';
 
   @override
-  String verifyRegulatoryHold(String date) => 'HELD UNTIL $date';
+  String verifyRegulatoryHold(String date) {
+    return 'HELD UNTIL $date';
+  }
 
   @override
   String get verifyTimestampAuthority => 'Timestamp Authority:';
@@ -563,22 +584,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get helpBatchSeal => 'Seal all files in a folder into .zgl format';
 
   @override
-  String get helpClassification => 'Set or change the security classification of a sealed file';
+  String get helpClassification =>
+      'Set or change the security classification of a sealed file';
 
   @override
   String get helpManifest => 'Create or verify a signed list of sealed files';
 
   @override
-  String get helpExcerpt => 'Generate or verify cryptographic proofs for specific blocks';
+  String get helpExcerpt =>
+      'Generate or verify cryptographic proofs for specific blocks';
 
   @override
-  String get helpProvenance => 'View the chain of custody and provenance events';
+  String get helpProvenance =>
+      'View the chain of custody and provenance events';
 
   @override
-  String get helpCredential => 'Issue or verify academic credentials and certifications';
+  String get helpCredential =>
+      'Issue or verify academic credentials and certifications';
 
   @override
-  String get helpContract => 'Multi-party contract workflow with attestations and split keys';
+  String get helpContract =>
+      'Multi-party contract workflow with attestations and split keys';
 
   @override
   String get inspectTitle => 'Inspect';
@@ -587,7 +613,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get inspectFileLabel => 'File to Inspect';
 
   @override
-  String get helpInspect => 'View file header information without the master key';
+  String get helpInspect =>
+      'View file header information without the master key';
 
   @override
   String get mediaMetadataTitle => 'Media Metadata';
@@ -599,7 +626,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mediaMetadataLoadAction => 'Load Metadata';
 
   @override
-  String get helpMediaMetadata => 'View EXIF, GPS, and other media metadata from sealed files';
+  String get helpMediaMetadata =>
+      'View EXIF, GPS, and other media metadata from sealed files';
 
   @override
   String get timestampTitle => 'Timestamps';
@@ -641,7 +669,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get versionChainInvalid => 'Version Chain BROKEN';
 
   @override
-  String get helpVersionChain => 'View and verify version history and chain hashes';
+  String get helpVersionChain =>
+      'View and verify version history and chain hashes';
 
   @override
   String get drawerToolsSection => 'Tools';

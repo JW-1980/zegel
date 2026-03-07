@@ -1,6 +1,9 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+
+||||||| original
+import 'package:flutter/services.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:zegel/zegel.dart';
@@ -100,6 +103,9 @@ class _CanaryScreenState extends State<CanaryScreen>
   Future<void> _pickIdentifyFile() async {
     final fileService = context.read<FileService>();
     final path = await fileService.pickFile(
+      type: FileType.any,
+||||||| original
+      allowedExtensions: ['zgl'],
 
     );
     if (path != null) {

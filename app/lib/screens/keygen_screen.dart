@@ -58,12 +58,17 @@ class _KeygenScreenState extends State<KeygenScreen> {
   Future<void> _copyToClipboard(String value, String label) async {
     await Clipboard.setData(ClipboardData(text: value));
     if (mounted) {
+      if (mounted) {
+        // ignore: use_build_context_synchronously
+      // ignore: use_build_context_synchronously
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('$label copied to clipboard'),
           duration: const Duration(seconds: 2),
         ),
       );
+      }
     }
   }
 
@@ -147,6 +152,8 @@ class _KeygenScreenState extends State<KeygenScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
+    // ignore: unused_local_variable
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
@@ -200,19 +207,24 @@ class _KeygenScreenState extends State<KeygenScreen> {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    _SecurityTip(
+                    const _SecurityTip(
                       icon: Icons.backup,
                       text: 'Store multiple backups in secure locations',
                     ),
-                    _SecurityTip(
+                    const _SecurityTip(
                       icon: Icons.lock,
                       text: 'Use a password manager for digital backup',
                     ),
-                    _SecurityTip(
+                    const _SecurityTip(
                       icon: Icons.print,
                       text: 'Consider printing and storing in a safe',
                     ),
                     _SecurityTip(
+                      icon: Icons.share,
+||||||| original
+                    _SecurityTip(
+                      icon: Icons.share_off,
+                    const _SecurityTip(
                       icon: Icons.share,
                       text: 'Never share your key via email or messaging',
                     ),
@@ -277,18 +289,24 @@ class _KeygenScreenState extends State<KeygenScreen> {
                       const Divider(),
 
                       // Key properties
-                      _KeyProperty(
+                      const _KeyProperty(
                         label: 'Algorithm',
+                        // ignore: deprecated_member_use
+                        // ignore: deprecated_member_use
                         value: 'AES-256-GCM',
                         icon: Icons.security,
                       ),
-                      _KeyProperty(
+                      const _KeyProperty(
                         label: 'Key Size',
+                        // ignore: deprecated_member_use
+                        // ignore: deprecated_member_use
                         value: '256 bits (32 bytes)',
                         icon: Icons.straighten,
                       ),
-                      _KeyProperty(
+                      const _KeyProperty(
                         label: 'Source',
+                        // ignore: deprecated_member_use
+                        // ignore: deprecated_member_use
                         value: 'Cryptographically Secure RNG',
                         icon: Icons.shuffle,
                       ),

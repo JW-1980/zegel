@@ -98,6 +98,9 @@ class _ExtractScreenState extends State<ExtractScreen> {
     try {
       final zegelService = context.read<ZegelService>();
 
+||||||| original
+      final fileService = context.read<FileService>();
+
       // Use a temp path then show save dialog
       final suggestedName =
           _inspection?.originalFilename ?? 'extracted_file';
@@ -257,13 +260,13 @@ class _ExtractScreenState extends State<ExtractScreen> {
                 margin: const EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
                   color: _isError
-                      ? Colors.red.withValues(alpha: 0.1)
-                      : Colors.green.withValues(alpha: 0.1),
+                      ? Colors.red.withValues(alpha:0.1)
+                      : Colors.green.withValues(alpha:0.1),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
                     color: _isError
-                        ? Colors.red.withValues(alpha: 0.3)
-                        : Colors.green.withValues(alpha: 0.3),
+                        ? Colors.red.withValues(alpha:0.3)
+                        : Colors.green.withValues(alpha:0.3),
                   ),
                 ),
                 child: Row(

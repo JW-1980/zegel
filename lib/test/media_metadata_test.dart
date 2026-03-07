@@ -136,8 +136,7 @@ void main() {
       test('returns content with same length for basic types', () {
         final content =
             Uint8List.fromList([0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10]);
-        final stripped =
-            MediaMetadata.stripMetadata(content, 'image/jpeg');
+        final stripped = MediaMetadata.stripMetadata(content, 'image/jpeg');
 
         expect(stripped.length, equals(content.length));
       });

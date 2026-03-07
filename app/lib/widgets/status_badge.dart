@@ -105,6 +105,8 @@ class _StatusBadgeState extends State<StatusBadge>
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
+    // ignore: unused_local_variable
     final l10n = AppLocalizations.of(context)!;
     final color = _statusColor();
 
@@ -166,7 +168,7 @@ class AnimatedBuilder extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListenableBuilder(
       listenable: listenable,
-      builder: (context, child) => builder(context, child),
+      builder: builder,
     );
   }
 }

@@ -179,7 +179,7 @@ class RedactCommand extends Command<int> {
     }
 
     // Verify the file before redacting.
-    final reader = const ZegelReader();
+    const reader = ZegelReader();
     try {
       reader.verify(fileBytes, masterKey);
     } on ZegelException catch (e) {
@@ -230,7 +230,7 @@ class RedactCommand extends Command<int> {
     );
 
     // Write redacted file.
-    final outputFile = File(outputPath!);
+    final outputFile = File(outputPath);
     outputFile.writeAsBytesSync(redactedBytes);
 
     // Print success message.

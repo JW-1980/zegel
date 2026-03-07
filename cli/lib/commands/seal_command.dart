@@ -310,8 +310,7 @@ class SealCommand extends Command<int> {
     }
 
     // Handle regulatory hold.
-    final regulatoryHoldStr =
-        argResults!['regulatory-hold-until'] as String?;
+    final regulatoryHoldStr = argResults!['regulatory-hold-until'] as String?;
     if (regulatoryHoldStr != null) {
       final holdDate = parseExpirationDate(regulatoryHoldStr);
       publicMetadata ??= <String, dynamic>{};
@@ -330,13 +329,12 @@ class SealCommand extends Command<int> {
     }
 
     // Parse content type.
-    final contentType = argResults!['content-type'] as String? ??
-        _guessContentType(inputPath);
+    final contentType =
+        argResults!['content-type'] as String? ?? _guessContentType(inputPath);
 
     // Parse version chaining. Compute the chain hash from previous root + seal.
     Uint8List? versionChainHash;
-    final prevMerkleRootHex =
-        argResults!['previous-merkle-root'] as String?;
+    final prevMerkleRootHex = argResults!['previous-merkle-root'] as String?;
     final prevSealHex = argResults!['previous-seal'] as String?;
     if (prevMerkleRootHex != null && prevSealHex != null) {
       final prevRoot =
@@ -386,8 +384,10 @@ class SealCommand extends Command<int> {
     // Print success message.
     stdout.writeln(Ansi.success('Sealed successfully.'));
     stdout.writeln();
-    stdout.writeln('  Input:    $inputPath (${formatFileSize(content.length)})');
-    stdout.writeln('  Output:   $outputPath (${formatFileSize(sealedBytes.length)})');
+    stdout
+        .writeln('  Input:    $inputPath (${formatFileSize(content.length)})');
+    stdout.writeln(
+        '  Output:   $outputPath (${formatFileSize(sealedBytes.length)})');
     stdout.writeln('  Filename: $filename');
     stdout.writeln('  Type:     $contentType');
 
@@ -465,9 +465,11 @@ class SealCommand extends Command<int> {
       'gz': 'application/gzip',
       'tar': 'application/x-tar',
       'doc': 'application/msword',
-      'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'docx':
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
       'xls': 'application/vnd.ms-excel',
-      'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'xlsx':
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       'csv': 'text/csv',
       'md': 'text/markdown',
       'dart': 'text/x-dart',

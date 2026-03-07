@@ -53,7 +53,8 @@ class HierarchicalSplitSplitCommand extends Command<int> {
   final String name = 'split';
 
   @override
-  String get description => 'Split a master key into hierarchical share groups.\n'
+  String get description =>
+      'Split a master key into hierarchical share groups.\n'
       '\n'
       'The master key is decomposed into intermediate keys using XOR chaining,\n'
       'and each intermediate key is split using Shamir\'s Secret Sharing with\n'
@@ -143,11 +144,13 @@ class HierarchicalSplitSplitCommand extends Command<int> {
     final manifest = <String, dynamic>{
       'version': 1,
       'type': 'hierarchical_split_key',
-      'levels': levels.map((l) => {
-        'name': l.classification,
-        'threshold': l.threshold,
-        'total': l.totalShares,
-      }).toList(),
+      'levels': levels
+          .map((l) => {
+                'name': l.classification,
+                'threshold': l.threshold,
+                'total': l.totalShares,
+              })
+          .toList(),
       'created': DateTime.now().toUtc().toIso8601String(),
     };
     final manifestFile = File('$outputDir/manifest.json');
@@ -171,9 +174,11 @@ class HierarchicalSplitSplitCommand extends Command<int> {
       );
     }
     stdout.writeln();
-    stdout.writeln('To reconstruct the full key, you need shares from ALL levels:');
+    stdout.writeln(
+        'To reconstruct the full key, you need shares from ALL levels:');
     for (final level in levels) {
-      stdout.writeln('  - ${level.threshold} shares from ${level.classification}');
+      stdout.writeln(
+          '  - ${level.threshold} shares from ${level.classification}');
     }
 
     return 0;
@@ -234,7 +239,8 @@ class HierarchicalSplitReconstructCommand extends Command<int> {
   final String name = 'reconstruct';
 
   @override
-  String get description => 'Reconstruct a master key from hierarchical shares.\n'
+  String get description =>
+      'Reconstruct a master key from hierarchical shares.\n'
       '\n'
       'Reads shares from a directory structure created by "hierarchical-split split"\n'
       'and reconstructs the original master key. You must provide at least the\n'
@@ -253,7 +259,8 @@ class HierarchicalSplitReconstructCommand extends Command<int> {
       '  zegel hierarchical-split reconstruct shares/ --levels "CONFIDENTIAL,SECRET" -o recovered.key';
 
   @override
-  final String invocation = 'zegel hierarchical-split reconstruct <shares-dir> [options]';
+  final String invocation =
+      'zegel hierarchical-split reconstruct <shares-dir> [options]';
 
   HierarchicalSplitReconstructCommand() {
     addOutputOption(
@@ -312,13 +319,18 @@ class HierarchicalSplitReconstructCommand extends Command<int> {
     List<ShareLevel> levels = manifestLevels;
     final levelsFilter = argResults!['levels'] as String?;
     if (levelsFilter != null && levelsFilter.isNotEmpty) {
-      final filterNames = levelsFilter.split(',').map((s) => s.trim().toUpperCase()).toList();
-      levels = manifestLevels.where((l) => filterNames.contains(l.classification)).toList();
+      final filterNames =
+          levelsFilter.split(',').map((s) => s.trim().toUpperCase()).toList();
+      levels = manifestLevels
+          .where((l) => filterNames.contains(l.classification))
+          .toList();
 
       // Preserve order from manifest.
       levels.sort((a, b) {
-        final aIdx = manifestLevels.indexWhere((m) => m.classification == a.classification);
-        final bIdx = manifestLevels.indexWhere((m) => m.classification == b.classification);
+        final aIdx = manifestLevels
+            .indexWhere((m) => m.classification == a.classification);
+        final bIdx = manifestLevels
+            .indexWhere((m) => m.classification == b.classification);
         return aIdx.compareTo(bIdx);
       });
     }

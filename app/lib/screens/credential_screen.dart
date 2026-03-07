@@ -44,6 +44,7 @@ class _CredentialScreenState extends State<CredentialScreen>
         bottom: TabBar(
           controller: _tabController,
           labelColor: theme.colorScheme.onPrimary,
+          unselectedLabelColor: theme.colorScheme.onPrimary.withValues(alpha:0.7),
           unselectedLabelColor: theme.colorScheme.onPrimary.withValues(alpha: 0.7),
           indicatorColor: theme.colorScheme.onPrimary,
           tabs: [
@@ -370,6 +371,13 @@ class _CredentialIssueTabState extends State<_CredentialIssueTab> {
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: _isError
+                      ? Colors.red.withValues(alpha:0.1)
+                      : Colors.green.withValues(alpha:0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: _isError
+                        ? Colors.red.withValues(alpha:0.3)
+                        : Colors.green.withValues(alpha:0.3),
                       ? Colors.red.withValues(alpha: 0.1)
                       : Colors.green.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
@@ -571,6 +579,13 @@ class _CredentialVerifyTabState extends State<_CredentialVerifyTab> {
               margin: const EdgeInsets.only(bottom: 16),
               decoration: BoxDecoration(
                 color: _isError
+                    ? Colors.red.withValues(alpha:0.1)
+                    : Colors.green.withValues(alpha:0.1),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: _isError
+                      ? Colors.red.withValues(alpha:0.3)
+                      : Colors.green.withValues(alpha:0.3),
                     ? Colors.red.withValues(alpha: 0.1)
                     : Colors.green.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),

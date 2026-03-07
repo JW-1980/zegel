@@ -9,8 +9,8 @@ import 'common.dart';
 class VersionChainVerifyCommand extends Command<int> {
   VersionChainVerifyCommand() {
     argParser.addMultiOption('files',
-      help: 'Ordered list of .zgl files in the version chain (oldest first).',
-      valueHelp: 'path');
+        help: 'Ordered list of .zgl files in the version chain (oldest first).',
+        valueHelp: 'path');
   }
 
   @override
@@ -39,7 +39,8 @@ class VersionChainVerifyCommand extends Command<int> {
   Future<int> run() async {
     final filePaths = argResults!['files'] as List<String>;
     if (filePaths.length < 2) {
-      throw UsageException('At least 2 files are needed for chain verification.', usage);
+      throw UsageException(
+          'At least 2 files are needed for chain verification.', usage);
     }
 
     stdout.writeln('Verifying version chain of ${filePaths.length} file(s)...');
@@ -50,7 +51,11 @@ class VersionChainVerifyCommand extends Command<int> {
     for (int i = 0; i < filePaths.length; i++) {
       final file = File(filePaths[i]);
       if (!file.existsSync()) {
+        stderr.writeln('${Ansi.error('Error:')} File not found: ${filePaths[i]}');
+||||||| original
         stderr.writeln(Ansi.error('Error:') + ' File not found: ${filePaths[i]}');
+        stderr
+            .writeln('${Ansi.error('Error:')} File not found: ${filePaths[i]}');
         return 1;
       }
 
@@ -61,19 +66,22 @@ class VersionChainVerifyCommand extends Command<int> {
       if (i == 0) {
         // First file: no chain hash expected
         if (header.versionChainHash != null) {
-          stdout.writeln('  ${Ansi.info("ℹ")} $name has chain hash (references prior version)');
+          stdout.writeln(
+              '  ${Ansi.info("ℹ")} $name has chain hash (references prior version)');
         } else {
           stdout.writeln('  ${Ansi.success("✓")} $name (chain start)');
         }
       } else {
         // Subsequent files: verify chain hash
         if (header.versionChainHash == null) {
-          stdout.writeln('  ${Ansi.error("✗")} $name: missing version chain hash');
+          stdout.writeln(
+              '  ${Ansi.error("✗")} $name: missing version chain hash');
           allValid = false;
           continue;
         }
 
-        final prevBytes = Uint8List.fromList(File(filePaths[i - 1]).readAsBytesSync());
+        final prevBytes =
+            Uint8List.fromList(File(filePaths[i - 1]).readAsBytesSync());
         final prevHeader = RawZegelHeader.parse(prevBytes);
         final prevSeal = Uint8List.fromList(
           prevBytes.sublist(prevBytes.length - ZegelFormat.sealSize),
@@ -86,7 +94,8 @@ class VersionChainVerifyCommand extends Command<int> {
         );
 
         if (valid) {
-          stdout.writeln('  ${Ansi.success("✓")} $name links to ${filePaths[i - 1].split(Platform.pathSeparator).last}');
+          stdout.writeln(
+              '  ${Ansi.success("✓")} $name links to ${filePaths[i - 1].split(Platform.pathSeparator).last}');
         } else {
           stdout.writeln('  ${Ansi.error("✗")} $name: chain hash mismatch');
           allValid = false;
