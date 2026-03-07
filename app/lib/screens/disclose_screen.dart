@@ -107,8 +107,7 @@ class _DiscloseScreenState extends State<DiscloseScreen>
 
   Future<void> _generateToken() async {
     if (_selectedBlocks.isEmpty) {
-      setState(
-          () => _generateError = 'Select at least one block to disclose.');
+      setState(() => _generateError = 'Select at least one block to disclose.');
       return;
     }
 
@@ -324,8 +323,7 @@ class _DiscloseScreenState extends State<DiscloseScreen>
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: KeyInput(
-                onKeyChanged: (key) =>
-                    setState(() => _generateHexKey = key),
+                onKeyChanged: (key) => setState(() => _generateHexKey = key),
               ),
             ),
           ),
@@ -663,9 +661,7 @@ class _DiscloseScreenState extends State<DiscloseScreen>
                     )
                   : const Icon(Icons.file_download),
               label: Text(
-                _isExtracting
-                    ? 'Extracting...'
-                    : 'Extract Disclosed Blocks',
+                _isExtracting ? 'Extracting...' : 'Extract Disclosed Blocks',
                 style: const TextStyle(fontSize: 16),
               ),
             ),

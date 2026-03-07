@@ -546,7 +546,7 @@ class ZegelWriter {
       dirOffset += 32;
     }
 
-    // Verify offsets matched expectations
+// Verify offsets matched expectations
     if (dirOffset != preSealBytesLength - dataSize) {
       throw Exception('Directory offset mismatch');
     }

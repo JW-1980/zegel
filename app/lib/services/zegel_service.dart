@@ -323,19 +323,26 @@ class ZegelService {
       throw FileSystemException('File does not exist', filePath);
     }
 
-||||||| original
-    final file = File(filePath);
-    final content = await file.readAsBytes();
-    final filename = filePath.split(Platform.pathSeparator).last;
+    final Uint8List masterKey = _hexToBytes(hexKey);
+    final String filename = file.uri.pathSegments.last;
+    final Uint8List fileContent = await file.readAsBytes();
 
-    // Delegate to the zegel library.
-    // The actual implementation calls into package:zegel.
-    // For now, this is a placeholder that returns empty bytes
-    // until the core library is fully integrated.
-    throw UnimplementedError(
-      'Seal operation requires the zegel core library. '
-      'Ensure package:zegel is properly linked in pubspec.yaml.',
+    final zegelOptions = zegel_core.ZegelOptions(
+      filename: filename,
+      compress: options.compress,
+      expiration: options.expirationDate,
+      recipientId: options.recipientId != null
+          ? _hexToBytes(options.recipientId!)
+          : null,
+      splitKeyThreshold: options.splitKeyThreshold,
+      splitKeyTotal: options.splitKeyTotal,
+      enableSelectiveDisclosure: options.enableSelectiveDisclosure,
+      metadata: options.metadata,
+      blockSize: options.blockSize,
     );
+
+    final writer = zegel_core.ZegelWriter(masterKey, zegelOptions);
+    return writer.seal(fileContent);
   }
 
   /// Verifies a .zgl file with the given key.
@@ -1027,6 +1034,7 @@ class ZegelService {
     );
   }
 
+  /// Converts a hex string to bytes.
   Uint8List _hexToBytes(String hex) {
     final int length = hex.length ~/ 2;
     final Uint8List bytes = Uint8List(length);
@@ -1035,12 +1043,7 @@ class ZegelService {
     }
     return bytes;
   }
-}
 
-
-// =============================================================================
-// Internal Header Parsers
-// =============================================================================
 
 /// A raw block directory entry parsed directly from a .zgl file.
 class _RawBlockEntry {

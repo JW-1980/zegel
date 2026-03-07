@@ -472,33 +472,6 @@ h.expirationTimestamp
         h.expirationTimestamp! * 1000,
         isUtc: true,
       );
-      expirationDate =
-          '$
-{
-
-dt.year.toString().padLeft(4, '0')
-}
-
--'
-          '$
-{
-
-dt.month.toString().padLeft(2, '0')
-}
-
--'
-          '$
-{
-
-dt.day.toString().padLeft(2, '0')
-}
-
-';
-||||||| original
-      expirationDate =
-          '${dt.year.toString().padLeft(4, '0')}-'
-          '${dt.month.toString().padLeft(2, '0')}-'
-          '${dt.day.toString().padLeft(2, '0')}';
       expirationDate = '${dt.year.toString().padLeft(4, '0')}-'
           '${dt.month.toString().padLeft(2, '0')}-'
           '${dt.day.toString().padLeft(2, '0')}';
@@ -536,6 +509,7 @@ dt.day.toString().padLeft(2, '0')
     final List<Map<String, dynamic>> provenanceEntries =
         <Map<String, dynamic>>[];
     final List<int> redactedBlocks = <int>[];
+
 
     for (int i = 0; i < h.blockCount; i++) {
       final _DirEntry entry = h.directory[i];
@@ -762,6 +736,7 @@ h.versionMinor
       if (!blockKeysMap.containsKey(indexStr)) {
         continue;
       }
+
 
 
 

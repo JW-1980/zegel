@@ -181,8 +181,9 @@ class _RedactScreenState extends State<RedactScreen> {
         _selectedBlocks.toList()..sort(),
       );
 
-      final suggestedName =
-          fileService.getFileName(_filePath!).replaceAll('.zgl', '_redacted.zgl');
+      final suggestedName = fileService
+          .getFileName(_filePath!)
+          .replaceAll('.zgl', '_redacted.zgl');
       final savedPath =
           await fileService.saveFile(redactedBytes, suggestedName);
 
@@ -375,9 +376,7 @@ class _RedactScreenState extends State<RedactScreen> {
                             style: theme.textTheme.bodySmall,
                           ),
                           secondary: Icon(
-                            isRedacted
-                                ? Icons.block
-                                : Icons.data_array,
+                            isRedacted ? Icons.block : Icons.data_array,
                             size: 20,
                             color: isRedacted ? Colors.red : null,
                           ),
@@ -395,10 +394,9 @@ class _RedactScreenState extends State<RedactScreen> {
               SizedBox(
                 height: 50,
                 child: ElevatedButton.icon(
-                  onPressed:
-                      _isRedacting || _selectedBlocks.isEmpty
-                          ? null
-                          : _redactSelected,
+                  onPressed: _isRedacting || _selectedBlocks.isEmpty
+                      ? null
+                      : _redactSelected,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,
                   ),
