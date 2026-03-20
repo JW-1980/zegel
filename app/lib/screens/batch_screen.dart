@@ -265,11 +265,10 @@ class _BatchVerifyTabState extends State<_BatchVerifyTab> {
           SizedBox(
             height: 50,
             child: ElevatedButton.icon(
-              onPressed: _isProcessing ||
-                      _folderPath == null ||
-                      _hexKey.length != 64
-                  ? null
-                  : _startBatchVerify,
+              onPressed:
+                  _isProcessing || _folderPath == null || _hexKey.length != 64
+                      ? null
+                      : _startBatchVerify,
               icon: _isProcessing
                   ? const SizedBox(
                       width: 20,
@@ -281,9 +280,7 @@ class _BatchVerifyTabState extends State<_BatchVerifyTab> {
                     )
                   : const Icon(Icons.play_arrow),
               label: Text(
-                _isProcessing
-                    ? l10n.batchProcessing
-                    : l10n.batchStartVerify,
+                _isProcessing ? l10n.batchProcessing : l10n.batchStartVerify,
                 style: const TextStyle(fontSize: 16),
               ),
             ),
@@ -591,8 +588,9 @@ class _BatchSealTabState extends State<_BatchSealTab> {
                   SwitchListTile(
                     title: Text(l10n.compressionLabel),
                     value: _compress,
-                    onChanged:
-                        _isProcessing ? null : (v) => setState(() => _compress = v),
+                    onChanged: _isProcessing
+                        ? null
+                        : (v) => setState(() => _compress = v),
                   ),
                 ],
               ),
@@ -641,9 +639,7 @@ class _BatchSealTabState extends State<_BatchSealTab> {
                     )
                   : const Icon(Icons.play_arrow),
               label: Text(
-                _isProcessing
-                    ? l10n.batchProcessing
-                    : l10n.batchStartSeal,
+                _isProcessing ? l10n.batchProcessing : l10n.batchStartSeal,
                 style: const TextStyle(fontSize: 16),
               ),
             ),

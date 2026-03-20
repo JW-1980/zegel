@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'dart:typed_data';
 
 import '../services/file_service.dart';
 import '../services/zegel_service.dart';
@@ -102,8 +103,7 @@ class _ProvenanceScreenState extends State<ProvenanceScreen> {
         reportBuffer.writeln('');
       }
 
-      final bytes =
-          List<int>.from(reportBuffer.toString().codeUnits);
+      final bytes = List<int>.from(reportBuffer.toString().codeUnits);
       final savedPath = await fileService.saveFile(
         Uint8List.fromList(bytes),
         'provenance_report.txt',

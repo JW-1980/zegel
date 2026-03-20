@@ -165,7 +165,8 @@ class Classification {
     // Apply optional redactions first.
     Uint8List workingBytes = fileBytes;
     if (redactBlocks != null && redactBlocks.isNotEmpty) {
-      workingBytes = Redaction.redactBlocks(workingBytes, masterKey, redactBlocks);
+      workingBytes =
+          Redaction.redactBlocks(workingBytes, masterKey, redactBlocks);
     }
 
     // Re-verify after redaction (if applied) and re-extract.

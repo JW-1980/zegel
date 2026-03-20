@@ -140,7 +140,8 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
         _filePath!,
         _declassifyLevel,
         _declassifyAuthority,
-        redactBlocks: _redactBlockIndices.isNotEmpty ? _redactBlockIndices : null,
+        redactBlocks:
+            _redactBlockIndices.isNotEmpty ? _redactBlockIndices : null,
       );
       if (mounted) {
         setState(() {
@@ -287,7 +288,7 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
                     ),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
-                      value: _classifyLevel,
+                      initialValue: _classifyLevel,
                       decoration: InputDecoration(
                         labelText: l10n.classificationLevelLabel,
                         border: const OutlineInputBorder(),
@@ -318,8 +319,7 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
                         labelText: l10n.classificationAuthorityLabel,
                         hintText: l10n.classificationAuthorityHint,
                       ),
-                      onChanged: (v) =>
-                          setState(() => _classifyAuthority = v),
+                      onChanged: (v) => setState(() => _classifyAuthority = v),
                     ),
                     const SizedBox(height: 12),
                     TextField(
@@ -327,8 +327,7 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
                         labelText: l10n.classificationCaveatLabel,
                         hintText: l10n.classificationCaveatHint,
                       ),
-                      onChanged: (v) =>
-                          setState(() => _classifyCaveat = v),
+                      onChanged: (v) => setState(() => _classifyCaveat = v),
                     ),
                     const SizedBox(height: 16),
                     SizedBox(
@@ -358,8 +357,7 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.lock_open,
-                              color: Colors.orange.shade700),
+                          Icon(Icons.lock_open, color: Colors.orange.shade700),
                           const SizedBox(width: 8),
                           Text(
                             l10n.classificationDeclassifyLabel,
@@ -371,7 +369,7 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
                       ),
                       const SizedBox(height: 12),
                       DropdownButtonFormField<String>(
-                        value: _declassifyLevel,
+                        initialValue: _declassifyLevel,
                         decoration: InputDecoration(
                           labelText: l10n.classificationNewLevelLabel,
                           border: const OutlineInputBorder(),

@@ -472,33 +472,6 @@ h.expirationTimestamp
         h.expirationTimestamp! * 1000,
         isUtc: true,
       );
-      expirationDate =
-          '$
-{
-
-dt.year.toString().padLeft(4, '0')
-}
-
--'
-          '$
-{
-
-dt.month.toString().padLeft(2, '0')
-}
-
--'
-          '$
-{
-
-dt.day.toString().padLeft(2, '0')
-}
-
-';
-||||||| original
-      expirationDate =
-          '${dt.year.toString().padLeft(4, '0')}-'
-          '${dt.month.toString().padLeft(2, '0')}-'
-          '${dt.day.toString().padLeft(2, '0')}';
       expirationDate = '${dt.year.toString().padLeft(4, '0')}-'
           '${dt.month.toString().padLeft(2, '0')}-'
           '${dt.day.toString().padLeft(2, '0')}';
@@ -763,6 +736,8 @@ h.versionMinor
       if (!blockKeysMap.containsKey(indexStr)) {
         continue;
       }
+
+
 
 
 

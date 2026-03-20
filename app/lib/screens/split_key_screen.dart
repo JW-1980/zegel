@@ -559,9 +559,7 @@ class _SplitKeyScreenState extends State<SplitKeyScreen>
                     )
                   : const Icon(Icons.merge_type),
               label: Text(
-                _isReconstructing
-                    ? 'Reconstructing...'
-                    : 'Reconstruct Key',
+                _isReconstructing ? 'Reconstructing...' : 'Reconstruct Key',
                 style: const TextStyle(fontSize: 16),
               ),
             ),

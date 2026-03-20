@@ -274,7 +274,7 @@ class _CredentialIssueTabState extends State<_CredentialIssueTab> {
                   ),
                   const SizedBox(height: 12),
                   DropdownButtonFormField<String>(
-                    value: _credentialType,
+                    initialValue: _credentialType,
                     decoration: InputDecoration(
                       border: const OutlineInputBorder(),
                       labelText: l10n.credentialTypeLabel,
@@ -475,9 +475,8 @@ class _CredentialVerifyTabState extends State<_CredentialVerifyTab> {
       if (mounted) {
         setState(() {
           _credentialInfo = info;
-          _statusMessage = info.isValid
-              ? 'Credential is VALID'
-              : 'Credential is INVALID';
+          _statusMessage =
+              info.isValid ? 'Credential is VALID' : 'Credential is INVALID';
           _isError = !info.isValid;
         });
       }
@@ -551,9 +550,8 @@ class _CredentialVerifyTabState extends State<_CredentialVerifyTab> {
           SizedBox(
             height: 50,
             child: ElevatedButton.icon(
-              onPressed: _isVerifying || _filePath == null
-                  ? null
-                  : _verifyCredential,
+              onPressed:
+                  _isVerifying || _filePath == null ? null : _verifyCredential,
               icon: _isVerifying
                   ? const SizedBox(
                       width: 20,

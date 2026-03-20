@@ -5,8 +5,6 @@ import 'dart:typed_data';
 import 'package:zegel/zegel.dart' as zegel_core;
 import 'package:zegel/zegel.dart' as zegel;
 
-import 'package:zegel/zegel.dart' as zegel_core;
-
 /// Result status from a verification operation.
 enum ZegelStatus {
   /// File is intact and has not been tampered with.
@@ -287,6 +285,30 @@ class CredentialInfo {
 /// Zegel library. All file operations are asynchronous to keep the UI
 /// responsive during cryptographic operations.
 class ZegelService {
+
+  Uint8List _hexToBytes(String hexStr) {
+    final String cleanHex = hexStr.replaceAll(RegExp(r'[^0-9a-fA-F]'), '');
+    if (cleanHex.length % 2 != 0) {
+      throw ArgumentError('Invalid hex string length');
+    }
+    final Uint8List result = Uint8List(cleanHex.length ~/ 2);
+    for (int i = 0; i < result.length; i++) {
+      result[i] = int.parse(cleanHex.substring(i * 2, i * 2 + 2), radix: 16);
+    }
+    return result;
+  }
+
+  String _bytesToHex(Uint8List bytes) {
+    const String hexDigits = '0123456789abcdef';
+    final Uint16List codeUnits = Uint16List(bytes.length * 2);
+    for (int i = 0; i < bytes.length; i++) {
+      final int b = bytes[i];
+      codeUnits[i * 2] = hexDigits.codeUnitAt(b >> 4);
+      codeUnits[i * 2 + 1] = hexDigits.codeUnitAt(b & 0x0f);
+    }
+    return String.fromCharCodes(codeUnits);
+  }
+
   /// Seals a file with the given key and options.
   ///
   /// Returns the sealed bytes as a Uint8List.
@@ -301,19 +323,26 @@ class ZegelService {
       throw FileSystemException('File does not exist', filePath);
     }
 
-||||||| original
-    final file = File(filePath);
-    final content = await file.readAsBytes();
-    final filename = filePath.split(Platform.pathSeparator).last;
+    final Uint8List masterKey = _hexToBytes(hexKey);
+    final String filename = file.uri.pathSegments.last;
+    final Uint8List fileContent = await file.readAsBytes();
 
-    // Delegate to the zegel library.
-    // The actual implementation calls into package:zegel.
-    // For now, this is a placeholder that returns empty bytes
-    // until the core library is fully integrated.
-    throw UnimplementedError(
-      'Seal operation requires the zegel core library. '
-      'Ensure package:zegel is properly linked in pubspec.yaml.',
+    final zegelOptions = zegel_core.ZegelOptions(
+      filename: filename,
+      compress: options.compress,
+      expiration: options.expirationDate,
+      recipientId: options.recipientId != null
+          ? _hexToBytes(options.recipientId!)
+          : null,
+      splitKeyThreshold: options.splitKeyThreshold,
+      splitKeyTotal: options.splitKeyTotal,
+      enableSelectiveDisclosure: options.enableSelectiveDisclosure,
+      metadata: options.metadata,
+      blockSize: options.blockSize,
     );
+
+    final writer = zegel_core.ZegelWriter(masterKey, zegelOptions);
+    return writer.seal(fileContent);
   }
 
   /// Verifies a .zgl file with the given key.
@@ -547,11 +576,14 @@ class ZegelService {
       );
     }
 
-    // Delegate to the zegel library.
-    throw UnimplementedError(
-      'Split key operation requires the zegel core library. '
-      'Ensure package:zegel is properly linked in pubspec.yaml.',
+    final Uint8List keyBytes = _hexToBytes(hexKey);
+    final List<Uint8List> shares = ShamirSecretSharing.split(
+      keyBytes,
+      threshold,
+      totalShares,
     );
+
+    return shares.map((s) => _bytesToHex(s)).toList();
   }
 
   /// Reconstructs a key from the given shares.
@@ -567,7 +599,7 @@ class ZegelService {
       for (final shareHex in shares) {
         final hexStr = shareHex.trim();
         if (hexStr.length % 2 != 0) {
-          throw FormatException('Invalid hex string length: ${hexStr.length}');
+          throw FormatException('Invalid hex string length: \${hexStr.length}');
         }
         final bytes = Uint8List(hexStr.length ~/ 2);
         for (int i = 0; i < bytes.length; i++) {
@@ -586,7 +618,7 @@ class ZegelService {
       }
       return buffer.toString();
     } catch (e) {
-      throw ArgumentError('Failed to reconstruct key: $e');
+      throw ArgumentError('Failed to reconstruct key: \$e');
     }
   }
 
@@ -679,11 +711,22 @@ class ZegelService {
     DisclosureToken token,
     String outputPath,
   ) async {
-    // Delegate to the zegel library.
-    throw UnimplementedError(
-      'Token extraction requires the zegel core library. '
-      'Ensure package:zegel is properly linked in pubspec.yaml.',
-    );
+    final file = File(filePath);
+    if (!await file.exists()) {
+      throw FileSystemException('File does not exist', filePath);
+    }
+
+    final bytes = await file.readAsBytes();
+    final reader = const ZegelReader();
+    final result = reader.extractWithToken(bytes, token.toJson());
+
+    final content = result.content;
+    if (content != null) {
+      final outFile = File(outputPath);
+      await outFile.writeAsBytes(content);
+      return content;
+    }
+    return Uint8List(0);
   }
 
   /// Lists all blocks in a .zgl file with their type and metadata.
@@ -991,6 +1034,7 @@ class ZegelService {
     );
   }
 
+  /// Converts a hex string to bytes.
   Uint8List _hexToBytes(String hex) {
     final int length = hex.length ~/ 2;
     final Uint8List bytes = Uint8List(length);
@@ -999,12 +1043,7 @@ class ZegelService {
     }
     return bytes;
   }
-}
 
-
-// =============================================================================
-// Internal Header Parsers
-// =============================================================================
 
 /// A raw block directory entry parsed directly from a .zgl file.
 class _RawBlockEntry {
