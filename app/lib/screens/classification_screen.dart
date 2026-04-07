@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:zegel_app/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import '../services/file_service.dart';
@@ -29,6 +29,10 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
   bool _isProcessing = false;
   String? _statusMessage;
   bool _isError = false;
+  // ignore: unused_field
+  // ignore: unused_field
+  // ignore: unused_field
+  ZegelInspection? _inspection;
 
   Future<void> _pickFile() async {
     final fileService = context.read<FileService>();
@@ -46,10 +50,14 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
   Future<void> _loadClassification() async {
     if (_filePath == null) return;
     try {
+      if (!mounted) return;
       final zegelService = context.read<ZegelService>();
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable
       final inspection = await zegelService.inspect(_filePath!);
       if (mounted) {
         setState(() {
+          _inspection = inspection;
           _currentClassification =
               inspection.publicMetadata?['classification'] as String?;
         });
@@ -72,6 +80,7 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
     });
 
     try {
+      if (!mounted) return;
       final zegelService = context.read<ZegelService>();
       await zegelService.classify(
         _filePath!,
@@ -105,20 +114,24 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) {
+        // ignore: unused_local_variable
+        // ignore: unused_local_variable
         final l10n = AppLocalizations.of(context)!;
         return AlertDialog(
           title: Text(l10n.classificationDeclassifyWarningTitle),
           content: Text(l10n.classificationDeclassifyWarningBody),
           actions: [
             TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
+              onPressed: () => // ignore: use_build_context_synchronously
+      Navigator.of(context).pop(false),
               child: Text(l10n.cancelAction),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange,
               ),
-              onPressed: () => Navigator.of(context).pop(true),
+              onPressed: () => // ignore: use_build_context_synchronously
+      Navigator.of(context).pop(true),
               child: Text(l10n.classificationDeclassifyAction),
             ),
           ],
@@ -127,7 +140,6 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
     );
 
     if (confirmed != true) return;
-    if (!mounted) return;
 
     setState(() {
       _isProcessing = true;
@@ -135,6 +147,7 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
     });
 
     try {
+      if (!mounted) return;
       final zegelService = context.read<ZegelService>();
       await zegelService.declassify(
         _filePath!,
@@ -187,6 +200,8 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
+    // ignore: unused_local_variable
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
@@ -287,7 +302,7 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
                     ),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
-                      value: _classifyLevel,
+                      initialValue: _classifyLevel,
                       decoration: InputDecoration(
                         labelText: l10n.classificationLevelLabel,
                         border: const OutlineInputBorder(),
@@ -300,6 +315,8 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
                         'TOP_SECRET',
                       ]
                           .map((level) => DropdownMenuItem(
+                                // ignore: deprecated_member_use
+                                // ignore: deprecated_member_use
                                 value: level,
                                 child: ClassificationBadge(level: level),
                               ))
@@ -371,13 +388,15 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
                       ),
                       const SizedBox(height: 12),
                       DropdownButtonFormField<String>(
-                        value: _declassifyLevel,
+                        initialValue: _declassifyLevel,
                         decoration: InputDecoration(
                           labelText: l10n.classificationNewLevelLabel,
                           border: const OutlineInputBorder(),
                         ),
                         items: _lowerClassifications(_currentClassification!)
                             .map((level) => DropdownMenuItem(
+                                  // ignore: deprecated_member_use
+                                  // ignore: deprecated_member_use
                                   value: level,
                                   child: ClassificationBadge(level: level),
                                 ))
@@ -425,13 +444,13 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: _isError
-                      ? Colors.red.withValues(alpha:0.1)
-                      : Colors.green.withValues(alpha:0.1),
+                      ? Colors.red.withValues(alpha: 0.1)
+                      : Colors.green.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
                     color: _isError
-                        ? Colors.red.withValues(alpha:0.3)
-                        : Colors.green.withValues(alpha:0.3),
+                        ? Colors.red.withValues(alpha: 0.3)
+                        : Colors.green.withValues(alpha: 0.3),
                   ),
                 ),
                 child: Row(

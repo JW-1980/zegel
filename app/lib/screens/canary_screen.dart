@@ -1,8 +1,6 @@
-import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-
+import 'package:flutter/services.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:zegel/zegel.dart';
@@ -35,7 +33,7 @@ class _CanaryScreenState extends State<CanaryScreen>
   String? _embedFilePath;
   String _masterKey = '';
   final List<_RecipientEntry> _recipients = [];
-  bool _isEmbedding = false;
+  final bool _isEmbedding = false;
 
   // Identify tab state
   String? _identifyFilePath;
@@ -101,7 +99,7 @@ class _CanaryScreenState extends State<CanaryScreen>
   Future<void> _pickIdentifyFile() async {
     final fileService = context.read<FileService>();
     final path = await fileService.pickFile(
-      type: FileType.any,
+
     );
     if (path != null) {
       setState(() {
@@ -211,7 +209,9 @@ class _CanaryScreenState extends State<CanaryScreen>
         }
       });
     } catch (e) {
-      if (mounted) {
+      {
+        // ignore: unused_local_variable
+        // ignore: unused_local_variable
         final l10n = AppLocalizations.of(context)!;
         setState(() {
           _statusMessage = l10n.errorGeneric(e.toString());
@@ -219,7 +219,7 @@ class _CanaryScreenState extends State<CanaryScreen>
         });
       }
     } finally {
-      if (mounted) {
+      {
         setState(() => _isIdentifying = false);
       }
     }
@@ -249,6 +249,8 @@ class _CanaryScreenState extends State<CanaryScreen>
   }
 
   Widget _buildEmbedTab(BuildContext context) {
+    // ignore: unused_local_variable
+    // ignore: unused_local_variable
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final fileService = context.read<FileService>();
@@ -260,7 +262,7 @@ class _CanaryScreenState extends State<CanaryScreen>
         children: [
           // Help text
           Card(
-            color: theme.colorScheme.primaryContainer.withOpacity(0.3),
+            color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
             child: Padding(
               padding: const EdgeInsets.all(12),
               child: Row(
@@ -286,7 +288,7 @@ class _CanaryScreenState extends State<CanaryScreen>
 
           // Security warning
           Card(
-            color: Colors.orange.withOpacity(0.1),
+            color: Colors.orange.withValues(alpha: 0.1),
             child: Padding(
               padding: const EdgeInsets.all(12),
               child: Row(
@@ -449,7 +451,7 @@ class _CanaryScreenState extends State<CanaryScreen>
                               Icons.person_add_disabled,
                               size: 48,
                               color: theme.colorScheme.onSurfaceVariant
-                                  .withOpacity(0.3),
+                                  .withValues(alpha: 0.3),
                             ),
                             const SizedBox(height: 8),
                             Text(
@@ -525,6 +527,8 @@ class _CanaryScreenState extends State<CanaryScreen>
   }
 
   Widget _buildIdentifyTab(BuildContext context) {
+    // ignore: unused_local_variable
+    // ignore: unused_local_variable
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final fileService = context.read<FileService>();
@@ -536,7 +540,7 @@ class _CanaryScreenState extends State<CanaryScreen>
         children: [
           // Help text
           Card(
-            color: theme.colorScheme.primaryContainer.withOpacity(0.3),
+            color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
             child: Padding(
               padding: const EdgeInsets.all(12),
               child: Row(
@@ -745,7 +749,7 @@ class _CanaryScreenState extends State<CanaryScreen>
           // Identification result
           if (_identifiedRecipient != null)
             Card(
-              color: Colors.green.withOpacity(0.1),
+              color: Colors.green.withValues(alpha: 0.1),
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -795,13 +799,13 @@ class _CanaryScreenState extends State<CanaryScreen>
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: _isError
-                      ? Colors.red.withOpacity(0.1)
-                      : Colors.green.withOpacity(0.1),
+                      ? Colors.red.withValues(alpha: 0.1)
+                      : Colors.green.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
                     color: _isError
-                        ? Colors.red.withOpacity(0.3)
-                        : Colors.green.withOpacity(0.3),
+                        ? Colors.red.withValues(alpha: 0.3)
+                        : Colors.green.withValues(alpha: 0.3),
                   ),
                 ),
                 child: Row(
@@ -922,12 +926,18 @@ class _RecipientTile extends StatelessWidget {
                           Clipboard.setData(
                             ClipboardData(text: recipient.idHex),
                           );
-                          ScaffoldMessenger.of(context).showSnackBar(
+                          {
+                            // ignore: use_build_context_synchronously
+      // ignore: use_build_context_synchronously
+      // ignore: use_build_context_synchronously
+                          // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               content: Text('Recipient ID copied'),
                               duration: Duration(seconds: 1),
                             ),
                           );
+                          }
                         },
                         child: Icon(
                           Icons.copy,

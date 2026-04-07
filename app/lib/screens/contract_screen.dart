@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:zegel_app/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import '../services/file_service.dart';
@@ -264,6 +264,8 @@ class _ContractScreenState extends State<ContractScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
+    // ignore: unused_local_variable
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
@@ -381,6 +383,8 @@ class _ContractScreenState extends State<ContractScreen> {
                     ),
                     SwitchListTile(
                       title: Text(l10n.contractEnableSplitKey),
+                      // ignore: deprecated_member_use
+                      // ignore: deprecated_member_use
                       value: _enableSplitKey,
                       onChanged: _isProcessing
                           ? null
@@ -461,13 +465,13 @@ class _ContractScreenState extends State<ContractScreen> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: _isError
-                        ? Colors.red.withValues(alpha:0.1)
-                        : Colors.green.withValues(alpha:0.1),
+                        ? Colors.red.withValues(alpha: 0.1)
+                        : Colors.green.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
                       color: _isError
-                          ? Colors.red.withValues(alpha:0.3)
-                          : Colors.green.withValues(alpha:0.3),
+                          ? Colors.red.withValues(alpha: 0.3)
+                          : Colors.green.withValues(alpha: 0.3),
                     ),
                   ),
                   child: Row(

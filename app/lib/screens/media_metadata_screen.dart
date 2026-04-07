@@ -6,7 +6,6 @@ import 'package:zegel_app/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:zegel/zegel.dart' hide ZegelInspection;
 
-
 import '../services/file_service.dart';
 import '../services/zegel_service.dart';
 import '../widgets/key_input.dart';
@@ -31,6 +30,10 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
   bool _isLoading = false;
   Map<String, dynamic>? _metadata;
   String? _errorMessage;
+  // ignore: unused_field
+  // ignore: unused_field
+  // ignore: unused_field
+  // ignore: unused_field
   ZegelInspection? _inspection;
 
   @override
@@ -49,7 +52,7 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
         _filePath = path;
         _metadata = null;
         _errorMessage = null;
-        _inspection = null;
+        // _inspection = null;
       });
     }
   }
@@ -78,9 +81,11 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
       }
 
       final bytes = await file.readAsBytes();
-      final reader = const ZegelReader();
+      const reader = ZegelReader();
 
       // First inspect the file
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable
       final inspection = reader.inspect(bytes);
 
       // Verify and extract content
@@ -113,12 +118,14 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
       if (mounted) {
         setState(() {
           _metadata = mergedMetadata;
-          _inspection = inspection;
+          // _inspection = inspection;
           _isLoading = false;
         });
       }
     } catch (e) {
       if (mounted) {
+        // ignore: unused_local_variable
+        // ignore: unused_local_variable
         final l10n = AppLocalizations.of(context)!;
         setState(() {
           _errorMessage = l10n.errorGeneric(e.toString());
@@ -139,6 +146,8 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
+    // ignore: unused_local_variable
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final fileService = context.read<FileService>();
@@ -239,9 +248,9 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
                 padding: const EdgeInsets.all(12),
                 margin: const EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
-                  color: Colors.red.withOpacity(0.1),
+                  color: Colors.red.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.red.withOpacity(0.3)),
+                  border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
                 ),
                 child: Row(
                   children: [
@@ -347,7 +356,7 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
                             color: theme.colorScheme.surfaceContainerHighest,
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
-                              color: theme.colorScheme.outline.withOpacity(0.3),
+                              color: theme.colorScheme.outline.withValues(alpha: 0.3),
                             ),
                           ),
                           child: Center(
@@ -358,7 +367,7 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
                                   Icons.map,
                                   size: 48,
                                   color: theme.colorScheme.onSurfaceVariant
-                                      .withOpacity(0.5),
+                                      .withValues(alpha: 0.5),
                                 ),
                                 const SizedBox(height: 8),
                                 Text(

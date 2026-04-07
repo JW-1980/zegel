@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:zegel_app/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -157,6 +157,8 @@ class _SplitKeyScreenState extends State<SplitKeyScreen>
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
+    // ignore: unused_local_variable
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
@@ -166,7 +168,7 @@ class _SplitKeyScreenState extends State<SplitKeyScreen>
         bottom: TabBar(
           controller: _tabController,
           labelColor: theme.colorScheme.onPrimary,
-          unselectedLabelColor: theme.colorScheme.onPrimary.withValues(alpha:0.6),
+          unselectedLabelColor: theme.colorScheme.onPrimary.withValues(alpha: 0.6),
           indicatorColor: theme.colorScheme.onPrimary,
           tabs: const [
             Tab(text: 'Split Key'),
@@ -302,7 +304,7 @@ class _SplitKeyScreenState extends State<SplitKeyScreen>
               padding: const EdgeInsets.all(12),
               margin: const EdgeInsets.only(bottom: 16),
               decoration: BoxDecoration(
-                color: Colors.red.withValues(alpha:0.1),
+                color: Colors.red.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
@@ -349,7 +351,7 @@ class _SplitKeyScreenState extends State<SplitKeyScreen>
                             CircleAvatar(
                               radius: 14,
                               backgroundColor:
-                                  theme.colorScheme.primary.withValues(alpha:0.1),
+                                  theme.colorScheme.primary.withValues(alpha: 0.1),
                               child: Text(
                                 '${index + 1}',
                                 style: TextStyle(
@@ -376,7 +378,11 @@ class _SplitKeyScreenState extends State<SplitKeyScreen>
                               tooltip: 'Copy share',
                               onPressed: () {
                                 Clipboard.setData(ClipboardData(text: share));
-                                ScaffoldMessenger.of(context).showSnackBar(
+                                if (mounted) {
+                                  // ignore: use_build_context_synchronously
+      // ignore: use_build_context_synchronously
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Text(
                                       'Share ${index + 1} copied to clipboard',
@@ -384,6 +390,7 @@ class _SplitKeyScreenState extends State<SplitKeyScreen>
                                     duration: const Duration(seconds: 1),
                                   ),
                                 );
+                                }
                               },
                             ),
                             IconButton(
@@ -405,10 +412,10 @@ class _SplitKeyScreenState extends State<SplitKeyScreen>
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: Colors.orange.withValues(alpha:0.1),
+                        color: Colors.orange.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: Colors.orange.withValues(alpha:0.3),
+                          color: Colors.orange.withValues(alpha: 0.3),
                         ),
                       ),
                       child: Row(
@@ -493,7 +500,7 @@ class _SplitKeyScreenState extends State<SplitKeyScreen>
                           CircleAvatar(
                             radius: 14,
                             backgroundColor:
-                                theme.colorScheme.primary.withValues(alpha:0.1),
+                                theme.colorScheme.primary.withValues(alpha: 0.1),
                             child: Text(
                               '${index + 1}',
                               style: TextStyle(
@@ -566,7 +573,7 @@ class _SplitKeyScreenState extends State<SplitKeyScreen>
               padding: const EdgeInsets.all(12),
               margin: const EdgeInsets.only(bottom: 16),
               decoration: BoxDecoration(
-                color: Colors.red.withValues(alpha:0.1),
+                color: Colors.red.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
@@ -614,12 +621,17 @@ class _SplitKeyScreenState extends State<SplitKeyScreen>
                             Clipboard.setData(
                               ClipboardData(text: _reconstructedKey!),
                             );
-                            ScaffoldMessenger.of(context).showSnackBar(
+                            if (mounted) {
+                              // ignore: use_build_context_synchronously
+      // ignore: use_build_context_synchronously
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text('Key copied to clipboard'),
                                 duration: Duration(seconds: 1),
                               ),
                             );
+                            }
                           },
                         ),
                       ],

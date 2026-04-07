@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:zegel_app/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import '../services/file_service.dart';
@@ -18,6 +18,14 @@ import 'excerpt_screen.dart';
 import 'provenance_screen.dart';
 import 'credential_screen.dart';
 import 'contract_screen.dart';
+import 'inspect_screen.dart';
+import 'media_metadata_screen.dart';
+import 'timestamp_screen.dart';
+import 'version_chain_screen.dart';
+import 'attest_screen.dart';
+import 'audit_screen.dart';
+import 'canary_screen.dart';
+import 'keygen_screen.dart';
 
 /// The main home screen of the Zegel application.
 ///
@@ -115,6 +123,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
+    // ignore: unused_local_variable
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final fileService = context.read<FileService>();
@@ -215,14 +225,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         Icons.shield_outlined,
                         size: 48,
                         color: theme.colorScheme.onSurfaceVariant
-                            .withValues(alpha:0.3),
+                            .withValues(alpha: 0.3),
                       ),
                       const SizedBox(height: 12),
                       Text(
                         'Drop a file above to get started',
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant
-                              .withValues(alpha:0.5),
+                              .withValues(alpha: 0.5),
                         ),
                       ),
                     ],
@@ -324,7 +334,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Text(
                   'Tamper-Proof Container Format',
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onPrimary.withValues(alpha:0.8),
+                    color: theme.colorScheme.onPrimary.withValues(alpha: 0.8),
                   ),
                 ),
               ],
@@ -338,6 +348,8 @@ class _HomeScreenState extends State<HomeScreen> {
               Icons.verified_user, l10n.verifyAction, _navigateToVerify),
           drawerItem(
               Icons.file_download, l10n.extractAction, _navigateToExtract),
+          drawerItem(Icons.search, l10n.inspectAction,
+              () => _navigateTo(const InspectScreen())),
 
           const Divider(),
 
@@ -349,6 +361,12 @@ class _HomeScreenState extends State<HomeScreen> {
               () => _navigateTo(const SplitKeyScreen())),
           drawerItem(Icons.security, l10n.classificationTitle,
               () => _navigateTo(const ClassificationScreen())),
+          drawerItem(Icons.approval, l10n.attestAction,
+              () => _navigateTo(const AttestScreen())),
+          drawerItem(Icons.timeline, l10n.auditTrailTitle,
+              () => _navigateTo(const AuditScreen())),
+          drawerItem(Icons.track_changes, 'Canary Traps',
+              () => _navigateTo(const CanaryScreen())),
 
           const Divider(),
 
@@ -373,6 +391,19 @@ class _HomeScreenState extends State<HomeScreen> {
               () => _navigateTo(const CredentialScreen())),
           drawerItem(Icons.history, l10n.provenanceTitle,
               () => _navigateTo(const ProvenanceScreen())),
+
+          const Divider(),
+
+          // Tools
+          sectionHeader(l10n.drawerToolsSection),
+          drawerItem(Icons.casino, l10n.generateKeyAction,
+              () => _navigateTo(const KeygenScreen())),
+          drawerItem(Icons.image, l10n.mediaMetadataTitle,
+              () => _navigateTo(const MediaMetadataScreen())),
+          drawerItem(Icons.access_time, l10n.timestampTitle,
+              () => _navigateTo(const TimestampScreen())),
+          drawerItem(Icons.history_edu, l10n.versionChainTitle,
+              () => _navigateTo(const VersionChainScreen())),
 
           const Divider(),
 

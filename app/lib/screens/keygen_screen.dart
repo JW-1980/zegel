@@ -1,13 +1,12 @@
-import 'dart:typed_data';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import '../services/file_service.dart';
 import '../services/key_service.dart';
-import 'package:flutter/services.dart';
 
 /// Screen for generating cryptographically secure keys.
 ///
@@ -219,11 +218,6 @@ class _KeygenScreenState extends State<KeygenScreen> {
                       icon: Icons.print,
                       text: 'Consider printing and storing in a safe',
                     ),
-                    _SecurityTip(
-                      icon: Icons.share,
-||||||| original
-                    _SecurityTip(
-                      icon: Icons.share_off,
                     const _SecurityTip(
                       icon: Icons.share,
                       text: 'Never share your key via email or messaging',

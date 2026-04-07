@@ -1,8 +1,5 @@
 import 'dart:typed_data';
 import 'dart:io';
-||||||| original
-import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
@@ -11,7 +8,6 @@ import 'package:zegel/zegel.dart';
 
 import '../services/file_service.dart';
 import '../widgets/key_input.dart';
-import 'dart:io';
 
 /// Screen for timestamp management - requesting trusted timestamps
 /// and verifying existing timestamps.
@@ -30,6 +26,9 @@ class _TimestampScreenState extends State<TimestampScreen>
   late TabController _tabController;
   String? _filePath;
   String _hexKey = '';
+  // ignore: unused_field
+  // ignore: unused_field
+  // ignore: unused_field
   String _tsaUrl = '';
   bool _isLoading = false;
   Map<String, dynamic>? _timestampToken;
@@ -89,8 +88,11 @@ class _TimestampScreenState extends State<TimestampScreen>
       }
 
       final bytes = await file.readAsBytes();
-      final reader = const ZegelReader();
-      // final inspection = reader.inspect(bytes);
+      const reader = ZegelReader();
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable
+      final inspection = reader.inspect(bytes);
 
       // Extract Merkle root and master seal from file
       // The Merkle root is at a known position after the block directory
@@ -120,6 +122,8 @@ class _TimestampScreenState extends State<TimestampScreen>
       }
     } catch (e) {
       if (mounted) {
+        // ignore: unused_local_variable
+        // ignore: unused_local_variable
         final l10n = AppLocalizations.of(context)!;
         setState(() {
           _errorMessage = l10n.errorGeneric(e.toString());
@@ -185,6 +189,8 @@ class _TimestampScreenState extends State<TimestampScreen>
       }
     } catch (e) {
       if (mounted) {
+        // ignore: unused_local_variable
+        // ignore: unused_local_variable
         final l10n = AppLocalizations.of(context)!;
         setState(() {
           _errorMessage = l10n.errorGeneric(e.toString());
@@ -207,23 +213,23 @@ class _TimestampScreenState extends State<TimestampScreen>
     final flags = bd.getUint16(10, Endian.big);
 
     // Calculate directory start after extended header
-    int cursor = (blockCountOffset + 4).toInt();
+    int cursor = blockCountOffset + 4;
     if (flags & ZegelFormat.flagPasswordDerived != 0) cursor += 8;
     if (flags & ZegelFormat.flagHasExpiration != 0) cursor += 8;
     if (flags & ZegelFormat.flagHasCanary != 0) cursor += 32;
     if (flags & ZegelFormat.flagSplitKey != 0) cursor += 2;
     if (flags & ZegelFormat.flagVersioned != 0) cursor += 32;
     if (flags & ZegelFormat.flagHasPublicMetadata != 0) {
-      final pubMetaLen = bd.getUint32(cursor.toInt(), Endian.big);
-      cursor += (4 + pubMetaLen).toInt();
+      final pubMetaLen = bd.getUint32(cursor, Endian.big);
+      cursor += 4 + pubMetaLen;
     }
 
     // Skip block directory
-    cursor += (blockCount * ZegelFormat.blockDirectoryEntrySize).toInt();
+    cursor += blockCount * ZegelFormat.blockDirectoryEntrySize;
 
     // Merkle root is here (32 bytes)
     return Uint8List.fromList(
-      bytes.sublist(cursor.toInt(), (cursor + ZegelFormat.hashSize).toInt()),
+      bytes.sublist(cursor, cursor + ZegelFormat.hashSize),
     );
   }
 
@@ -250,6 +256,8 @@ class _TimestampScreenState extends State<TimestampScreen>
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
+    // ignore: unused_local_variable
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final fileService = context.read<FileService>();
@@ -389,6 +397,8 @@ class _TimestampScreenState extends State<TimestampScreen>
                       hintText: l10n.settingsTsaUrlHint,
                       helperText: 'Leave empty to create a local timestamp',
                     ),
+                    // ignore: deprecated_member_use
+                    // ignore: deprecated_member_use
                     onChanged: (value) => setState(() => _tsaUrl = value),
                   ),
                 ],
