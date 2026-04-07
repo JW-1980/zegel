@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -161,7 +160,7 @@ class _KeygenScreenState extends State<KeygenScreen> {
           children: [
             // Security warning card
             Card(
-              color: Colors.orange.withOpacity(0.1),
+              color: Colors.orange.withValues(alpha: 0.1),
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -200,19 +199,19 @@ class _KeygenScreenState extends State<KeygenScreen> {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    _SecurityTip(
+                    const _SecurityTip(
                       icon: Icons.backup,
                       text: 'Store multiple backups in secure locations',
                     ),
-                    _SecurityTip(
+                    const _SecurityTip(
                       icon: Icons.lock,
                       text: 'Use a password manager for digital backup',
                     ),
-                    _SecurityTip(
+                    const _SecurityTip(
                       icon: Icons.print,
                       text: 'Consider printing and storing in a safe',
                     ),
-                    _SecurityTip(
+                    const _SecurityTip(
                       icon: Icons.security,
                       text: 'Never share your key via email or messaging',
                     ),
@@ -277,17 +276,17 @@ class _KeygenScreenState extends State<KeygenScreen> {
                       const Divider(),
 
                       // Key properties
-                      _KeyProperty(
+                      const _KeyProperty(
                         label: 'Algorithm',
                         value: 'AES-256-GCM',
                         icon: Icons.security,
                       ),
-                      _KeyProperty(
+                      const _KeyProperty(
                         label: 'Key Size',
                         value: '256 bits (32 bytes)',
                         icon: Icons.straighten,
                       ),
-                      _KeyProperty(
+                      const _KeyProperty(
                         label: 'Source',
                         value: 'Cryptographically Secure RNG',
                         icon: Icons.shuffle,
@@ -308,7 +307,7 @@ class _KeygenScreenState extends State<KeygenScreen> {
                           color: theme.colorScheme.surfaceContainerHighest,
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
-                            color: theme.colorScheme.outline.withOpacity(0.3),
+                            color: theme.colorScheme.outline.withValues(alpha: 0.3),
                           ),
                         ),
                         child: Row(
@@ -355,7 +354,7 @@ class _KeygenScreenState extends State<KeygenScreen> {
                           color: theme.colorScheme.surfaceContainerHighest,
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
-                            color: theme.colorScheme.outline.withOpacity(0.3),
+                            color: theme.colorScheme.outline.withValues(alpha: 0.3),
                           ),
                         ),
                         child: Row(
@@ -495,13 +494,13 @@ class _KeygenScreenState extends State<KeygenScreen> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: _isError
-                        ? Colors.red.withOpacity(0.1)
-                        : Colors.green.withOpacity(0.1),
+                        ? Colors.red.withValues(alpha: 0.1)
+                        : Colors.green.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
                       color: _isError
-                          ? Colors.red.withOpacity(0.3)
-                          : Colors.green.withOpacity(0.3),
+                          ? Colors.red.withValues(alpha: 0.3)
+                          : Colors.green.withValues(alpha: 0.3),
                     ),
                   ),
                   child: Row(
@@ -529,7 +528,7 @@ class _KeygenScreenState extends State<KeygenScreen> {
 
             // Info card about key usage
             Card(
-              color: theme.colorScheme.primaryContainer.withOpacity(0.3),
+              color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(

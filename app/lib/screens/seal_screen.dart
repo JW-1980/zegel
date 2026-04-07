@@ -471,7 +471,7 @@ class _SealScreenState extends State<SealScreen> {
                           ),
                           const SizedBox(height: 8),
                           DropdownButtonFormField<String>(
-                            value: _classificationLevel.isEmpty
+                            initialValue: _classificationLevel.isEmpty
                                 ? null
                                 : _classificationLevel,
                             decoration: InputDecoration(
@@ -656,6 +656,7 @@ class _MetadataEntry {
 }
 
 /// A row showing a file detail (icon + label + value).
+// ignore: unused_element
 class _FileDetail extends StatelessWidget {
   final IconData icon;
   final String label;
