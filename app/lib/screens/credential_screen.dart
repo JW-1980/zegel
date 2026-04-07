@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:zegel_app/gen_l10n/app_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import '../services/file_service.dart';
@@ -45,7 +45,6 @@ class _CredentialScreenState extends State<CredentialScreen>
           controller: _tabController,
           labelColor: theme.colorScheme.onPrimary,
           unselectedLabelColor: theme.colorScheme.onPrimary.withValues(alpha:0.7),
-          unselectedLabelColor: theme.colorScheme.onPrimary.withValues(alpha: 0.7),
           indicatorColor: theme.colorScheme.onPrimary,
           tabs: [
             Tab(text: l10n.credentialIssueTab),
@@ -274,7 +273,7 @@ class _CredentialIssueTabState extends State<_CredentialIssueTab> {
                   ),
                   const SizedBox(height: 12),
                   DropdownButtonFormField<String>(
-                    initialValue: _credentialType,
+                    value: _credentialType,
                     decoration: InputDecoration(
                       border: const OutlineInputBorder(),
                       labelText: l10n.credentialTypeLabel,
@@ -378,13 +377,6 @@ class _CredentialIssueTabState extends State<_CredentialIssueTab> {
                     color: _isError
                         ? Colors.red.withValues(alpha:0.3)
                         : Colors.green.withValues(alpha:0.3),
-                      ? Colors.red.withValues(alpha: 0.1)
-                      : Colors.green.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: _isError
-                        ? Colors.red.withValues(alpha: 0.3)
-                        : Colors.green.withValues(alpha: 0.3),
                   ),
                 ),
                 child: Row(
@@ -475,8 +467,9 @@ class _CredentialVerifyTabState extends State<_CredentialVerifyTab> {
       if (mounted) {
         setState(() {
           _credentialInfo = info;
-          _statusMessage =
-              info.isValid ? 'Credential is VALID' : 'Credential is INVALID';
+          _statusMessage = info.isValid
+              ? 'Credential is VALID'
+              : 'Credential is INVALID';
           _isError = !info.isValid;
         });
       }
@@ -550,8 +543,9 @@ class _CredentialVerifyTabState extends State<_CredentialVerifyTab> {
           SizedBox(
             height: 50,
             child: ElevatedButton.icon(
-              onPressed:
-                  _isVerifying || _filePath == null ? null : _verifyCredential,
+              onPressed: _isVerifying || _filePath == null
+                  ? null
+                  : _verifyCredential,
               icon: _isVerifying
                   ? const SizedBox(
                       width: 20,
@@ -584,13 +578,6 @@ class _CredentialVerifyTabState extends State<_CredentialVerifyTab> {
                   color: _isError
                       ? Colors.red.withValues(alpha:0.3)
                       : Colors.green.withValues(alpha:0.3),
-                    ? Colors.red.withValues(alpha: 0.1)
-                    : Colors.green.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: _isError
-                      ? Colors.red.withValues(alpha: 0.3)
-                      : Colors.green.withValues(alpha: 0.3),
                 ),
               ),
               child: Row(

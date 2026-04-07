@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:zegel_app/gen_l10n/app_localizations.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../services/zegel_service.dart';
 import '../widgets/key_input.dart';
-import 'package:flutter/services.dart';
 
 /// Screen for splitting and reconstructing keys using Shamir's Secret Sharing.
 ///
@@ -167,7 +167,6 @@ class _SplitKeyScreenState extends State<SplitKeyScreen>
           controller: _tabController,
           labelColor: theme.colorScheme.onPrimary,
           unselectedLabelColor: theme.colorScheme.onPrimary.withValues(alpha:0.6),
-          unselectedLabelColor: theme.colorScheme.onPrimary.withValues(alpha: 0.6),
           indicatorColor: theme.colorScheme.onPrimary,
           tabs: const [
             Tab(text: 'Split Key'),
@@ -304,7 +303,6 @@ class _SplitKeyScreenState extends State<SplitKeyScreen>
               margin: const EdgeInsets.only(bottom: 16),
               decoration: BoxDecoration(
                 color: Colors.red.withValues(alpha:0.1),
-                color: Colors.red.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
@@ -352,7 +350,6 @@ class _SplitKeyScreenState extends State<SplitKeyScreen>
                               radius: 14,
                               backgroundColor:
                                   theme.colorScheme.primary.withValues(alpha:0.1),
-                                  theme.colorScheme.primary.withValues(alpha: 0.1),
                               child: Text(
                                 '${index + 1}',
                                 style: TextStyle(
@@ -412,10 +409,6 @@ class _SplitKeyScreenState extends State<SplitKeyScreen>
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
                           color: Colors.orange.withValues(alpha:0.3),
-                        color: Colors.orange.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: Colors.orange.withValues(alpha: 0.3),
                         ),
                       ),
                       child: Row(
@@ -501,7 +494,6 @@ class _SplitKeyScreenState extends State<SplitKeyScreen>
                             radius: 14,
                             backgroundColor:
                                 theme.colorScheme.primary.withValues(alpha:0.1),
-                                theme.colorScheme.primary.withValues(alpha: 0.1),
                             child: Text(
                               '${index + 1}',
                               style: TextStyle(
@@ -559,7 +551,9 @@ class _SplitKeyScreenState extends State<SplitKeyScreen>
                     )
                   : const Icon(Icons.merge_type),
               label: Text(
-                _isReconstructing ? 'Reconstructing...' : 'Reconstruct Key',
+                _isReconstructing
+                    ? 'Reconstructing...'
+                    : 'Reconstruct Key',
                 style: const TextStyle(fontSize: 16),
               ),
             ),
@@ -573,7 +567,6 @@ class _SplitKeyScreenState extends State<SplitKeyScreen>
               margin: const EdgeInsets.only(bottom: 16),
               decoration: BoxDecoration(
                 color: Colors.red.withValues(alpha:0.1),
-                color: Colors.red.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(

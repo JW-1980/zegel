@@ -1,15 +1,14 @@
-import 'dart:typed_data';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:zegel_app/gen_l10n/app_localizations.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import '../services/file_service.dart';
 import '../services/zegel_service.dart';
 import '../widgets/key_input.dart';
-import 'dart:io';
-import 'package:flutter/services.dart';
 
 /// Screen for selective disclosure of .zgl file blocks.
 ///
@@ -107,7 +106,8 @@ class _DiscloseScreenState extends State<DiscloseScreen>
 
   Future<void> _generateToken() async {
     if (_selectedBlocks.isEmpty) {
-      setState(() => _generateError = 'Select at least one block to disclose.');
+      setState(
+          () => _generateError = 'Select at least one block to disclose.');
       return;
     }
 
@@ -255,7 +255,6 @@ class _DiscloseScreenState extends State<DiscloseScreen>
           controller: _tabController,
           labelColor: theme.colorScheme.onPrimary,
           unselectedLabelColor: theme.colorScheme.onPrimary.withValues(alpha:0.6),
-          unselectedLabelColor: theme.colorScheme.onPrimary.withValues(alpha: 0.6),
           indicatorColor: theme.colorScheme.onPrimary,
           tabs: const [
             Tab(text: 'Generate Token'),
@@ -323,7 +322,8 @@ class _DiscloseScreenState extends State<DiscloseScreen>
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: KeyInput(
-                onKeyChanged: (key) => setState(() => _generateHexKey = key),
+                onKeyChanged: (key) =>
+                    setState(() => _generateHexKey = key),
               ),
             ),
           ),
@@ -440,7 +440,6 @@ class _DiscloseScreenState extends State<DiscloseScreen>
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: Colors.red.withValues(alpha:0.1),
-                  color: Colors.red.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -661,7 +660,9 @@ class _DiscloseScreenState extends State<DiscloseScreen>
                     )
                   : const Icon(Icons.file_download),
               label: Text(
-                _isExtracting ? 'Extracting...' : 'Extract Disclosed Blocks',
+                _isExtracting
+                    ? 'Extracting...'
+                    : 'Extract Disclosed Blocks',
                 style: const TextStyle(fontSize: 16),
               ),
             ),
@@ -682,13 +683,6 @@ class _DiscloseScreenState extends State<DiscloseScreen>
                     color: _extractIsError
                         ? Colors.red.withValues(alpha:0.3)
                         : Colors.green.withValues(alpha:0.3),
-                      ? Colors.red.withValues(alpha: 0.1)
-                      : Colors.green.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: _extractIsError
-                        ? Colors.red.withValues(alpha: 0.3)
-                        : Colors.green.withValues(alpha: 0.3),
                   ),
                 ),
                 child: Row(

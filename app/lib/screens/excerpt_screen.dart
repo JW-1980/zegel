@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:zegel_app/gen_l10n/app_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import '../services/file_service.dart';
@@ -45,7 +45,6 @@ class _ExcerptScreenState extends State<ExcerptScreen>
           controller: _tabController,
           labelColor: theme.colorScheme.onPrimary,
           unselectedLabelColor: theme.colorScheme.onPrimary.withValues(alpha:0.7),
-          unselectedLabelColor: theme.colorScheme.onPrimary.withValues(alpha: 0.7),
           indicatorColor: theme.colorScheme.onPrimary,
           tabs: [
             Tab(text: l10n.excerptGenerateTab),
@@ -145,8 +144,7 @@ class _ExcerptGenerateTabState extends State<_ExcerptGenerateTab> {
         _hexKey,
         _selectedBlocks.toList()..sort(),
       );
-      final savedPath =
-          await fileService.saveFile(proofJson, 'excerpt_proof.json');
+      final savedPath = await fileService.saveFile(proofJson, 'excerpt_proof.json');
       if (savedPath != null && mounted) {
         setState(() {
           _statusMessage = 'Excerpt proof saved.';
@@ -257,7 +255,8 @@ class _ExcerptGenerateTabState extends State<_ExcerptGenerateTab> {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.view_list, color: theme.colorScheme.primary),
+                        Icon(Icons.view_list,
+                            color: theme.colorScheme.primary),
                         const SizedBox(width: 8),
                         Text(
                           l10n.excerptSelectBlocks,
@@ -319,13 +318,6 @@ class _ExcerptGenerateTabState extends State<_ExcerptGenerateTab> {
                     color: _isError
                         ? Colors.red.withValues(alpha:0.3)
                         : Colors.green.withValues(alpha:0.3),
-                      ? Colors.red.withValues(alpha: 0.1)
-                      : Colors.green.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: _isError
-                        ? Colors.red.withValues(alpha: 0.3)
-                        : Colors.green.withValues(alpha: 0.3),
                   ),
                 ),
                 child: Row(
@@ -433,8 +425,9 @@ class _ExcerptVerifyTabState extends State<_ExcerptVerifyTab> {
       if (mounted) {
         setState(() {
           _isValid = valid;
-          _statusMessage =
-              valid ? 'Excerpt proof is VALID' : 'Excerpt proof is INVALID';
+          _statusMessage = valid
+              ? 'Excerpt proof is VALID'
+              : 'Excerpt proof is INVALID';
         });
       }
     } catch (e) {
@@ -553,7 +546,9 @@ class _ExcerptVerifyTabState extends State<_ExcerptVerifyTab> {
           SizedBox(
             height: 50,
             child: ElevatedButton.icon(
-              onPressed: _isVerifying || _filePath == null || _proofPath == null
+              onPressed: _isVerifying ||
+                      _filePath == null ||
+                      _proofPath == null
                   ? null
                   : _verifyProof,
               icon: _isVerifying
@@ -565,7 +560,9 @@ class _ExcerptVerifyTabState extends State<_ExcerptVerifyTab> {
                     )
                   : const Icon(Icons.verified),
               label: Text(
-                _isVerifying ? l10n.excerptVerifying : l10n.excerptVerifyAction,
+                _isVerifying
+                    ? l10n.excerptVerifying
+                    : l10n.excerptVerifyAction,
                 style: const TextStyle(fontSize: 16),
               ),
             ),
@@ -584,7 +581,6 @@ class _ExcerptVerifyTabState extends State<_ExcerptVerifyTab> {
                       shape: BoxShape.circle,
                       color: (_isValid! ? Colors.green : Colors.red)
                           .withValues(alpha:0.1),
-                          .withValues(alpha: 0.1),
                       border: Border.all(
                         color: _isValid! ? Colors.green : Colors.red,
                         width: 3,

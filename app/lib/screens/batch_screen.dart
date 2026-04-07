@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:zegel_app/gen_l10n/app_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import '../services/file_service.dart';
@@ -46,9 +46,6 @@ class _BatchScreenState extends State<BatchScreen>
           controller: _tabController,
           labelColor: theme.colorScheme.onPrimary,
           unselectedLabelColor: theme.colorScheme.onPrimary.withValues(alpha:0.7),
-||||||| original
-          unselectedLabelColor: theme.colorScheme.onPrimary.withOpacity(0.7),
-          unselectedLabelColor: theme.colorScheme.onPrimary.withValues(alpha: 0.7),
           indicatorColor: theme.colorScheme.onPrimary,
           tabs: [
             Tab(text: l10n.batchVerifyTab),
@@ -265,10 +262,11 @@ class _BatchVerifyTabState extends State<_BatchVerifyTab> {
           SizedBox(
             height: 50,
             child: ElevatedButton.icon(
-              onPressed:
-                  _isProcessing || _folderPath == null || _hexKey.length != 64
-                      ? null
-                      : _startBatchVerify,
+              onPressed: _isProcessing ||
+                      _folderPath == null ||
+                      _hexKey.length != 64
+                  ? null
+                  : _startBatchVerify,
               icon: _isProcessing
                   ? const SizedBox(
                       width: 20,
@@ -280,7 +278,9 @@ class _BatchVerifyTabState extends State<_BatchVerifyTab> {
                     )
                   : const Icon(Icons.play_arrow),
               label: Text(
-                _isProcessing ? l10n.batchProcessing : l10n.batchStartVerify,
+                _isProcessing
+                    ? l10n.batchProcessing
+                    : l10n.batchStartVerify,
                 style: const TextStyle(fontSize: 16),
               ),
             ),
@@ -588,9 +588,8 @@ class _BatchSealTabState extends State<_BatchSealTab> {
                   SwitchListTile(
                     title: Text(l10n.compressionLabel),
                     value: _compress,
-                    onChanged: _isProcessing
-                        ? null
-                        : (v) => setState(() => _compress = v),
+                    onChanged:
+                        _isProcessing ? null : (v) => setState(() => _compress = v),
                   ),
                 ],
               ),
@@ -639,7 +638,9 @@ class _BatchSealTabState extends State<_BatchSealTab> {
                     )
                   : const Icon(Icons.play_arrow),
               label: Text(
-                _isProcessing ? l10n.batchProcessing : l10n.batchStartSeal,
+                _isProcessing
+                    ? l10n.batchProcessing
+                    : l10n.batchStartSeal,
                 style: const TextStyle(fontSize: 16),
               ),
             ),

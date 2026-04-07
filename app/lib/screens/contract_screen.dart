@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:zegel_app/gen_l10n/app_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import '../services/file_service.dart';
@@ -468,13 +468,6 @@ class _ContractScreenState extends State<ContractScreen> {
                       color: _isError
                           ? Colors.red.withValues(alpha:0.3)
                           : Colors.green.withValues(alpha:0.3),
-                        ? Colors.red.withValues(alpha: 0.1)
-                        : Colors.green.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: _isError
-                          ? Colors.red.withValues(alpha: 0.3)
-                          : Colors.green.withValues(alpha: 0.3),
                     ),
                   ),
                   child: Row(

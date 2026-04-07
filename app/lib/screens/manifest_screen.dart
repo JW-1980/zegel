@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:zegel_app/gen_l10n/app_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import '../services/file_service.dart';
@@ -45,7 +45,6 @@ class _ManifestScreenState extends State<ManifestScreen>
           controller: _tabController,
           labelColor: theme.colorScheme.onPrimary,
           unselectedLabelColor: theme.colorScheme.onPrimary.withValues(alpha:0.7),
-          unselectedLabelColor: theme.colorScheme.onPrimary.withValues(alpha: 0.7),
           indicatorColor: theme.colorScheme.onPrimary,
           tabs: [
             Tab(text: l10n.manifestCreateTab),
@@ -260,13 +259,6 @@ class _ManifestCreateTabState extends State<_ManifestCreateTab> {
                     color: _isError
                         ? Colors.red.withValues(alpha:0.3)
                         : Colors.green.withValues(alpha:0.3),
-                      ? Colors.red.withValues(alpha: 0.1)
-                      : Colors.green.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: _isError
-                        ? Colors.red.withValues(alpha: 0.3)
-                        : Colors.green.withValues(alpha: 0.3),
                   ),
                 ),
                 child: Row(
@@ -296,7 +288,9 @@ class _ManifestCreateTabState extends State<_ManifestCreateTab> {
                     )
                   : const Icon(Icons.create_new_folder),
               label: Text(
-                _isCreating ? l10n.manifestCreating : l10n.manifestCreateAction,
+                _isCreating
+                    ? l10n.manifestCreating
+                    : l10n.manifestCreateAction,
                 style: const TextStyle(fontSize: 16),
               ),
             ),
@@ -510,13 +504,6 @@ class _ManifestVerifyTabState extends State<_ManifestVerifyTab> {
                     color: _isError
                         ? Colors.red.withValues(alpha:0.3)
                         : Colors.green.withValues(alpha:0.3),
-                      ? Colors.red.withValues(alpha: 0.1)
-                      : Colors.green.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: _isError
-                        ? Colors.red.withValues(alpha: 0.3)
-                        : Colors.green.withValues(alpha: 0.3),
                   ),
                 ),
                 child: Row(

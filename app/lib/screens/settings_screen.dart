@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:zegel_app/gen_l10n/app_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import '../main.dart';
@@ -24,10 +24,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _isLoadingKeys = true;
   String _selectedBlockSize = '65536';
   String _defaultClassification = 'INTERNAL';
-||||||| original
-  String _tsaUrl = '';
-  // ignore: unused_field
-  String _tsaUrl = '';
   bool _preserveMediaMetadata = false;
   bool _anonymousMode = false;
 
@@ -38,8 +34,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _loadKeys() async {
-    if (!mounted) return;
-      final keyService = context.read<KeyService>();
+    final keyService = context.read<KeyService>();
     final names = await keyService.listKeys();
     if (mounted) {
       setState(() {
@@ -85,8 +80,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   icon: const Icon(Icons.casino, size: 16),
                   label: const Text('Generate Random'),
                   onPressed: () {
-                    if (!mounted) return;
-      final keyService = context.read<KeyService>();
+                    final keyService = context.read<KeyService>();
                     keyController.text = keyService.generateKey();
                   },
                 ),
@@ -114,22 +108,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
       if (name.isEmpty) {
         if (mounted) {
-          // ignore: use_build_context_synchronously
-          // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Key name cannot be empty')),
           );
         }
         return;
       }
 
-      if (!mounted) return;
       final keyService = context.read<KeyService>();
       if (!keyService.isValidHexKey(key)) {
         if (mounted) {
-          // ignore: use_build_context_synchronously
-          // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Invalid key: must be 64 hex characters'),
             ),
@@ -223,7 +212,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // ignore: unused_local_variable
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final localeNotifier = context.watch<LocaleNotifier>();
@@ -333,40 +321,33 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                   const SizedBox(height: 12),
                   DropdownButtonFormField<String>(
-                    // ignore: deprecated_member_use
                     value: _selectedBlockSize,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                     ),
                     items: const [
                       DropdownMenuItem(
-                        // ignore: deprecated_member_use
                         value: '16384',
                         child: Text('16 KB'),
                       ),
                       DropdownMenuItem(
-                        // ignore: deprecated_member_use
                         value: '32768',
                         child: Text('32 KB'),
                       ),
                       DropdownMenuItem(
-                        // ignore: deprecated_member_use
                         value: '65536',
                         child: Text('64 KB (default)'),
                       ),
                       DropdownMenuItem(
-                        // ignore: deprecated_member_use
                         value: '131072',
                         child: Text('128 KB'),
                       ),
                       DropdownMenuItem(
-                        // ignore: deprecated_member_use
                         value: '262144',
                         child: Text('256 KB'),
                       ),
                     ],
-                    // ignore: deprecated_member_use
-                          onChanged: (value) {
+                    onChanged: (value) {
                       if (value != null) {
                         setState(() => _selectedBlockSize = value);
                       }
@@ -400,23 +381,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   const SizedBox(height: 12),
                   RadioListTile<Locale>(
                     title: const Text('English'),
-                    // ignore: deprecated_member_use
                     value: const Locale('en'),
-                    // ignore: deprecated_member_use
                     groupValue: localeNotifier.locale,
-                    // ignore: deprecated_member_use
-                          onChanged: (value) {
+                    onChanged: (value) {
                       if (value != null) _changeLanguage(value);
                     },
                   ),
                   RadioListTile<Locale>(
                     title: const Text('Nederlands'),
-                    // ignore: deprecated_member_use
                     value: const Locale('nl'),
-                    // ignore: deprecated_member_use
                     groupValue: localeNotifier.locale,
-                    // ignore: deprecated_member_use
-                          onChanged: (value) {
+                    onChanged: (value) {
                       if (value != null) _changeLanguage(value);
                     },
                   ),
@@ -447,32 +422,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                   const SizedBox(height: 12),
                   DropdownButtonFormField<String>(
-                    // ignore: deprecated_member_use
                     value: _defaultClassification,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                     ),
                     items: const [
                       DropdownMenuItem(
-                          // ignore: deprecated_member_use
                           value: 'PUBLIC', child: Text('PUBLIC')),
                       DropdownMenuItem(
-                          // ignore: deprecated_member_use
                           value: 'INTERNAL', child: Text('INTERNAL')),
                       DropdownMenuItem(
-                          // ignore: deprecated_member_use
                           value: 'CONFIDENTIAL',
                           child: Text('CONFIDENTIAL')),
                       DropdownMenuItem(
-                          // ignore: deprecated_member_use
                           value: 'SECRET', child: Text('SECRET')),
                       DropdownMenuItem(
-                          // ignore: deprecated_member_use
                           value: 'TOP_SECRET',
                           child: Text('TOP SECRET')),
                     ],
-                    // ignore: deprecated_member_use
-                          onChanged: (value) {
+                    onChanged: (value) {
                       if (value != null) {
                         setState(() => _defaultClassification = value);
                       }
@@ -510,13 +478,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       border: const OutlineInputBorder(),
                     ),
                     onChanged: (_) {},
-||||||| original
-                    onChanged: (v) => setState(() => _tsaUrl = v),
-                    // ignore: deprecated_member_use
-                    // ignore: deprecated_member_use
-                    // ignore: deprecated_member_use
-                    // ignore: deprecated_member_use
-                          onChanged: (v) => setState(() => _tsaUrl = v),
                   ),
                 ],
               ),
@@ -547,19 +508,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   SwitchListTile(
                     title: Text(l10n.settingsPreserveMediaMetadata),
                     subtitle: Text(l10n.settingsPreserveMediaMetadataDesc),
-                    // ignore: deprecated_member_use
                     value: _preserveMediaMetadata,
-                    // ignore: deprecated_member_use
-                          onChanged: (v) =>
+                    onChanged: (v) =>
                         setState(() => _preserveMediaMetadata = v),
                   ),
                   SwitchListTile(
                     title: Text(l10n.settingsAnonymousMode),
                     subtitle: Text(l10n.settingsAnonymousModeDesc),
-                    // ignore: deprecated_member_use
                     value: _anonymousMode,
-                    // ignore: deprecated_member_use
-                          onChanged: (v) =>
+                    onChanged: (v) =>
                         setState(() => _anonymousMode = v),
                   ),
                 ],
@@ -593,31 +550,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   const _AboutRow(label: 'Format Version', value: '1.2'),
                   const _AboutRow(label: 'File Extension', value: '.zgl'),
                   const _AboutRow(label: 'MIME Type', value: 'application/x-zgl'),
-||||||| original
-                  _AboutRow(label: 'Application', value: 'Zegel'),
-                  _AboutRow(label: 'Version', value: '1.3.0'),
-                  _AboutRow(label: 'Format Version', value: '1.2'),
-                  _AboutRow(label: 'File Extension', value: '.zgl'),
-                  _AboutRow(label: 'MIME Type', value: 'application/x-zgl'),
-                  const _AboutRow(label: 'Application', // ignore: deprecated_member_use
- value: 'Zegel'),
-                  const _AboutRow(label: 'Version', // ignore: deprecated_member_use
- value: '1.3.0'),
-                  const _AboutRow(label: 'Format Version', // ignore: deprecated_member_use
- value: '1.2'),
-                  const _AboutRow(label: 'File Extension', // ignore: deprecated_member_use
- value: '.zgl'),
-                  const _AboutRow(label: 'MIME Type', // ignore: deprecated_member_use
- value: 'application/x-zgl'),
                   const SizedBox(height: 8),
                   const _AboutRow(
                     label: 'Code License',
-                    // ignore: deprecated_member_use
                     value: 'Apache License 2.0',
                   ),
                   const _AboutRow(
                     label: 'Spec License',
-                    // ignore: deprecated_member_use
                     value: 'CC BY 4.0',
                   ),
                   const SizedBox(height: 12),
