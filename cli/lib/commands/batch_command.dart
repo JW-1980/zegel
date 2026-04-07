@@ -9,15 +9,23 @@ import 'common.dart';
 /// `zegel batch-verify` - Verify multiple .zgl files at once.
 class BatchVerifyCommand extends Command<int> {
   BatchVerifyCommand() {
-    argParser.addOption('directory',
-        abbr: 'd',
-        help: 'Directory containing .zgl files to verify.',
-        valueHelp: 'path');
+    argParser.addOption(
+      'directory',
+      abbr: 'd',
+      help: 'Directory containing .zgl files to verify.',
+      valueHelp: 'path',
+    );
     addKeyOptions(argParser);
-    argParser.addFlag('stop-on-failure',
-        help: 'Stop on first verification failure.', defaultsTo: false);
-    argParser.addFlag('verbose',
-        abbr: 'v', help: 'Show detailed output for each file.');
+    argParser.addFlag(
+      'stop-on-failure',
+      help: 'Stop on first verification failure.',
+      defaultsTo: false,
+    );
+    argParser.addFlag(
+      'verbose',
+      abbr: 'v',
+      help: 'Show detailed output for each file.',
+    );
   }
 
   @override
@@ -74,15 +82,22 @@ class BatchVerifyCommand extends Command<int> {
     stdout.writeln();
 
     final entries = files
-        .map((f) => MapEntry(f.path.split(Platform.pathSeparator).last,
-            Uint8List.fromList(f.readAsBytesSync())))
+        .map(
+          (f) => MapEntry(
+            f.path.split(Platform.pathSeparator).last,
+            Uint8List.fromList(f.readAsBytesSync()),
+          ),
+        )
         .toList();
 
-    final results = BatchOperations.batchVerify(entries, key,
-        stopOnFirstFailure: stopOnFailure);
+    final results = BatchOperations.batchVerify(
+      entries,
+      key,
+      stopOnFirstFailure: stopOnFailure,
+    );
 
     final rows = <List<String>>[
-      ['File', 'Status', 'Time']
+      ['File', 'Status', 'Time'],
     ];
     int passed = 0;
     int failed = 0;
@@ -104,7 +119,8 @@ class BatchVerifyCommand extends Command<int> {
     printTable(rows);
     stdout.writeln();
     stdout.writeln(
-        '${Ansi.success("$passed passed")}, ${failed > 0 ? Ansi.error("$failed failed") : "$failed failed"}');
+      '${Ansi.success("$passed passed")}, ${failed > 0 ? Ansi.error("$failed failed") : "$failed failed"}',
+    );
 
     return failed > 0 ? 1 : 0;
   }
@@ -113,16 +129,24 @@ class BatchVerifyCommand extends Command<int> {
 /// `zegel batch-seal` - Seal multiple files at once.
 class BatchSealCommand extends Command<int> {
   BatchSealCommand() {
-    argParser.addOption('directory',
-        abbr: 'd',
-        help: 'Directory containing files to seal.',
-        valueHelp: 'path');
+    argParser.addOption(
+      'directory',
+      abbr: 'd',
+      help: 'Directory containing files to seal.',
+      valueHelp: 'path',
+    );
     addKeyOptions(argParser);
     addOutputOption(argParser, help: 'Output directory for .zgl files.');
-    argParser.addFlag('compress',
-        abbr: 'c', help: 'Compress content blocks with zlib.');
-    argParser.addOption('content-type',
-        help: 'Content type for all files.', valueHelp: 'mime-type');
+    argParser.addFlag(
+      'compress',
+      abbr: 'c',
+      help: 'Compress content blocks with zlib.',
+    );
+    argParser.addOption(
+      'content-type',
+      help: 'Content type for all files.',
+      valueHelp: 'mime-type',
+    );
   }
 
   @override
@@ -154,7 +178,9 @@ class BatchSealCommand extends Command<int> {
     final outputPath = argResults!['output'] as String?;
     if (dirPath == null || outputPath == null) {
       throw UsageException(
-          '--directory (-d) and --output (-o) are required.', usage);
+        '--directory (-d) and --output (-o) are required.',
+        usage,
+      );
     }
 
     final dir = Directory(dirPath);
@@ -185,16 +211,18 @@ class BatchSealCommand extends Command<int> {
       final name = file.path.split(Platform.pathSeparator).last;
       final content = Uint8List.fromList(file.readAsBytesSync());
       final writer = ZegelWriter(
-          key,
-          ZegelOptions(
-            contentType: contentType ?? 'application/octet-stream',
-            filename: name,
-            compress: compress,
-            enableKeyCommitment: true,
-          ));
+        key,
+        ZegelOptions(
+          contentType: contentType ?? 'application/octet-stream',
+          filename: name,
+          compress: compress,
+          enableKeyCommitment: true,
+        ),
+      );
       final sealedBytes = writer.seal(content);
-      File('${outputDir.path}${Platform.pathSeparator}$name.zgl')
-          .writeAsBytesSync(sealedBytes);
+      File(
+        '${outputDir.path}${Platform.pathSeparator}$name.zgl',
+      ).writeAsBytesSync(sealedBytes);
       stdout.writeln('  ${Ansi.success("✓")} $name -> $name.zgl');
       sealed++;
     }

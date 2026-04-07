@@ -60,8 +60,9 @@ Uint8List parseKeyFromArgs(
 /// Throws [FormatException] if the input is invalid.
 Uint8List hexDecode(String hex, {String label = 'value'}) {
   // Strip optional 0x prefix.
-  final cleaned =
-      hex.startsWith('0x') || hex.startsWith('0X') ? hex.substring(2) : hex;
+  final cleaned = hex.startsWith('0x') || hex.startsWith('0X')
+      ? hex.substring(2)
+      : hex;
 
   if (cleaned.length % 2 != 0) {
     throw FormatException(
@@ -70,9 +71,7 @@ Uint8List hexDecode(String hex, {String label = 'value'}) {
   }
 
   if (!RegExp(r'^[0-9a-fA-F]+$').hasMatch(cleaned)) {
-    throw FormatException(
-      'Invalid hex $label: contains non-hex characters.',
-    );
+    throw FormatException('Invalid hex $label: contains non-hex characters.');
   }
 
   final bytes = Uint8List(cleaned.length ~/ 2);
@@ -272,13 +271,15 @@ class RawZegelHeader {
     final directory = <RawBlockEntry>[];
     for (int i = 0; i < h.blockCount; i++) {
       final eo = cursor;
-      directory.add(RawBlockEntry(
-        type: fileBytes[eo],
-        plaintextHash: Uint8List.fromList(fileBytes.sublist(eo + 1, eo + 33)),
-        ciphertextLength: bd.getUint32(eo + 33, Endian.big),
-        iv: Uint8List.fromList(fileBytes.sublist(eo + 37, eo + 49)),
-        tag: Uint8List.fromList(fileBytes.sublist(eo + 49, eo + 65)),
-      ));
+      directory.add(
+        RawBlockEntry(
+          type: fileBytes[eo],
+          plaintextHash: Uint8List.fromList(fileBytes.sublist(eo + 1, eo + 33)),
+          ciphertextLength: bd.getUint32(eo + 33, Endian.big),
+          iv: Uint8List.fromList(fileBytes.sublist(eo + 37, eo + 49)),
+          tag: Uint8List.fromList(fileBytes.sublist(eo + 49, eo + 65)),
+        ),
+      );
       cursor += ZegelFormat.blockDirectoryEntrySize;
     }
     h.blockDirectory = directory;
@@ -310,10 +311,8 @@ class RawZegelHeader {
       : null;
 
   /// Returns the creation timestamp as a DateTime.
-  DateTime get createdAt => DateTime.fromMillisecondsSinceEpoch(
-        timestamp * 1000,
-        isUtc: true,
-      );
+  DateTime get createdAt =>
+      DateTime.fromMillisecondsSinceEpoch(timestamp * 1000, isUtc: true);
 }
 
 /// Formats a file size in human-readable form.
@@ -362,12 +361,7 @@ void addKeyOptions(ArgParser argParser) {
 
 /// Adds the output option to an [ArgParser].
 void addOutputOption(ArgParser argParser, {String help = 'Output file path.'}) {
-  argParser.addOption(
-    'output',
-    abbr: 'o',
-    help: help,
-    valueHelp: 'path',
-  );
+  argParser.addOption('output', abbr: 'o', help: help, valueHelp: 'path');
 }
 
 /// Decodes Zegel flags to a human-readable list of feature names.

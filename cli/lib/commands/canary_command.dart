@@ -23,7 +23,8 @@ class CanaryCommand extends Command<int> {
   final String name = 'canary';
 
   @override
-  String get description => 'Canary trap fingerprinting operations.\n'
+  String get description =>
+      'Canary trap fingerprinting operations.\n'
       '\n'
       'Canary traps embed invisible, recipient-specific markers in sealed\n'
       'files. If a file is leaked, the markers can identify which recipient\n'
@@ -56,7 +57,8 @@ class CanaryEmbedCommand extends Command<int> {
   final String name = 'embed';
 
   @override
-  String get description => 'Embed a canary trap for a specific recipient.\n'
+  String get description =>
+      'Embed a canary trap for a specific recipient.\n'
       '\n'
       'Creates a copy of the sealed file with invisible fingerprinting that\n'
       'is unique to the specified recipient. The canary padding is derived\n'
@@ -87,7 +89,8 @@ class CanaryEmbedCommand extends Command<int> {
     argParser.addOption(
       'recipient',
       abbr: 'r',
-      help: 'Recipient identifier string.\n'
+      help:
+          'Recipient identifier string.\n'
           'This is hashed to produce a 32-byte canary ID.',
       valueHelp: 'id',
       mandatory: true,
@@ -181,7 +184,8 @@ class CanaryEmbedCommand extends Command<int> {
         header.expirationTimestamp! * 1000,
         isUtc: true,
       );
-      expirationDateStr = '${dt.year.toString().padLeft(4, '0')}-'
+      expirationDateStr =
+          '${dt.year.toString().padLeft(4, '0')}-'
           '${dt.month.toString().padLeft(2, '0')}-'
           '${dt.day.toString().padLeft(2, '0')}';
     }
@@ -228,7 +232,10 @@ class CanaryEmbedCommand extends Command<int> {
         final paddedPlaintext = Uint8List(plaintext.length + padding.length);
         paddedPlaintext.setRange(0, plaintext.length, plaintext);
         paddedPlaintext.setRange(
-            plaintext.length, paddedPlaintext.length, padding);
+          plaintext.length,
+          paddedPlaintext.length,
+          padding,
+        );
         plaintext = paddedPlaintext;
       }
 
@@ -436,7 +443,8 @@ class CanaryIdentifyCommand extends Command<int> {
   final String name = 'identify';
 
   @override
-  String get description => 'Identify which recipient leaked a file.\n'
+  String get description =>
+      'Identify which recipient leaked a file.\n'
       '\n'
       'Given a potentially leaked file and a list of candidate recipients,\n'
       'this command checks the canary padding in content blocks to identify\n'
@@ -525,9 +533,7 @@ class CanaryIdentifyCommand extends Command<int> {
 
     // Hash each recipient name to get 32-byte IDs.
     final candidateIds = recipientNames.map((name) {
-      return Uint8List.fromList(
-        crypto.sha256.convert(utf8.encode(name)).bytes,
-      );
+      return Uint8List.fromList(crypto.sha256.convert(utf8.encode(name)).bytes);
     }).toList();
 
     final fileBytes = Uint8List.fromList(file.readAsBytesSync());
@@ -545,9 +551,11 @@ class CanaryIdentifyCommand extends Command<int> {
 
     // Check if file has canary flag.
     if (rawHeader.flags & ZegelFormat.flagHasCanary == 0) {
-      stdout.writeln(Ansi.warning(
-        'Warning: This file does not have the HAS_CANARY flag set.',
-      ));
+      stdout.writeln(
+        Ansi.warning(
+          'Warning: This file does not have the HAS_CANARY flag set.',
+        ),
+      );
       stdout.writeln('It may not contain canary fingerprinting.');
     }
 
@@ -558,7 +566,8 @@ class CanaryIdentifyCommand extends Command<int> {
         rawHeader.expirationTimestamp! * 1000,
         isUtc: true,
       );
-      expirationDateStr = '${dt.year.toString().padLeft(4, '0')}-'
+      expirationDateStr =
+          '${dt.year.toString().padLeft(4, '0')}-'
           '${dt.month.toString().padLeft(2, '0')}-'
           '${dt.day.toString().padLeft(2, '0')}';
     }
