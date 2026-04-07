@@ -41,13 +41,16 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
   final List<String> _recentFiles = [];
+  final Set<String> _recentFilesSet = {};
 
   void _onFileDropped(DropResult result) {
     setState(() {
-      if (!_recentFiles.contains(result.filePath)) {
+      if (!_recentFilesSet.contains(result.filePath)) {
         _recentFiles.insert(0, result.filePath);
+        _recentFilesSet.add(result.filePath);
         if (_recentFiles.length > 10) {
-          _recentFiles.removeLast();
+          final removed = _recentFiles.removeLast();
+          _recentFilesSet.remove(removed);
         }
       }
     });
