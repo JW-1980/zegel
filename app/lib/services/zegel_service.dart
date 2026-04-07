@@ -518,11 +518,8 @@ class ZegelService {
     List<String> filePaths,
     String hexKey,
   ) async {
-    final results = <ZegelResult>[];
-    const chunkSize = 10;
-    for (var i = 0; i < filePaths.length; i += chunkSize) {
-      final chunk = filePaths.skip(i).take(chunkSize).toList();
-      final chunkResults = await Future.wait(chunk.map((path) async {
+    return Future.wait(
+      filePaths.map((path) async {
         try {
           return await verify(path, hexKey);
         } catch (e) {
@@ -531,10 +528,8 @@ class ZegelService {
             message: 'Error: $e',
           );
         }
-      }));
-      results.addAll(chunkResults);
-    }
-    return results;
+      }),
+    );
   }
 
   /// Seals multiple files in batch.
@@ -546,12 +541,9 @@ class ZegelService {
     SealOptions options,
   ) async {
     final results = <Uint8List>[];
-    const chunkSize = 10;
-    for (var i = 0; i < filePaths.length; i += chunkSize) {
-      final chunk = filePaths.skip(i).take(chunkSize).toList();
-      final chunkResults =
-          await Future.wait(chunk.map((path) => seal(path, hexKey, options)));
-      results.addAll(chunkResults);
+    for (final path in filePaths) {
+      final sealed = await seal(path, hexKey, options);
+      results.add(sealed);
     }
     return results;
   }
@@ -684,15 +676,14 @@ class ZegelService {
   ///
   /// Returns true if the version chain is intact and unbroken.
   Future<bool> verifyVersionChain(List<String> filePaths) async {
-    final fileBytesList = await Future.wait(
-      filePaths.map((path) async {
-        final file = File(path);
-        if (!await file.exists()) {
-          throw FileSystemException('File does not exist', path);
-        }
-        return file.readAsBytes();
-      }),
-    );
+    final fileBytesList = <Uint8List>[];
+    for (final path in filePaths) {
+      final file = File(path);
+      if (!await file.exists()) {
+        throw FileSystemException('File does not exist', path);
+      }
+      fileBytesList.add(await file.readAsBytes());
+    }
     return ContentVersioning.verifyVersionChain(fileBytesList);
   }
 
