@@ -541,12 +541,9 @@ class ZegelService {
     String hexKey,
     SealOptions options,
   ) async {
-    final results = <Uint8List>[];
-    for (final path in filePaths) {
-      final sealed = await seal(path, hexKey, options);
-      results.add(sealed);
-    }
-    return results;
+    return Future.wait(
+      filePaths.map((path) => seal(path, hexKey, options)),
+    );
   }
 
   // ======================================================================
