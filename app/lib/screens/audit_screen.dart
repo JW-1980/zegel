@@ -1,7 +1,10 @@
+import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:zegel/zegel.dart';
 
@@ -78,9 +81,7 @@ class _AuditScreenState extends State<AuditScreen> {
 
   Future<void> _pickFile() async {
     final fileService = context.read<FileService>();
-    final path = await fileService.pickFile(
-
-    );
+    final path = await fileService.pickZegelFile();
     if (path != null) {
       await _setFile(path);
     }
@@ -207,8 +208,6 @@ class _AuditScreenState extends State<AuditScreen> {
       await _loadAuditTrail();
     } catch (e) {
       if (mounted) {
-        // ignore: unused_local_variable
-        // ignore: unused_local_variable
         final l10n = AppLocalizations.of(context)!;
         setState(() {
           _statusMessage = l10n.errorGeneric(e.toString());
@@ -233,8 +232,6 @@ class _AuditScreenState extends State<AuditScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // ignore: unused_local_variable
-    // ignore: unused_local_variable
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final fileService = context.read<FileService>();
@@ -250,7 +247,7 @@ class _AuditScreenState extends State<AuditScreen> {
           children: [
             // Help text
             Card(
-              color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
+              color: theme.colorScheme.primaryContainer.withOpacity(0.3),
               child: Padding(
                 padding: const EdgeInsets.all(12),
                 child: Row(
@@ -373,8 +370,8 @@ class _AuditScreenState extends State<AuditScreen> {
             if (_auditEntries != null)
               Card(
                 color: _isChainValid
-                    ? Colors.green.withValues(alpha: 0.1)
-                    : Colors.red.withValues(alpha: 0.1),
+                    ? Colors.green.withOpacity(0.1)
+                    : Colors.red.withOpacity(0.1),
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Row(
@@ -460,21 +457,17 @@ class _AuditScreenState extends State<AuditScreen> {
                         hintText: 'e.g. user:42:admin@example.com',
                         prefixIcon: Icon(Icons.person),
                       ),
-                      // ignore: deprecated_member_use
-                      // ignore: deprecated_member_use
                       onChanged: (v) => setState(() => _actor = v),
                     ),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<String>(
-                      initialValue: _action,
+                      value: _action,
                       decoration: const InputDecoration(
                         labelText: 'Action',
                         prefixIcon: Icon(Icons.play_arrow),
                       ),
                       items: _actionTypes.map((action) {
                         return DropdownMenuItem(
-                          // ignore: deprecated_member_use
-                          // ignore: deprecated_member_use
                           value: action,
                           child: Row(
                             children: [
@@ -554,13 +547,13 @@ class _AuditScreenState extends State<AuditScreen> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: _isError
-                        ? Colors.red.withValues(alpha: 0.1)
-                        : Colors.green.withValues(alpha: 0.1),
+                        ? Colors.red.withOpacity(0.1)
+                        : Colors.green.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
                       color: _isError
-                          ? Colors.red.withValues(alpha: 0.3)
-                          : Colors.green.withValues(alpha: 0.3),
+                          ? Colors.red.withOpacity(0.3)
+                          : Colors.green.withOpacity(0.3),
                     ),
                   ),
                   child: Row(

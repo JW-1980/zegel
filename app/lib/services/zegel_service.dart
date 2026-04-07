@@ -3,6 +3,8 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:zegel/zegel.dart';
 
+import 'package:zegel/zegel.dart' hide ZegelInspection;
+
 /// Result status from a verification operation.
 enum ZegelStatus {
   /// File is intact and has not been tampered with.
@@ -363,11 +365,13 @@ class ZegelService {
     String hexKey,
     List<int> blockIndices,
   ) async {
-    // Delegate to the zegel library.
-    throw UnimplementedError(
-      'Redact operation requires the zegel core library. '
-      'Ensure package:zegel is properly linked in pubspec.yaml.',
-    );
+    final file = File(filePath);
+    if (!await file.exists()) {
+      throw FileSystemException('File does not exist', filePath);
+    }
+    final fileBytes = await file.readAsBytes();
+    final masterKey = _hexToBytes(hexKey);
+    return Redaction.redactBlocks(fileBytes, masterKey, blockIndices);
   }
 
   /// Splits a key into N shares with threshold M using Shamir's Secret Sharing.
@@ -493,6 +497,16 @@ class ZegelService {
       default:
         return 'UNKNOWN (0x${blockType.toRadixString(16).padLeft(2, '0')})';
     }
+  }
+
+  /// Converts a hex string to bytes.
+  Uint8List _hexToBytes(String hex) {
+    final length = hex.length ~/ 2;
+    final bytes = Uint8List(length);
+    for (int i = 0; i < length; i++) {
+      bytes[i] = int.parse(hex.substring(i * 2, i * 2 + 2), radix: 16);
+    }
+    return bytes;
   }
 
   // ======================================================================
