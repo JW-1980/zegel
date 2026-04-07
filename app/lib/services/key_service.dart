@@ -76,9 +76,10 @@ class KeyService {
   }
 
   /// Generates a new random 32-byte key and returns it as a 64-character hex string.
-  String generateKey() {
+  String generateKey([int lengthBits = 256]) {
     final random = Random.secure();
-    final bytes = List<int>.generate(32, (_) => random.nextInt(256));
+    final int numBytes = lengthBits ~/ 8;
+    final bytes = List<int>.generate(numBytes, (_) => random.nextInt(256));
     return bytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
   }
 

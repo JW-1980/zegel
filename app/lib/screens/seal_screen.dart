@@ -201,63 +201,55 @@ class _SealScreenState extends State<SealScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // File selection card
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
+            // File selection drop zone (Brutalist style)
+            InkWell(
+              onTap: _isSealing ? null : _pickFile,
+              borderRadius: BorderRadius.circular(4),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 48, horizontal: 24),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surfaceContainerLow,
+                  borderRadius: BorderRadius.circular(4),
+                  border: Border.all(
+                    color: theme.colorScheme.outline.withValues(alpha: 0.4),
+                    style: BorderStyle.solid,
+                    width: 2,
+                  ),
+                ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.description,
-                          color: theme.colorScheme.primary,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'File to Seal',
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
+                    Icon(
+                      Icons.upload_file,
+                      size: 64,
+                      color: theme.colorScheme.primary,
                     ),
-                    const SizedBox(height: 12),
-                    if (_filePath != null) ...[
-                      _FileDetail(
-                        icon: Icons.insert_drive_file,
-                        label: 'Name',
-                        value: _fileName ?? '',
+                    const SizedBox(height: 16),
+                    Text(
+                      _filePath != null ? _fileName ?? '' : 'DROP .ZGL OR ASSET FILE HERE',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.2,
+                        color: theme.colorScheme.onSurface,
                       ),
-                      if (_fileSize != null)
-                        _FileDetail(
-                          icon: Icons.data_usage,
-                          label: 'Size',
-                          value: fileService.formatFileSize(_fileSize!),
-                        ),
-                      _FileDetail(
-                        icon: Icons.folder,
-                        label: 'Type',
-                        value:
-                            '.${fileService.getFileExtension(_filePath!).toUpperCase()}',
-                      ),
-                      const SizedBox(height: 8),
-                    ] else
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        child: Text(
-                          l10n.noFileSelected,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ),
-                    OutlinedButton.icon(
-                      onPressed: _isSealing ? null : _pickFile,
-                      icon: const Icon(Icons.folder_open),
-                      label: const Text('Select File'),
+                      textAlign: TextAlign.center,
                     ),
+                    const SizedBox(height: 8),
+                    if (_filePath == null)
+                      Text(
+                        'Accepts .doc, .pdf, .zip, .encrypted',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    if (_filePath != null && _fileSize != null)
+                      Text(
+                        fileService.formatFileSize(_fileSize!),
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                   ],
                 ),
               ),
@@ -275,74 +267,79 @@ class _SealScreenState extends State<SealScreen> {
             ),
             const SizedBox(height: 16),
 
-            // Metadata entries
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.label,
-                          color: theme.colorScheme.primary,
+            // Metadata entries (Brutalist style)
+            Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        'METADATA PAIRS',
+                        style: theme.textTheme.labelLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.5,
                         ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Metadata (optional)',
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                      ),
+                      const Spacer(),
+                      OutlinedButton.icon(
+                        icon: const Icon(Icons.add),
+                        label: const Text('ADD PAIR'),
+                        onPressed: _isSealing ? null : _addMetadataEntry,
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         ),
-                        const Spacer(),
-                        IconButton(
-                          icon: const Icon(Icons.add_circle_outline),
-                          tooltip: 'Add metadata field',
-                          onPressed: _isSealing ? null : _addMetadataEntry,
-                        ),
-                      ],
-                    ),
-                    if (_metadataEntries.isNotEmpty) ...[
-                      const Divider(),
-                      ..._metadataEntries.asMap().entries.map((entry) {
-                        final index = entry.key;
-                        final meta = entry.value;
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: TextField(
-                                  decoration: const InputDecoration(
-                                    labelText: 'Key',
-                                    isDense: true,
-                                  ),
-                                  onChanged: (v) => meta.key = v,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: TextField(
-                                  decoration: const InputDecoration(
-                                    labelText: 'Value',
-                                    isDense: true,
-                                  ),
-                                  onChanged: (v) => meta.value = v,
-                                ),
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.remove_circle_outline),
-                                iconSize: 20,
-                                onPressed: () => _removeMetadataEntry(index),
-                              ),
-                            ],
-                          ),
-                        );
-                      }),
+                      ),
                     ],
+                  ),
+                  if (_metadataEntries.isNotEmpty) ...[
+                    const SizedBox(height: 16),
+                    ..._metadataEntries.asMap().entries.map((entry) {
+                      final index = entry.key;
+                      final meta = entry.value;
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                decoration: InputDecoration(
+                                  labelText: 'Key',
+                                  isDense: true,
+                                  filled: true,
+                                  fillColor: theme.colorScheme.surfaceContainerLow,
+                                ),
+                                onChanged: (v) => meta.key = v,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: TextField(
+                                decoration: InputDecoration(
+                                  labelText: 'Value',
+                                  isDense: true,
+                                  filled: true,
+                                  fillColor: theme.colorScheme.surfaceContainerLow,
+                                ),
+                                onChanged: (v) => meta.value = v,
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.remove_circle_outline),
+                              color: theme.colorScheme.error,
+                              onPressed: () => _removeMetadataEntry(index),
+                            ),
+                          ],
+                        ),
+                      );
+                    }),
                   ],
-                ),
+                ],
               ),
             ),
             const SizedBox(height: 16),
@@ -592,16 +589,9 @@ class _SealScreenState extends State<SealScreen> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: _isError
-                        ? Colors.red.withValues(alpha:0.1)
-                        : Colors.green.withValues(alpha:0.1),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: _isError
-                          ? Colors.red.withValues(alpha:0.3)
-                          : Colors.green.withValues(alpha:0.3),
                         ? Colors.red.withValues(alpha: 0.1)
                         : Colors.green.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(4),
                     border: Border.all(
                       color: _isError
                           ? Colors.red.withValues(alpha: 0.3)
@@ -632,7 +622,7 @@ class _SealScreenState extends State<SealScreen> {
 
             // Seal button
             SizedBox(
-              height: 50,
+              height: 60,
               child: ElevatedButton.icon(
                 onPressed: _isSealing ? null : _seal,
                 icon: _isSealing
@@ -644,10 +634,10 @@ class _SealScreenState extends State<SealScreen> {
                           color: Colors.white,
                         ),
                       )
-                    : const Icon(Icons.lock),
+                    : const Icon(Icons.lock, size: 28),
                 label: Text(
-                  _isSealing ? 'Sealing...' : l10n.sealAction,
-                  style: const TextStyle(fontSize: 16),
+                  _isSealing ? 'SEALING...' : 'SEAL CONTAINER',
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 1.5),
                 ),
               ),
             ),

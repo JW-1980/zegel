@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -32,6 +31,7 @@ class _KeygenScreenState extends State<KeygenScreen> {
   bool _isSaving = false;
   String? _statusMessage;
   bool _isError = false;
+  int _keyLength = 256;
 
   final TextEditingController _keyNameController = TextEditingController();
 
@@ -43,7 +43,7 @@ class _KeygenScreenState extends State<KeygenScreen> {
 
   void _generateKey() {
     final keyService = context.read<KeyService>();
-    final hexKey = keyService.generateKey();
+    final hexKey = keyService.generateKey(_keyLength);
     final bytes = keyService.hexToBytes(hexKey);
     final base64Key = base64Encode(bytes);
 
@@ -219,11 +219,6 @@ class _KeygenScreenState extends State<KeygenScreen> {
                       icon: Icons.print,
                       text: 'Consider printing and storing in a safe',
                     ),
-                    _SecurityTip(
-                      icon: Icons.share,
-||||||| original
-                    _SecurityTip(
-                      icon: Icons.share_off,
                     const _SecurityTip(
                       icon: Icons.share,
                       text: 'Never share your key via email or messaging',
@@ -234,19 +229,46 @@ class _KeygenScreenState extends State<KeygenScreen> {
             ),
             const SizedBox(height: 24),
 
-            // Generate button
-            SizedBox(
-              height: 60,
-              child: ElevatedButton.icon(
-                onPressed: _generateKey,
-                icon: const Icon(Icons.casino, size: 28),
-                label: Text(
-                  _generatedKeyHex == null
-                      ? 'Generate New Key'
-                      : 'Generate Another Key',
-                  style: const TextStyle(fontSize: 18),
+            // Generate button area with Entropy Selection
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  'ENTROPY MAGNITUDE',
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.5,
+                  ),
                 ),
-              ),
+                const SizedBox(height: 8),
+                SegmentedButton<int>(
+                  segments: const [
+                    ButtonSegment(value: 256, label: Text('256-BIT')),
+                    ButtonSegment(value: 512, label: Text('512-BIT')),
+                    ButtonSegment(value: 1024, label: Text('1024-BIT')),
+                  ],
+                  selected: {_keyLength},
+                  onSelectionChanged: (Set<int> newSelection) {
+                    setState(() {
+                      _keyLength = newSelection.first;
+                    });
+                  },
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  height: 60,
+                  child: ElevatedButton.icon(
+                    onPressed: _generateKey,
+                    icon: const Icon(Icons.casino, size: 28),
+                    label: Text(
+                      _generatedKeyHex == null
+                          ? 'INITIALIZE ENTROPY & GENERATE KEY'
+                          : 'REGENERATE KEY',
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 24),
 
@@ -314,7 +336,7 @@ class _KeygenScreenState extends State<KeygenScreen> {
 
                       // Hex format
                       Text(
-                        'Hexadecimal Format (64 characters)',
+                        'Hexadecimal Format',
                         style: theme.textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.w600,
                         ),
@@ -323,10 +345,11 @@ class _KeygenScreenState extends State<KeygenScreen> {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.surfaceContainerHighest,
-                          borderRadius: BorderRadius.circular(8),
+                          color: Colors.black87,
+                          borderRadius: BorderRadius.circular(4),
                           border: Border.all(
-                            color: theme.colorScheme.outline.withValues(alpha: 0.3),
+                            color: theme.colorScheme.primary.withValues(alpha: 0.5),
+                            width: 1.5,
                           ),
                         ),
                         child: Row(
@@ -338,16 +361,16 @@ class _KeygenScreenState extends State<KeygenScreen> {
                                     : _generatedKeyHex!,
                                 style: TextStyle(
                                   fontFamily: 'monospace',
-                                  fontSize: 12,
-                                  letterSpacing: 1,
+                                  fontSize: 13,
+                                  letterSpacing: 1.2,
                                   color: _obscureKey
-                                      ? theme.colorScheme.onSurfaceVariant
-                                      : null,
+                                      ? Colors.grey.shade500
+                                      : Colors.tealAccent.shade400,
                                 ),
                               ),
                             ),
                             IconButton(
-                              icon: const Icon(Icons.copy, size: 20),
+                              icon: const Icon(Icons.copy, size: 20, color: Colors.tealAccent),
                               tooltip: 'Copy hex key',
                               onPressed: () => _copyToClipboard(
                                 _generatedKeyHex!,
@@ -361,7 +384,7 @@ class _KeygenScreenState extends State<KeygenScreen> {
 
                       // Base64 format
                       Text(
-                        'Base64 Format (44 characters)',
+                        'Base64 Format',
                         style: theme.textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.w600,
                         ),
@@ -370,10 +393,11 @@ class _KeygenScreenState extends State<KeygenScreen> {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.surfaceContainerHighest,
-                          borderRadius: BorderRadius.circular(8),
+                          color: Colors.black87,
+                          borderRadius: BorderRadius.circular(4),
                           border: Border.all(
-                            color: theme.colorScheme.outline.withValues(alpha: 0.3),
+                            color: theme.colorScheme.primary.withValues(alpha: 0.5),
+                            width: 1.5,
                           ),
                         ),
                         child: Row(
@@ -385,16 +409,16 @@ class _KeygenScreenState extends State<KeygenScreen> {
                                     : _generatedKeyBase64!,
                                 style: TextStyle(
                                   fontFamily: 'monospace',
-                                  fontSize: 12,
-                                  letterSpacing: 1,
+                                  fontSize: 13,
+                                  letterSpacing: 1.2,
                                   color: _obscureKey
-                                      ? theme.colorScheme.onSurfaceVariant
-                                      : null,
+                                      ? Colors.grey.shade500
+                                      : Colors.tealAccent.shade400,
                                 ),
                               ),
                             ),
                             IconButton(
-                              icon: const Icon(Icons.copy, size: 20),
+                              icon: const Icon(Icons.copy, size: 20, color: Colors.tealAccent),
                               tooltip: 'Copy base64 key',
                               onPressed: () => _copyToClipboard(
                                 _generatedKeyBase64!,
