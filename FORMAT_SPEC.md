@@ -1,4 +1,4 @@
-# Zegel File Format Specification v1.3
+# Zegel File Format Specification v1.4
 
 **Extension:** `.zgl`
 **MIME type:** `application/x-zgl`
@@ -42,6 +42,7 @@ Zegel ("seal" in Dutch) is a tamper-proof container format. It wraps any file an
 | 1.1 | 2026-01-27 | SEC-1 Argon2id password derivation, SEC-2 key commitment, SEC-3 expiration, GEN-1 public metadata, GEN-2 compression, GEN-3 streaming verification, GEN-4 multi-file container, GEN-5 provenance chain |
 | 1.2 | 2026-01-27 | SEC-4 canary traps, SEC-5 partial redaction, SEC-6 split-key M-of-N, GEN-6 co-signatures, GEN-7 cross-file references, GEN-8 audit trail, GEN-9 selective disclosure, GEN-10 content versioning |
 | 1.3 | 2026-01-28 | SEC-7 regulatory hold, SEC-8 classification levels, SEC-9 hierarchical split-key, GEN-11 trusted timestamps (RFC 3161), GEN-12 anonymous mode, GEN-13 role-based attestation, GEN-14 excerpt proofs (Merkle inclusion), GEN-15 batch operations, GEN-16 manifests, GEN-17 provenance verification, GEN-18 token expiration |
+| 1.4 | 2026-04-07 | **SECURITY**: SEC-10 Merkle tree domain separation (RFC 6962), SEC-11 mandatory key commitment with passwords, SEC-12 AAD binding in AES-GCM, SEC-13 Shamir share validation, SEC-14 Argon2id minimum parameters (OWASP), SEC-15 token expiration enforcement. **FEATURES**: GEN-19 streaming seal mode, GEN-20 burn-after-read, GEN-21 time-locked release, GEN-22 Ed25519 creator identity/signatures, GEN-23 device attestation, GEN-24 supply chain verification, GEN-25 structured blocks (SBOM, royalty, measurement, privilege log) |
 
 ---
 
@@ -216,7 +217,18 @@ master_key = Argon2id(password, salt, ops_limit, mem_limit, output_length=32)
 
 Parameters are stored in the extended header. Defaults: `ops_limit = 3`, `mem_limit = 65536 KiB (64 MiB)`.
 
+**v1.4 minimum parameters (SEC-14):** Writers MUST enforce:
+- `ops_limit >= 2` (time cost)
+- `mem_limit >= 19456 KiB` (19 MiB memory cost)
+
+These minimums follow OWASP 2024 Password Storage Cheat Sheet recommendations.
+
 The Argon2id variant is mandatory (not Argon2i or Argon2d). This provides resistance against both side-channel and GPU attacks.
+
+**v1.4 mandatory key commitment (SEC-11):** When `FLAG_PASSWORD_DERIVED` is set,
+`FLAG_HAS_KEY_COMMITMENT` MUST also be set. This defends against partitioning
+oracle attacks where an attacker uses the lack of key commitment to partition
+the password space and recover the password more efficiently.
 
 ### 5.3 Key Derivation with Expiration (SEC-3, v1.1)
 
@@ -228,19 +240,28 @@ info = "zegel-block-key-v1:" || block_index || ":exp=" || YYYY-MM-DD
 
 The date is UTC day-granularity. Readers MUST check the current time against the expiration timestamp. If expired, readers MUST refuse to derive keys (making extraction impossible). The expiration date is baked into the key derivation, so even if a reader ignores the check, it would need the exact expiration date to derive correct keys.
 
-### 5.4 Block Encryption
+### 5.4 Block Encryption (v1.4: AAD Binding)
 
-Each block is encrypted with AES-256-GCM:
+Each block is encrypted with AES-256-GCM. Starting with v1.4, **Associated
+Authenticated Data (AAD)** is used to cryptographically bind each ciphertext to
+its block type, position, and file identity. This prevents block-swapping and
+cross-file replay attacks.
 
 ```
 plaintext  = block content (bytes)
 key        = derived block key (32 bytes)
 iv         = random 12 bytes (unique per block)
-aad        = empty (no additional authenticated data)
+aad        = block_type (1 byte) || block_index (uint32 BE) || master_salt (32 bytes)
 tag_length = 16 bytes
 
 ciphertext, tag = AES-256-GCM-Encrypt(key, iv, plaintext, aad, tag_length)
 ```
+
+The AAD is **37 bytes**: 1 byte block type + 4 bytes block index (big-endian) +
+32 bytes master salt from the file header. This ensures that:
+- A ciphertext cannot be moved to a different block position (block_index check)
+- A ciphertext cannot be used in a different file (salt check)
+- A ciphertext's block type cannot be changed (block_type check)
 
 ### 5.5 Block Compression (GEN-2, v1.1)
 
@@ -248,20 +269,29 @@ When `FLAG_COMPRESSED` is set, each content block is compressed with zlib (level
 
 ```
 compressed = zlib_compress(plaintext)
+aad        = block_type || block_index (uint32 BE) || master_salt
 ciphertext, tag = AES-256-GCM-Encrypt(key, iv, compressed, aad, tag_length)
 ```
 
 The plaintext hash in the directory is computed from the **compressed** data (before encryption). On decryption, decompress after decrypting.
 
-### 5.6 Merkle Tree Construction
+### 5.6 Merkle Tree Construction (v1.4: Domain-Separated per RFC 6962)
 
-1. Compute leaf hash for each block: `leaf[i] = SHA-256(plaintext[i])`
+Domain separation prevents second preimage attacks where internal nodes could
+be confused with leaf nodes. This follows the Certificate Transparency standard
+(RFC 6962, Section 2.1).
+
+1. Compute **domain-separated** leaf hash for each block:
+   `leaf[i] = SHA-256(0x00 || SHA-256(plaintext[i]))`
+   The `0x00` byte prefix identifies this as a leaf node.
 2. Build tree bottom-up:
    - If layer has odd number of nodes, duplicate the last node
-   - Parent node: `SHA-256(left_child || right_child)` (concatenate raw 32-byte hashes)
+   - Parent node: `SHA-256(0x01 || left_child || right_child)`
+     The `0x01` byte prefix identifies this as an internal node.
 3. Root is the single node at the top level
 
-**Single leaf special case:** If there is only one block, the Merkle root equals the leaf hash.
+**Single leaf special case:** If there is only one block, the Merkle root
+equals the domain-separated leaf hash: `SHA-256(0x00 || SHA-256(plaintext[0]))`.
 
 ### 5.7 Master Seal
 
@@ -553,6 +583,74 @@ Each event is HMAC-signed and linked to a specific file via its Merkle root. Ver
 ### 7b.8 GEN-18: Token Expiration
 
 Extends selective disclosure tokens (GEN-9) with an `expires_at` field (Unix epoch seconds). Readers MUST check whether the token has expired before allowing extraction. This prevents indefinite access from a single token issuance.
+
+## 7c. Security Features (v1.4)
+
+### 7c.1 SEC-10: Merkle Tree Domain Separation
+
+See Section 5.6. Leaf hashes are prefixed with `0x00` and internal node hashes with `0x01` per RFC 6962. This prevents second preimage attacks.
+
+### 7c.2 SEC-11: Mandatory Key Commitment with Passwords
+
+When `FLAG_PASSWORD_DERIVED` is set, `FLAG_HAS_KEY_COMMITMENT` MUST also be set. Defends against partitioning oracle attacks.
+
+### 7c.3 SEC-12: AAD Binding in AES-GCM
+
+See Section 5.4. Each block's ciphertext is bound to `block_type || block_index || master_salt` via GCM's Associated Authenticated Data.
+
+### 7c.4 SEC-13: Shamir Share Validation
+
+Implementations MUST validate share integrity before reconstruction:
+- Reject shares with x-coordinate = 0
+- Reject duplicate x-coordinates among shares
+- Reject shares with invalid length (!= 33 bytes)
+
+### 7c.5 SEC-14: Argon2id Minimum Parameters
+
+See Section 5.2. Writers MUST enforce `time_cost >= 2` and `memory_cost >= 19456 KiB` per OWASP 2024 guidelines.
+
+### 7c.6 SEC-15: Token Expiration Enforcement
+
+Readers MUST check the `expires_at` field in disclosure tokens before any block decryption. Expired tokens MUST be rejected.
+
+## 7d. General Features (v1.4)
+
+### 7d.1 GEN-19: Streaming Seal Mode
+
+Allows append-only block sealing for real-time use cases (black boxes, IoT logging). Blocks are encrypted as they arrive; the Merkle tree and master seal are computed on finalization.
+
+### 7d.2 GEN-20: Burn After Read
+
+Embeds a tamper-evident read counter in public metadata. After N reads, the content is considered destroyed. The counter is protected by HMAC.
+
+**Limitation:** Requires trust in the reader software. The file format itself cannot enforce read limits -- this is a policy mechanism.
+
+### 7d.3 GEN-21: Time-Locked Release
+
+Uses iterated hashing (SHA-256) to create a time-lock puzzle. The actual encryption key is derived from `SHA-256^N(puzzle_seed)` where N is calibrated to the desired time duration. Sequential computation is required -- no parallelization shortcut.
+
+### 7d.4 GEN-22: Creator Identity (Ed25519 Signatures)
+
+New block type `0x0E` (SIGNATURE): Contains an Ed25519 signature over `SHA-256(merkle_root || master_seal || timestamp)`, binding the file to a verified identity.
+
+### 7d.5 GEN-23: Device Attestation
+
+New block type `0x0F` (DEVICE_ATTESTATION): Contains signed device properties (OS, platform, hostname hash) bound to the sealing operation.
+
+### 7d.6 GEN-24: Supply Chain Verification
+
+New block type `0x14` (BUILD_ATTESTATION): Contains Ed25519-signed build provenance (version, commit hash, build timestamp, builder identity, reproducible build hash). Used to verify the integrity of the Zegel tool itself.
+
+### 7d.7 GEN-25: Structured Block Types
+
+| Type | Name | Purpose |
+|------|------|---------|
+| 0x10 | SBOM | Software Bill of Materials |
+| 0x11 | ROYALTY | Payment split ratios |
+| 0x12 | MEASUREMENT | Sensor/IoT data with calibration |
+| 0x13 | PRIVILEGE_LOG | Legal basis for redactions |
+
+All structured blocks are JSON-serialized and encrypted as regular blocks.
 
 ---
 

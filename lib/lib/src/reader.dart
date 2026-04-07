@@ -326,6 +326,14 @@ class ZegelReader {
         expirationDate: expirationDate,
       );
 
+      // Build AAD: blockType(1) || blockIndex(4 BE) || salt(32).
+      // Must match the AAD used during encryption.
+      final Uint8List aad = Uint8List(1 + 4 + ZegelFormat.saltSize);
+      aad[0] = entry.type;
+      final ByteData aadBd = ByteData.sublistView(aad);
+      aadBd.setUint32(1, i, Endian.big);
+      aad.setRange(5, 5 + ZegelFormat.saltSize, h.salt);
+
       // AES-256-GCM decrypt (input = ciphertext || tag).
       Uint8List plaintext;
       try {
@@ -336,7 +344,7 @@ class ZegelReader {
             KeyParameter(blockKey),
             ZegelFormat.tagSize * 8,
             entry.iv,
-            Uint8List(0),
+            aad,
           ),
         );
         final Uint8List gcmInput = Uint8List(
@@ -457,10 +465,24 @@ class ZegelReader {
   /// Throws [ZegelFormatException] if the file format is invalid.
   /// Throws [ZegelTamperedException] if decryption or hash verification fails
   /// for any disclosed block.
+  /// Throws [ZegelExpiredException] if the token has an `expires_at` field
+  /// and the current time exceeds it.
   ZegelResult extractWithToken(
     Uint8List fileBytes,
     Map<String, dynamic> token,
   ) {
+    // Check token expiration before any decryption.
+    if (token.containsKey('expires_at')) {
+      final int expiresAt = token['expires_at'] as int;
+      final int nowEpoch =
+          DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
+      if (nowEpoch > expiresAt) {
+        throw ZegelExpiredException(
+          'Disclosure token expired at epoch $expiresAt',
+        );
+      }
+    }
+
     final _ParsedHeader h = _parseAll(fileBytes);
 
     final Map<String, dynamic> blockKeysMap =
@@ -520,6 +542,13 @@ class ZegelReader {
         bOffset + entry.ciphertextLen,
       );
 
+      // Build AAD: blockType(1) || blockIndex(4 BE) || salt(32).
+      final Uint8List aad = Uint8List(1 + 4 + ZegelFormat.saltSize);
+      aad[0] = entry.type;
+      final ByteData aadBd = ByteData.sublistView(aad);
+      aadBd.setUint32(1, i, Endian.big);
+      aad.setRange(5, 5 + ZegelFormat.saltSize, h.salt);
+
       Uint8List plaintext;
       try {
         final GCMBlockCipher cipher = GCMBlockCipher(AESEngine());
@@ -529,7 +558,7 @@ class ZegelReader {
             KeyParameter(blockKey),
             ZegelFormat.tagSize * 8,
             entry.iv,
-            Uint8List(0),
+            aad,
           ),
         );
         final Uint8List gcmInput = Uint8List(

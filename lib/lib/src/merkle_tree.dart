@@ -4,29 +4,58 @@ import 'package:crypto/crypto.dart';
 
 /// Binary SHA-256 Merkle tree used by the Zegel format.
 ///
+/// Uses domain-separated hashing per RFC 6962 (Certificate Transparency) to
+/// prevent second preimage attacks where internal nodes could be confused with
+/// leaf nodes:
+/// - Leaf hashes:     `SHA-256(0x00 || plaintext_hash)`
+/// - Internal nodes:  `SHA-256(0x01 || left || right)`
+///
 /// Leaf hashes are the SHA-256 digests of each block's plaintext. The tree is
-/// built bottom-up: odd layers duplicate the last node, and parent hashes are
-/// `SHA-256(left || right)` where left and right are raw 32-byte hashes.
+/// built bottom-up: odd layers duplicate the last node.
 ///
 /// A single leaf is its own root (no hashing step).
 class MerkleTree {
   MerkleTree._();
 
+  /// Domain separator byte for leaf nodes (RFC 6962).
+  static const int leafPrefix = 0x00;
+
+  /// Domain separator byte for internal nodes (RFC 6962).
+  static const int nodePrefix = 0x01;
+
+  /// Computes a domain-separated leaf hash: `SHA-256(0x00 || raw_hash)`.
+  ///
+  /// This must be applied to raw plaintext hashes before building the tree.
+  /// The `0x00` prefix prevents confusion between leaf and internal nodes
+  /// (second preimage attack mitigation per RFC 6962).
+  static Uint8List hashLeaf(Uint8List rawHash) {
+    final Uint8List prefixed = Uint8List(1 + rawHash.length);
+    prefixed[0] = leafPrefix;
+    prefixed.setRange(1, prefixed.length, rawHash);
+    return Uint8List.fromList(sha256.convert(prefixed).bytes);
+  }
+
   /// Builds the Merkle root hash from a list of [leafHashes].
   ///
   /// Each element of [leafHashes] must be exactly 32 bytes (a raw SHA-256
-  /// digest). Returns the 32-byte root hash.
+  /// digest of the block plaintext). Domain separation is applied
+  /// automatically: leaves are prefixed with `0x00`, internal nodes with
+  /// `0x01`, per RFC 6962.
+  ///
+  /// Returns the 32-byte root hash.
   ///
   /// Throws [ArgumentError] if [leafHashes] is empty.
   static Uint8List buildRoot(List<Uint8List> leafHashes) {
     if (leafHashes.isEmpty) {
       throw ArgumentError('Cannot build Merkle tree from zero leaves');
     }
-    if (leafHashes.length == 1) {
-      return Uint8List.fromList(leafHashes[0]);
-    }
 
-    List<Uint8List> layer = List<Uint8List>.from(leafHashes);
+    // Apply domain-separated leaf hashing.
+    List<Uint8List> layer = leafHashes.map(hashLeaf).toList();
+
+    if (layer.length == 1) {
+      return layer[0];
+    }
 
     while (layer.length > 1) {
       final List<Uint8List> nextLayer = <Uint8List>[];
@@ -46,14 +75,16 @@ class MerkleTree {
   /// Builds the full Merkle tree, returning all layers from leaves (index 0)
   /// up to the root (last index).
   ///
-  /// This is used to generate inclusion proofs.
+  /// Domain separation is applied automatically. This is used to generate
+  /// inclusion proofs.
   static List<List<Uint8List>> buildTree(List<Uint8List> leafHashes) {
     if (leafHashes.isEmpty) {
       throw ArgumentError('Cannot build Merkle tree from zero leaves');
     }
 
     final List<List<Uint8List>> layers = <List<Uint8List>>[];
-    List<Uint8List> layer = List<Uint8List>.from(leafHashes);
+    // Apply domain-separated leaf hashing.
+    List<Uint8List> layer = leafHashes.map(hashLeaf).toList();
     layers.add(List<Uint8List>.from(layer));
 
     while (layer.length > 1) {
@@ -105,9 +136,11 @@ class MerkleTree {
 
   /// Verifies a Merkle inclusion proof.
   ///
-  /// Given the expected [root], the [leafHash] at [index] in a tree with
-  /// [leafCount] total leaves, and the [proof] (sibling hashes), returns
-  /// `true` if the proof is valid.
+  /// Given the expected [root], the raw [leafHash] (SHA-256 of plaintext) at
+  /// [index] in a tree with [leafCount] total leaves, and the [proof]
+  /// (sibling hashes), returns `true` if the proof is valid.
+  ///
+  /// Domain separation is applied automatically to the leaf hash.
   static bool verifyInclusion(
     Uint8List root,
     Uint8List leafHash,
@@ -115,11 +148,13 @@ class MerkleTree {
     List<Uint8List> proof,
     int leafCount,
   ) {
+    // Apply domain-separated leaf hashing.
+    Uint8List currentHash = hashLeaf(leafHash);
+
     if (leafCount == 1 && proof.isEmpty) {
-      return _constantTimeEquals(root, leafHash);
+      return _constantTimeEquals(root, currentHash);
     }
 
-    Uint8List currentHash = Uint8List.fromList(leafHash);
     int currentIndex = index;
 
     for (final Uint8List sibling in proof) {
@@ -134,11 +169,14 @@ class MerkleTree {
     return _constantTimeEquals(root, currentHash);
   }
 
-  /// Computes `SHA-256(left || right)` where both are raw 32-byte hashes.
+  /// Computes `SHA-256(0x01 || left || right)` where both are raw 32-byte
+  /// hashes. The `0x01` prefix is the domain separator for internal nodes
+  /// (RFC 6962), preventing confusion with leaf hashes which use `0x00`.
   static Uint8List _hashPair(Uint8List left, Uint8List right) {
-    final Uint8List combined = Uint8List(64);
-    combined.setRange(0, 32, left);
-    combined.setRange(32, 64, right);
+    final Uint8List combined = Uint8List(1 + 64);
+    combined[0] = nodePrefix;
+    combined.setRange(1, 33, left);
+    combined.setRange(33, 65, right);
     final digest = sha256.convert(combined);
     return Uint8List.fromList(digest.bytes);
   }

@@ -106,6 +106,21 @@ class SelectiveDisclosure {
       final _BlockInfo? info = _parseBlockInfo(fileBytes, blockIndex);
       if (info == null) return null;
 
+      // Build AAD: blockType(1) || blockIndex(4 BE) || salt(32).
+      // Parse the salt from the file header.
+      final int fnLen = bd.getUint16(84, Endian.big);
+      final int saltOffset = 86 + fnLen;
+      final Uint8List fileSalt = Uint8List.sublistView(
+        fileBytes,
+        saltOffset,
+        saltOffset + ZegelFormat.saltSize,
+      );
+      final Uint8List aad = Uint8List(1 + 4 + ZegelFormat.saltSize);
+      aad[0] = info.blockType;
+      final ByteData aadBd2 = ByteData.sublistView(aad);
+      aadBd2.setUint32(1, blockIndex, Endian.big);
+      aad.setRange(5, 5 + ZegelFormat.saltSize, fileSalt);
+
       // Decrypt with AES-256-GCM.
       final GCMBlockCipher cipher = GCMBlockCipher(AESEngine());
       cipher.init(
@@ -114,7 +129,7 @@ class SelectiveDisclosure {
           KeyParameter(blockKey),
           ZegelFormat.tagSize * 8,
           info.iv,
-          Uint8List(0),
+          aad,
         ),
       );
 
