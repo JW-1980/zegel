@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:io';
+import 'dart:io' hide BytesBuilder;
 import 'dart:math';
 import 'dart:typed_data';
 
@@ -181,8 +181,7 @@ class CanaryEmbedCommand extends Command<int> {
         header.expirationTimestamp! * 1000,
         isUtc: true,
       );
-      expirationDateStr =
-          '${dt.year.toString().padLeft(4, '0')}-'
+      expirationDateStr = '${dt.year.toString().padLeft(4, '0')}-'
           '${dt.month.toString().padLeft(2, '0')}-'
           '${dt.day.toString().padLeft(2, '0')}';
     }
@@ -226,10 +225,10 @@ class CanaryEmbedCommand extends Command<int> {
       // If this is a CONTENT block, add canary padding.
       if (entry.type == ZegelFormat.blockContent) {
         final padding = CanaryTrap.generatePadding(masterKey, recipientId, i);
-        final paddedPlaintext = Uint8List(plaintext.length + padding.length);
-        paddedPlaintext.setRange(0, plaintext.length, plaintext);
-        paddedPlaintext.setRange(plaintext.length, paddedPlaintext.length, padding);
-        plaintext = paddedPlaintext;
+        final bb = BytesBuilder(copy: false)
+          ..add(plaintext)
+          ..add(padding);
+        plaintext = bb.takeBytes();
       }
 
       plaintexts.add(plaintext);
@@ -558,8 +557,7 @@ class CanaryIdentifyCommand extends Command<int> {
         rawHeader.expirationTimestamp! * 1000,
         isUtc: true,
       );
-      expirationDateStr =
-          '${dt.year.toString().padLeft(4, '0')}-'
+      expirationDateStr = '${dt.year.toString().padLeft(4, '0')}-'
           '${dt.month.toString().padLeft(2, '0')}-'
           '${dt.day.toString().padLeft(2, '0')}';
     }

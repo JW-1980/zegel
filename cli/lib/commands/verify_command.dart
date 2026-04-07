@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:io' hide BytesBuilder;
 import 'dart:typed_data';
 
 import 'package:args/command_runner.dart';
@@ -54,7 +54,8 @@ class VerifyCommand extends Command<int> {
     argParser.addFlag(
       'verbose',
       abbr: 'v',
-      help: 'Show detailed verification information including block\n'
+      help:
+          'Show detailed verification information including block\n'
           'directory, per-block hashes, attestation HMACs, and\n'
           'audit trail entries.',
       defaultsTo: false,
@@ -63,14 +64,16 @@ class VerifyCommand extends Command<int> {
     argParser.addFlag(
       'quiet',
       abbr: 'q',
-      help: 'Only output the result (VALID, TAMPERED, or EXPIRED).\n'
+      help:
+          'Only output the result (VALID, TAMPERED, or EXPIRED).\n'
           'Useful for scripting.',
       defaultsTo: false,
     );
 
     argParser.addOption(
       'check-attestation-policy',
-      help: 'Comma-separated list of required attestation roles.\n'
+      help:
+          'Comma-separated list of required attestation roles.\n'
           'Verification fails (exit code 3) if any role is missing.\n'
           'Valid roles: owner, signer, witness, notary, auditor, reviewer.',
       valueHelp: 'role1,role2',
@@ -109,8 +112,7 @@ class VerifyCommand extends Command<int> {
       final result = reader.verify(fileBytes, masterKey);
 
       // Check attestation policy if specified.
-      final policyStr =
-          argResults!['check-attestation-policy'] as String?;
+      final policyStr = argResults!['check-attestation-policy'] as String?;
       if (policyStr != null && policyStr.isNotEmpty) {
         final requiredRoles = policyStr
             .split(',')
@@ -139,8 +141,9 @@ class VerifyCommand extends Command<int> {
           }
         }
 
-        final missingRoles =
-            requiredRoles.where((r) => !attestedRoles.contains(r)).toList();
+        final missingRoles = requiredRoles
+            .where((r) => !attestedRoles.contains(r))
+            .toList();
         if (missingRoles.isNotEmpty) {
           if (quiet) {
             stdout.writeln('POLICY_VIOLATION');
@@ -150,9 +153,7 @@ class VerifyCommand extends Command<int> {
               'roles are missing.',
             );
             stdout.writeln();
-            stderr.writeln(
-              '  Missing roles: ${missingRoles.join(', ')}',
-            );
+            stderr.writeln('  Missing roles: ${missingRoles.join(', ')}');
             stderr.writeln(
               '  Present roles: ${attestedRoles.isEmpty ? '(none)' : attestedRoles.join(', ')}',
             );
@@ -278,9 +279,9 @@ class VerifyCommand extends Command<int> {
     // Show redacted blocks.
     if (result.redactedBlocks != null && result.redactedBlocks!.isNotEmpty) {
       stdout.writeln();
-      stdout.writeln(Ansi.warning(
-        '  Redacted blocks: ${result.redactedBlocks!.join(', ')}',
-      ));
+      stdout.writeln(
+        Ansi.warning('  Redacted blocks: ${result.redactedBlocks!.join(', ')}'),
+      );
     }
 
     // Show attestations if present.

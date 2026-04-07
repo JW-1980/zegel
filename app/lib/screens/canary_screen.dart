@@ -1,6 +1,3 @@
-import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
@@ -35,6 +32,7 @@ class _CanaryScreenState extends State<CanaryScreen>
   String? _embedFilePath;
   String _masterKey = '';
   final List<_RecipientEntry> _recipients = [];
+  // ignore: prefer_final_fields
   bool _isEmbedding = false;
 
   // Identify tab state
@@ -48,7 +46,8 @@ class _CanaryScreenState extends State<CanaryScreen>
   String? _statusMessage;
   bool _isError = false;
 
-  final TextEditingController _recipientNameController = TextEditingController();
+  final TextEditingController _recipientNameController =
+      TextEditingController();
   final TextEditingController _candidateIdController = TextEditingController();
 
   @override
@@ -100,9 +99,7 @@ class _CanaryScreenState extends State<CanaryScreen>
 
   Future<void> _pickIdentifyFile() async {
     final fileService = context.read<FileService>();
-    final path = await fileService.pickFile(
-      allowedExtensions: ['zgl'],
-    );
+    final path = await fileService.pickZegelFile();
     if (path != null) {
       setState(() {
         _identifyFilePath = path;
@@ -168,7 +165,8 @@ class _CanaryScreenState extends State<CanaryScreen>
 
     try {
       final keyService = context.read<KeyService>();
-      final masterKeyBytes = Uint8List.fromList(keyService.hexToBytes(_identifyKey));
+      final masterKeyBytes =
+          Uint8List.fromList(keyService.hexToBytes(_identifyKey));
 
       // Convert candidate IDs to bytes
       final candidateIdBytes = _candidateIds
@@ -260,7 +258,7 @@ class _CanaryScreenState extends State<CanaryScreen>
         children: [
           // Help text
           Card(
-            color: theme.colorScheme.primaryContainer.withOpacity(0.3),
+            color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
             child: Padding(
               padding: const EdgeInsets.all(12),
               child: Row(
@@ -286,7 +284,7 @@ class _CanaryScreenState extends State<CanaryScreen>
 
           // Security warning
           Card(
-            color: Colors.orange.withOpacity(0.1),
+            color: Colors.orange.withValues(alpha: 0.1),
             child: Padding(
               padding: const EdgeInsets.all(12),
               child: Row(
@@ -449,7 +447,7 @@ class _CanaryScreenState extends State<CanaryScreen>
                               Icons.person_add_disabled,
                               size: 48,
                               color: theme.colorScheme.onSurfaceVariant
-                                  .withOpacity(0.3),
+                                  .withValues(alpha: 0.3),
                             ),
                             const SizedBox(height: 8),
                             Text(
@@ -536,7 +534,7 @@ class _CanaryScreenState extends State<CanaryScreen>
         children: [
           // Help text
           Card(
-            color: theme.colorScheme.primaryContainer.withOpacity(0.3),
+            color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
             child: Padding(
               padding: const EdgeInsets.all(12),
               child: Row(
@@ -745,7 +743,7 @@ class _CanaryScreenState extends State<CanaryScreen>
           // Identification result
           if (_identifiedRecipient != null)
             Card(
-              color: Colors.green.withOpacity(0.1),
+              color: Colors.green.withValues(alpha: 0.1),
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -795,13 +793,13 @@ class _CanaryScreenState extends State<CanaryScreen>
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: _isError
-                      ? Colors.red.withOpacity(0.1)
-                      : Colors.green.withOpacity(0.1),
+                      ? Colors.red.withValues(alpha: 0.1)
+                      : Colors.green.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
                     color: _isError
-                        ? Colors.red.withOpacity(0.3)
-                        : Colors.green.withOpacity(0.3),
+                        ? Colors.red.withValues(alpha: 0.3)
+                        : Colors.green.withValues(alpha: 0.3),
                   ),
                 ),
                 child: Row(
