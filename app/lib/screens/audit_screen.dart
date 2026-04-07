@@ -1,11 +1,11 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 
 import 'package:flutter/material.dart';
 
-||||||| original
-import 'package:flutter/services.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:zegel/zegel.dart';
 
@@ -84,9 +84,6 @@ class _AuditScreenState extends State<AuditScreen> {
     final fileService = context.read<FileService>();
     final path = await fileService.pickFile(
       type: FileType.any,
-||||||| original
-      allowedExtensions: ['zgl'],
-
     );
     if (path != null) {
       await _setFile(path);
@@ -253,7 +250,7 @@ class _AuditScreenState extends State<AuditScreen> {
           children: [
             // Help text
             Card(
-              color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
+              color: theme.colorScheme.primaryContainer.withOpacity(0.3),
               child: Padding(
                 padding: const EdgeInsets.all(12),
                 child: Row(
@@ -376,8 +373,8 @@ class _AuditScreenState extends State<AuditScreen> {
             if (_auditEntries != null)
               Card(
                 color: _isChainValid
-                    ? Colors.green.withValues(alpha: 0.1)
-                    : Colors.red.withValues(alpha: 0.1),
+                    ? Colors.green.withOpacity(0.1)
+                    : Colors.red.withOpacity(0.1),
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Row(
@@ -553,13 +550,13 @@ class _AuditScreenState extends State<AuditScreen> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: _isError
-                        ? Colors.red.withValues(alpha: 0.1)
-                        : Colors.green.withValues(alpha: 0.1),
+                        ? Colors.red.withOpacity(0.1)
+                        : Colors.green.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
                       color: _isError
-                          ? Colors.red.withValues(alpha: 0.3)
-                          : Colors.green.withValues(alpha: 0.3),
+                          ? Colors.red.withOpacity(0.3)
+                          : Colors.green.withOpacity(0.3),
                     ),
                   ),
                   child: Row(

@@ -1,9 +1,8 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 
-||||||| original
-import 'package:flutter/services.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:zegel/zegel.dart';
@@ -11,7 +10,6 @@ import 'package:zegel/zegel.dart';
 import '../services/file_service.dart';
 import '../services/key_service.dart';
 import '../widgets/key_input.dart';
-import 'package:flutter/services.dart';
 
 /// Screen for managing canary traps (recipient fingerprinting).
 ///
@@ -104,9 +102,6 @@ class _CanaryScreenState extends State<CanaryScreen>
     final fileService = context.read<FileService>();
     final path = await fileService.pickFile(
       type: FileType.any,
-||||||| original
-      allowedExtensions: ['zgl'],
-
     );
     if (path != null) {
       setState(() {
@@ -265,7 +260,7 @@ class _CanaryScreenState extends State<CanaryScreen>
         children: [
           // Help text
           Card(
-            color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
+            color: theme.colorScheme.primaryContainer.withOpacity(0.3),
             child: Padding(
               padding: const EdgeInsets.all(12),
               child: Row(
@@ -291,7 +286,7 @@ class _CanaryScreenState extends State<CanaryScreen>
 
           // Security warning
           Card(
-            color: Colors.orange.withValues(alpha: 0.1),
+            color: Colors.orange.withOpacity(0.1),
             child: Padding(
               padding: const EdgeInsets.all(12),
               child: Row(
@@ -454,7 +449,7 @@ class _CanaryScreenState extends State<CanaryScreen>
                               Icons.person_add_disabled,
                               size: 48,
                               color: theme.colorScheme.onSurfaceVariant
-                                  .withValues(alpha: 0.3),
+                                  .withOpacity(0.3),
                             ),
                             const SizedBox(height: 8),
                             Text(
@@ -541,7 +536,7 @@ class _CanaryScreenState extends State<CanaryScreen>
         children: [
           // Help text
           Card(
-            color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
+            color: theme.colorScheme.primaryContainer.withOpacity(0.3),
             child: Padding(
               padding: const EdgeInsets.all(12),
               child: Row(
@@ -750,7 +745,7 @@ class _CanaryScreenState extends State<CanaryScreen>
           // Identification result
           if (_identifiedRecipient != null)
             Card(
-              color: Colors.green.withValues(alpha: 0.1),
+              color: Colors.green.withOpacity(0.1),
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -800,13 +795,13 @@ class _CanaryScreenState extends State<CanaryScreen>
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: _isError
-                      ? Colors.red.withValues(alpha: 0.1)
-                      : Colors.green.withValues(alpha: 0.1),
+                      ? Colors.red.withOpacity(0.1)
+                      : Colors.green.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
                     color: _isError
-                        ? Colors.red.withValues(alpha: 0.3)
-                        : Colors.green.withValues(alpha: 0.3),
+                        ? Colors.red.withOpacity(0.3)
+                        : Colors.green.withOpacity(0.3),
                   ),
                 ),
                 child: Row(

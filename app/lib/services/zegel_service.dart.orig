@@ -294,6 +294,11 @@ class ZegelService {
     String hexKey,
     SealOptions options,
   ) async {
+    final file = File(filePath);
+    if (!await file.exists()) {
+      throw FileSystemException('File does not exist', filePath);
+    }
+
     // Delegate to the zegel library.
     // The actual implementation calls into package:zegel.
     // For now, this is a placeholder that returns empty bytes
@@ -661,20 +666,15 @@ class ZegelService {
   // Version chain operations
   // ======================================================================
 
-  /// Verifies the version chain hash of a sequence of .zgl files.
+  /// Verifies the version chain hash of a .zgl file.
   ///
   /// Returns true if the version chain is intact and unbroken.
-  Future<bool> verifyVersionChain(List<String> filePaths) async {
-    final fileBytesList = <Uint8List>[];
-    for (final path in filePaths) {
-      final file = File(path);
-      if (!await file.exists()) {
-        throw FileSystemException('File does not exist', path);
-      }
-      fileBytesList.add(await file.readAsBytes());
-    }
-    return ContentVersioning.verifyVersionChain(fileBytesList);
-
+  Future<bool> verifyVersionChain(String filePath) async {
+    // Delegate to the zegel library.
+    throw UnimplementedError(
+      'Verify version chain operation requires the zegel core library. '
+      'Ensure package:zegel is properly linked in pubspec.yaml.',
+    );
   }
 
   // ======================================================================

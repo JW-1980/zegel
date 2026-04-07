@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:args/command_runner.dart';
 import 'package:crypto/crypto.dart' as crypto;
@@ -534,10 +535,6 @@ class CanaryIdentifyCommand extends Command<int> {
     // Verify the file first.
     const reader = ZegelReader();
 
-||||||| original
-    final reader = const ZegelReader();
-    ZegelResult result;
-    final reader = const ZegelReader();
     try {
       reader.verify(fileBytes, masterKey);
     } on ZegelException catch (e) {
