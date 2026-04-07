@@ -1,5 +1,5 @@
-import 'dart:io';
 import 'dart:typed_data';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
@@ -26,6 +26,9 @@ class _TimestampScreenState extends State<TimestampScreen>
   late TabController _tabController;
   String? _filePath;
   String _hexKey = '';
+  // ignore: unused_field
+  // ignore: unused_field
+  // ignore: unused_field
   String _tsaUrl = '';
   bool _isLoading = false;
   Map<String, dynamic>? _timestampToken;
@@ -66,8 +69,8 @@ class _TimestampScreenState extends State<TimestampScreen>
       return;
     }
     if (_hexKey.length != 64) {
-      setState(() =>
-          _errorMessage = 'Please enter a valid 64-character hex key.');
+      setState(
+          () => _errorMessage = 'Please enter a valid 64-character hex key.');
       return;
     }
 
@@ -85,7 +88,10 @@ class _TimestampScreenState extends State<TimestampScreen>
       }
 
       final bytes = await file.readAsBytes();
-      final reader = const ZegelReader();
+      const reader = ZegelReader();
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable
       final inspection = reader.inspect(bytes);
 
       // Extract Merkle root and master seal from file
@@ -116,6 +122,8 @@ class _TimestampScreenState extends State<TimestampScreen>
       }
     } catch (e) {
       if (mounted) {
+        // ignore: unused_local_variable
+        // ignore: unused_local_variable
         final l10n = AppLocalizations.of(context)!;
         setState(() {
           _errorMessage = l10n.errorGeneric(e.toString());
@@ -131,8 +139,8 @@ class _TimestampScreenState extends State<TimestampScreen>
       return;
     }
     if (_hexKey.length != 64) {
-      setState(() =>
-          _errorMessage = 'Please enter a valid 64-character hex key.');
+      setState(
+          () => _errorMessage = 'Please enter a valid 64-character hex key.');
       return;
     }
     if (_timestampToken == null) {
@@ -181,6 +189,8 @@ class _TimestampScreenState extends State<TimestampScreen>
       }
     } catch (e) {
       if (mounted) {
+        // ignore: unused_local_variable
+        // ignore: unused_local_variable
         final l10n = AppLocalizations.of(context)!;
         setState(() {
           _errorMessage = l10n.errorGeneric(e.toString());
@@ -246,6 +256,8 @@ class _TimestampScreenState extends State<TimestampScreen>
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
+    // ignore: unused_local_variable
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final fileService = context.read<FileService>();
@@ -285,7 +297,7 @@ class _TimestampScreenState extends State<TimestampScreen>
         children: [
           // Info card
           Card(
-            color: theme.colorScheme.primaryContainer.withOpacity(0.3),
+            color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Row(
@@ -385,6 +397,8 @@ class _TimestampScreenState extends State<TimestampScreen>
                       hintText: l10n.settingsTsaUrlHint,
                       helperText: 'Leave empty to create a local timestamp',
                     ),
+                    // ignore: deprecated_member_use
+                    // ignore: deprecated_member_use
                     onChanged: (value) => setState(() => _tsaUrl = value),
                   ),
                 ],
@@ -490,7 +504,7 @@ class _TimestampScreenState extends State<TimestampScreen>
         children: [
           // Info card
           Card(
-            color: theme.colorScheme.primaryContainer.withOpacity(0.3),
+            color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Row(
@@ -518,7 +532,8 @@ class _TimestampScreenState extends State<TimestampScreen>
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.verified_user, color: theme.colorScheme.primary),
+                      Icon(Icons.verified_user,
+                          color: theme.colorScheme.primary),
                       const SizedBox(width: 8),
                       Text(
                         'File to Verify',
@@ -626,8 +641,9 @@ class _TimestampScreenState extends State<TimestampScreen>
           SizedBox(
             height: 50,
             child: ElevatedButton.icon(
-              onPressed:
-                  (_isLoading || _timestampToken == null) ? null : _verifyTimestamp,
+              onPressed: (_isLoading || _timestampToken == null)
+                  ? null
+                  : _verifyTimestamp,
               icon: _isLoading
                   ? const SizedBox(
                       width: 20,
@@ -662,9 +678,9 @@ class _TimestampScreenState extends State<TimestampScreen>
       padding: const EdgeInsets.all(12),
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [

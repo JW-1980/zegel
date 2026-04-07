@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:io';
+import 'dart:io' hide BytesBuilder;
 import 'dart:typed_data';
 
 import 'package:args/command_runner.dart';
@@ -20,7 +20,8 @@ class MediaMetadataCommand extends Command<int> {
   final String name = 'media-metadata';
 
   @override
-  String get description => 'Media metadata extraction and viewing.\n'
+  String get description =>
+      'Media metadata extraction and viewing.\n'
       '\n'
       'Utilities for handling metadata from media files (images, videos,\n'
       'documents). Metadata can be extracted from raw files or viewed\n'
@@ -53,7 +54,8 @@ class MediaMetadataExtractCommand extends Command<int> {
   final String name = 'extract';
 
   @override
-  String get description => 'Extract metadata from a media file.\n'
+  String get description =>
+      'Extract metadata from a media file.\n'
       '\n'
       'Reads a media file (image, video, document) and extracts basic\n'
       'metadata including file size, content hash, and detected file type.\n'
@@ -77,10 +79,7 @@ class MediaMetadataExtractCommand extends Command<int> {
       defaultsTo: false,
     );
 
-    addOutputOption(
-      argParser,
-      help: 'Output path for metadata JSON file.',
-    );
+    addOutputOption(argParser, help: 'Output path for metadata JSON file.');
   }
 
   @override
@@ -126,7 +125,9 @@ class MediaMetadataExtractCommand extends Command<int> {
     stdout.writeln(Ansi.header('Media Metadata - $filePath'));
     stdout.writeln();
     stdout.writeln('  Filename:     ${metadata['filename']}');
-    stdout.writeln('  File size:    ${formatFileSize(metadata['file_size'] as int)}');
+    stdout.writeln(
+      '  File size:    ${formatFileSize(metadata['file_size'] as int)}',
+    );
     stdout.writeln('  Detected type: ${metadata['detected_type']}');
     stdout.writeln('  Content hash: ${metadata['content_hash']}');
 
@@ -140,7 +141,8 @@ class MediaMetadataViewCommand extends Command<int> {
   final String name = 'view';
 
   @override
-  String get description => 'View preserved metadata in a sealed .zgl file.\n'
+  String get description =>
+      'View preserved metadata in a sealed .zgl file.\n'
       '\n'
       'Displays metadata that was preserved when the file was sealed\n'
       'with the --preserve-media-metadata flag. This includes both the\n'
@@ -192,7 +194,7 @@ class MediaMetadataViewCommand extends Command<int> {
     final fileBytes = Uint8List.fromList(file.readAsBytesSync());
 
     // Verify and extract the file.
-    final reader = const ZegelReader();
+    const reader = ZegelReader();
     ZegelResult result;
     try {
       result = reader.verify(fileBytes, masterKey);
@@ -266,7 +268,8 @@ class MediaMetadataViewCommand extends Command<int> {
       }
     }
 
-    if (rawHeader.publicMetadata != null && rawHeader.publicMetadata!.isNotEmpty) {
+    if (rawHeader.publicMetadata != null &&
+        rawHeader.publicMetadata!.isNotEmpty) {
       stdout.writeln();
       stdout.writeln(Ansi.header('Public Metadata:'));
       for (final entry in rawHeader.publicMetadata!.entries) {

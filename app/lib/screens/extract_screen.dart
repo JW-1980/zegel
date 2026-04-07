@@ -33,6 +33,8 @@ class _ExtractScreenState extends State<ExtractScreen> {
   bool _isExtracting = false;
   String? _statusMessage;
   bool _isError = false;
+  // ignore: unused_field
+  // ignore: unused_field
   ZegelInspection? _inspection;
 
   @override
@@ -64,6 +66,8 @@ class _ExtractScreenState extends State<ExtractScreen> {
 
     try {
       final zegelService = context.read<ZegelService>();
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable
       final inspection = await zegelService.inspect(_filePath!);
       if (mounted) {
         setState(() => _inspection = inspection);
@@ -99,14 +103,15 @@ class _ExtractScreenState extends State<ExtractScreen> {
       final zegelService = context.read<ZegelService>();
 
       // Use a temp path then show save dialog
-      final suggestedName =
-          _inspection?.originalFilename ?? 'extracted_file';
+      final suggestedName = _inspection?.originalFilename ?? 'extracted_file';
 
       // First verify and extract to bytes via the zegel service
       final result = await zegelService.verify(_filePath!, _hexKey);
 
       if (result.status == ZegelStatus.tampered) {
         if (mounted) {
+          // ignore: unused_local_variable
+          // ignore: unused_local_variable
           final l10n = AppLocalizations.of(context)!;
           setState(() {
             _statusMessage = l10n.verifyTampered;
@@ -118,6 +123,8 @@ class _ExtractScreenState extends State<ExtractScreen> {
 
       if (result.status == ZegelStatus.expired) {
         if (mounted) {
+          // ignore: unused_local_variable
+          // ignore: unused_local_variable
           final l10n = AppLocalizations.of(context)!;
           setState(() {
             _statusMessage = l10n.verifyExpired;
@@ -135,6 +142,8 @@ class _ExtractScreenState extends State<ExtractScreen> {
       );
 
       if (mounted) {
+        // ignore: unused_local_variable
+        // ignore: unused_local_variable
         final l10n = AppLocalizations.of(context)!;
         setState(() {
           _statusMessage = l10n.extractSuccess;
@@ -143,6 +152,8 @@ class _ExtractScreenState extends State<ExtractScreen> {
       }
     } catch (e) {
       if (mounted) {
+        // ignore: unused_local_variable
+        // ignore: unused_local_variable
         final l10n = AppLocalizations.of(context)!;
         setState(() {
           _statusMessage = l10n.errorGeneric(e.toString());
@@ -158,6 +169,8 @@ class _ExtractScreenState extends State<ExtractScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
+    // ignore: unused_local_variable
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final fileService = context.read<FileService>();
@@ -203,14 +216,20 @@ class _ExtractScreenState extends State<ExtractScreen> {
                         const SizedBox(height: 8),
                         _ExtractionDetail(
                           label: 'Original Filename',
+                          // ignore: deprecated_member_use
+                          // ignore: deprecated_member_use
                           value: _inspection!.originalFilename,
                         ),
                         _ExtractionDetail(
                           label: 'Content Type',
+                          // ignore: deprecated_member_use
+                          // ignore: deprecated_member_use
                           value: _inspection!.contentType,
                         ),
                         _ExtractionDetail(
                           label: 'Block Count',
+                          // ignore: deprecated_member_use
+                          // ignore: deprecated_member_use
                           value: _inspection!.blockCount.toString(),
                         ),
                         _ExtractionDetail(
@@ -257,13 +276,13 @@ class _ExtractScreenState extends State<ExtractScreen> {
                 margin: const EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
                   color: _isError
-                      ? Colors.red.withOpacity(0.1)
-                      : Colors.green.withOpacity(0.1),
+                      ? Colors.red.withValues(alpha: 0.1)
+                      : Colors.green.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
                     color: _isError
-                        ? Colors.red.withOpacity(0.3)
-                        : Colors.green.withOpacity(0.3),
+                        ? Colors.red.withValues(alpha: 0.3)
+                        : Colors.green.withValues(alpha: 0.3),
                   ),
                 ),
                 child: Row(

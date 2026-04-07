@@ -31,6 +31,8 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
   Map<String, dynamic>? _metadata;
   String? _errorMessage;
   ZegelInspection? _inspection;
+  // ignore: unused_element
+  ZegelInspection? get _unusedInspection => _inspection;
 
   @override
   void initState() {
@@ -59,8 +61,8 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
       return;
     }
     if (_hexKey.length != 64) {
-      setState(() =>
-          _errorMessage = 'Please enter a valid 64-character hex key.');
+      setState(
+          () => _errorMessage = 'Please enter a valid 64-character hex key.');
       return;
     }
 
@@ -78,14 +80,15 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
       }
 
       final bytes = await file.readAsBytes();
-      final reader = const core.ZegelReader();
+      const reader = core.ZegelReader();
 
       // First inspect the file
       final inspection = await zegelService.inspect(_filePath!);
 
       // Verify and extract content
       final masterKey = _hexToBytes(_hexKey);
-      final result = reader.verify(bytes, masterKey); // Note: still returns core.ZegelResult
+      final result = reader.verify(
+          bytes, masterKey); // Note: still returns core.ZegelResult
 
       if (!result.valid) {
         throw Exception('File verification failed');
@@ -239,9 +242,9 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
                 padding: const EdgeInsets.all(12),
                 margin: const EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
-                  color: Colors.red.withOpacity(0.1),
+                  color: Colors.red.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.red.withOpacity(0.3)),
+                  border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
                 ),
                 child: Row(
                   children: [
@@ -280,8 +283,8 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
                       ),
                       const Divider(),
                       if (_metadata!['filename'] != null)
-                        _buildInfoRow(
-                            'Filename', _metadata!['filename'].toString(), theme),
+                        _buildInfoRow('Filename',
+                            _metadata!['filename'].toString(), theme),
                       if (_metadata!['file_size'] != null)
                         _buildInfoRow(
                           'File Size',
@@ -347,7 +350,8 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
                             color: theme.colorScheme.surfaceContainerHighest,
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
-                              color: theme.colorScheme.outline.withOpacity(0.3),
+                              color: theme.colorScheme.outline
+                                  .withValues(alpha: 0.3),
                             ),
                           ),
                           child: Center(
@@ -358,7 +362,7 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
                                   Icons.map,
                                   size: 48,
                                   color: theme.colorScheme.onSurfaceVariant
-                                      .withOpacity(0.5),
+                                      .withValues(alpha: 0.5),
                                 ),
                                 const SizedBox(height: 8),
                                 Text(

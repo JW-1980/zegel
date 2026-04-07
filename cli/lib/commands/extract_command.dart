@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:io' hide BytesBuilder;
 import 'dart:typed_data';
 
 import 'package:args/command_runner.dart';
@@ -47,7 +47,8 @@ class ExtractCommand extends Command<int> {
     addKeyOptions(argParser);
     addOutputOption(
       argParser,
-      help: 'Output file path. Defaults to the original filename\n'
+      help:
+          'Output file path. Defaults to the original filename\n'
           'stored in the .zgl header.',
     );
 
@@ -60,14 +61,16 @@ class ExtractCommand extends Command<int> {
 
     argParser.addFlag(
       'skip-redacted',
-      help: 'Continue extraction even if some blocks are redacted.\n'
+      help:
+          'Continue extraction even if some blocks are redacted.\n'
           'Redacted blocks are replaced with empty content.',
       defaultsTo: true,
     );
 
     argParser.addFlag(
       'check-regulatory-hold',
-      help: 'Check for regulatory hold metadata. If a hold is active\n'
+      help:
+          'Check for regulatory hold metadata. If a hold is active\n'
           '(hold date is in the future), refuse extraction with exit code 3.',
       defaultsTo: false,
     );
@@ -97,7 +100,7 @@ class ExtractCommand extends Command<int> {
     final fileBytes = Uint8List.fromList(file.readAsBytesSync());
 
     // Create reader and verify/extract.
-    final reader = const ZegelReader();
+    const reader = ZegelReader();
     ZegelResult result;
 
     try {
@@ -145,8 +148,7 @@ class ExtractCommand extends Command<int> {
     // Check regulatory hold if requested.
     final checkRegulatoryHold = argResults!['check-regulatory-hold'] as bool;
     if (checkRegulatoryHold && inspection.publicMetadata != null) {
-      final holdTimestamp =
-          inspection.publicMetadata!['regulatory_hold_until'];
+      final holdTimestamp = inspection.publicMetadata!['regulatory_hold_until'];
       if (holdTimestamp != null) {
         final holdDate = DateTime.fromMillisecondsSinceEpoch(
           (holdTimestamp as int) * 1000,
@@ -156,14 +158,12 @@ class ExtractCommand extends Command<int> {
         if (now.isBefore(holdDate)) {
           final holdStr =
               inspection.publicMetadata!['regulatory_hold_date_str'] ??
-                  formatTimestamp(holdDate);
+              formatTimestamp(holdDate);
           stderr.writeln(
             '${Ansi.error('REGULATORY HOLD')} - File is under regulatory hold.',
           );
           stderr.writeln('  Hold until: $holdStr');
-          stderr.writeln(
-            '  Extraction is refused while the hold is active.',
-          );
+          stderr.writeln('  Extraction is refused while the hold is active.');
           stderr.writeln(
             '  Use --no-check-regulatory-hold to bypass this check.',
           );
@@ -210,10 +210,12 @@ class ExtractCommand extends Command<int> {
 
     if (result.redactedBlocks != null && result.redactedBlocks!.isNotEmpty) {
       stdout.writeln();
-      stdout.writeln(Ansi.warning(
-        '  Note: ${result.redactedBlocks!.length} block(s) were redacted '
-        '(blocks: ${result.redactedBlocks!.join(', ')})',
-      ));
+      stdout.writeln(
+        Ansi.warning(
+          '  Note: ${result.redactedBlocks!.length} block(s) were redacted '
+          '(blocks: ${result.redactedBlocks!.join(', ')})',
+        ),
+      );
     }
 
     if (result.metadata != null && result.metadata!.isNotEmpty) {

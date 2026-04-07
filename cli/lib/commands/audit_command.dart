@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:io';
+import 'dart:io' hide BytesBuilder;
 import 'dart:math';
 import 'dart:typed_data';
 
@@ -24,7 +24,8 @@ class AuditCommand extends Command<int> {
   final String name = 'audit';
 
   @override
-  String get description => 'Audit trail operations for .zgl files.\n'
+  String get description =>
+      'Audit trail operations for .zgl files.\n'
       '\n'
       'The audit trail is a tamper-evident append-only log that records\n'
       'actions performed on a sealed file. Each entry is hash-chained to\n'
@@ -60,7 +61,8 @@ class AuditViewCommand extends Command<int> {
   final String name = 'view';
 
   @override
-  String get description => 'View audit trail entries in a .zgl file.\n'
+  String get description =>
+      'View audit trail entries in a .zgl file.\n'
       '\n'
       'Displays all audit entries including actor, action, timestamp,\n'
       'and chain hash for each entry.\n'
@@ -110,7 +112,7 @@ class AuditViewCommand extends Command<int> {
     final fileBytes = Uint8List.fromList(file.readAsBytesSync());
 
     // Verify the file first.
-    final reader = const ZegelReader();
+    const reader = ZegelReader();
     ZegelResult result;
     try {
       result = reader.verify(fileBytes, masterKey);
@@ -164,7 +166,8 @@ class AuditAddCommand extends Command<int> {
   final String name = 'add';
 
   @override
-  String get description => 'Add a new audit entry to a .zgl file.\n'
+  String get description =>
+      'Add a new audit entry to a .zgl file.\n'
       '\n'
       'Creates an audit entry with the specified actor, action, and optional\n'
       'details. The entry is hash-chained to the previous entry in the trail.\n'
@@ -187,13 +190,15 @@ class AuditAddCommand extends Command<int> {
     addKeyOptions(argParser);
     addOutputOption(
       argParser,
-      help: 'Output path for the updated .zgl file.\n'
+      help:
+          'Output path for the updated .zgl file.\n'
           'Defaults to overwriting the input file.',
     );
 
     argParser.addOption(
       'actor',
-      help: 'Actor identifier string.\n'
+      help:
+          'Actor identifier string.\n'
           'Recommended format: "user:id:name@example.com" or\n'
           '"role:id:description".',
       valueHelp: 'id',
@@ -202,7 +207,8 @@ class AuditAddCommand extends Command<int> {
 
     argParser.addOption(
       'action',
-      help: 'Action being recorded.\n'
+      help:
+          'Action being recorded.\n'
           'Common values: sealed, verified, redacted, attested,\n'
           'disclosed, accessed, shared, modified, exported.',
       valueHelp: 'action',
@@ -264,7 +270,7 @@ class AuditAddCommand extends Command<int> {
     final fileBytes = Uint8List.fromList(file.readAsBytesSync());
 
     // Verify the file first.
-    final reader = const ZegelReader();
+    const reader = ZegelReader();
     ZegelResult result;
     try {
       result = reader.verify(fileBytes, masterKey);
@@ -587,7 +593,8 @@ class AuditVerifyChainCommand extends Command<int> {
   final String name = 'verify-chain';
 
   @override
-  String get description => 'Verify the integrity of the audit chain.\n'
+  String get description =>
+      'Verify the integrity of the audit chain.\n'
       '\n'
       'Recomputes the chain hash for each audit entry and verifies it\n'
       'matches the stored value. If any entry has been tampered with,\n'
@@ -633,7 +640,7 @@ class AuditVerifyChainCommand extends Command<int> {
     final fileBytes = Uint8List.fromList(file.readAsBytesSync());
 
     // Verify the file first.
-    final reader = const ZegelReader();
+    const reader = ZegelReader();
     ZegelResult result;
     try {
       result = reader.verify(fileBytes, masterKey);
@@ -658,8 +665,12 @@ class AuditVerifyChainCommand extends Command<int> {
       stdout.writeln();
       stdout.writeln('  File:    $filePath');
       stdout.writeln('  Entries: ${auditTrail.length}');
-      stdout.writeln('  First:   ${auditTrail.first['action']} by ${auditTrail.first['actor']}');
-      stdout.writeln('  Last:    ${auditTrail.last['action']} by ${auditTrail.last['actor']}');
+      stdout.writeln(
+        '  First:   ${auditTrail.first['action']} by ${auditTrail.first['actor']}',
+      );
+      stdout.writeln(
+        '  Last:    ${auditTrail.last['action']} by ${auditTrail.last['actor']}',
+      );
       return 0;
     } else {
       stdout.writeln(Ansi.error('Audit chain is INVALID.'));
