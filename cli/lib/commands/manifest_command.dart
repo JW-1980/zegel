@@ -66,8 +66,8 @@ class ManifestCreateCommand extends Command<int> {
       return 1;
     }
 
-    final entities = await dir.list().toList();
-    final files = entities
+    final files = dir
+        .listSync()
         .whereType<File>()
         .where((f) => f.path.endsWith('.zgl'))
         .toList();
@@ -78,16 +78,11 @@ class ManifestCreateCommand extends Command<int> {
     }
 
     final entries = <String, Uint8List>{};
-    final results = await Future.wait(
-      files.map((file) async {
-        final name = file.path.split(Platform.pathSeparator).last;
-        final bytes = await file.readAsBytes();
-        final header = RawZegelHeader.parse(bytes);
-        return MapEntry(name, header.merkleRoot);
-      }),
-    );
-    for (final entry in results) {
-      entries[entry.key] = entry.value;
+    for (final file in files) {
+      final name = file.path.split(Platform.pathSeparator).last;
+      final bytes = Uint8List.fromList(file.readAsBytesSync());
+      final header = RawZegelHeader.parse(bytes);
+      entries[name] = header.merkleRoot;
     }
 
     final manifest = ZegelManifest.create(entries, key, signerId);
@@ -169,23 +164,13 @@ class ManifestVerifyCommand extends Command<int> {
     // Check files
     final dir = Directory(dirPath);
     final actualRoots = <String, Uint8List>{};
-
-    final entities = await dir.list().toList();
-    final files = entities.whereType<File>().where(
+    for (final file in dir.listSync().whereType<File>().where(
           (f) => f.path.endsWith('.zgl'),
-        );
-
-    final results = await Future.wait(
-      files.map((file) async {
-        final name = file.path.split(Platform.pathSeparator).last;
-        final bytes = await file.readAsBytes();
-        final header = RawZegelHeader.parse(bytes);
-        return MapEntry(name, header.merkleRoot);
-      }),
-    );
-
-    for (final entry in results) {
-      actualRoots[entry.key] = entry.value;
+        )) {
+      final name = file.path.split(Platform.pathSeparator).last;
+      final bytes = Uint8List.fromList(file.readAsBytesSync());
+      final header = RawZegelHeader.parse(bytes);
+      actualRoots[name] = header.merkleRoot;
     }
 
     final fileResults = ZegelManifest.checkFiles(manifest, actualRoots);
