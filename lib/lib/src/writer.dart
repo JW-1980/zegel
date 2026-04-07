@@ -235,10 +235,9 @@ class ZegelWriter {
     // =========================================================================
     // 2. Generate or use provided salt
     // =========================================================================
-    final Uint8List salt =
-        options.salt != null
-            ? Uint8List.fromList(options.salt!)
-            : _randomBytes(secureRandom, ZegelFormat.saltSize);
+    final Uint8List salt = options.salt != null
+        ? Uint8List.fromList(options.salt!)
+        : _randomBytes(secureRandom, ZegelFormat.saltSize);
 
     // =========================================================================
     // 3. Split content into chunks
@@ -331,8 +330,7 @@ class ZegelWriter {
     String? expirationDate;
     if (options.expiration != null) {
       final DateTime dt = options.expiration!.toUtc();
-      expirationDate =
-          '${dt.year.toString().padLeft(4, '0')}-'
+      expirationDate = '${dt.year.toString().padLeft(4, '0')}-'
           '${dt.month.toString().padLeft(2, '0')}-'
           '${dt.day.toString().padLeft(2, '0')}';
     }
@@ -403,8 +401,7 @@ class ZegelWriter {
     builder.add(_packUint16BE(flags));
 
     // Created timestamp (uint64 BE, Unix epoch seconds).
-    final int nowEpoch =
-        DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
+    final int nowEpoch = DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
     builder.add(_packUint64BE(nowEpoch));
 
     // Content-Type (64 bytes, UTF-8, null-padded).
@@ -419,10 +416,9 @@ class ZegelWriter {
     builder.add(ctPadded);
 
     // Filename length (uint16 BE) + filename (variable).
-    final Uint8List fnBytes =
-        options.filename != null
-            ? Uint8List.fromList(utf8.encode(options.filename!))
-            : Uint8List(0);
+    final Uint8List fnBytes = options.filename != null
+        ? Uint8List.fromList(utf8.encode(options.filename!))
+        : Uint8List(0);
     if (fnBytes.length > ZegelFormat.maxFilenameLength) {
       throw const ZegelFormatException(
         'Filename exceeds maximum of ${ZegelFormat.maxFilenameLength} bytes',
