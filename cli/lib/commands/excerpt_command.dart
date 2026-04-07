@@ -10,13 +10,19 @@ import 'common.dart';
 /// `zegel excerpt-proof` - Generate Merkle inclusion proof for specific blocks.
 class ExcerptProofCommand extends Command<int> {
   ExcerptProofCommand() {
-    argParser.addOption('file',
-        abbr: 'f', help: 'Path to the .zgl file.', valueHelp: 'path');
+    argParser.addOption(
+      'file',
+      abbr: 'f',
+      help: 'Path to the .zgl file.',
+      valueHelp: 'path',
+    );
     addKeyOptions(argParser);
-    argParser.addOption('block',
-        abbr: 'b',
-        help: 'Block index to generate proof for.',
-        valueHelp: 'index');
+    argParser.addOption(
+      'block',
+      abbr: 'b',
+      help: 'Block index to generate proof for.',
+      valueHelp: 'index',
+    );
     addOutputOption(argParser, help: 'Output path for proof JSON.');
   }
 
@@ -51,9 +57,9 @@ class ExcerptProofCommand extends Command<int> {
     final proof = ExcerptProof.generateProof(leafHashes, blockIndex);
 
     final outputPath = argResults!['output'] as String? ?? 'excerpt_proof.json';
-    File(outputPath).writeAsStringSync(
-      const JsonEncoder.withIndent('  ').convert(proof),
-    );
+    File(
+      outputPath,
+    ).writeAsStringSync(const JsonEncoder.withIndent('  ').convert(proof));
 
     stdout.writeln(Ansi.success('Excerpt proof generated'));
     stdout.writeln('  Block: $blockIndex');
@@ -66,12 +72,18 @@ class ExcerptProofCommand extends Command<int> {
 /// `zegel verify-excerpt` - Verify an excerpt proof.
 class VerifyExcerptCommand extends Command<int> {
   VerifyExcerptCommand() {
-    argParser.addOption('proof',
-        abbr: 'p', help: 'Path to the proof JSON file.', valueHelp: 'path');
-    argParser.addOption('file',
-        abbr: 'f',
-        help: 'Path to the .zgl file to verify against.',
-        valueHelp: 'path');
+    argParser.addOption(
+      'proof',
+      abbr: 'p',
+      help: 'Path to the proof JSON file.',
+      valueHelp: 'path',
+    );
+    argParser.addOption(
+      'file',
+      abbr: 'f',
+      help: 'Path to the .zgl file to verify against.',
+      valueHelp: 'path',
+    );
   }
 
   @override
@@ -102,7 +114,8 @@ class VerifyExcerptCommand extends Command<int> {
     if (valid) {
       stdout.writeln(Ansi.success('✓ Excerpt proof is VALID'));
       stdout.writeln(
-          '  Block ${proofData["block_index"]} verified against Merkle root');
+        '  Block ${proofData["block_index"]} verified against Merkle root',
+      );
     } else {
       stdout.writeln(Ansi.error('✗ Excerpt proof is INVALID'));
     }

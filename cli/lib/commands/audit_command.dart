@@ -658,9 +658,11 @@ class AuditVerifyChainCommand extends Command<int> {
       stdout.writeln('  File:    $filePath');
       stdout.writeln('  Entries: ${auditTrail.length}');
       stdout.writeln(
-          '  First:   ${auditTrail.first['action']} by ${auditTrail.first['actor']}');
+        '  First:   ${auditTrail.first['action']} by ${auditTrail.first['actor']}',
+      );
       stdout.writeln(
-          '  Last:    ${auditTrail.last['action']} by ${auditTrail.last['actor']}');
+        '  Last:    ${auditTrail.last['action']} by ${auditTrail.last['actor']}',
+      );
       return 0;
     } else {
       stdout.writeln(Ansi.error('Audit chain is INVALID.'));

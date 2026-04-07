@@ -45,10 +45,7 @@ class SplitKeyCommand extends Command<int> {
 
   SplitKeyCommand() {
     addKeyOptions(argParser);
-    addOutputOption(
-      argParser,
-      help: 'Output directory for share files.',
-    );
+    addOutputOption(argParser, help: 'Output directory for share files.');
 
     argParser.addOption(
       'threshold',
@@ -101,9 +98,7 @@ class SplitKeyCommand extends Command<int> {
     }
 
     if (totalShares == null || totalShares < threshold || totalShares > 255) {
-      exitError(
-        'Total shares must be an integer between $threshold and 255.',
-      );
+      exitError('Total shares must be an integer between $threshold and 255.');
     }
 
     final outputDir = argResults!['output'] as String?;
@@ -120,11 +115,7 @@ class SplitKeyCommand extends Command<int> {
     final useHex = argResults!['hex'] as bool;
 
     // Split the key.
-    final shares = ShamirSecretSharing.split(
-      masterKey,
-      threshold,
-      totalShares,
-    );
+    final shares = ShamirSecretSharing.split(masterKey, threshold, totalShares);
 
     // Write each share to a file.
     for (var i = 0; i < shares.length; i++) {
@@ -151,7 +142,8 @@ class SplitKeyCommand extends Command<int> {
     stdout.writeln('  Threshold:  $threshold of $totalShares');
     stdout.writeln('  Share dir:  $outputDir');
     stdout.writeln(
-        '  Format:     ${useHex ? 'hex (66 characters)' : 'raw (33 bytes)'}');
+      '  Format:     ${useHex ? 'hex (66 characters)' : 'raw (33 bytes)'}',
+    );
     stdout.writeln('  Files:');
     for (var i = 0; i < shares.length; i++) {
       stdout.writeln('    share_${i + 1}.key');
@@ -227,10 +219,7 @@ class ReconstructCommand extends Command<int> {
   @override
   Future<int> run() async {
     if (argResults!.rest.length < 2) {
-      throw UsageException(
-        'At least 2 share files are required.',
-        usage,
-      );
+      throw UsageException('At least 2 share files are required.', usage);
     }
 
     // Read all share files.
@@ -305,19 +294,21 @@ class ReconstructCommand extends Command<int> {
         stdout.writeln('  Shares used: ${shares.length}');
         stdout.writeln('  Key file:    $outputPath');
         stdout.writeln();
-        stderr.writeln(Ansi.warning(
-          'Security Warning: Treat this key file with the same care as '
-          'the original key.',
-        ));
+        stderr.writeln(
+          Ansi.warning(
+            'Security Warning: Treat this key file with the same care as '
+            'the original key.',
+          ),
+        );
       }
     } else {
       stdout.writeln(keyHex);
 
       if (!quiet) {
         stderr.writeln();
-        stderr.writeln(Ansi.success(
-          'Key reconstructed from ${shares.length} shares.',
-        ));
+        stderr.writeln(
+          Ansi.success('Key reconstructed from ${shares.length} shares.'),
+        );
       }
     }
 

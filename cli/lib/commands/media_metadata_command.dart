@@ -77,10 +77,7 @@ class MediaMetadataExtractCommand extends Command<int> {
       defaultsTo: false,
     );
 
-    addOutputOption(
-      argParser,
-      help: 'Output path for metadata JSON file.',
-    );
+    addOutputOption(argParser, help: 'Output path for metadata JSON file.');
   }
 
   @override
@@ -127,7 +124,8 @@ class MediaMetadataExtractCommand extends Command<int> {
     stdout.writeln();
     stdout.writeln('  Filename:     ${metadata['filename']}');
     stdout.writeln(
-        '  File size:    ${formatFileSize(metadata['file_size'] as int)}');
+      '  File size:    ${formatFileSize(metadata['file_size'] as int)}',
+    );
     stdout.writeln('  Detected type: ${metadata['detected_type']}');
     stdout.writeln('  Content hash: ${metadata['content_hash']}');
 

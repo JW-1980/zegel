@@ -160,9 +160,7 @@ class ExtractCommand extends Command<int> {
             '${Ansi.error('REGULATORY HOLD')} - File is under regulatory hold.',
           );
           stderr.writeln('  Hold until: $holdStr');
-          stderr.writeln(
-            '  Extraction is refused while the hold is active.',
-          );
+          stderr.writeln('  Extraction is refused while the hold is active.');
           stderr.writeln(
             '  Use --no-check-regulatory-hold to bypass this check.',
           );
@@ -209,10 +207,12 @@ class ExtractCommand extends Command<int> {
 
     if (result.redactedBlocks != null && result.redactedBlocks!.isNotEmpty) {
       stdout.writeln();
-      stdout.writeln(Ansi.warning(
-        '  Note: ${result.redactedBlocks!.length} block(s) were redacted '
-        '(blocks: ${result.redactedBlocks!.join(', ')})',
-      ));
+      stdout.writeln(
+        Ansi.warning(
+          '  Note: ${result.redactedBlocks!.length} block(s) were redacted '
+          '(blocks: ${result.redactedBlocks!.join(', ')})',
+        ),
+      );
     }
 
     if (result.metadata != null && result.metadata!.isNotEmpty) {

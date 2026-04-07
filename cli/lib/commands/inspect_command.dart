@@ -150,9 +150,7 @@ class InspectCommand extends Command<int> {
 
     // Merkle root (from raw header).
     if (rawHeader != null) {
-      stdout.writeln(
-        '  Merkle root:  ${hexEncode(rawHeader.merkleRoot)}',
-      );
+      stdout.writeln('  Merkle root:  ${hexEncode(rawHeader.merkleRoot)}');
     }
 
     // Extended header fields.
@@ -271,9 +269,7 @@ class InspectCommand extends Command<int> {
         stdout.writeln();
         stdout.writeln(Ansi.header('  Attestations:'));
         stdout.writeln('    Count:       $attestationCount');
-        stdout.writeln(
-          '    Blocks:      ${attestationIndices.join(', ')}',
-        );
+        stdout.writeln('    Blocks:      ${attestationIndices.join(', ')}');
         stdout.writeln(
           '    ${Ansi.dim}(use "zegel verify" with key to see attestation details)${Ansi.reset}',
         );
@@ -341,9 +337,7 @@ class InspectCommand extends Command<int> {
       );
     }
     if (inspection.filename != null) {
-      buffer.writeln(
-        '  "filename": "${_jsonEscape(inspection.filename!)}",',
-      );
+      buffer.writeln('  "filename": "${_jsonEscape(inspection.filename!)}",');
     }
     buffer.writeln('  "block_count": ${inspection.blockCount},');
 
@@ -357,9 +351,7 @@ class InspectCommand extends Command<int> {
         inspection.expirationTimestamp! * 1000,
         isUtc: true,
       );
-      buffer.writeln(
-        '  "expires_at_iso": "${expiresAt.toIso8601String()}",',
-      );
+      buffer.writeln('  "expires_at_iso": "${expiresAt.toIso8601String()}",');
     }
 
     if (inspection.splitKeyParams != null) {
@@ -393,12 +385,8 @@ class InspectCommand extends Command<int> {
         buffer.writeln('    {');
         buffer.writeln('      "index": $i,');
         buffer.writeln('      "type": ${block.type},');
-        buffer.writeln(
-          '      "type_name": "${blockTypeName(block.type)}",',
-        );
-        buffer.writeln(
-          '      "ciphertext_length": ${block.ciphertextLength},',
-        );
+        buffer.writeln('      "type_name": "${blockTypeName(block.type)}",');
+        buffer.writeln('      "ciphertext_length": ${block.ciphertextLength},');
         buffer.writeln(
           '      "plaintext_hash": "${hexEncode(block.plaintextHash)}"',
         );

@@ -151,9 +151,9 @@ class RedactCommand extends Command<int> {
       }
       // Check if block is already redacted.
       if (rawHeader.blockDirectory[index].type == ZegelFormat.blockRedacted) {
-        stderr.writeln(Ansi.warning(
-          'Warning: Block $index is already redacted.',
-        ));
+        stderr.writeln(
+          Ansi.warning('Warning: Block $index is already redacted.'),
+        );
       }
     }
 
@@ -161,9 +161,7 @@ class RedactCommand extends Command<int> {
     final skipConfirm = argResults!['confirm'] as bool;
     if (!skipConfirm && stdin.hasTerminal) {
       stderr.writeln(Ansi.warning('WARNING: Redaction is IRREVERSIBLE.'));
-      stderr.writeln(
-        'The following blocks will be permanently destroyed:',
-      );
+      stderr.writeln('The following blocks will be permanently destroyed:');
       for (final index in blockIndices) {
         final block = rawHeader.blockDirectory[index];
         stderr.writeln(
@@ -247,16 +245,16 @@ class RedactCommand extends Command<int> {
     );
 
     if (declassify) {
-      stdout.writeln(
-        '  Declassified:    ${newClassification!.toUpperCase()}',
-      );
+      stdout.writeln('  Declassified:    ${newClassification!.toUpperCase()}');
     }
 
     stdout.writeln();
-    stdout.writeln(Ansi.info(
-      'The Merkle tree remains intact. Non-redacted blocks can still be '
-      'verified and extracted.',
-    ));
+    stdout.writeln(
+      Ansi.info(
+        'The Merkle tree remains intact. Non-redacted blocks can still be '
+        'verified and extracted.',
+      ),
+    );
 
     return 0;
   }

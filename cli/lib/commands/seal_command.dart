@@ -207,9 +207,11 @@ class SealCommand extends Command<int> {
       }
 
       if (password.length < 8) {
-        stderr.writeln(Ansi.warning(
-          'Warning: Password is very short. Consider using at least 12 characters.',
-        ));
+        stderr.writeln(
+          Ansi.warning(
+            'Warning: Password is very short. Consider using at least 12 characters.',
+          ),
+        );
       }
 
       // The library handles Argon2id derivation internally.
@@ -238,9 +240,7 @@ class SealCommand extends Command<int> {
       for (final entry in metadataArgs) {
         final eqIndex = entry.indexOf('=');
         if (eqIndex < 1) {
-          exitError(
-            'Invalid metadata format: "$entry". Expected key=value.',
-          );
+          exitError('Invalid metadata format: "$entry". Expected key=value.');
         }
         metadata[entry.substring(0, eqIndex)] = entry.substring(eqIndex + 1);
       }
@@ -258,8 +258,9 @@ class SealCommand extends Command<int> {
             'Invalid public metadata format: "$entry". Expected key=value.',
           );
         }
-        publicMetadata[entry.substring(0, eqIndex)] =
-            entry.substring(eqIndex + 1);
+        publicMetadata[entry.substring(0, eqIndex)] = entry.substring(
+          eqIndex + 1,
+        );
       }
     }
 
@@ -338,8 +339,10 @@ class SealCommand extends Command<int> {
     final prevMerkleRootHex = argResults!['previous-merkle-root'] as String?;
     final prevSealHex = argResults!['previous-seal'] as String?;
     if (prevMerkleRootHex != null && prevSealHex != null) {
-      final prevRoot =
-          hexDecode(prevMerkleRootHex, label: 'previous-merkle-root');
+      final prevRoot = hexDecode(
+        prevMerkleRootHex,
+        label: 'previous-merkle-root',
+      );
       final prevSeal = hexDecode(prevSealHex, label: 'previous-seal');
       versionChainHash = ContentVersioning.computeChainHash(prevRoot, prevSeal);
     } else if (prevMerkleRootHex != null || prevSealHex != null) {
@@ -385,10 +388,12 @@ class SealCommand extends Command<int> {
     // Print success message.
     stdout.writeln(Ansi.success('Sealed successfully.'));
     stdout.writeln();
-    stdout
-        .writeln('  Input:    $inputPath (${formatFileSize(content.length)})');
     stdout.writeln(
-        '  Output:   $outputPath (${formatFileSize(sealedBytes.length)})');
+      '  Input:    $inputPath (${formatFileSize(content.length)})',
+    );
+    stdout.writeln(
+      '  Output:   $outputPath (${formatFileSize(sealedBytes.length)})',
+    );
     stdout.writeln('  Filename: $filename');
     stdout.writeln('  Type:     $contentType');
 

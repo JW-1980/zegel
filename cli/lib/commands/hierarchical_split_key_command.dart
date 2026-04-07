@@ -77,10 +77,7 @@ class HierarchicalSplitSplitCommand extends Command<int> {
 
   HierarchicalSplitSplitCommand() {
     addKeyOptions(argParser);
-    addOutputOption(
-      argParser,
-      help: 'Output directory for share files.',
-    );
+    addOutputOption(argParser, help: 'Output directory for share files.');
 
     argParser.addOption(
       'levels',
@@ -146,11 +143,13 @@ class HierarchicalSplitSplitCommand extends Command<int> {
       'version': 1,
       'type': 'hierarchical_split_key',
       'levels': levels
-          .map((l) => {
-                'name': l.classification,
-                'threshold': l.threshold,
-                'total': l.totalShares,
-              })
+          .map(
+            (l) => {
+              'name': l.classification,
+              'threshold': l.threshold,
+              'total': l.totalShares,
+            },
+          )
           .toList(),
       'created': DateTime.now().toUtc().toIso8601String(),
     };
@@ -176,10 +175,12 @@ class HierarchicalSplitSplitCommand extends Command<int> {
     }
     stdout.writeln();
     stdout.writeln(
-        'To reconstruct the full key, you need shares from ALL levels:');
+      'To reconstruct the full key, you need shares from ALL levels:',
+    );
     for (final level in levels) {
       stdout.writeln(
-          '  - ${level.threshold} shares from ${level.classification}');
+        '  - ${level.threshold} shares from ${level.classification}',
+      );
     }
 
     return 0;
@@ -223,11 +224,13 @@ class HierarchicalSplitSplitCommand extends Command<int> {
         );
       }
 
-      levels.add(ShareLevel(
-        classification: name,
-        threshold: threshold,
-        totalShares: total,
-      ));
+      levels.add(
+        ShareLevel(
+          classification: name,
+          threshold: threshold,
+          totalShares: total,
+        ),
+      );
     }
 
     return levels;
@@ -264,10 +267,7 @@ class HierarchicalSplitReconstructCommand extends Command<int> {
       'zegel hierarchical-split reconstruct <shares-dir> [options]';
 
   HierarchicalSplitReconstructCommand() {
-    addOutputOption(
-      argParser,
-      help: 'Output path for the reconstructed key.',
-    );
+    addOutputOption(argParser, help: 'Output path for the reconstructed key.');
 
     argParser.addOption(
       'levels',
@@ -309,11 +309,13 @@ class HierarchicalSplitReconstructCommand extends Command<int> {
 
     // Parse levels from manifest.
     final manifestLevels = (manifestJson['levels'] as List)
-        .map((l) => ShareLevel(
-              classification: l['name'] as String,
-              threshold: l['threshold'] as int,
-              totalShares: l['total'] as int,
-            ))
+        .map(
+          (l) => ShareLevel(
+            classification: l['name'] as String,
+            threshold: l['threshold'] as int,
+            totalShares: l['total'] as int,
+          ),
+        )
         .toList();
 
     // Optionally filter to specific levels.
@@ -328,10 +330,12 @@ class HierarchicalSplitReconstructCommand extends Command<int> {
 
       // Preserve order from manifest.
       levels.sort((a, b) {
-        final aIdx = manifestLevels
-            .indexWhere((m) => m.classification == a.classification);
-        final bIdx = manifestLevels
-            .indexWhere((m) => m.classification == b.classification);
+        final aIdx = manifestLevels.indexWhere(
+          (m) => m.classification == a.classification,
+        );
+        final bIdx = manifestLevels.indexWhere(
+          (m) => m.classification == b.classification,
+        );
         return aIdx.compareTo(bIdx);
       });
     }
@@ -367,10 +371,9 @@ class HierarchicalSplitReconstructCommand extends Command<int> {
         shares.add(Uint8List.fromList(shareFiles[i].readAsBytesSync()));
       }
 
-      providedShares.add(LevelShares(
-        classification: level.classification,
-        shares: shares,
-      ));
+      providedShares.add(
+        LevelShares(classification: level.classification, shares: shares),
+      );
     }
 
     // Reconstruct the master key.
@@ -394,9 +397,7 @@ class HierarchicalSplitReconstructCommand extends Command<int> {
     stdout.writeln();
     stdout.writeln(Ansi.header('Levels used:'));
     for (final level in levels) {
-      stdout.writeln(
-        '  ${level.classification}: ${level.threshold} shares',
-      );
+      stdout.writeln('  ${level.classification}: ${level.threshold} shares');
     }
 
     return 0;

@@ -147,9 +147,7 @@ class DiscloseCommand extends Command<int> {
         );
       }
       if (rawHeader.blockDirectory[index].type == ZegelFormat.blockRedacted) {
-        exitError(
-          'Block $index is redacted and cannot be disclosed.',
-        );
+        exitError('Block $index is redacted and cannot be disclosed.');
       }
     }
 
@@ -256,9 +254,7 @@ class DiscloseCommand extends Command<int> {
     stderr.writeln(
       '  This token grants permanent read access to the specified blocks.',
     );
-    stderr.writeln(
-      '  Distribute it with the same care as a key.',
-    );
+    stderr.writeln('  Distribute it with the same care as a key.');
     stderr.writeln(
       '  The token holder cannot access any blocks not listed in the token.',
     );
@@ -425,10 +421,12 @@ class ExtractWithTokenCommand extends Command<int> {
 
     // Write extracted content.
     if (result.content == null || result.content!.isEmpty) {
-      stderr.writeln(Ansi.warning(
-        'No content blocks were disclosed. '
-        'Token may only contain metadata or non-content blocks.',
-      ));
+      stderr.writeln(
+        Ansi.warning(
+          'No content blocks were disclosed. '
+          'Token may only contain metadata or non-content blocks.',
+        ),
+      );
 
       // Still show metadata if available.
       if (result.metadata != null && result.metadata!.isNotEmpty) {
@@ -448,9 +446,7 @@ class ExtractWithTokenCommand extends Command<int> {
         argResults!['output'] as String? ?? 'partial_$defaultFilename';
 
     if (outputPath.isEmpty) {
-      exitError(
-        'Could not determine output filename. Use -o to specify.',
-      );
+      exitError('Could not determine output filename. Use -o to specify.');
     }
 
     // Check if output exists.
@@ -486,16 +482,18 @@ class ExtractWithTokenCommand extends Command<int> {
 
     if (result.redactedBlocks != null && result.redactedBlocks!.isNotEmpty) {
       stdout.writeln();
-      stdout.writeln(Ansi.warning(
-        '  Redacted blocks: ${result.redactedBlocks!.join(', ')}',
-      ));
+      stdout.writeln(
+        Ansi.warning('  Redacted blocks: ${result.redactedBlocks!.join(', ')}'),
+      );
     }
 
     stdout.writeln();
-    stdout.writeln(Ansi.info(
-      'Note: This is a partial extraction. Blocks not included in the token '
-      'are unavailable.',
-    ));
+    stdout.writeln(
+      Ansi.info(
+        'Note: This is a partial extraction. Blocks not included in the token '
+        'are unavailable.',
+      ),
+    );
 
     return 0;
   }

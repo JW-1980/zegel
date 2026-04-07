@@ -107,7 +107,11 @@ class FileService {
   Future<List<String>> listZegelFiles(String directoryPath) async {
     final dir = Directory(directoryPath);
     if (!await dir.exists()) return [];
-    return await dir.list().where((e) => e is File && e.path.endsWith('.zgl')).map((e) => e.path).toList();
+    return await dir
+        .list()
+        .where((e) => e is File && e.path.endsWith('.zgl'))
+        .map((e) => e.path)
+        .toList();
   }
 
   /// Lists all regular files in a directory (non-recursive).

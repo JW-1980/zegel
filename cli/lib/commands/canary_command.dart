@@ -228,7 +228,10 @@ class CanaryEmbedCommand extends Command<int> {
         final paddedPlaintext = Uint8List(plaintext.length + padding.length);
         paddedPlaintext.setRange(0, plaintext.length, plaintext);
         paddedPlaintext.setRange(
-            plaintext.length, paddedPlaintext.length, padding);
+          plaintext.length,
+          paddedPlaintext.length,
+          padding,
+        );
         plaintext = paddedPlaintext;
       }
 
@@ -525,9 +528,7 @@ class CanaryIdentifyCommand extends Command<int> {
 
     // Hash each recipient name to get 32-byte IDs.
     final candidateIds = recipientNames.map((name) {
-      return Uint8List.fromList(
-        crypto.sha256.convert(utf8.encode(name)).bytes,
-      );
+      return Uint8List.fromList(crypto.sha256.convert(utf8.encode(name)).bytes);
     }).toList();
 
     final fileBytes = Uint8List.fromList(file.readAsBytesSync());
@@ -545,9 +546,11 @@ class CanaryIdentifyCommand extends Command<int> {
 
     // Check if file has canary flag.
     if (rawHeader.flags & ZegelFormat.flagHasCanary == 0) {
-      stdout.writeln(Ansi.warning(
-        'Warning: This file does not have the HAS_CANARY flag set.',
-      ));
+      stdout.writeln(
+        Ansi.warning(
+          'Warning: This file does not have the HAS_CANARY flag set.',
+        ),
+      );
       stdout.writeln('It may not contain canary fingerprinting.');
     }
 

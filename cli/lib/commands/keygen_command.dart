@@ -127,7 +127,8 @@ class KeygenCommand extends Command<int> {
         stderr.writeln();
         stderr.writeln('  File:   $outputPath');
         stderr.writeln(
-            '  Format: ${rawOutput ? 'raw (32 bytes)' : 'hex (64 characters)'}');
+          '  Format: ${rawOutput ? 'raw (32 bytes)' : 'hex (64 characters)'}',
+        );
         stderr.writeln('  Perms:  0600 (owner read/write only)');
         stderr.writeln();
         _printSecurityWarning();
@@ -215,11 +216,7 @@ class KeygenCommand extends Command<int> {
     stderr.writeln('  - Store it securely (password manager, hardware token).');
     stderr.writeln('  - Never commit key files to version control.');
     stderr.writeln('  - Never transmit keys over insecure channels.');
-    stderr.writeln(
-      '  - Consider split-key (M-of-N) for high-value documents:',
-    );
-    stderr.writeln(
-      '      zegel split-key -k <key> --threshold 3 --shares 5',
-    );
+    stderr.writeln('  - Consider split-key (M-of-N) for high-value documents:');
+    stderr.writeln('      zegel split-key -k <key> --threshold 3 --shares 5');
   }
 }

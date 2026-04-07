@@ -159,9 +159,9 @@ class TimestampCreateCommand extends Command<int> {
 
       // Note: Actual TSA communication would require HTTP client.
       // For now, we create a local timestamp and note the TSA URL.
-      stdout.writeln(Ansi.warning(
-        'Note: External TSA communication not implemented.',
-      ));
+      stdout.writeln(
+        Ansi.warning('Note: External TSA communication not implemented.'),
+      );
       stdout.writeln('Creating local timestamp instead.');
       stdout.writeln('TSA URL would be: $tsaUrl');
       stdout.writeln();
@@ -215,8 +215,9 @@ class TimestampCreateCommand extends Command<int> {
     timestampToken['created'] = DateTime.now().toUtc().toIso8601String();
 
     // Output the token.
-    final tokenJson =
-        const JsonEncoder.withIndent('  ').convert(timestampToken);
+    final tokenJson = const JsonEncoder.withIndent(
+      '  ',
+    ).convert(timestampToken);
 
     if (outputPath != null && outputPath.isNotEmpty) {
       final outputFile = File(outputPath);
@@ -366,9 +367,11 @@ class TimestampVerifyCommand extends Command<int> {
     // Check token type.
     final tokenType = token['type'] as String?;
     if (tokenType != 'local') {
-      stdout.writeln(Ansi.warning(
-        'Warning: Token type "$tokenType" may not be verifiable locally.',
-      ));
+      stdout.writeln(
+        Ansi.warning(
+          'Warning: Token type "$tokenType" may not be verifiable locally.',
+        ),
+      );
     }
 
     // Verify the token.

@@ -149,9 +149,7 @@ class VerifyCommand extends Command<int> {
               'roles are missing.',
             );
             stdout.writeln();
-            stderr.writeln(
-              '  Missing roles: ${missingRoles.join(', ')}',
-            );
+            stderr.writeln('  Missing roles: ${missingRoles.join(', ')}');
             stderr.writeln(
               '  Present roles: ${attestedRoles.isEmpty ? '(none)' : attestedRoles.join(', ')}',
             );
@@ -277,9 +275,9 @@ class VerifyCommand extends Command<int> {
     // Show redacted blocks.
     if (result.redactedBlocks != null && result.redactedBlocks!.isNotEmpty) {
       stdout.writeln();
-      stdout.writeln(Ansi.warning(
-        '  Redacted blocks: ${result.redactedBlocks!.join(', ')}',
-      ));
+      stdout.writeln(
+        Ansi.warning('  Redacted blocks: ${result.redactedBlocks!.join(', ')}'),
+      );
     }
 
     // Show attestations if present.
