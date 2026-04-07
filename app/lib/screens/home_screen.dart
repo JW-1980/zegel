@@ -344,8 +344,7 @@ class _HomeScreenState extends State<HomeScreen> {
           // Core
           sectionHeader(l10n.drawerCoreSection),
           drawerItem(Icons.lock, l10n.sealAction, _navigateToSeal),
-          drawerItem(
-              Icons.verified_user, l10n.verifyAction, _navigateToVerify),
+          drawerItem(Icons.verified_user, l10n.verifyAction, _navigateToVerify),
           drawerItem(
               Icons.file_download, l10n.extractAction, _navigateToExtract),
           drawerItem(Icons.search, l10n.inspectAction,
@@ -408,8 +407,7 @@ class _HomeScreenState extends State<HomeScreen> {
           const Divider(),
 
           // Settings
-          drawerItem(
-              Icons.settings, l10n.settingsTitle, _navigateToSettings),
+          drawerItem(Icons.settings, l10n.settingsTitle, _navigateToSettings),
         ],
       ),
     );

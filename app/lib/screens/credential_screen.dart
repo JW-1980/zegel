@@ -46,7 +46,8 @@ class _CredentialScreenState extends State<CredentialScreen>
         bottom: TabBar(
           controller: _tabController,
           labelColor: theme.colorScheme.onPrimary,
-          unselectedLabelColor: theme.colorScheme.onPrimary.withValues(alpha: 0.7),
+          unselectedLabelColor:
+              theme.colorScheme.onPrimary.withValues(alpha: 0.7),
           indicatorColor: theme.colorScheme.onPrimary,
           tabs: [
             Tab(text: l10n.credentialIssueTab),
@@ -479,9 +480,8 @@ class _CredentialVerifyTabState extends State<_CredentialVerifyTab> {
       if (mounted) {
         setState(() {
           _credentialInfo = info;
-          _statusMessage = info.isValid
-              ? 'Credential is VALID'
-              : 'Credential is INVALID';
+          _statusMessage =
+              info.isValid ? 'Credential is VALID' : 'Credential is INVALID';
           _isError = !info.isValid;
         });
       }
@@ -557,9 +557,8 @@ class _CredentialVerifyTabState extends State<_CredentialVerifyTab> {
           SizedBox(
             height: 50,
             child: ElevatedButton.icon(
-              onPressed: _isVerifying || _filePath == null
-                  ? null
-                  : _verifyCredential,
+              onPressed:
+                  _isVerifying || _filePath == null ? null : _verifyCredential,
               icon: _isVerifying
                   ? const SizedBox(
                       width: 20,

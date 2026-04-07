@@ -46,7 +46,8 @@ class _ManifestScreenState extends State<ManifestScreen>
         bottom: TabBar(
           controller: _tabController,
           labelColor: theme.colorScheme.onPrimary,
-          unselectedLabelColor: theme.colorScheme.onPrimary.withValues(alpha: 0.7),
+          unselectedLabelColor:
+              theme.colorScheme.onPrimary.withValues(alpha: 0.7),
           indicatorColor: theme.colorScheme.onPrimary,
           tabs: [
             Tab(text: l10n.manifestCreateTab),
@@ -292,9 +293,7 @@ class _ManifestCreateTabState extends State<_ManifestCreateTab> {
                     )
                   : const Icon(Icons.create_new_folder),
               label: Text(
-                _isCreating
-                    ? l10n.manifestCreating
-                    : l10n.manifestCreateAction,
+                _isCreating ? l10n.manifestCreating : l10n.manifestCreateAction,
                 style: const TextStyle(fontSize: 16),
               ),
             ),

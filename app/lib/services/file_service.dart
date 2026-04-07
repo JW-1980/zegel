@@ -25,7 +25,6 @@ class FileService {
   Future<String?> pickZegelFile() async {
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-
       allowMultiple: false,
     );
     if (result != null && result.files.isNotEmpty) {

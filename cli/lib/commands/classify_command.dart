@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:io';
+import 'dart:io' hide BytesBuilder;
 
 import 'package:args/command_runner.dart';
 import 'package:zegel/zegel.dart';

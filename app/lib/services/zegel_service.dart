@@ -202,10 +202,8 @@ class DisclosureToken {
   Map<String, dynamic> toJson() => {
         'version': version,
         'merkle_root': merkleRoot,
-        'block_keys': blockKeys
-            .map((k, v) => MapEntry(k.toString(), v)),
-        'created_at':
-            createdAt.millisecondsSinceEpoch ~/ 1000,
+        'block_keys': blockKeys.map((k, v) => MapEntry(k.toString(), v)),
+        'created_at': createdAt.millisecondsSinceEpoch ~/ 1000,
       };
 
   factory DisclosureToken.fromJson(Map<String, dynamic> json) {
@@ -688,7 +686,6 @@ class ZegelService {
       fileBytesList.add(await file.readAsBytes());
     }
     return ContentVersioning.verifyVersionChain(fileBytesList);
-
   }
 
   // ======================================================================

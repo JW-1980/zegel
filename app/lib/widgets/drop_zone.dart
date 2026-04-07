@@ -157,7 +157,8 @@ class _DropZoneState extends State<DropZone>
                     Text(
                       'or tap to browse',
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                        color:
+                            colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
                       ),
                     ),
                 ],

@@ -61,8 +61,8 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
       return;
     }
     if (_hexKey.length != 64) {
-      setState(() =>
-          _errorMessage = 'Please enter a valid 64-character hex key.');
+      setState(
+          () => _errorMessage = 'Please enter a valid 64-character hex key.');
       return;
     }
 
@@ -87,7 +87,8 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
 
       // Verify and extract content
       final masterKey = _hexToBytes(_hexKey);
-      final result = reader.verify(bytes, masterKey); // Note: still returns core.ZegelResult
+      final result = reader.verify(
+          bytes, masterKey); // Note: still returns core.ZegelResult
 
       if (!result.valid) {
         throw Exception('File verification failed');
@@ -282,8 +283,8 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
                       ),
                       const Divider(),
                       if (_metadata!['filename'] != null)
-                        _buildInfoRow(
-                            'Filename', _metadata!['filename'].toString(), theme),
+                        _buildInfoRow('Filename',
+                            _metadata!['filename'].toString(), theme),
                       if (_metadata!['file_size'] != null)
                         _buildInfoRow(
                           'File Size',
@@ -349,7 +350,8 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
                             color: theme.colorScheme.surfaceContainerHighest,
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
-                              color: theme.colorScheme.outline.withValues(alpha: 0.3),
+                              color: theme.colorScheme.outline
+                                  .withValues(alpha: 0.3),
                             ),
                           ),
                           child: Center(

@@ -106,8 +106,7 @@ class _DiscloseScreenState extends State<DiscloseScreen>
 
   Future<void> _generateToken() async {
     if (_selectedBlocks.isEmpty) {
-      setState(
-          () => _generateError = 'Select at least one block to disclose.');
+      setState(() => _generateError = 'Select at least one block to disclose.');
       return;
     }
 
@@ -260,7 +259,8 @@ class _DiscloseScreenState extends State<DiscloseScreen>
         bottom: TabBar(
           controller: _tabController,
           labelColor: theme.colorScheme.onPrimary,
-          unselectedLabelColor: theme.colorScheme.onPrimary.withValues(alpha: 0.6),
+          unselectedLabelColor:
+              theme.colorScheme.onPrimary.withValues(alpha: 0.6),
           indicatorColor: theme.colorScheme.onPrimary,
           tabs: const [
             Tab(text: 'Generate Token'),
@@ -328,8 +328,7 @@ class _DiscloseScreenState extends State<DiscloseScreen>
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: KeyInput(
-                onKeyChanged: (key) =>
-                    setState(() => _generateHexKey = key),
+                onKeyChanged: (key) => setState(() => _generateHexKey = key),
               ),
             ),
           ),
@@ -514,14 +513,14 @@ class _DiscloseScreenState extends State<DiscloseScreen>
                             );
                             if (mounted) {
                               // ignore: use_build_context_synchronously
-      // ignore: use_build_context_synchronously
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Token copied to clipboard'),
-                                duration: Duration(seconds: 1),
-                              ),
-                            );
+                              // ignore: use_build_context_synchronously
+                              // ignore: use_build_context_synchronously
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Token copied to clipboard'),
+                                  duration: Duration(seconds: 1),
+                                ),
+                              );
                             }
                           },
                         ),
@@ -673,9 +672,7 @@ class _DiscloseScreenState extends State<DiscloseScreen>
                     )
                   : const Icon(Icons.file_download),
               label: Text(
-                _isExtracting
-                    ? 'Extracting...'
-                    : 'Extract Disclosed Blocks',
+                _isExtracting ? 'Extracting...' : 'Extract Disclosed Blocks',
                 style: const TextStyle(fontSize: 16),
               ),
             ),

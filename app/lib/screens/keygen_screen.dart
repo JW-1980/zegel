@@ -79,7 +79,8 @@ class _KeygenScreenState extends State<KeygenScreen> {
       final keyService = context.read<KeyService>();
 
       // Save as raw 32 bytes
-      final bytes = Uint8List.fromList(keyService.hexToBytes(_generatedKeyHex!));
+      final bytes =
+          Uint8List.fromList(keyService.hexToBytes(_generatedKeyHex!));
       final savedPath = await fileService.saveFile(bytes, 'zegel_key.bin');
 
       if (savedPath != null && mounted) {
@@ -307,16 +308,15 @@ class _KeygenScreenState extends State<KeygenScreen> {
                           color: theme.colorScheme.surfaceContainerHighest,
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
-                            color: theme.colorScheme.outline.withValues(alpha: 0.3),
+                            color: theme.colorScheme.outline
+                                .withValues(alpha: 0.3),
                           ),
                         ),
                         child: Row(
                           children: [
                             Expanded(
                               child: SelectableText(
-                                _obscureKey
-                                    ? '*' * 64
-                                    : _generatedKeyHex!,
+                                _obscureKey ? '*' * 64 : _generatedKeyHex!,
                                 style: TextStyle(
                                   fontFamily: 'monospace',
                                   fontSize: 12,
@@ -354,16 +354,15 @@ class _KeygenScreenState extends State<KeygenScreen> {
                           color: theme.colorScheme.surfaceContainerHighest,
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
-                            color: theme.colorScheme.outline.withValues(alpha: 0.3),
+                            color: theme.colorScheme.outline
+                                .withValues(alpha: 0.3),
                           ),
                         ),
                         child: Row(
                           children: [
                             Expanded(
                               child: SelectableText(
-                                _obscureKey
-                                    ? '*' * 44
-                                    : _generatedKeyBase64!,
+                                _obscureKey ? '*' * 44 : _generatedKeyBase64!,
                                 style: TextStyle(
                                   fontFamily: 'monospace',
                                   fontSize: 12,
@@ -470,9 +469,8 @@ class _KeygenScreenState extends State<KeygenScreen> {
                                 ),
                                 const SizedBox(width: 8),
                                 ElevatedButton(
-                                  onPressed: _isSaving
-                                      ? null
-                                      : _saveToSecureStorage,
+                                  onPressed:
+                                      _isSaving ? null : _saveToSecureStorage,
                                   child: const Text('Save'),
                                 ),
                               ],

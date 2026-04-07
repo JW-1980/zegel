@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
@@ -47,7 +46,8 @@ class _CanaryScreenState extends State<CanaryScreen>
   String? _statusMessage;
   bool _isError = false;
 
-  final TextEditingController _recipientNameController = TextEditingController();
+  final TextEditingController _recipientNameController =
+      TextEditingController();
   final TextEditingController _candidateIdController = TextEditingController();
 
   @override
@@ -165,7 +165,8 @@ class _CanaryScreenState extends State<CanaryScreen>
 
     try {
       final keyService = context.read<KeyService>();
-      final masterKeyBytes = Uint8List.fromList(keyService.hexToBytes(_identifyKey));
+      final masterKeyBytes =
+          Uint8List.fromList(keyService.hexToBytes(_identifyKey));
 
       // Convert candidate IDs to bytes
       final candidateIdBytes = _candidateIds

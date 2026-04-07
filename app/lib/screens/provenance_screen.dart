@@ -100,8 +100,7 @@ class _ProvenanceScreenState extends State<ProvenanceScreen> {
         reportBuffer.writeln('');
       }
 
-      final bytes =
-          List<int>.from(reportBuffer.toString().codeUnits);
+      final bytes = List<int>.from(reportBuffer.toString().codeUnits);
       final savedPath = await fileService.saveFile(
         Uint8List.fromList(bytes),
         'provenance_report.txt',

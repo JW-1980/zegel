@@ -47,7 +47,8 @@ class _BatchScreenState extends State<BatchScreen>
         bottom: TabBar(
           controller: _tabController,
           labelColor: theme.colorScheme.onPrimary,
-          unselectedLabelColor: theme.colorScheme.onPrimary.withValues(alpha: 0.7),
+          unselectedLabelColor:
+              theme.colorScheme.onPrimary.withValues(alpha: 0.7),
           indicatorColor: theme.colorScheme.onPrimary,
           tabs: [
             Tab(text: l10n.batchVerifyTab),
@@ -162,11 +163,11 @@ class _BatchVerifyTabState extends State<_BatchVerifyTab> {
       if (mounted) {
         if (mounted) {
           // ignore: use_build_context_synchronously
-      // ignore: use_build_context_synchronously
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Batch verify error: $e')),
-        );
+          // ignore: use_build_context_synchronously
+          // ignore: use_build_context_synchronously
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Batch verify error: $e')),
+          );
         }
       }
     } finally {
@@ -254,9 +255,10 @@ class _BatchVerifyTabState extends State<_BatchVerifyTab> {
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
-                    LinearProgressIndicator(// ignore: deprecated_member_use
+                    LinearProgressIndicator(
+                        // ignore: deprecated_member_use
 // ignore: deprecated_member_use
-value: _progress),
+                        value: _progress),
                     const SizedBox(height: 8),
                     Text(
                       '$_processedFiles / $_totalFiles files processed',
@@ -273,11 +275,10 @@ value: _progress),
           SizedBox(
             height: 50,
             child: ElevatedButton.icon(
-              onPressed: _isProcessing ||
-                      _folderPath == null ||
-                      _hexKey.length != 64
-                  ? null
-                  : _startBatchVerify,
+              onPressed:
+                  _isProcessing || _folderPath == null || _hexKey.length != 64
+                      ? null
+                      : _startBatchVerify,
               icon: _isProcessing
                   ? const SizedBox(
                       width: 20,
@@ -289,9 +290,7 @@ value: _progress),
                     )
                   : const Icon(Icons.play_arrow),
               label: Text(
-                _isProcessing
-                    ? l10n.batchProcessing
-                    : l10n.batchStartVerify,
+                _isProcessing ? l10n.batchProcessing : l10n.batchStartVerify,
                 style: const TextStyle(fontSize: 16),
               ),
             ),
@@ -463,11 +462,11 @@ class _BatchSealTabState extends State<_BatchSealTab> {
       if (mounted) {
         if (mounted) {
           // ignore: use_build_context_synchronously
-      // ignore: use_build_context_synchronously
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Batch seal error: $e')),
-        );
+          // ignore: use_build_context_synchronously
+          // ignore: use_build_context_synchronously
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Batch seal error: $e')),
+          );
         }
       }
     } finally {
@@ -614,8 +613,9 @@ class _BatchSealTabState extends State<_BatchSealTab> {
                     // ignore: deprecated_member_use
                     // ignore: deprecated_member_use
                     value: _compress,
-                    onChanged:
-                        _isProcessing ? null : (v) => setState(() => _compress = v),
+                    onChanged: _isProcessing
+                        ? null
+                        : (v) => setState(() => _compress = v),
                   ),
                 ],
               ),
@@ -630,9 +630,10 @@ class _BatchSealTabState extends State<_BatchSealTab> {
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
-                    LinearProgressIndicator(// ignore: deprecated_member_use
+                    LinearProgressIndicator(
+                        // ignore: deprecated_member_use
 // ignore: deprecated_member_use
-value: _progress),
+                        value: _progress),
                     const SizedBox(height: 8),
                     Text(
                       '$_processedFiles / $_totalFiles files processed',
@@ -666,9 +667,7 @@ value: _progress),
                     )
                   : const Icon(Icons.play_arrow),
               label: Text(
-                _isProcessing
-                    ? l10n.batchProcessing
-                    : l10n.batchStartSeal,
+                _isProcessing ? l10n.batchProcessing : l10n.batchStartSeal,
                 style: const TextStyle(fontSize: 16),
               ),
             ),

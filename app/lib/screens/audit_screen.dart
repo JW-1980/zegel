@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
@@ -187,14 +186,16 @@ class _AuditScreenState extends State<AuditScreen> {
       final newEntry = AuditTrail.createEntry(
         _actor.trim(),
         _action,
-        details: _details.isNotEmpty ? Map<String, dynamic>.from(_details) : null,
+        details:
+            _details.isNotEmpty ? Map<String, dynamic>.from(_details) : null,
         previousChainHash: previousChainHash,
       );
 
       // For demo purposes, show success and refresh
       // In production, this would write the entry to the file
       setState(() {
-        _statusMessage = 'Audit entry created (chain hash: ${(newEntry['chain_hash'] as String).substring(0, 16)}...)';
+        _statusMessage =
+            'Audit entry created (chain hash: ${(newEntry['chain_hash'] as String).substring(0, 16)}...)';
         _isError = false;
         _actorController.clear();
         _actor = '';
@@ -388,7 +389,8 @@ class _AuditScreenState extends State<AuditScreen> {
                                   : 'Chain Integrity Broken',
                               style: theme.textTheme.titleSmall?.copyWith(
                                 fontWeight: FontWeight.bold,
-                                color: _isChainValid ? Colors.green : Colors.red,
+                                color:
+                                    _isChainValid ? Colors.green : Colors.red,
                               ),
                             ),
                             Text(

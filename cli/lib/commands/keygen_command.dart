@@ -1,5 +1,6 @@
-import 'dart:io';
+import 'dart:io' hide BytesBuilder;
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:args/command_runner.dart';
 
