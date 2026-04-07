@@ -549,7 +549,8 @@ class ZegelService {
     const chunkSize = 10;
     for (var i = 0; i < filePaths.length; i += chunkSize) {
       final chunk = filePaths.skip(i).take(chunkSize).toList();
-      final chunkResults = await Future.wait(chunk.map((path) => seal(path, hexKey, options)));
+      final chunkResults =
+          await Future.wait(chunk.map((path) => seal(path, hexKey, options)));
       results.addAll(chunkResults);
     }
     return results;
