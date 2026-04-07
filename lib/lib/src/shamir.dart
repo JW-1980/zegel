@@ -49,9 +49,11 @@ class ShamirSecretSharing {
   ///
   /// In GF(2^8), a^(2^8 - 1) = 1 for all a != 0, so a^(-1) = a^254.
   ///
-  /// Returns 0 if [a] is 0 (undefined, but kept safe).
+  /// Throws [ArgumentError] if [a] is 0 (zero has no multiplicative inverse).
   static int gfInverse(int a) {
-    if (a == 0) return 0;
+    if (a == 0) {
+      throw ArgumentError('Zero has no multiplicative inverse in GF(256)');
+    }
     // a^(-1) = a^254 = a^(2+4+8+16+32+64+128)
     // Compute by repeated squaring.
     int result = a;
@@ -133,6 +135,12 @@ class ShamirSecretSharing {
   /// will produce an incorrect (random-looking) result.
   ///
   /// Each share must be exactly 33 bytes: 1-byte x-coordinate + 32 y-values.
+  ///
+  /// Throws [ArgumentError] if:
+  /// - Fewer than [threshold] shares are provided.
+  /// - Any share has an invalid length (not 33 bytes).
+  /// - Any share has a zero x-coordinate.
+  /// - Duplicate x-coordinates are found among the shares.
   static Uint8List reconstruct(List<Uint8List> shares, int threshold) {
     if (shares.length < threshold) {
       throw ArgumentError(
@@ -140,11 +148,33 @@ class ShamirSecretSharing {
       );
     }
 
+    // Validate share lengths.
+    for (int i = 0; i < shares.length; i++) {
+      if (shares[i].length != 33) {
+        throw ArgumentError(
+          'Share $i has invalid length ${shares[i].length} (expected 33)',
+        );
+      }
+    }
+
     // Use exactly threshold shares.
     final List<Uint8List> usedShares = shares.sublist(0, threshold);
 
     // Extract x-coordinates.
     final List<int> xCoords = usedShares.map((s) => s[0]).toList();
+
+    // Validate x-coordinates: no zeros, no duplicates.
+    final Set<int> seen = <int>{};
+    for (int i = 0; i < xCoords.length; i++) {
+      if (xCoords[i] == 0) {
+        throw ArgumentError('Share $i has invalid x-coordinate 0');
+      }
+      if (!seen.add(xCoords[i])) {
+        throw ArgumentError(
+          'Duplicate x-coordinate ${xCoords[i]} in shares',
+        );
+      }
+    }
 
     final Uint8List secret = Uint8List(32);
 

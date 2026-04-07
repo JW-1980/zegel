@@ -1,0 +1,540 @@
+import 'dart:convert';
+import 'dart:io';
+import 'dart:math';
+import 'dart:typed_data';
+
+import 'package:crypto/crypto.dart';
+import 'package:pointycastle/export.dart';
+
+import 'format.dart';
+import 'reader.dart';
+
+/// Creator identity and Ed25519 signature support (v1.2+).
+///
+/// Provides cryptographic proof of who created a .zgl file and on what device.
+/// Uses Ed25519 signatures (via pointycastle) for non-repudiation: the creator
+/// signs the Merkle root, master seal, and timestamp, producing a verifiable
+/// signature that can be checked with only the public key.
+///
+/// Device attestation captures platform and environment information, creating
+/// a signed record of the device that produced the file.
+class ZegelIdentity {
+  ZegelIdentity._();
+
+  /// Generates an Ed25519 signing keypair.
+  ///
+  /// Returns a [ZegelKeyPair] containing the 32-byte private key seed and the
+  /// 32-byte public key.
+  static ZegelKeyPair generateKeyPair() {
+    final SecureRandom secureRandom = _createSecureRandom();
+    final Ed25519KeyPairGenerator keyGen = Ed25519KeyPairGenerator();
+    keyGen.init(ParametersWithRandom(
+      Ed25519KeyGenerationParameters(),
+      secureRandom,
+    ));
+
+    final AsymmetricKeyPair<PublicKey, PrivateKey> pair =
+        keyGen.generateKeyPair();
+    final Ed25519PrivateKeyParameters privateKey =
+        pair.privateKey as Ed25519PrivateKeyParameters;
+    final Ed25519PublicKeyParameters publicKey =
+        pair.publicKey as Ed25519PublicKeyParameters;
+
+    return ZegelKeyPair(
+      privateKey: Uint8List.fromList(privateKey.key),
+      publicKey: Uint8List.fromList(publicKey.key),
+    );
+  }
+
+  /// Signs a .zgl file's integrity markers with an Ed25519 private key.
+  ///
+  /// The signature is computed over:
+  /// ```
+  /// SHA-256(merkle_root || master_seal || timestamp_bytes)
+  /// ```
+  ///
+  /// [fileBytes] is the complete .zgl file (including master seal).
+  /// [privateKey] is the 32-byte Ed25519 private key seed.
+  ///
+  /// Returns a [ZegelSignature] containing the 64-byte Ed25519 signature and
+  /// the timestamp used.
+  ///
+  /// Throws [ZegelFormatException] if the file cannot be parsed.
+  static ZegelSignature sign(Uint8List fileBytes, Uint8List privateKey) {
+    if (privateKey.length != 32) {
+      throw ArgumentError('Private key must be exactly 32 bytes');
+    }
+
+    final _FileIntegrityMarkers markers = _extractMarkers(fileBytes);
+
+    // Build the message to sign: SHA-256(merkle_root || master_seal || timestamp).
+    final int nowEpoch = DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
+    final Uint8List timestampBytes = _packUint64BE(nowEpoch);
+
+    final Uint8List message = Uint8List(
+      markers.merkleRoot.length +
+          markers.masterSeal.length +
+          timestampBytes.length,
+    );
+    int offset = 0;
+    message.setRange(offset, offset + markers.merkleRoot.length,
+        markers.merkleRoot);
+    offset += markers.merkleRoot.length;
+    message.setRange(offset, offset + markers.masterSeal.length,
+        markers.masterSeal);
+    offset += markers.masterSeal.length;
+    message.setRange(offset, offset + timestampBytes.length, timestampBytes);
+
+    final Uint8List digest = Uint8List.fromList(sha256.convert(message).bytes);
+
+    // Sign with Ed25519.
+    final Ed25519Signer signer = Ed25519Signer();
+    signer.init(
+      true,
+      PrivateKeyParameter<Ed25519PrivateKeyParameters>(
+        Ed25519PrivateKeyParameters(privateKey),
+      ),
+    );
+    signer.update(digest, 0, digest.length);
+    final Uint8List signature = signer.generateSignature().toUint8List();
+
+    return ZegelSignature(
+      signature: signature,
+      timestamp: nowEpoch,
+      merkleRootHex: _bytesToHex(markers.merkleRoot),
+    );
+  }
+
+  /// Verifies an Ed25519 signature over a .zgl file's integrity markers.
+  ///
+  /// [fileBytes] is the complete .zgl file.
+  /// [publicKey] is the 32-byte Ed25519 public key.
+  /// [sig] is the [ZegelSignature] to verify.
+  ///
+  /// Returns `true` if the signature is valid.
+  static bool verify(
+    Uint8List fileBytes,
+    Uint8List publicKey,
+    ZegelSignature sig,
+  ) {
+    if (publicKey.length != 32) {
+      throw ArgumentError('Public key must be exactly 32 bytes');
+    }
+
+    final _FileIntegrityMarkers markers = _extractMarkers(fileBytes);
+
+    // Rebuild the signed message.
+    final Uint8List timestampBytes = _packUint64BE(sig.timestamp);
+
+    final Uint8List message = Uint8List(
+      markers.merkleRoot.length +
+          markers.masterSeal.length +
+          timestampBytes.length,
+    );
+    int offset = 0;
+    message.setRange(offset, offset + markers.merkleRoot.length,
+        markers.merkleRoot);
+    offset += markers.merkleRoot.length;
+    message.setRange(offset, offset + markers.masterSeal.length,
+        markers.masterSeal);
+    offset += markers.masterSeal.length;
+    message.setRange(offset, offset + timestampBytes.length, timestampBytes);
+
+    final Uint8List digest = Uint8List.fromList(sha256.convert(message).bytes);
+
+    // Verify with Ed25519.
+    final Ed25519Signer verifier = Ed25519Signer();
+    verifier.init(
+      false,
+      PublicKeyParameter<Ed25519PublicKeyParameters>(
+        Ed25519PublicKeyParameters(publicKey),
+      ),
+    );
+    verifier.update(digest, 0, digest.length);
+
+    try {
+      return verifier.verifySignature(Ed25519Signature(sig.signature));
+    } on Exception {
+      return false;
+    }
+  }
+
+  /// Serialises a signature to a JSON-compatible map for storage as a
+  /// SIGNATURE block.
+  static Map<String, dynamic> signatureToJson(ZegelSignature sig) {
+    return <String, dynamic>{
+      'signature_hex': _bytesToHex(sig.signature),
+      'timestamp': sig.timestamp,
+      'merkle_root_hex': sig.merkleRootHex,
+      'algorithm': 'Ed25519',
+    };
+  }
+
+  /// Deserialises a signature from a JSON map.
+  static ZegelSignature signatureFromJson(Map<String, dynamic> json) {
+    return ZegelSignature(
+      signature: _hexToBytes(json['signature_hex'] as String),
+      timestamp: json['timestamp'] as int,
+      merkleRootHex: json['merkle_root_hex'] as String,
+    );
+  }
+
+  /// Extracts the Merkle root and master seal from a .zgl file.
+  static _FileIntegrityMarkers _extractMarkers(Uint8List fileBytes) {
+    // The master seal is the last 64 bytes.
+    if (fileBytes.length < ZegelFormat.sealSize + ZegelFormat.hashSize) {
+      throw const ZegelFormatException(
+        'File too short to contain Merkle root and master seal',
+      );
+    }
+
+    final Uint8List masterSeal = Uint8List.fromList(
+      fileBytes.sublist(fileBytes.length - ZegelFormat.sealSize),
+    );
+
+    // Parse the file to find the Merkle root.
+    const ZegelReader reader = ZegelReader();
+    final ZegelInspection inspection = reader.inspect(fileBytes);
+
+    // Re-parse to get the Merkle root. We need to find it in the binary.
+    // The Merkle root is located after the block directory.
+    // We know: header + extended header + directory entries + merkle root.
+    // Use the inspection to compute the offset.
+    final ByteData bd = ByteData.sublistView(fileBytes);
+
+    // Skip to after fixed header.
+    final int filenameLen = bd.getUint16(84, Endian.big);
+    final int flags = bd.getUint16(10, Endian.big);
+    int cursor = 86 + filenameLen + ZegelFormat.saltSize + 4;
+
+    // Skip extended header fields.
+    if (flags & ZegelFormat.flagPasswordDerived != 0) cursor += 8;
+    if (flags & ZegelFormat.flagHasExpiration != 0) cursor += 8;
+    if (flags & ZegelFormat.flagHasCanary != 0) cursor += 32;
+    if (flags & ZegelFormat.flagSplitKey != 0) cursor += 2;
+    if (flags & ZegelFormat.flagVersioned != 0) cursor += 32;
+    if (flags & ZegelFormat.flagHasPublicMetadata != 0) {
+      final int pubMetaLen = bd.getUint32(cursor, Endian.big);
+      cursor += 4 + pubMetaLen;
+    }
+
+    // Skip block directory.
+    cursor += inspection.blockCount * ZegelFormat.blockDirectoryEntrySize;
+
+    // Read Merkle root.
+    final Uint8List merkleRoot = Uint8List.fromList(
+      fileBytes.sublist(cursor, cursor + ZegelFormat.hashSize),
+    );
+
+    return _FileIntegrityMarkers(
+      merkleRoot: merkleRoot,
+      masterSeal: masterSeal,
+    );
+  }
+
+  static SecureRandom _createSecureRandom() {
+    final FortunaRandom secureRandom = FortunaRandom();
+    final Random rng = Random.secure();
+    final Uint8List seed = Uint8List(32);
+    for (int i = 0; i < 32; i++) {
+      seed[i] = rng.nextInt(256);
+    }
+    secureRandom.seed(KeyParameter(seed));
+    return secureRandom;
+  }
+
+  static String _bytesToHex(Uint8List bytes) {
+    final StringBuffer buf = StringBuffer();
+    for (final byte in bytes) {
+      buf.write(byte.toRadixString(16).padLeft(2, '0'));
+    }
+    return buf.toString();
+  }
+
+  static Uint8List _hexToBytes(String hex) {
+    final int length = hex.length ~/ 2;
+    final Uint8List bytes = Uint8List(length);
+    for (int i = 0; i < length; i++) {
+      bytes[i] = int.parse(hex.substring(i * 2, i * 2 + 2), radix: 16);
+    }
+    return bytes;
+  }
+
+  static Uint8List _packUint64BE(int value) {
+    final ByteData bd = ByteData(8);
+    bd.setUint64(0, value, Endian.big);
+    return bd.buffer.asUint8List();
+  }
+}
+
+/// Internal: extracted Merkle root and master seal from a .zgl file.
+class _FileIntegrityMarkers {
+  const _FileIntegrityMarkers({
+    required this.merkleRoot,
+    required this.masterSeal,
+  });
+
+  final Uint8List merkleRoot;
+  final Uint8List masterSeal;
+}
+
+/// An Ed25519 signing keypair for Zegel identity.
+class ZegelKeyPair {
+  /// Creates a [ZegelKeyPair].
+  const ZegelKeyPair({
+    required this.privateKey,
+    required this.publicKey,
+  });
+
+  /// The 32-byte Ed25519 private key seed.
+  final Uint8List privateKey;
+
+  /// The 32-byte Ed25519 public key.
+  final Uint8List publicKey;
+}
+
+/// An Ed25519 signature over a .zgl file's integrity markers.
+class ZegelSignature {
+  /// Creates a [ZegelSignature].
+  const ZegelSignature({
+    required this.signature,
+    required this.timestamp,
+    required this.merkleRootHex,
+  });
+
+  /// The 64-byte Ed25519 signature.
+  final Uint8List signature;
+
+  /// Unix epoch seconds when the signature was created.
+  final int timestamp;
+
+  /// Hex-encoded Merkle root that was signed.
+  final String merkleRootHex;
+}
+
+/// Device attestation: captures and signs device/platform information (v1.2+).
+///
+/// Creates a signed record of the device that produced a .zgl file. Useful for
+/// forensic analysis, compliance, and chain of custody.
+///
+/// The device information includes OS, platform, Dart version, and a salted
+/// hash of the hostname (to avoid leaking the exact hostname while still
+/// enabling device correlation).
+class DeviceAttestation {
+  DeviceAttestation._();
+
+  /// Captures current device/platform information.
+  ///
+  /// Returns a [DeviceInfo] with OS, platform, Dart runtime version, and a
+  /// SHA-256 hash of the hostname (salted with a random value for privacy).
+  static DeviceInfo captureDeviceInfo() {
+    final String os = Platform.operatingSystem;
+    final String osVersion = Platform.operatingSystemVersion;
+    final String dartVersion = Platform.version;
+
+    // Hash the hostname for privacy.
+    final String hostname = Platform.localHostname;
+    final int salt = DateTime.now().microsecondsSinceEpoch;
+    final Uint8List hostnameHash = Uint8List.fromList(
+      sha256.convert(utf8.encode('$salt:$hostname')).bytes,
+    );
+
+    return DeviceInfo(
+      operatingSystem: os,
+      operatingSystemVersion: osVersion,
+      dartVersion: dartVersion,
+      hostnameHash: hostnameHash,
+      capturedAt: DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000,
+    );
+  }
+
+  /// Creates a signed attestation block from device information.
+  ///
+  /// [deviceInfo] is the captured device information.
+  /// [signingKey] is a 32-byte Ed25519 private key seed.
+  ///
+  /// Returns a JSON-serialisable map suitable for inclusion as a
+  /// DEVICE_ATTESTATION block (type 0x0F).
+  static Map<String, dynamic> createAttestation(
+    DeviceInfo deviceInfo,
+    Uint8List signingKey,
+  ) {
+    if (signingKey.length != 32) {
+      throw ArgumentError('Signing key must be exactly 32 bytes');
+    }
+
+    final Map<String, dynamic> infoMap = deviceInfo.toJson();
+    final String infoJson = jsonEncode(infoMap);
+    final Uint8List infoBytes = Uint8List.fromList(utf8.encode(infoJson));
+
+    // Sign the device info JSON with Ed25519.
+    final Uint8List digest = Uint8List.fromList(
+      sha256.convert(infoBytes).bytes,
+    );
+
+    final Ed25519Signer signer = Ed25519Signer();
+    signer.init(
+      true,
+      PrivateKeyParameter<Ed25519PrivateKeyParameters>(
+        Ed25519PrivateKeyParameters(signingKey),
+      ),
+    );
+    signer.update(digest, 0, digest.length);
+    final Uint8List signature = signer.generateSignature().toUint8List();
+
+    // Derive the public key from the private key for verification reference.
+    final Ed25519KeyPairGenerator keyGen = Ed25519KeyPairGenerator();
+    final secureRandom = FortunaRandom();
+    secureRandom.seed(KeyParameter(signingKey));
+    keyGen.init(ParametersWithRandom(
+      Ed25519KeyGenerationParameters(),
+      secureRandom,
+    ));
+    final pair = keyGen.generateKeyPair();
+    final publicKey =
+        (pair.publicKey as Ed25519PublicKeyParameters).key;
+
+    return <String, dynamic>{
+      'device_info': infoMap,
+      'signature_hex': _bytesToHex(Uint8List.fromList(signature)),
+      'public_key_hex': _bytesToHex(Uint8List.fromList(publicKey)),
+      'algorithm': 'Ed25519',
+    };
+  }
+
+  /// Verifies a device attestation signature.
+  ///
+  /// [attestation] is the attestation map (as produced by [createAttestation]).
+  /// [publicKey] is the 32-byte Ed25519 public key. If null, the public key
+  /// embedded in the attestation is used.
+  ///
+  /// Returns `true` if the signature is valid.
+  static bool verifyAttestation(
+    Map<String, dynamic> attestation, {
+    Uint8List? publicKey,
+  }) {
+    final Uint8List pubKey = publicKey ??
+        _hexToBytes(attestation['public_key_hex'] as String);
+
+    if (pubKey.length != 32) {
+      throw ArgumentError('Public key must be exactly 32 bytes');
+    }
+
+    final Map<String, dynamic> infoMap =
+        attestation['device_info'] as Map<String, dynamic>;
+    final String infoJson = jsonEncode(infoMap);
+    final Uint8List infoBytes = Uint8List.fromList(utf8.encode(infoJson));
+    final Uint8List digest = Uint8List.fromList(
+      sha256.convert(infoBytes).bytes,
+    );
+
+    final Uint8List signatureBytes = _hexToBytes(
+      attestation['signature_hex'] as String,
+    );
+
+    final Ed25519Signer verifier = Ed25519Signer();
+    verifier.init(
+      false,
+      PublicKeyParameter<Ed25519PublicKeyParameters>(
+        Ed25519PublicKeyParameters(pubKey),
+      ),
+    );
+    verifier.update(digest, 0, digest.length);
+
+    try {
+      return verifier.verifySignature(Ed25519Signature(signatureBytes));
+    } on Exception {
+      return false;
+    }
+  }
+
+  static String _bytesToHex(Uint8List bytes) {
+    final StringBuffer buf = StringBuffer();
+    for (final byte in bytes) {
+      buf.write(byte.toRadixString(16).padLeft(2, '0'));
+    }
+    return buf.toString();
+  }
+
+  static Uint8List _hexToBytes(String hex) {
+    final int length = hex.length ~/ 2;
+    final Uint8List bytes = Uint8List(length);
+    for (int i = 0; i < length; i++) {
+      bytes[i] = int.parse(hex.substring(i * 2, i * 2 + 2), radix: 16);
+    }
+    return bytes;
+  }
+}
+
+/// Captured device and platform information.
+class DeviceInfo {
+  /// Creates a [DeviceInfo].
+  const DeviceInfo({
+    required this.operatingSystem,
+    required this.operatingSystemVersion,
+    required this.dartVersion,
+    required this.hostnameHash,
+    required this.capturedAt,
+  });
+
+  /// Operating system name (e.g. "linux", "macos", "windows").
+  final String operatingSystem;
+
+  /// Operating system version string.
+  final String operatingSystemVersion;
+
+  /// Dart runtime version string.
+  final String dartVersion;
+
+  /// SHA-256 hash of the salted hostname (for privacy).
+  final Uint8List hostnameHash;
+
+  /// Unix epoch seconds when the device info was captured.
+  final int capturedAt;
+
+  /// Serialises to a JSON-compatible map.
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'operating_system': operatingSystem,
+      'operating_system_version': operatingSystemVersion,
+      'dart_version': dartVersion,
+      'hostname_hash_hex': _bytesToHex(hostnameHash),
+      'captured_at': capturedAt,
+    };
+  }
+
+  /// Deserialises from a JSON-compatible map.
+  factory DeviceInfo.fromJson(Map<String, dynamic> json) {
+    return DeviceInfo(
+      operatingSystem: json['operating_system'] as String,
+      operatingSystemVersion: json['operating_system_version'] as String,
+      dartVersion: json['dart_version'] as String,
+      hostnameHash: _hexToBytes(json['hostname_hash_hex'] as String),
+      capturedAt: json['captured_at'] as int,
+    );
+  }
+
+  static String _bytesToHex(Uint8List bytes) {
+    final StringBuffer buf = StringBuffer();
+    for (final byte in bytes) {
+      buf.write(byte.toRadixString(16).padLeft(2, '0'));
+    }
+    return buf.toString();
+  }
+
+  static Uint8List _hexToBytes(String hex) {
+    final int length = hex.length ~/ 2;
+    final Uint8List bytes = Uint8List(length);
+    for (int i = 0; i < length; i++) {
+      bytes[i] = int.parse(hex.substring(i * 2, i * 2 + 2), radix: 16);
+    }
+    return bytes;
+  }
+}
+
+/// Extension adding `toUint8List` to Ed25519Signature for convenience.
+extension _Ed25519SignatureToBytes on Ed25519Signature {
+  Uint8List toUint8List() {
+    return Uint8List.fromList(bytes);
+  }
+}

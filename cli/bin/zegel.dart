@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:args/command_runner.dart';
 
 import 'package:zegel_cli/commands/attest_command.dart';
+import 'package:zegel_cli/commands/identity_command.dart';
+import 'package:zegel_cli/commands/supply_chain_command.dart';
 import 'package:zegel_cli/commands/audit_command.dart';
 import 'package:zegel_cli/commands/batch_command.dart';
 import 'package:zegel_cli/commands/canary_command.dart';
@@ -24,7 +26,7 @@ import 'package:zegel_cli/commands/verify_command.dart';
 import 'package:zegel_cli/commands/version_chain_command.dart';
 
 /// Application version.
-const String version = '1.3.0';
+const String version = '1.4.0';
 
 /// Zegel CLI - tamper-proof container format tool.
 ///
@@ -84,6 +86,17 @@ void main(List<String> arguments) async {
         '  audit                 Audit trail operations (view, add, verify-chain)\n'
         '  canary                Canary trap fingerprinting (embed, identify)\n'
         '  timestamp             Trusted timestamp operations (create, verify)\n'
+        '\n'
+        'Identity & Signing commands:\n'
+        '  sign                  Sign a .zgl file with an Ed25519 key\n'
+        '  verify-signature      Verify an Ed25519 signature on a .zgl file\n'
+        '  identity-keygen       Generate an Ed25519 signing keypair\n'
+        '\n'
+        'Supply Chain commands:\n'
+        '  verify-binary         Verify the integrity of a Zegel binary\n'
+        '  build-attest          Create a build provenance attestation\n'
+        '  verify-build          Verify a build attestation\n'
+        '  audit-entropy         Audit randomness quality in a .zgl file\n'
         '\n'
         'Advanced commands:\n'
         '  hierarchical-split    Hierarchical key splitting (split, reconstruct)\n'
@@ -150,6 +163,17 @@ void main(List<String> arguments) async {
   runner.addCommand(AuditCommand());
   runner.addCommand(CanaryCommand());
   runner.addCommand(TimestampCommand());
+
+  // Identity & Signing commands.
+  runner.addCommand(SignCommand());
+  runner.addCommand(VerifySignatureCommand());
+  runner.addCommand(IdentityKeygenCommand());
+
+  // Supply Chain commands.
+  runner.addCommand(VerifyBinaryCommand());
+  runner.addCommand(BuildAttestCommand());
+  runner.addCommand(VerifyBuildCommand());
+  runner.addCommand(AuditEntropyCommand());
 
   // Advanced commands.
   runner.addCommand(HierarchicalSplitCommand());

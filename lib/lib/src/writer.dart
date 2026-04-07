@@ -175,10 +175,37 @@ class ZegelOptions {
 /// final sealed = writer.seal(pdfBytes);
 /// ```
 class ZegelWriter {
+  /// Minimum Argon2id time cost (iterations) per OWASP 2024 guidelines.
+  static const int minArgon2TimeCost = 2;
+
+  /// Minimum Argon2id memory cost in KiB per OWASP 2024 guidelines (19 MiB).
+  static const int minArgon2MemoryCost = 19456;
+
   /// Creates a writer with the given 32-byte [masterKey] and [options].
+  ///
+  /// Throws [ArgumentError] if:
+  /// - [masterKey] is not exactly 32 bytes.
+  /// - Argon2id parameters are set but below OWASP minimum thresholds
+  ///   (time cost >= 2, memory cost >= 19456 KiB / 19 MiB).
   ZegelWriter(this.masterKey, this.options) {
     if (masterKey.length != 32) {
       throw ArgumentError('Master key must be exactly 32 bytes');
+    }
+    if (options.argon2TimeCost != null && options.argon2MemoryCost != null) {
+      if (options.argon2TimeCost! < minArgon2TimeCost) {
+        throw ArgumentError(
+          'Argon2id time cost must be >= $minArgon2TimeCost '
+          '(got ${options.argon2TimeCost}). '
+          'See OWASP Password Storage Cheat Sheet.',
+        );
+      }
+      if (options.argon2MemoryCost! < minArgon2MemoryCost) {
+        throw ArgumentError(
+          'Argon2id memory cost must be >= $minArgon2MemoryCost KiB (19 MiB) '
+          '(got ${options.argon2MemoryCost}). '
+          'See OWASP Password Storage Cheat Sheet.',
+        );
+      }
     }
   }
 
@@ -210,7 +237,12 @@ class ZegelWriter {
     if (options.argon2TimeCost != null && options.argon2MemoryCost != null) {
       flags |= ZegelFormat.flagPasswordDerived;
     }
-    if (options.enableKeyCommitment) {
+    // Key commitment is always enabled when using password-derived keys to
+    // defend against partitioning oracle attacks. It can also be explicitly
+    // requested for any file.
+    final bool requireKeyCommitment = options.enableKeyCommitment ||
+        (options.argon2TimeCost != null && options.argon2MemoryCost != null);
+    if (requireKeyCommitment) {
       flags |= ZegelFormat.flagHasKeyCommitment;
     }
     if (options.expiration != null) {
@@ -356,6 +388,15 @@ class ZegelWriter {
       final Uint8List iv = _randomBytes(secureRandom, ZegelFormat.ivSize);
       ivs.add(iv);
 
+      // Build AAD: blockType(1) || blockIndex(4 BE) || salt(32).
+      // This binds each ciphertext to its position and file identity,
+      // preventing block-swapping and cross-file replay attacks.
+      final Uint8List aad = Uint8List(1 + 4 + ZegelFormat.saltSize);
+      aad[0] = blockTypes[i];
+      final ByteData aadBd = ByteData.sublistView(aad);
+      aadBd.setUint32(1, i, Endian.big);
+      aad.setRange(5, 5 + ZegelFormat.saltSize, salt);
+
       // AES-256-GCM encrypt.
       final GCMBlockCipher cipher = GCMBlockCipher(AESEngine());
       cipher.init(
@@ -364,7 +405,7 @@ class ZegelWriter {
           KeyParameter(key),
           ZegelFormat.tagSize * 8, // 128 bits
           iv,
-          Uint8List(0), // empty AAD
+          aad,
         ),
       );
       final Uint8List encrypted = cipher.process(plaintexts[i]);
@@ -379,7 +420,7 @@ class ZegelWriter {
     // 11. Compute key commitment (optional)
     // =========================================================================
     Uint8List? keyCommitment;
-    if (options.enableKeyCommitment) {
+    if (requireKeyCommitment) {
       keyCommitment = KeyDerivation.computeKeyCommitment(blockKeys);
     }
 

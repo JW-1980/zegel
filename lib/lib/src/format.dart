@@ -130,6 +130,29 @@ class ZegelFormat {
   /// Manifest entry referencing an external file.
   static const int blockManifestEntry = 0x0D;
 
+  // v1.4 block types
+
+  /// Ed25519 digital signature over the file's Merkle root and master seal.
+  static const int blockSignature = 0x0E;
+
+  /// Device attestation block (signed device properties).
+  static const int blockDeviceAttestation = 0x0F;
+
+  /// Software Bill of Materials block.
+  static const int blockSbom = 0x10;
+
+  /// Royalty/payment split ratios block.
+  static const int blockRoyalty = 0x11;
+
+  /// Sensor measurement data block.
+  static const int blockMeasurement = 0x12;
+
+  /// Privilege log block (legal basis for redactions).
+  static const int blockPrivilegeLog = 0x13;
+
+  /// Supply chain / build provenance attestation block.
+  static const int blockBuildAttestation = 0x14;
+
   // ---------------------------------------------------------------------------
   // Classification levels (v1.3)
   // ---------------------------------------------------------------------------
