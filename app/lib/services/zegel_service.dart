@@ -518,19 +518,18 @@ class ZegelService {
     List<String> filePaths,
     String hexKey,
   ) async {
-    final results = <ZegelResult>[];
-    for (final path in filePaths) {
-      try {
-        final result = await verify(path, hexKey);
-        results.add(result);
-      } catch (e) {
-        results.add(ZegelResult(
-          status: ZegelStatus.tampered,
-          message: 'Error: $e',
-        ));
-      }
-    }
-    return results;
+    return Future.wait(
+      filePaths.map((path) async {
+        try {
+          return await verify(path, hexKey);
+        } catch (e) {
+          return ZegelResult(
+            status: ZegelStatus.tampered,
+            message: 'Error: $e',
+          );
+        }
+      }),
+    );
   }
 
   /// Seals multiple files in batch.
