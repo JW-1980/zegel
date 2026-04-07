@@ -50,8 +50,7 @@ class SelectiveDisclosure {
       blockKeys[index.toString()] = _bytesToHex(key);
     }
 
-    final int createdAt =
-        DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
+    final int createdAt = DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
 
     final Map<String, dynamic> token = <String, dynamic>{
       'version': 1,
@@ -75,8 +74,7 @@ class SelectiveDisclosure {
   static bool isTokenExpired(Map<String, dynamic> token) {
     if (!token.containsKey('expires_at')) return false;
     final int expiresAt = token['expires_at'] as int;
-    final int nowEpoch =
-        DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
+    final int nowEpoch = DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
     return nowEpoch > expiresAt;
   }
 
@@ -183,14 +181,20 @@ class SelectiveDisclosure {
     // IV (12 bytes), tag (16 bytes)
     final int blockType = fileBytes[entryOffset];
     final Uint8List hash = Uint8List.sublistView(
-      fileBytes, entryOffset + 1, entryOffset + 33,
+      fileBytes,
+      entryOffset + 1,
+      entryOffset + 33,
     );
     final int ciphertextLen = bd.getUint32(entryOffset + 33, Endian.big);
     final Uint8List iv = Uint8List.sublistView(
-      fileBytes, entryOffset + 37, entryOffset + 49,
+      fileBytes,
+      entryOffset + 37,
+      entryOffset + 49,
     );
     final Uint8List tag = Uint8List.sublistView(
-      fileBytes, entryOffset + 49, entryOffset + 65,
+      fileBytes,
+      entryOffset + 49,
+      entryOffset + 65,
     );
 
     // Compute the offset of the ciphertext data.
@@ -209,7 +213,9 @@ class SelectiveDisclosure {
     if (fileBytes.length < dataStart + ciphertextLen) return null;
 
     final Uint8List ciphertext = Uint8List.sublistView(
-      fileBytes, dataStart, dataStart + ciphertextLen,
+      fileBytes,
+      dataStart,
+      dataStart + ciphertextLen,
     );
 
     return _BlockInfo(

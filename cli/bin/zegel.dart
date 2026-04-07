@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
+
 import 'package:zegel_cli/commands/attest_command.dart';
 import 'package:zegel_cli/commands/audit_command.dart';
 import 'package:zegel_cli/commands/batch_command.dart';

@@ -12,7 +12,8 @@ class BatchOperations {
   BatchOperations._();
 
   /// Result of a batch operation on a single file.
-  static Map<String, dynamic> _result(String name, bool success, String message, int durationMs) {
+  static Map<String, dynamic> _result(
+      String name, bool success, String message, int durationMs) {
     return {
       'name': name,
       'success': success,
@@ -52,11 +53,13 @@ class BatchOperations {
         if (!result.valid && stopOnFirstFailure) break;
       } on ZegelException catch (e) {
         sw.stop();
-        results.add(_result(entry.key, false, e.message, sw.elapsedMilliseconds));
+        results
+            .add(_result(entry.key, false, e.message, sw.elapsedMilliseconds));
         if (stopOnFirstFailure) break;
       } catch (e) {
         sw.stop();
-        results.add(_result(entry.key, false, e.toString(), sw.elapsedMilliseconds));
+        results.add(
+            _result(entry.key, false, e.toString(), sw.elapsedMilliseconds));
         if (stopOnFirstFailure) break;
       }
     }
@@ -76,14 +79,16 @@ class BatchOperations {
   ) {
     final results = <MapEntry<String, Uint8List>>[];
     for (final entry in contents) {
-      final writer = ZegelWriter(masterKey, ZegelOptions(
-        contentType: options.contentType,
-        filename: entry.key,
-        metadata: options.metadata,
-        compress: options.compress,
-        enableKeyCommitment: options.enableKeyCommitment,
-        blockSize: options.blockSize,
-      ));
+      final writer = ZegelWriter(
+          masterKey,
+          ZegelOptions(
+            contentType: options.contentType,
+            filename: entry.key,
+            metadata: options.metadata,
+            compress: options.compress,
+            enableKeyCommitment: options.enableKeyCommitment,
+            blockSize: options.blockSize,
+          ));
       results.add(MapEntry(entry.key, writer.seal(entry.value)));
     }
     return results;

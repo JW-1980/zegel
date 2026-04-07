@@ -3,6 +3,8 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:zegel/zegel.dart';
 
+import 'package:zegel/zegel.dart' hide ZegelInspection;
+
 /// Result status from a verification operation.
 enum ZegelStatus {
   /// File is intact and has not been tampered with.
@@ -200,10 +202,8 @@ class DisclosureToken {
   Map<String, dynamic> toJson() => {
         'version': version,
         'merkle_root': merkleRoot,
-        'block_keys': blockKeys
-            .map((k, v) => MapEntry(k.toString(), v)),
-        'created_at':
-            createdAt.millisecondsSinceEpoch ~/ 1000,
+        'block_keys': blockKeys.map((k, v) => MapEntry(k.toString(), v)),
+        'created_at': createdAt.millisecondsSinceEpoch ~/ 1000,
       };
 
   factory DisclosureToken.fromJson(Map<String, dynamic> json) {
@@ -294,11 +294,6 @@ class ZegelService {
     String hexKey,
     SealOptions options,
   ) async {
-    final file = File(filePath);
-    if (!await file.exists()) {
-      throw FileSystemException('File does not exist', filePath);
-    }
-
     // Delegate to the zegel library.
     // The actual implementation calls into package:zegel.
     // For now, this is a placeholder that returns empty bytes
@@ -368,11 +363,13 @@ class ZegelService {
     String hexKey,
     List<int> blockIndices,
   ) async {
-    // Delegate to the zegel library.
-    throw UnimplementedError(
-      'Redact operation requires the zegel core library. '
-      'Ensure package:zegel is properly linked in pubspec.yaml.',
-    );
+    final file = File(filePath);
+    if (!await file.exists()) {
+      throw FileSystemException('File does not exist', filePath);
+    }
+    final fileBytes = await file.readAsBytes();
+    final masterKey = _hexToBytes(hexKey);
+    return Redaction.redactBlocks(fileBytes, masterKey, blockIndices);
   }
 
   /// Splits a key into N shares with threshold M using Shamir's Secret Sharing.
@@ -500,6 +497,16 @@ class ZegelService {
     }
   }
 
+  /// Converts a hex string to bytes.
+  Uint8List _hexToBytes(String hex) {
+    final length = hex.length ~/ 2;
+    final bytes = Uint8List(length);
+    for (int i = 0; i < length; i++) {
+      bytes[i] = int.parse(hex.substring(i * 2, i * 2 + 2), radix: 16);
+    }
+    return bytes;
+  }
+
   // ======================================================================
   // Batch operations
   // ======================================================================
@@ -511,19 +518,18 @@ class ZegelService {
     List<String> filePaths,
     String hexKey,
   ) async {
-    final results = <ZegelResult>[];
-    for (final path in filePaths) {
-      try {
-        final result = await verify(path, hexKey);
-        results.add(result);
-      } catch (e) {
-        results.add(ZegelResult(
-          status: ZegelStatus.tampered,
-          message: 'Error: $e',
-        ));
-      }
-    }
-    return results;
+    return Future.wait(
+      filePaths.map((path) async {
+        try {
+          return await verify(path, hexKey);
+        } catch (e) {
+          return ZegelResult(
+            status: ZegelStatus.tampered,
+            message: 'Error: $e',
+          );
+        }
+      }),
+    );
   }
 
   /// Seals multiple files in batch.
@@ -534,12 +540,9 @@ class ZegelService {
     String hexKey,
     SealOptions options,
   ) async {
-    final results = <Uint8List>[];
-    for (final path in filePaths) {
-      final sealed = await seal(path, hexKey, options);
-      results.add(sealed);
-    }
-    return results;
+    return Future.wait(
+      filePaths.map((path) => seal(path, hexKey, options)),
+    );
   }
 
   // ======================================================================
@@ -679,7 +682,6 @@ class ZegelService {
       fileBytesList.add(await file.readAsBytes());
     }
     return ContentVersioning.verifyVersionChain(fileBytesList);
-
   }
 
   // ======================================================================

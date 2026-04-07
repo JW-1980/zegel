@@ -72,7 +72,7 @@ class _ZegelAppState extends State<ZegelApp> {
   }
 
   ThemeData _buildTheme() {
-    const deepTeal = Color(0xFF00695C);
+    const deepTeal = Color(0xFF004D40);
     const tealAccent = Color(0xFF26A69A);
 
     return ThemeData(
@@ -91,7 +91,7 @@ class _ZegelAppState extends State<ZegelApp> {
       cardTheme: CardThemeData(
         elevation: 2,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(4),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -100,7 +100,7 @@ class _ZegelAppState extends State<ZegelApp> {
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(4),
           ),
         ),
       ),
@@ -110,16 +110,16 @@ class _ZegelAppState extends State<ZegelApp> {
           side: const BorderSide(color: deepTeal),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(4),
           ),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(4),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(4),
           borderSide: const BorderSide(color: deepTeal, width: 2),
         ),
         contentPadding: const EdgeInsets.symmetric(

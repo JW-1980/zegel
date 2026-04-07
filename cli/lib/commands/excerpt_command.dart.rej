@@ -1,0 +1,9 @@
+--- cli/lib/commands/excerpt_command.dart
++++ cli/lib/commands/excerpt_command.dart
+@@ -39,7 +39,6 @@
+       return 1;
+     }
+
+-    final key = parseKeyFromArgs(argResults!);
+     final blocksStr = argResults!['blocks'] as String;
+     final blocks = blocksStr.split(',').map((s) => int.parse(s.trim())).toList();

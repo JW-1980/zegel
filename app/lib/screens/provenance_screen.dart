@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
@@ -99,8 +100,7 @@ class _ProvenanceScreenState extends State<ProvenanceScreen> {
         reportBuffer.writeln('');
       }
 
-      final bytes =
-          List<int>.from(reportBuffer.toString().codeUnits);
+      final bytes = List<int>.from(reportBuffer.toString().codeUnits);
       final savedPath = await fileService.saveFile(
         Uint8List.fromList(bytes),
         'provenance_report.txt',
@@ -227,13 +227,13 @@ class _ProvenanceScreenState extends State<ProvenanceScreen> {
                 margin: const EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
                   color: _isError
-                      ? Colors.red.withOpacity(0.1)
-                      : Colors.green.withOpacity(0.1),
+                      ? Colors.red.withValues(alpha: 0.1)
+                      : Colors.green.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
                     color: _isError
-                        ? Colors.red.withOpacity(0.3)
-                        : Colors.green.withOpacity(0.3),
+                        ? Colors.red.withValues(alpha: 0.3)
+                        : Colors.green.withValues(alpha: 0.3),
                   ),
                 ),
                 child: Row(
@@ -380,7 +380,7 @@ class _ProvenanceEventTile extends StatelessWidget {
                   Expanded(
                     child: Container(
                       width: 2,
-                      color: colorScheme.outline.withOpacity(0.3),
+                      color: colorScheme.outline.withValues(alpha: 0.3),
                     ),
                   ),
                 Container(
@@ -390,7 +390,7 @@ class _ProvenanceEventTile extends StatelessWidget {
                     shape: BoxShape.circle,
                     color: color,
                     border: Border.all(
-                      color: color.withOpacity(0.3),
+                      color: color.withValues(alpha: 0.3),
                       width: 3,
                     ),
                   ),
@@ -399,7 +399,7 @@ class _ProvenanceEventTile extends StatelessWidget {
                   Expanded(
                     child: Container(
                       width: 2,
-                      color: colorScheme.outline.withOpacity(0.3),
+                      color: colorScheme.outline.withValues(alpha: 0.3),
                     ),
                   ),
               ],

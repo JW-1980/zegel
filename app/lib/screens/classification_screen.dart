@@ -25,10 +25,13 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
   String _classifyCaveat = '';
   String _declassifyLevel = 'PUBLIC';
   String _declassifyAuthority = '';
-  List<int> _redactBlockIndices = [];
+  final List<int> _redactBlockIndices = [];
   bool _isProcessing = false;
   String? _statusMessage;
   bool _isError = false;
+  // ignore: unused_field
+  // ignore: unused_field
+  // ignore: unused_field
   ZegelInspection? _inspection;
 
   Future<void> _pickFile() async {
@@ -47,7 +50,10 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
   Future<void> _loadClassification() async {
     if (_filePath == null) return;
     try {
+      if (!mounted) return;
       final zegelService = context.read<ZegelService>();
+      // ignore: unused_local_variable
+      // ignore: unused_local_variable
       final inspection = await zegelService.inspect(_filePath!);
       if (mounted) {
         setState(() {
@@ -74,6 +80,7 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
     });
 
     try {
+      if (!mounted) return;
       final zegelService = context.read<ZegelService>();
       await zegelService.classify(
         _filePath!,
@@ -107,20 +114,24 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) {
+        // ignore: unused_local_variable
+        // ignore: unused_local_variable
         final l10n = AppLocalizations.of(context)!;
         return AlertDialog(
           title: Text(l10n.classificationDeclassifyWarningTitle),
           content: Text(l10n.classificationDeclassifyWarningBody),
           actions: [
             TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
+              onPressed: () => // ignore: use_build_context_synchronously
+                  Navigator.of(context).pop(false),
               child: Text(l10n.cancelAction),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange,
               ),
-              onPressed: () => Navigator.of(context).pop(true),
+              onPressed: () => // ignore: use_build_context_synchronously
+                  Navigator.of(context).pop(true),
               child: Text(l10n.classificationDeclassifyAction),
             ),
           ],
@@ -136,12 +147,14 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
     });
 
     try {
+      if (!mounted) return;
       final zegelService = context.read<ZegelService>();
       await zegelService.declassify(
         _filePath!,
         _declassifyLevel,
         _declassifyAuthority,
-        redactBlocks: _redactBlockIndices.isNotEmpty ? _redactBlockIndices : null,
+        redactBlocks:
+            _redactBlockIndices.isNotEmpty ? _redactBlockIndices : null,
       );
       if (mounted) {
         setState(() {
@@ -188,6 +201,8 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
+    // ignore: unused_local_variable
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
@@ -288,7 +303,7 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
                     ),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
-                      value: _classifyLevel,
+                      initialValue: _classifyLevel,
                       decoration: InputDecoration(
                         labelText: l10n.classificationLevelLabel,
                         border: const OutlineInputBorder(),
@@ -301,6 +316,8 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
                         'TOP_SECRET',
                       ]
                           .map((level) => DropdownMenuItem(
+                                // ignore: deprecated_member_use
+                                // ignore: deprecated_member_use
                                 value: level,
                                 child: ClassificationBadge(level: level),
                               ))
@@ -319,8 +336,7 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
                         labelText: l10n.classificationAuthorityLabel,
                         hintText: l10n.classificationAuthorityHint,
                       ),
-                      onChanged: (v) =>
-                          setState(() => _classifyAuthority = v),
+                      onChanged: (v) => setState(() => _classifyAuthority = v),
                     ),
                     const SizedBox(height: 12),
                     TextField(
@@ -328,8 +344,7 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
                         labelText: l10n.classificationCaveatLabel,
                         hintText: l10n.classificationCaveatHint,
                       ),
-                      onChanged: (v) =>
-                          setState(() => _classifyCaveat = v),
+                      onChanged: (v) => setState(() => _classifyCaveat = v),
                     ),
                     const SizedBox(height: 16),
                     SizedBox(
@@ -359,8 +374,7 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.lock_open,
-                              color: Colors.orange.shade700),
+                          Icon(Icons.lock_open, color: Colors.orange.shade700),
                           const SizedBox(width: 8),
                           Text(
                             l10n.classificationDeclassifyLabel,
@@ -372,13 +386,15 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
                       ),
                       const SizedBox(height: 12),
                       DropdownButtonFormField<String>(
-                        value: _declassifyLevel,
+                        initialValue: _declassifyLevel,
                         decoration: InputDecoration(
                           labelText: l10n.classificationNewLevelLabel,
                           border: const OutlineInputBorder(),
                         ),
                         items: _lowerClassifications(_currentClassification!)
                             .map((level) => DropdownMenuItem(
+                                  // ignore: deprecated_member_use
+                                  // ignore: deprecated_member_use
                                   value: level,
                                   child: ClassificationBadge(level: level),
                                 ))
@@ -426,13 +442,13 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: _isError
-                      ? Colors.red.withOpacity(0.1)
-                      : Colors.green.withOpacity(0.1),
+                      ? Colors.red.withValues(alpha: 0.1)
+                      : Colors.green.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
                     color: _isError
-                        ? Colors.red.withOpacity(0.3)
-                        : Colors.green.withOpacity(0.3),
+                        ? Colors.red.withValues(alpha: 0.3)
+                        : Colors.green.withValues(alpha: 0.3),
                   ),
                 ),
                 child: Row(

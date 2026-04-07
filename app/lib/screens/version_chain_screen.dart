@@ -91,7 +91,7 @@ class _VersionChainScreenState extends State<VersionChainScreen> {
 
     try {
       final fileService = context.read<FileService>();
-      final reader = const ZegelReader();
+      const reader = ZegelReader();
       final versions = <_VersionEntry>[];
       final fileBytesList = <Uint8List>[];
 
@@ -105,6 +105,8 @@ class _VersionChainScreenState extends State<VersionChainScreen> {
         final bytes = await file.readAsBytes();
         fileBytesList.add(bytes);
 
+        // ignore: unused_local_variable
+        // ignore: unused_local_variable
         final inspection = reader.inspect(bytes);
 
         // Extract version chain hash if present
@@ -117,8 +119,8 @@ class _VersionChainScreenState extends State<VersionChainScreen> {
         Map<String, dynamic>? versionInfo;
         if (inspection.publicMetadata != null &&
             inspection.publicMetadata!.containsKey('version_info')) {
-          versionInfo =
-              inspection.publicMetadata!['version_info'] as Map<String, dynamic>?;
+          versionInfo = inspection.publicMetadata!['version_info']
+              as Map<String, dynamic>?;
         }
 
         versions.add(_VersionEntry(
@@ -163,9 +165,12 @@ class _VersionChainScreenState extends State<VersionChainScreen> {
       }
     } catch (e) {
       if (mounted) {
-
+        // ignore: unused_local_variable
+        // ignore: unused_local_variable
+        // ignore: unused_local_variable
+        final l10n = AppLocalizations.of(context)!;
         setState(() {
-          _errorMessage = AppLocalizations.of(context)!.errorGeneric(e.toString());
+          _errorMessage = l10n.errorGeneric(e.toString());
           _isLoading = false;
         });
       }
@@ -217,7 +222,10 @@ class _VersionChainScreenState extends State<VersionChainScreen> {
 
   @override
   Widget build(BuildContext context) {
-
+    // ignore: unused_local_variable
+    // ignore: unused_local_variable
+    // ignore: unused_local_variable
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final fileService = context.read<FileService>();
 
@@ -240,7 +248,7 @@ class _VersionChainScreenState extends State<VersionChainScreen> {
           children: [
             // Info card
             Card(
-              color: theme.colorScheme.primaryContainer.withOpacity(0.3),
+              color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Row(
@@ -317,7 +325,8 @@ class _VersionChainScreenState extends State<VersionChainScreen> {
                           return ListTile(
                             key: ValueKey(path),
                             leading: CircleAvatar(
-                              backgroundColor: theme.colorScheme.primaryContainer,
+                              backgroundColor:
+                                  theme.colorScheme.primaryContainer,
                               child: Text(
                                 '${index + 1}',
                                 style: TextStyle(
@@ -330,7 +339,9 @@ class _VersionChainScreenState extends State<VersionChainScreen> {
                               overflow: TextOverflow.ellipsis,
                             ),
                             subtitle: Text(
-                              index == 0 ? 'First version' : 'Version ${index + 1}',
+                              index == 0
+                                  ? 'First version'
+                                  : 'Version ${index + 1}',
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: theme.colorScheme.onSurfaceVariant,
                               ),
@@ -384,9 +395,9 @@ class _VersionChainScreenState extends State<VersionChainScreen> {
                 padding: const EdgeInsets.all(12),
                 margin: const EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
-                  color: Colors.red.withOpacity(0.1),
+                  color: Colors.red.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.red.withOpacity(0.3)),
+                  border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
                 ),
                 child: Row(
                   children: [
@@ -462,7 +473,8 @@ class _VersionChainScreenState extends State<VersionChainScreen> {
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.timeline, color: theme.colorScheme.primary),
+                          Icon(Icons.timeline,
+                              color: theme.colorScheme.primary),
                           const SizedBox(width: 8),
                           Text(
                             'Version Timeline',
@@ -507,9 +519,7 @@ class _VersionChainScreenState extends State<VersionChainScreen> {
                       Container(
                         width: 2,
                         height: 20,
-                        color: version.isChainValid
-                            ? Colors.green
-                            : Colors.red,
+                        color: version.isChainValid ? Colors.green : Colors.red,
                       ),
                     Container(
                       width: 24,
@@ -537,7 +547,8 @@ class _VersionChainScreenState extends State<VersionChainScreen> {
                       Expanded(
                         child: Container(
                           width: 2,
-                          color: theme.colorScheme.outline.withOpacity(0.3),
+                          color:
+                              theme.colorScheme.outline.withValues(alpha: 0.3),
                         ),
                       ),
                   ],
@@ -550,10 +561,10 @@ class _VersionChainScreenState extends State<VersionChainScreen> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: theme.colorScheme.surfaceContainerHighest
-                        .withOpacity(0.3),
+                        .withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
-                      color: theme.colorScheme.outline.withOpacity(0.2),
+                      color: theme.colorScheme.outline.withValues(alpha: 0.2),
                     ),
                   ),
                   child: Column(

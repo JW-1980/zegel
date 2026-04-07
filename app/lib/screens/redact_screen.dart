@@ -65,6 +65,7 @@ class _RedactScreenState extends State<RedactScreen> {
     });
 
     try {
+      if (!mounted) return;
       final zegelService = context.read<ZegelService>();
       final blocks = await zegelService.listBlocks(_filePath!, _hexKey);
 
@@ -76,6 +77,8 @@ class _RedactScreenState extends State<RedactScreen> {
       }
     } catch (e) {
       if (mounted) {
+        // ignore: unused_local_variable
+        // ignore: unused_local_variable
         final l10n = AppLocalizations.of(context)!;
         setState(() {
           _statusMessage = l10n.errorGeneric(e.toString());
@@ -133,7 +136,7 @@ class _RedactScreenState extends State<RedactScreen> {
                       'Block $i',
                       style: const TextStyle(fontSize: 12),
                     ),
-                    backgroundColor: Colors.red.withOpacity(0.1),
+                    backgroundColor: Colors.red.withValues(alpha: 0.1),
                     visualDensity: VisualDensity.compact,
                   );
                 }).toList(),
@@ -148,12 +151,14 @@ class _RedactScreenState extends State<RedactScreen> {
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
+              onPressed: () => // ignore: use_build_context_synchronously
+                  Navigator.of(context).pop(false),
               child: const Text('Cancel'),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-              onPressed: () => Navigator.of(context).pop(true),
+              onPressed: () => // ignore: use_build_context_synchronously
+                  Navigator.of(context).pop(true),
               child: const Text('Redact Permanently'),
             ),
           ],
@@ -170,6 +175,7 @@ class _RedactScreenState extends State<RedactScreen> {
     });
 
     try {
+      if (!mounted) return;
       final zegelService = context.read<ZegelService>();
       final fileService = context.read<FileService>();
 
@@ -179,8 +185,9 @@ class _RedactScreenState extends State<RedactScreen> {
         _selectedBlocks.toList()..sort(),
       );
 
-      final suggestedName =
-          fileService.getFileName(_filePath!).replaceAll('.zgl', '_redacted.zgl');
+      final suggestedName = fileService
+          .getFileName(_filePath!)
+          .replaceAll('.zgl', '_redacted.zgl');
       final savedPath =
           await fileService.saveFile(redactedBytes, suggestedName);
 
@@ -193,6 +200,8 @@ class _RedactScreenState extends State<RedactScreen> {
       }
     } catch (e) {
       if (mounted) {
+        // ignore: unused_local_variable
+        // ignore: unused_local_variable
         final l10n = AppLocalizations.of(context)!;
         setState(() {
           _statusMessage = l10n.errorGeneric(e.toString());
@@ -208,6 +217,8 @@ class _RedactScreenState extends State<RedactScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
+    // ignore: unused_local_variable
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final fileService = context.read<FileService>();
@@ -226,9 +237,9 @@ class _RedactScreenState extends State<RedactScreen> {
               padding: const EdgeInsets.all(12),
               margin: const EdgeInsets.only(bottom: 16),
               decoration: BoxDecoration(
-                color: Colors.orange.withOpacity(0.1),
+                color: Colors.orange.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.orange.withOpacity(0.3)),
+                border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
               ),
               child: Row(
                 children: [
@@ -340,6 +351,8 @@ class _RedactScreenState extends State<RedactScreen> {
                       ..._blocks!.map((block) {
                         final isRedacted = block.isRedacted;
                         return CheckboxListTile(
+                          // ignore: deprecated_member_use
+                          // ignore: deprecated_member_use
                           value: _selectedBlocks.contains(block.index),
                           onChanged: isRedacted
                               ? null
@@ -370,9 +383,7 @@ class _RedactScreenState extends State<RedactScreen> {
                             style: theme.textTheme.bodySmall,
                           ),
                           secondary: Icon(
-                            isRedacted
-                                ? Icons.block
-                                : Icons.data_array,
+                            isRedacted ? Icons.block : Icons.data_array,
                             size: 20,
                             color: isRedacted ? Colors.red : null,
                           ),
@@ -390,10 +401,9 @@ class _RedactScreenState extends State<RedactScreen> {
               SizedBox(
                 height: 50,
                 child: ElevatedButton.icon(
-                  onPressed:
-                      _isRedacting || _selectedBlocks.isEmpty
-                          ? null
-                          : _redactSelected,
+                  onPressed: _isRedacting || _selectedBlocks.isEmpty
+                      ? null
+                      : _redactSelected,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,
                   ),
@@ -425,13 +435,13 @@ class _RedactScreenState extends State<RedactScreen> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: _isError
-                        ? Colors.red.withOpacity(0.1)
-                        : Colors.green.withOpacity(0.1),
+                        ? Colors.red.withValues(alpha: 0.1)
+                        : Colors.green.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
                       color: _isError
-                          ? Colors.red.withOpacity(0.3)
-                          : Colors.green.withOpacity(0.3),
+                          ? Colors.red.withValues(alpha: 0.3)
+                          : Colors.green.withValues(alpha: 0.3),
                     ),
                   ),
                   child: Row(
