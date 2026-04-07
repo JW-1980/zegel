@@ -107,10 +107,9 @@ class FileService {
   Future<List<String>> listZegelFiles(String directoryPath) async {
     final dir = Directory(directoryPath);
     if (!await dir.exists()) return [];
-    return await dir
-        .list()
-        .where((e) => e is File && e.path.endsWith('.zgl'))
-        .map((e) => e.path)
+    return dir.list()
+        .where((entity) => entity is File && entity.path.endsWith('.zgl'))
+        .map((entity) => entity.path)
         .toList();
   }
 
@@ -118,13 +117,10 @@ class FileService {
   Future<List<String>> listAllFiles(String directoryPath) async {
     final dir = Directory(directoryPath);
     if (!await dir.exists()) return [];
-    final files = <String>[];
-    await for (final entity in dir.list()) {
-      if (entity is File) {
-        files.add(entity.path);
-      }
-    }
-    return files;
+    return dir.list()
+        .where((entity) => entity is File)
+        .map((entity) => entity.path)
+        .toList();
   }
 
   /// Saves bytes to a specific file path (no dialog).
