@@ -47,3 +47,4 @@ export 'src/time_lock.dart';
 export 'src/identity.dart';
 export 'src/supply_chain.dart';
 export 'src/structured_blocks.dart';
+export 'src/wet_signature.dart';
