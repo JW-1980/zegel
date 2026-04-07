@@ -38,6 +38,7 @@ class ExcerptProofCommand extends Command<int> {
       throw UsageException('--file and --block are required.', usage);
     }
 
+    // final key = parseKeyFromArgs(argResults!);
     final blockIndex = int.parse(blockStr);
 
     final fileBytes = Uint8List.fromList(File(filePath).readAsBytesSync());
