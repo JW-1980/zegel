@@ -261,8 +261,7 @@ class ZegelReader {
         h.expirationTimestamp! * 1000,
         isUtc: true,
       );
-      expirationDate =
-          '${dt.year.toString().padLeft(4, '0')}-'
+      expirationDate = '${dt.year.toString().padLeft(4, '0')}-'
           '${dt.month.toString().padLeft(2, '0')}-'
           '${dt.day.toString().padLeft(2, '0')}';
     }
@@ -379,8 +378,7 @@ class ZegelReader {
         case ZegelFormat.blockContent:
           contentParts.add(plaintext);
         case ZegelFormat.blockMetadata:
-          metadata =
-              jsonDecode(utf8.decode(plaintext)) as Map<String, dynamic>;
+          metadata = jsonDecode(utf8.decode(plaintext)) as Map<String, dynamic>;
         case ZegelFormat.blockProvenance:
           provenanceEntries.add(
             jsonDecode(utf8.decode(plaintext)) as Map<String, dynamic>,
@@ -574,8 +572,7 @@ class ZegelReader {
         case ZegelFormat.blockContent:
           contentParts.add(plaintext);
         case ZegelFormat.blockMetadata:
-          metadata =
-              jsonDecode(utf8.decode(plaintext)) as Map<String, dynamic>;
+          metadata = jsonDecode(utf8.decode(plaintext)) as Map<String, dynamic>;
         case ZegelFormat.blockProvenance:
           provenanceEntries.add(
             jsonDecode(utf8.decode(plaintext)) as Map<String, dynamic>,
@@ -721,8 +718,7 @@ class ZegelReader {
       final String pubMetaJson = utf8.decode(
         fileBytes.sublist(cursor, cursor + pubMetaLen),
       );
-      h.publicMetadata =
-          jsonDecode(pubMetaJson) as Map<String, dynamic>;
+      h.publicMetadata = jsonDecode(pubMetaJson) as Map<String, dynamic>;
       cursor += pubMetaLen;
     }
 

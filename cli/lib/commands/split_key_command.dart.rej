@@ -1,0 +1,11 @@
+--- cli/lib/commands/split_key_command.dart
++++ cli/lib/commands/split_key_command.dart
+@@ -112,7 +112,7 @@
+       print('Output:');
+       for (int i = 0; i < parts.length; i++) {
+         final part = parts[i];
+-        final hex = part.map((b) => b.toRadixString(16).padLeft(2, '0')).join('');
++        final hex = part.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
+         print('  Share ${i + 1}: $hex');
+       }
+       return 0;

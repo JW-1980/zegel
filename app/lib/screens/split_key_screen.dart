@@ -168,7 +168,8 @@ class _SplitKeyScreenState extends State<SplitKeyScreen>
         bottom: TabBar(
           controller: _tabController,
           labelColor: theme.colorScheme.onPrimary,
-          unselectedLabelColor: theme.colorScheme.onPrimary.withValues(alpha: 0.6),
+          unselectedLabelColor:
+              theme.colorScheme.onPrimary.withValues(alpha: 0.6),
           indicatorColor: theme.colorScheme.onPrimary,
           tabs: const [
             Tab(text: 'Split Key'),
@@ -350,8 +351,8 @@ class _SplitKeyScreenState extends State<SplitKeyScreen>
                           children: [
                             CircleAvatar(
                               radius: 14,
-                              backgroundColor:
-                                  theme.colorScheme.primary.withValues(alpha: 0.1),
+                              backgroundColor: theme.colorScheme.primary
+                                  .withValues(alpha: 0.1),
                               child: Text(
                                 '${index + 1}',
                                 style: TextStyle(
@@ -380,16 +381,16 @@ class _SplitKeyScreenState extends State<SplitKeyScreen>
                                 Clipboard.setData(ClipboardData(text: share));
                                 if (mounted) {
                                   // ignore: use_build_context_synchronously
-      // ignore: use_build_context_synchronously
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      'Share ${index + 1} copied to clipboard',
+                                  // ignore: use_build_context_synchronously
+                                  // ignore: use_build_context_synchronously
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        'Share ${index + 1} copied to clipboard',
+                                      ),
+                                      duration: const Duration(seconds: 1),
                                     ),
-                                    duration: const Duration(seconds: 1),
-                                  ),
-                                );
+                                  );
                                 }
                               },
                             ),
@@ -499,8 +500,8 @@ class _SplitKeyScreenState extends State<SplitKeyScreen>
                         children: [
                           CircleAvatar(
                             radius: 14,
-                            backgroundColor:
-                                theme.colorScheme.primary.withValues(alpha: 0.1),
+                            backgroundColor: theme.colorScheme.primary
+                                .withValues(alpha: 0.1),
                             child: Text(
                               '${index + 1}',
                               style: TextStyle(
@@ -558,9 +559,7 @@ class _SplitKeyScreenState extends State<SplitKeyScreen>
                     )
                   : const Icon(Icons.merge_type),
               label: Text(
-                _isReconstructing
-                    ? 'Reconstructing...'
-                    : 'Reconstruct Key',
+                _isReconstructing ? 'Reconstructing...' : 'Reconstruct Key',
                 style: const TextStyle(fontSize: 16),
               ),
             ),
@@ -623,14 +622,14 @@ class _SplitKeyScreenState extends State<SplitKeyScreen>
                             );
                             if (mounted) {
                               // ignore: use_build_context_synchronously
-      // ignore: use_build_context_synchronously
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Key copied to clipboard'),
-                                duration: Duration(seconds: 1),
-                              ),
-                            );
+                              // ignore: use_build_context_synchronously
+                              // ignore: use_build_context_synchronously
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Key copied to clipboard'),
+                                  duration: Duration(seconds: 1),
+                                ),
+                              );
                             }
                           },
                         ),

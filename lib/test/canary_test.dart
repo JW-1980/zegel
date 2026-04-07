@@ -34,40 +34,36 @@ void main() {
 
     setUp(() {
       masterKey = _testKey();
-      content = Uint8List.fromList(utf8.encode('Confidential document content'));
+      content =
+          Uint8List.fromList(utf8.encode('Confidential document content'));
       recipientA = _recipientId('user:1:alice@example.com');
       recipientB = _recipientId('user:2:bob@example.com');
     });
 
     group('padding generation', () {
       test('generates different padding for recipient A and B', () {
-        final paddingA =
-            CanaryTrap.generatePadding(masterKey, recipientA, 0);
-        final paddingB =
-            CanaryTrap.generatePadding(masterKey, recipientB, 0);
+        final paddingA = CanaryTrap.generatePadding(masterKey, recipientA, 0);
+        final paddingB = CanaryTrap.generatePadding(masterKey, recipientB, 0);
 
         expect(paddingA, isNot(equals(paddingB)),
-            reason:
-                'Different recipients should produce different padding');
+            reason: 'Different recipients should produce different padding');
       });
 
       test('padding length is always 1-16 bytes', () {
         // Test with multiple block indices and recipients
         for (var blockIndex = 0; blockIndex < 20; blockIndex++) {
-          final paddingA = CanaryTrap.generatePadding(
-              masterKey, recipientA, blockIndex);
-          final paddingB = CanaryTrap.generatePadding(
-              masterKey, recipientB, blockIndex);
+          final paddingA =
+              CanaryTrap.generatePadding(masterKey, recipientA, blockIndex);
+          final paddingB =
+              CanaryTrap.generatePadding(masterKey, recipientB, blockIndex);
 
           expect(paddingA.length, greaterThanOrEqualTo(1),
-              reason:
-                  'Padding for A at block $blockIndex should be >= 1 byte');
+              reason: 'Padding for A at block $blockIndex should be >= 1 byte');
           expect(paddingA.length, lessThanOrEqualTo(16),
               reason:
                   'Padding for A at block $blockIndex should be <= 16 bytes');
           expect(paddingB.length, greaterThanOrEqualTo(1),
-              reason:
-                  'Padding for B at block $blockIndex should be >= 1 byte');
+              reason: 'Padding for B at block $blockIndex should be >= 1 byte');
           expect(paddingB.length, lessThanOrEqualTo(16),
               reason:
                   'Padding for B at block $blockIndex should be <= 16 bytes');
@@ -75,19 +71,15 @@ void main() {
       });
 
       test('padding is deterministic for same inputs', () {
-        final padding1 =
-            CanaryTrap.generatePadding(masterKey, recipientA, 0);
-        final padding2 =
-            CanaryTrap.generatePadding(masterKey, recipientA, 0);
+        final padding1 = CanaryTrap.generatePadding(masterKey, recipientA, 0);
+        final padding2 = CanaryTrap.generatePadding(masterKey, recipientA, 0);
 
         expect(padding1, equals(padding2));
       });
 
       test('padding differs across block indices for same recipient', () {
-        final padding0 =
-            CanaryTrap.generatePadding(masterKey, recipientA, 0);
-        final padding1 =
-            CanaryTrap.generatePadding(masterKey, recipientA, 1);
+        final padding0 = CanaryTrap.generatePadding(masterKey, recipientA, 0);
+        final padding1 = CanaryTrap.generatePadding(masterKey, recipientA, 1);
 
         // While they could theoretically be the same by coincidence,
         // it is extremely unlikely with HMAC-SHA256
@@ -97,8 +89,8 @@ void main() {
 
       test('last byte of padding equals padding length (PKCS#7 style)', () {
         for (var blockIndex = 0; blockIndex < 10; blockIndex++) {
-          final padding = CanaryTrap.generatePadding(
-              masterKey, recipientA, blockIndex);
+          final padding =
+              CanaryTrap.generatePadding(masterKey, recipientA, blockIndex);
           expect(padding.last, equals(padding.length),
               reason:
                   'Last byte should equal padding length at block $blockIndex');
@@ -184,8 +176,7 @@ void main() {
         const blockIndex = 0;
         final padding =
             CanaryTrap.generatePadding(masterKey, recipientA, blockIndex);
-        final blockWithPadding =
-            Uint8List(content.length + padding.length);
+        final blockWithPadding = Uint8List(content.length + padding.length);
         blockWithPadding.setRange(0, content.length, content);
         blockWithPadding.setRange(
             content.length, blockWithPadding.length, padding);
@@ -206,8 +197,7 @@ void main() {
         const blockIndex = 0;
         final padding =
             CanaryTrap.generatePadding(masterKey, recipientB, blockIndex);
-        final blockWithPadding =
-            Uint8List(content.length + padding.length);
+        final blockWithPadding = Uint8List(content.length + padding.length);
         blockWithPadding.setRange(0, content.length, content);
         blockWithPadding.setRange(
             content.length, blockWithPadding.length, padding);
@@ -229,8 +219,7 @@ void main() {
         const blockIndex = 0;
         final padding =
             CanaryTrap.generatePadding(masterKey, unknownRecipient, blockIndex);
-        final blockWithPadding =
-            Uint8List(content.length + padding.length);
+        final blockWithPadding = Uint8List(content.length + padding.length);
         blockWithPadding.setRange(0, content.length, content);
         blockWithPadding.setRange(
             content.length, blockWithPadding.length, padding);
@@ -250,8 +239,7 @@ void main() {
         const blockIndex = 0;
         final padding =
             CanaryTrap.generatePadding(masterKey, recipientA, blockIndex);
-        final blockWithPadding =
-            Uint8List(content.length + padding.length);
+        final blockWithPadding = Uint8List(content.length + padding.length);
         blockWithPadding.setRange(0, content.length, content);
         blockWithPadding.setRange(
             content.length, blockWithPadding.length, padding);
@@ -318,8 +306,7 @@ void main() {
           salt: _zeroSalt(),
           recipientId: recipientA,
         );
-        final fileBytes =
-            ZegelWriter(masterKey, options).seal(largeContent);
+        final fileBytes = ZegelWriter(masterKey, options).seal(largeContent);
 
         final result = const ZegelReader().verify(fileBytes, masterKey);
         expect(result.valid, isTrue);

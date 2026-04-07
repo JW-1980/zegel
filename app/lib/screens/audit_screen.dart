@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
@@ -78,9 +77,7 @@ class _AuditScreenState extends State<AuditScreen> {
 
   Future<void> _pickFile() async {
     final fileService = context.read<FileService>();
-    final path = await fileService.pickFile(
-
-    );
+    final path = await fileService.pickZegelFile();
     if (path != null) {
       await _setFile(path);
     }
@@ -189,14 +186,16 @@ class _AuditScreenState extends State<AuditScreen> {
       final newEntry = AuditTrail.createEntry(
         _actor.trim(),
         _action,
-        details: _details.isNotEmpty ? Map<String, dynamic>.from(_details) : null,
+        details:
+            _details.isNotEmpty ? Map<String, dynamic>.from(_details) : null,
         previousChainHash: previousChainHash,
       );
 
       // For demo purposes, show success and refresh
       // In production, this would write the entry to the file
       setState(() {
-        _statusMessage = 'Audit entry created (chain hash: ${(newEntry['chain_hash'] as String).substring(0, 16)}...)';
+        _statusMessage =
+            'Audit entry created (chain hash: ${(newEntry['chain_hash'] as String).substring(0, 16)}...)';
         _isError = false;
         _actorController.clear();
         _actor = '';
@@ -207,8 +206,6 @@ class _AuditScreenState extends State<AuditScreen> {
       await _loadAuditTrail();
     } catch (e) {
       if (mounted) {
-        // ignore: unused_local_variable
-        // ignore: unused_local_variable
         final l10n = AppLocalizations.of(context)!;
         setState(() {
           _statusMessage = l10n.errorGeneric(e.toString());
@@ -233,8 +230,6 @@ class _AuditScreenState extends State<AuditScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // ignore: unused_local_variable
-    // ignore: unused_local_variable
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final fileService = context.read<FileService>();
@@ -394,7 +389,8 @@ class _AuditScreenState extends State<AuditScreen> {
                                   : 'Chain Integrity Broken',
                               style: theme.textTheme.titleSmall?.copyWith(
                                 fontWeight: FontWeight.bold,
-                                color: _isChainValid ? Colors.green : Colors.red,
+                                color:
+                                    _isChainValid ? Colors.green : Colors.red,
                               ),
                             ),
                             Text(
@@ -460,8 +456,6 @@ class _AuditScreenState extends State<AuditScreen> {
                         hintText: 'e.g. user:42:admin@example.com',
                         prefixIcon: Icon(Icons.person),
                       ),
-                      // ignore: deprecated_member_use
-                      // ignore: deprecated_member_use
                       onChanged: (v) => setState(() => _actor = v),
                     ),
                     const SizedBox(height: 16),
@@ -473,8 +467,6 @@ class _AuditScreenState extends State<AuditScreen> {
                       ),
                       items: _actionTypes.map((action) {
                         return DropdownMenuItem(
-                          // ignore: deprecated_member_use
-                          // ignore: deprecated_member_use
                           value: action,
                           child: Row(
                             children: [

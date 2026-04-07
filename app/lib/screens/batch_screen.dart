@@ -47,7 +47,8 @@ class _BatchScreenState extends State<BatchScreen>
         bottom: TabBar(
           controller: _tabController,
           labelColor: theme.colorScheme.onPrimary,
-          unselectedLabelColor: theme.colorScheme.onPrimary.withValues(alpha: 0.7),
+          unselectedLabelColor:
+              theme.colorScheme.onPrimary.withValues(alpha: 0.7),
           indicatorColor: theme.colorScheme.onPrimary,
           tabs: [
             Tab(text: l10n.batchVerifyTab),
@@ -125,49 +126,50 @@ class _BatchVerifyTabState extends State<_BatchVerifyTab> {
       final files = await fileService.listZegelFiles(_folderPath!);
       _totalFiles = files.length;
 
-      for (final filePath in files) {
-        final stopwatch = Stopwatch()..start();
-        try {
-          final result = await zegelService.verify(filePath, _hexKey);
-          stopwatch.stop();
-          if (mounted) {
-            setState(() {
-              _processedFiles++;
-              _progress = _processedFiles / _totalFiles;
-              _results.add(_BatchFileResult(
-                filename: fileService.getFileName(filePath),
-                success: result.status == ZegelStatus.valid,
-                message: result.message,
-                duration: stopwatch.elapsed,
-              ));
-            });
+      const chunkSize = 20;
+      for (int i = 0; i < files.length; i += chunkSize) {
+        final end =
+            (i + chunkSize < files.length) ? i + chunkSize : files.length;
+        final chunk = files.sublist(i, end);
+
+        final futures = chunk.map((filePath) async {
+          final stopwatch = Stopwatch()..start();
+          try {
+            final result = await zegelService.verify(filePath, _hexKey);
+            stopwatch.stop();
+            return _BatchFileResult(
+              filename: fileService.getFileName(filePath),
+              success: result.status == ZegelStatus.valid,
+              message: result.message,
+              duration: stopwatch.elapsed,
+            );
+          } catch (e) {
+            stopwatch.stop();
+            return _BatchFileResult(
+              filename: fileService.getFileName(filePath),
+              success: false,
+              message: e.toString(),
+              duration: stopwatch.elapsed,
+            );
           }
-        } catch (e) {
-          stopwatch.stop();
-          if (mounted) {
-            setState(() {
-              _processedFiles++;
-              _progress = _processedFiles / _totalFiles;
-              _results.add(_BatchFileResult(
-                filename: fileService.getFileName(filePath),
-                success: false,
-                message: e.toString(),
-                duration: stopwatch.elapsed,
-              ));
-            });
-          }
+        });
+
+        final chunkResults = await Future.wait(futures);
+
+        if (mounted) {
+          setState(() {
+            _processedFiles += chunk.length;
+            _progress = _processedFiles / _totalFiles;
+            _results.addAll(chunkResults);
+          });
         }
       }
     } catch (e) {
       if (mounted) {
-        if (mounted) {
-          // ignore: use_build_context_synchronously
-      // ignore: use_build_context_synchronously
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
+        // ignore: use_build_context_synchronously
+        ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Batch verify error: $e')),
         );
-        }
       }
     } finally {
       if (mounted) {
@@ -254,9 +256,10 @@ class _BatchVerifyTabState extends State<_BatchVerifyTab> {
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
-                    LinearProgressIndicator(// ignore: deprecated_member_use
+                    LinearProgressIndicator(
+                        // ignore: deprecated_member_use
 // ignore: deprecated_member_use
-value: _progress),
+                        value: _progress),
                     const SizedBox(height: 8),
                     Text(
                       '$_processedFiles / $_totalFiles files processed',
@@ -273,11 +276,10 @@ value: _progress),
           SizedBox(
             height: 50,
             child: ElevatedButton.icon(
-              onPressed: _isProcessing ||
-                      _folderPath == null ||
-                      _hexKey.length != 64
-                  ? null
-                  : _startBatchVerify,
+              onPressed:
+                  _isProcessing || _folderPath == null || _hexKey.length != 64
+                      ? null
+                      : _startBatchVerify,
               icon: _isProcessing
                   ? const SizedBox(
                       width: 20,
@@ -289,9 +291,7 @@ value: _progress),
                     )
                   : const Icon(Icons.play_arrow),
               label: Text(
-                _isProcessing
-                    ? l10n.batchProcessing
-                    : l10n.batchStartVerify,
+                _isProcessing ? l10n.batchProcessing : l10n.batchStartVerify,
                 style: const TextStyle(fontSize: 16),
               ),
             ),
@@ -420,55 +420,56 @@ class _BatchSealTabState extends State<_BatchSealTab> {
       _totalFiles = files.length;
 
       final options = SealOptions(compress: _compress);
+      const chunkSize = 20;
 
-      for (final filePath in files) {
-        final stopwatch = Stopwatch()..start();
-        try {
-          final sealedBytes =
-              await zegelService.seal(filePath, _hexKey, options);
-          final fileName = fileService.getFileName(filePath);
-          final outputPath = '$_outputFolder/$fileName.zgl';
-          await fileService.saveFileToPath(sealedBytes, outputPath);
-          stopwatch.stop();
+      for (int i = 0; i < files.length; i += chunkSize) {
+        final end =
+            (i + chunkSize < files.length) ? i + chunkSize : files.length;
+        final chunk = files.sublist(i, end);
 
-          if (mounted) {
-            setState(() {
-              _processedFiles++;
-              _progress = _processedFiles / _totalFiles;
-              _results.add(_BatchFileResult(
-                filename: fileName,
-                success: true,
-                message: 'Sealed successfully',
-                duration: stopwatch.elapsed,
-              ));
-            });
+        final futures = chunk.map((filePath) async {
+          final stopwatch = Stopwatch()..start();
+          try {
+            final sealedBytes =
+                await zegelService.seal(filePath, _hexKey, options);
+            final fileName = fileService.getFileName(filePath);
+            final outputPath = '$_outputFolder/$fileName.zgl';
+            await fileService.saveFileToPath(sealedBytes, outputPath);
+            stopwatch.stop();
+
+            return _BatchFileResult(
+              filename: fileName,
+              success: true,
+              message: 'Sealed successfully',
+              duration: stopwatch.elapsed,
+            );
+          } catch (e) {
+            stopwatch.stop();
+            return _BatchFileResult(
+              filename: fileService.getFileName(filePath),
+              success: false,
+              message: e.toString(),
+              duration: stopwatch.elapsed,
+            );
           }
-        } catch (e) {
-          stopwatch.stop();
-          if (mounted) {
-            setState(() {
-              _processedFiles++;
-              _progress = _processedFiles / _totalFiles;
-              _results.add(_BatchFileResult(
-                filename: fileService.getFileName(filePath),
-                success: false,
-                message: e.toString(),
-                duration: stopwatch.elapsed,
-              ));
-            });
-          }
+        });
+
+        final chunkResults = await Future.wait(futures);
+
+        if (mounted) {
+          setState(() {
+            _processedFiles += chunk.length;
+            _progress = _processedFiles / _totalFiles;
+            _results.addAll(chunkResults);
+          });
         }
       }
     } catch (e) {
       if (mounted) {
-        if (mounted) {
-          // ignore: use_build_context_synchronously
-      // ignore: use_build_context_synchronously
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
+        // ignore: use_build_context_synchronously
+        ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Batch seal error: $e')),
         );
-        }
       }
     } finally {
       if (mounted) {
@@ -614,8 +615,9 @@ class _BatchSealTabState extends State<_BatchSealTab> {
                     // ignore: deprecated_member_use
                     // ignore: deprecated_member_use
                     value: _compress,
-                    onChanged:
-                        _isProcessing ? null : (v) => setState(() => _compress = v),
+                    onChanged: _isProcessing
+                        ? null
+                        : (v) => setState(() => _compress = v),
                   ),
                 ],
               ),
@@ -630,9 +632,10 @@ class _BatchSealTabState extends State<_BatchSealTab> {
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
-                    LinearProgressIndicator(// ignore: deprecated_member_use
+                    LinearProgressIndicator(
+                        // ignore: deprecated_member_use
 // ignore: deprecated_member_use
-value: _progress),
+                        value: _progress),
                     const SizedBox(height: 8),
                     Text(
                       '$_processedFiles / $_totalFiles files processed',
@@ -666,9 +669,7 @@ value: _progress),
                     )
                   : const Icon(Icons.play_arrow),
               label: Text(
-                _isProcessing
-                    ? l10n.batchProcessing
-                    : l10n.batchStartSeal,
+                _isProcessing ? l10n.batchProcessing : l10n.batchStartSeal,
                 style: const TextStyle(fontSize: 16),
               ),
             ),

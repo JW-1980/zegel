@@ -41,13 +41,16 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
   final List<String> _recentFiles = [];
+  final Set<String> _recentFilesSet = {};
 
   void _onFileDropped(DropResult result) {
     setState(() {
-      if (!_recentFiles.contains(result.filePath)) {
+      if (!_recentFilesSet.contains(result.filePath)) {
         _recentFiles.insert(0, result.filePath);
+        _recentFilesSet.add(result.filePath);
         if (_recentFiles.length > 10) {
-          _recentFiles.removeLast();
+          final removed = _recentFiles.removeLast();
+          _recentFilesSet.remove(removed);
         }
       }
     });
@@ -344,8 +347,7 @@ class _HomeScreenState extends State<HomeScreen> {
           // Core
           sectionHeader(l10n.drawerCoreSection),
           drawerItem(Icons.lock, l10n.sealAction, _navigateToSeal),
-          drawerItem(
-              Icons.verified_user, l10n.verifyAction, _navigateToVerify),
+          drawerItem(Icons.verified_user, l10n.verifyAction, _navigateToVerify),
           drawerItem(
               Icons.file_download, l10n.extractAction, _navigateToExtract),
           drawerItem(Icons.search, l10n.inspectAction,
@@ -408,8 +410,7 @@ class _HomeScreenState extends State<HomeScreen> {
           const Divider(),
 
           // Settings
-          drawerItem(
-              Icons.settings, l10n.settingsTitle, _navigateToSettings),
+          drawerItem(Icons.settings, l10n.settingsTitle, _navigateToSettings),
         ],
       ),
     );

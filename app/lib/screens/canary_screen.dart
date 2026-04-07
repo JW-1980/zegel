@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
@@ -33,7 +32,8 @@ class _CanaryScreenState extends State<CanaryScreen>
   String? _embedFilePath;
   String _masterKey = '';
   final List<_RecipientEntry> _recipients = [];
-  final bool _isEmbedding = false;
+  // ignore: prefer_final_fields
+  bool _isEmbedding = false;
 
   // Identify tab state
   String? _identifyFilePath;
@@ -46,7 +46,8 @@ class _CanaryScreenState extends State<CanaryScreen>
   String? _statusMessage;
   bool _isError = false;
 
-  final TextEditingController _recipientNameController = TextEditingController();
+  final TextEditingController _recipientNameController =
+      TextEditingController();
   final TextEditingController _candidateIdController = TextEditingController();
 
   @override
@@ -98,9 +99,7 @@ class _CanaryScreenState extends State<CanaryScreen>
 
   Future<void> _pickIdentifyFile() async {
     final fileService = context.read<FileService>();
-    final path = await fileService.pickFile(
-
-    );
+    final path = await fileService.pickZegelFile();
     if (path != null) {
       setState(() {
         _identifyFilePath = path;
@@ -166,7 +165,8 @@ class _CanaryScreenState extends State<CanaryScreen>
 
     try {
       final keyService = context.read<KeyService>();
-      final masterKeyBytes = Uint8List.fromList(keyService.hexToBytes(_identifyKey));
+      final masterKeyBytes =
+          Uint8List.fromList(keyService.hexToBytes(_identifyKey));
 
       // Convert candidate IDs to bytes
       final candidateIdBytes = _candidateIds
@@ -209,9 +209,7 @@ class _CanaryScreenState extends State<CanaryScreen>
         }
       });
     } catch (e) {
-      {
-        // ignore: unused_local_variable
-        // ignore: unused_local_variable
+      if (mounted) {
         final l10n = AppLocalizations.of(context)!;
         setState(() {
           _statusMessage = l10n.errorGeneric(e.toString());
@@ -219,7 +217,7 @@ class _CanaryScreenState extends State<CanaryScreen>
         });
       }
     } finally {
-      {
+      if (mounted) {
         setState(() => _isIdentifying = false);
       }
     }
@@ -249,8 +247,6 @@ class _CanaryScreenState extends State<CanaryScreen>
   }
 
   Widget _buildEmbedTab(BuildContext context) {
-    // ignore: unused_local_variable
-    // ignore: unused_local_variable
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final fileService = context.read<FileService>();
@@ -527,8 +523,6 @@ class _CanaryScreenState extends State<CanaryScreen>
   }
 
   Widget _buildIdentifyTab(BuildContext context) {
-    // ignore: unused_local_variable
-    // ignore: unused_local_variable
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final fileService = context.read<FileService>();
@@ -926,18 +920,12 @@ class _RecipientTile extends StatelessWidget {
                           Clipboard.setData(
                             ClipboardData(text: recipient.idHex),
                           );
-                          {
-                            // ignore: use_build_context_synchronously
-      // ignore: use_build_context_synchronously
-      // ignore: use_build_context_synchronously
-                          // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
+                          ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               content: Text('Recipient ID copied'),
                               duration: Duration(seconds: 1),
                             ),
                           );
-                          }
                         },
                         child: Icon(
                           Icons.copy,

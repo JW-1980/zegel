@@ -1,0 +1,11 @@
+--- cli/lib/commands/disclose_command.dart
++++ cli/lib/commands/disclose_command.dart
+@@ -220,7 +220,7 @@
+       return 1;
+     }
+
+-    final outputFile = File(outputPath!);
++    final outputFile = File(outputPath);
+     outputFile.writeAsStringSync(jsonEncode(token));
+
+     print('Disclosure token created successfully.');

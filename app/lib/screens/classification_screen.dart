@@ -123,7 +123,7 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
           actions: [
             TextButton(
               onPressed: () => // ignore: use_build_context_synchronously
-      Navigator.of(context).pop(false),
+                  Navigator.of(context).pop(false),
               child: Text(l10n.cancelAction),
             ),
             ElevatedButton(
@@ -131,7 +131,7 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
                 backgroundColor: Colors.orange,
               ),
               onPressed: () => // ignore: use_build_context_synchronously
-      Navigator.of(context).pop(true),
+                  Navigator.of(context).pop(true),
               child: Text(l10n.classificationDeclassifyAction),
             ),
           ],
@@ -153,7 +153,8 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
         _filePath!,
         _declassifyLevel,
         _declassifyAuthority,
-        redactBlocks: _redactBlockIndices.isNotEmpty ? _redactBlockIndices : null,
+        redactBlocks:
+            _redactBlockIndices.isNotEmpty ? _redactBlockIndices : null,
       );
       if (mounted) {
         setState(() {
@@ -335,8 +336,7 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
                         labelText: l10n.classificationAuthorityLabel,
                         hintText: l10n.classificationAuthorityHint,
                       ),
-                      onChanged: (v) =>
-                          setState(() => _classifyAuthority = v),
+                      onChanged: (v) => setState(() => _classifyAuthority = v),
                     ),
                     const SizedBox(height: 12),
                     TextField(
@@ -344,8 +344,7 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
                         labelText: l10n.classificationCaveatLabel,
                         hintText: l10n.classificationCaveatHint,
                       ),
-                      onChanged: (v) =>
-                          setState(() => _classifyCaveat = v),
+                      onChanged: (v) => setState(() => _classifyCaveat = v),
                     ),
                     const SizedBox(height: 16),
                     SizedBox(
@@ -375,8 +374,7 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.lock_open,
-                              color: Colors.orange.shade700),
+                          Icon(Icons.lock_open, color: Colors.orange.shade700),
                           const SizedBox(width: 8),
                           Text(
                             l10n.classificationDeclassifyLabel,

@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
@@ -64,9 +63,7 @@ class _AttestScreenState extends State<AttestScreen> {
 
   Future<void> _pickFile() async {
     final fileService = context.read<FileService>();
-    final path = await fileService.pickFile(
-
-    );
+    final path = await fileService.pickZegelFile();
     if (path != null) {
       await _setFile(path);
     }
@@ -170,8 +167,6 @@ class _AttestScreenState extends State<AttestScreen> {
       }
     } catch (e) {
       if (mounted) {
-        // ignore: unused_local_variable
-        // ignore: unused_local_variable
         final l10n = AppLocalizations.of(context)!;
         setState(() {
           _statusMessage = l10n.errorGeneric(e.toString());
@@ -187,8 +182,6 @@ class _AttestScreenState extends State<AttestScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // ignore: unused_local_variable
-    // ignore: unused_local_variable
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final fileService = context.read<FileService>();
@@ -361,21 +354,18 @@ class _AttestScreenState extends State<AttestScreen> {
                         hintText: 'e.g. user:42:reviewer@example.com',
                         prefixIcon: Icon(Icons.person),
                       ),
-                      // ignore: deprecated_member_use
-                      // ignore: deprecated_member_use
                       onChanged: (v) => setState(() => _signerId = v),
                     ),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<String>(
-                      initialValue: _selectedRole,
+                      // ignore: deprecated_member_use
+                      value: _selectedRole,
                       decoration: const InputDecoration(
                         labelText: 'Role',
                         prefixIcon: Icon(Icons.badge),
                       ),
                       items: Attestation.validRoles.map((role) {
                         return DropdownMenuItem(
-                          // ignore: deprecated_member_use
-                          // ignore: deprecated_member_use
                           value: role,
                           child: Row(
                             children: [
@@ -399,8 +389,6 @@ class _AttestScreenState extends State<AttestScreen> {
                         prefixIcon: Icon(Icons.edit_note),
                       ),
                       maxLines: 2,
-                      // ignore: deprecated_member_use
-                      // ignore: deprecated_member_use
                       onChanged: (v) => setState(() => _statement = v),
                     ),
                   ],

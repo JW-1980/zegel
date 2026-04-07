@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
 
 import '../services/zegel_service.dart';
+import 'package:intl/intl.dart';
 
 /// A vertical timeline widget displaying the audit trail entries.
 ///
@@ -196,9 +196,7 @@ class _AuditEntryTile extends StatelessWidget {
                       const Spacer(),
                       // Chain hash verification indicator
                       Icon(
-                        entry.isChainValid
-                            ? Icons.link
-                            : Icons.link_off,
+                        entry.isChainValid ? Icons.link : Icons.link_off,
                         size: 14,
                         color: entry.isChainValid
                             ? const Color(0xFF2E7D32)
@@ -247,7 +245,8 @@ class _AuditEntryTile extends StatelessWidget {
                     style: theme.textTheme.bodySmall?.copyWith(
                       fontFamily: 'monospace',
                       fontSize: 10,
-                      color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+                      color:
+                          colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
                     ),
                   ),
                 ],

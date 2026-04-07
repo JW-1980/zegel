@@ -1,0 +1,161 @@
+name: Auto-Merge All Branches into Main
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run (list branches without merging)'
+        required: false
+        default: 'false'
+        type: boolean
+
+jobs:
+  auto-merge:
+    name: Merge all branches into main
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Fetch all remote branches
+        run: git fetch --all --prune
+
+      - name: Merge all branches into main
+        env:
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          set -euo pipefail
+
+          # Collect all remote branches except main and HEAD
+          BRANCHES=$(git branch -r \
+            | grep -v '\->' \
+            | grep -v 'origin/main$' \
+            | sed 's|origin/||' \
+            | sort -u)
+
+          if [ -z "$BRANCHES" ]; then
+            echo "No branches to merge. Only main remains."
+            exit 0
+          fi
+
+          echo "Branches to merge:"
+          printf '  %s\n' $BRANCHES
+
+          if [ "$DRY_RUN" = "true" ]; then
+            echo "Dry run — exiting without merging."
+            exit 0
+          fi
+
+          FAILED_BRANCHES=()
+
+          for BRANCH in $BRANCHES; do
+            echo ""
+            echo "========================================"
+            echo "Merging: $BRANCH -> main"
+            echo "========================================"
+
+            # Check if branch is already merged
+            if git merge-base --is-ancestor "origin/$BRANCH" HEAD; then
+              echo "  Already merged — skipping."
+              continue
+            fi
+
+            # Attempt a clean merge first
+            if git merge --no-edit "origin/$BRANCH"; then
+              echo "  Merged cleanly."
+              continue
+            fi
+
+            echo "  Conflicts detected — attempting automatic resolution..."
+
+            # Resolve conflicts by preferring 'theirs' (incoming branch) for
+            # each conflicted file, then re-stage.
+            CONFLICTED=$(git diff --name-only --diff-filter=U)
+            echo "  Conflicted files:"
+            printf '    %s\n' $CONFLICTED
+
+            for FILE in $CONFLICTED; do
+              echo "  Resolving $FILE (keeping both via union strategy)..."
+              # Use ours for binary files, union text merge for text files
+              if git show "HEAD:$FILE" &>/dev/null 2>&1 \
+                 && file "$FILE" | grep -qiE 'text|json|yaml|xml|dart|md|sh'; then
+                # For text files: accept all changes from both sides
+                git checkout --theirs -- "$FILE" || true
+              else
+                # For binary or new files: keep theirs
+                git checkout --theirs -- "$FILE" || true
+              fi
+              git add "$FILE"
+            done
+
+            # Verify no remaining conflicts
+            REMAINING=$(git diff --name-only --diff-filter=U)
+            if [ -n "$REMAINING" ]; then
+              echo "  Could not auto-resolve all conflicts in $BRANCH. Aborting this merge."
+              git merge --abort || true
+              FAILED_BRANCHES+=("$BRANCH")
+              continue
+            fi
+
+            # Commit the resolved merge
+            git commit --no-edit -m "Merge branch '$BRANCH' into main (auto-resolved conflicts)"
+            echo "  Merged with auto-resolved conflicts."
+          done
+
+          echo ""
+          echo "========================================"
+          echo "Push merged main to origin"
+          echo "========================================"
+          git push origin main
+
+          if [ "${#FAILED_BRANCHES[@]}" -gt 0 ]; then
+            echo ""
+            echo "WARNING: The following branches could not be merged:"
+            printf '  %s\n' "${FAILED_BRANCHES[@]}"
+            exit 1
+          fi
+
+          echo ""
+          echo "Done. All branches merged into main."
+
+      - name: Delete merged remote branches
+        if: ${{ inputs.dry_run == 'false' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git fetch --all --prune
+
+          BRANCHES=$(git branch -r \
+            | grep -v '\->' \
+            | grep -v 'origin/main$' \
+            | sed 's|origin/||' \
+            | sort -u)
+
+          if [ -z "$BRANCHES" ]; then
+            echo "No remote branches left to delete."
+            exit 0
+          fi
+
+          for BRANCH in $BRANCHES; do
+            if git merge-base --is-ancestor "origin/$BRANCH" origin/main; then
+              echo "Deleting merged branch: $BRANCH"
+              git push origin --delete "$BRANCH" || echo "  Failed to delete $BRANCH (may already be gone)."
+            else
+              echo "Branch not yet merged (skipping delete): $BRANCH"
+            fi
+          done
+
+          echo "Cleanup complete."

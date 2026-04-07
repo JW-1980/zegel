@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:io';
+import 'dart:io' hide BytesBuilder;
 import 'dart:typed_data';
 
 import 'package:args/command_runner.dart';
@@ -10,13 +10,19 @@ import 'common.dart';
 /// `zegel excerpt-proof` - Generate Merkle inclusion proof for specific blocks.
 class ExcerptProofCommand extends Command<int> {
   ExcerptProofCommand() {
-    argParser.addOption('file', abbr: 'f',
+    argParser.addOption(
+      'file',
+      abbr: 'f',
       help: 'Path to the .zgl file.',
-      valueHelp: 'path');
+      valueHelp: 'path',
+    );
     addKeyOptions(argParser);
-    argParser.addOption('block', abbr: 'b',
+    argParser.addOption(
+      'block',
+      abbr: 'b',
       help: 'Block index to generate proof for.',
-      valueHelp: 'index');
+      valueHelp: 'index',
+    );
     addOutputOption(argParser, help: 'Output path for proof JSON.');
   }
 
@@ -24,7 +30,8 @@ class ExcerptProofCommand extends Command<int> {
   String get name => 'excerpt-proof';
 
   @override
-  String get description => 'Generate a Merkle inclusion proof for a block.\n\n'
+  String get description =>
+      'Generate a Merkle inclusion proof for a block.\n\n'
       'Creates a cryptographic proof that a specific block belongs to\n'
       'a sealed file, without revealing other blocks.\n\n'
       'Examples:\n'
@@ -38,7 +45,7 @@ class ExcerptProofCommand extends Command<int> {
       throw UsageException('--file and --block are required.', usage);
     }
 
-    parseKeyFromArgs(argResults!);
+    // final key = parseKeyFromArgs(argResults!);
     final blockIndex = int.parse(blockStr);
 
     final fileBytes = Uint8List.fromList(File(filePath).readAsBytesSync());
@@ -52,9 +59,9 @@ class ExcerptProofCommand extends Command<int> {
     final proof = ExcerptProof.generateProof(leafHashes, blockIndex);
 
     final outputPath = argResults!['output'] as String? ?? 'excerpt_proof.json';
-    File(outputPath).writeAsStringSync(
-      const JsonEncoder.withIndent('  ').convert(proof),
-    );
+    File(
+      outputPath,
+    ).writeAsStringSync(const JsonEncoder.withIndent('  ').convert(proof));
 
     stdout.writeln(Ansi.success('Excerpt proof generated'));
     stdout.writeln('  Block: $blockIndex');
@@ -67,19 +74,26 @@ class ExcerptProofCommand extends Command<int> {
 /// `zegel verify-excerpt` - Verify an excerpt proof.
 class VerifyExcerptCommand extends Command<int> {
   VerifyExcerptCommand() {
-    argParser.addOption('proof', abbr: 'p',
+    argParser.addOption(
+      'proof',
+      abbr: 'p',
       help: 'Path to the proof JSON file.',
-      valueHelp: 'path');
-    argParser.addOption('file', abbr: 'f',
+      valueHelp: 'path',
+    );
+    argParser.addOption(
+      'file',
+      abbr: 'f',
       help: 'Path to the .zgl file to verify against.',
-      valueHelp: 'path');
+      valueHelp: 'path',
+    );
   }
 
   @override
   String get name => 'verify-excerpt';
 
   @override
-  String get description => 'Verify a Merkle inclusion proof.\n\n'
+  String get description =>
+      'Verify a Merkle inclusion proof.\n\n'
       'Checks that an excerpt proof is valid against a sealed file\'s\n'
       'Merkle root.\n\n'
       'Examples:\n'
@@ -93,7 +107,8 @@ class VerifyExcerptCommand extends Command<int> {
       throw UsageException('--proof and --file are required.', usage);
     }
 
-    final proofData = jsonDecode(File(proofPath).readAsStringSync()) as Map<String, dynamic>;
+    final proofData =
+        jsonDecode(File(proofPath).readAsStringSync()) as Map<String, dynamic>;
     final fileBytes = Uint8List.fromList(File(filePath).readAsBytesSync());
     final header = RawZegelHeader.parse(fileBytes);
 
@@ -101,7 +116,9 @@ class VerifyExcerptCommand extends Command<int> {
 
     if (valid) {
       stdout.writeln(Ansi.success('✓ Excerpt proof is VALID'));
-      stdout.writeln('  Block ${proofData["block_index"]} verified against Merkle root');
+      stdout.writeln(
+        '  Block ${proofData["block_index"]} verified against Merkle root',
+      );
     } else {
       stdout.writeln(Ansi.error('✗ Excerpt proof is INVALID'));
     }

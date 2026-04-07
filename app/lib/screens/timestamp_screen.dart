@@ -69,8 +69,8 @@ class _TimestampScreenState extends State<TimestampScreen>
       return;
     }
     if (_hexKey.length != 64) {
-      setState(() =>
-          _errorMessage = 'Please enter a valid 64-character hex key.');
+      setState(
+          () => _errorMessage = 'Please enter a valid 64-character hex key.');
       return;
     }
 
@@ -139,8 +139,8 @@ class _TimestampScreenState extends State<TimestampScreen>
       return;
     }
     if (_hexKey.length != 64) {
-      setState(() =>
-          _errorMessage = 'Please enter a valid 64-character hex key.');
+      setState(
+          () => _errorMessage = 'Please enter a valid 64-character hex key.');
       return;
     }
     if (_timestampToken == null) {
@@ -532,7 +532,8 @@ class _TimestampScreenState extends State<TimestampScreen>
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.verified_user, color: theme.colorScheme.primary),
+                      Icon(Icons.verified_user,
+                          color: theme.colorScheme.primary),
                       const SizedBox(width: 8),
                       Text(
                         'File to Verify',
@@ -640,8 +641,9 @@ class _TimestampScreenState extends State<TimestampScreen>
           SizedBox(
             height: 50,
             child: ElevatedButton.icon(
-              onPressed:
-                  (_isLoading || _timestampToken == null) ? null : _verifyTimestamp,
+              onPressed: (_isLoading || _timestampToken == null)
+                  ? null
+                  : _verifyTimestamp,
               icon: _isLoading
                   ? const SizedBox(
                       width: 20,

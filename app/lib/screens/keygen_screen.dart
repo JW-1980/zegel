@@ -57,17 +57,12 @@ class _KeygenScreenState extends State<KeygenScreen> {
   Future<void> _copyToClipboard(String value, String label) async {
     await Clipboard.setData(ClipboardData(text: value));
     if (mounted) {
-      if (mounted) {
-        // ignore: use_build_context_synchronously
-      // ignore: use_build_context_synchronously
-      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('$label copied to clipboard'),
           duration: const Duration(seconds: 2),
         ),
       );
-      }
     }
   }
 
@@ -84,7 +79,8 @@ class _KeygenScreenState extends State<KeygenScreen> {
       final keyService = context.read<KeyService>();
 
       // Save as raw 32 bytes
-      final bytes = Uint8List.fromList(keyService.hexToBytes(_generatedKeyHex!));
+      final bytes =
+          Uint8List.fromList(keyService.hexToBytes(_generatedKeyHex!));
       final savedPath = await fileService.saveFile(bytes, 'zegel_key.bin');
 
       if (savedPath != null && mounted) {
@@ -151,8 +147,6 @@ class _KeygenScreenState extends State<KeygenScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // ignore: unused_local_variable
-    // ignore: unused_local_variable
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
@@ -219,7 +213,7 @@ class _KeygenScreenState extends State<KeygenScreen> {
                       text: 'Consider printing and storing in a safe',
                     ),
                     const _SecurityTip(
-                      icon: Icons.share,
+                      icon: Icons.security,
                       text: 'Never share your key via email or messaging',
                     ),
                   ],
@@ -285,22 +279,16 @@ class _KeygenScreenState extends State<KeygenScreen> {
                       // Key properties
                       const _KeyProperty(
                         label: 'Algorithm',
-                        // ignore: deprecated_member_use
-                        // ignore: deprecated_member_use
                         value: 'AES-256-GCM',
                         icon: Icons.security,
                       ),
                       const _KeyProperty(
                         label: 'Key Size',
-                        // ignore: deprecated_member_use
-                        // ignore: deprecated_member_use
                         value: '256 bits (32 bytes)',
                         icon: Icons.straighten,
                       ),
                       const _KeyProperty(
                         label: 'Source',
-                        // ignore: deprecated_member_use
-                        // ignore: deprecated_member_use
                         value: 'Cryptographically Secure RNG',
                         icon: Icons.shuffle,
                       ),
@@ -320,16 +308,15 @@ class _KeygenScreenState extends State<KeygenScreen> {
                           color: theme.colorScheme.surfaceContainerHighest,
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
-                            color: theme.colorScheme.outline.withValues(alpha: 0.3),
+                            color: theme.colorScheme.outline
+                                .withValues(alpha: 0.3),
                           ),
                         ),
                         child: Row(
                           children: [
                             Expanded(
                               child: SelectableText(
-                                _obscureKey
-                                    ? '*' * 64
-                                    : _generatedKeyHex!,
+                                _obscureKey ? '*' * 64 : _generatedKeyHex!,
                                 style: TextStyle(
                                   fontFamily: 'monospace',
                                   fontSize: 12,
@@ -367,16 +354,15 @@ class _KeygenScreenState extends State<KeygenScreen> {
                           color: theme.colorScheme.surfaceContainerHighest,
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
-                            color: theme.colorScheme.outline.withValues(alpha: 0.3),
+                            color: theme.colorScheme.outline
+                                .withValues(alpha: 0.3),
                           ),
                         ),
                         child: Row(
                           children: [
                             Expanded(
                               child: SelectableText(
-                                _obscureKey
-                                    ? '*' * 44
-                                    : _generatedKeyBase64!,
+                                _obscureKey ? '*' * 44 : _generatedKeyBase64!,
                                 style: TextStyle(
                                   fontFamily: 'monospace',
                                   fontSize: 12,
@@ -483,9 +469,8 @@ class _KeygenScreenState extends State<KeygenScreen> {
                                 ),
                                 const SizedBox(width: 8),
                                 ElevatedButton(
-                                  onPressed: _isSaving
-                                      ? null
-                                      : _saveToSecureStorage,
+                                  onPressed:
+                                      _isSaving ? null : _saveToSecureStorage,
                                   child: const Text('Save'),
                                 ),
                               ],

@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
@@ -99,41 +100,28 @@ class _ProvenanceScreenState extends State<ProvenanceScreen> {
         reportBuffer.writeln('');
       }
 
-      final bytes =
-          List<int>.from(reportBuffer.toString().codeUnits);
+      final bytes = List<int>.from(reportBuffer.toString().codeUnits);
       final savedPath = await fileService.saveFile(
         Uint8List.fromList(bytes),
         'provenance_report.txt',
       );
 
       if (savedPath != null && mounted) {
-        if (mounted) {
-          // ignore: use_build_context_synchronously
-      // ignore: use_build_context_synchronously
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Provenance report exported.')),
         );
-        }
       }
     } catch (e) {
       if (mounted) {
-        if (mounted) {
-          // ignore: use_build_context_synchronously
-      // ignore: use_build_context_synchronously
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Export error: $e')),
         );
-        }
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // ignore: unused_local_variable
-    // ignore: unused_local_variable
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 

@@ -1,10 +1,10 @@
-import 'dart:typed_data';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
-import 'package:zegel/zegel.dart' hide ZegelInspection;
+import 'package:zegel/zegel.dart' as core;
 
 import '../services/file_service.dart';
 import '../services/zegel_service.dart';
@@ -30,11 +30,9 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
   bool _isLoading = false;
   Map<String, dynamic>? _metadata;
   String? _errorMessage;
-  // ignore: unused_field
-  // ignore: unused_field
-  // ignore: unused_field
-  // ignore: unused_field
   ZegelInspection? _inspection;
+  // ignore: unused_element
+  ZegelInspection? get _unusedInspection => _inspection;
 
   @override
   void initState() {
@@ -52,7 +50,7 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
         _filePath = path;
         _metadata = null;
         _errorMessage = null;
-        // _inspection = null;
+        _inspection = null;
       });
     }
   }
@@ -63,11 +61,12 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
       return;
     }
     if (_hexKey.length != 64) {
-      setState(() =>
-          _errorMessage = 'Please enter a valid 64-character hex key.');
+      setState(
+          () => _errorMessage = 'Please enter a valid 64-character hex key.');
       return;
     }
 
+    final zegelService = context.read<ZegelService>();
     setState(() {
       _isLoading = true;
       _metadata = null;
@@ -81,16 +80,15 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
       }
 
       final bytes = await file.readAsBytes();
-      const reader = ZegelReader();
+      const reader = core.ZegelReader();
 
       // First inspect the file
-      // ignore: unused_local_variable
-      // ignore: unused_local_variable
-      final inspection = reader.inspect(bytes);
+      final inspection = await zegelService.inspect(_filePath!);
 
       // Verify and extract content
       final masterKey = _hexToBytes(_hexKey);
-      final result = reader.verify(bytes, masterKey);
+      final result = reader.verify(
+          bytes, masterKey); // Note: still returns core.ZegelResult
 
       if (!result.valid) {
         throw Exception('File verification failed');
@@ -103,7 +101,7 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
       }
 
       // Use MediaMetadata to extract metadata
-      final basicMetadata = MediaMetadata.extractBasicMetadata(
+      final basicMetadata = core.MediaMetadata.extractBasicMetadata(
         content,
         result.filename ?? 'unknown',
       );
@@ -118,14 +116,12 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
       if (mounted) {
         setState(() {
           _metadata = mergedMetadata;
-          // _inspection = inspection;
+          _inspection = inspection;
           _isLoading = false;
         });
       }
     } catch (e) {
       if (mounted) {
-        // ignore: unused_local_variable
-        // ignore: unused_local_variable
         final l10n = AppLocalizations.of(context)!;
         setState(() {
           _errorMessage = l10n.errorGeneric(e.toString());
@@ -146,8 +142,6 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // ignore: unused_local_variable
-    // ignore: unused_local_variable
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final fileService = context.read<FileService>();
@@ -289,8 +283,8 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
                       ),
                       const Divider(),
                       if (_metadata!['filename'] != null)
-                        _buildInfoRow(
-                            'Filename', _metadata!['filename'].toString(), theme),
+                        _buildInfoRow('Filename',
+                            _metadata!['filename'].toString(), theme),
                       if (_metadata!['file_size'] != null)
                         _buildInfoRow(
                           'File Size',
@@ -356,7 +350,8 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
                             color: theme.colorScheme.surfaceContainerHighest,
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
-                              color: theme.colorScheme.outline.withValues(alpha: 0.3),
+                              color: theme.colorScheme.outline
+                                  .withValues(alpha: 0.3),
                             ),
                           ),
                           child: Center(

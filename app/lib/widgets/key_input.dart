@@ -1,12 +1,11 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import '../services/file_service.dart';
 import '../services/key_service.dart';
+import 'dart:io';
+import 'package:flutter/services.dart';
 
 /// A reusable widget for entering, loading, or generating a cryptographic key.
 ///
@@ -68,11 +67,13 @@ class _KeyInputState extends State<KeyInput> {
       return;
     }
     if (value.length != 64) {
-      setState(() => _errorText = 'Key must be 64 hex characters (${value.length}/64)');
+      setState(() =>
+          _errorText = 'Key must be 64 hex characters (${value.length}/64)');
       return;
     }
     if (!RegExp(r'^[0-9a-fA-F]{64}$').hasMatch(value)) {
-      setState(() => _errorText = 'Key must contain only hexadecimal characters (0-9, a-f)');
+      setState(() => _errorText =
+          'Key must contain only hexadecimal characters (0-9, a-f)');
       return;
     }
     setState(() => _errorText = null);
@@ -112,26 +113,26 @@ class _KeyInputState extends State<KeyInput> {
       if (mounted) {
         if (mounted) {
           // ignore: use_build_context_synchronously
-      // ignore: use_build_context_synchronously
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Invalid key file. Expected 64 hex characters or 32 raw bytes.',
+          // ignore: use_build_context_synchronously
+          // ignore: use_build_context_synchronously
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Invalid key file. Expected 64 hex characters or 32 raw bytes.',
+              ),
             ),
-          ),
-        );
+          );
         }
       }
     } catch (e) {
       if (mounted) {
         if (mounted) {
           // ignore: use_build_context_synchronously
-      // ignore: use_build_context_synchronously
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to load key file: $e')),
-        );
+          // ignore: use_build_context_synchronously
+          // ignore: use_build_context_synchronously
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to load key file: $e')),
+          );
         }
       }
     }
@@ -151,11 +152,11 @@ class _KeyInputState extends State<KeyInput> {
       if (mounted) {
         if (mounted) {
           // ignore: use_build_context_synchronously
-      // ignore: use_build_context_synchronously
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No saved keys found')),
-        );
+          // ignore: use_build_context_synchronously
+          // ignore: use_build_context_synchronously
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('No saved keys found')),
+          );
         }
       }
       return;
@@ -238,14 +239,14 @@ class _KeyInputState extends State<KeyInput> {
                       );
                       if (mounted) {
                         // ignore: use_build_context_synchronously
-      // ignore: use_build_context_synchronously
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Key copied to clipboard'),
-                          duration: Duration(seconds: 1),
-                        ),
-                      );
+                        // ignore: use_build_context_synchronously
+                        // ignore: use_build_context_synchronously
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Key copied to clipboard'),
+                            duration: Duration(seconds: 1),
+                          ),
+                        );
                       }
                     },
                   ),

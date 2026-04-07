@@ -137,7 +137,8 @@ class WorkflowStepperWidget extends StatelessWidget {
                           margin: const EdgeInsets.symmetric(vertical: 2),
                           color: index < currentStep
                               ? const Color(0xFF2E7D32).withValues(alpha: 0.5)
-                              : theme.colorScheme.outline.withValues(alpha: 0.2),
+                              : theme.colorScheme.outline
+                                  .withValues(alpha: 0.2),
                         ),
                       ),
                   ],

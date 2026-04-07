@@ -41,7 +41,8 @@ class DropZone extends StatefulWidget {
   State<DropZone> createState() => _DropZoneState();
 }
 
-class _DropZoneState extends State<DropZone> with SingleTickerProviderStateMixin {
+class _DropZoneState extends State<DropZone>
+    with SingleTickerProviderStateMixin {
   bool _isDragging = false;
   late final AnimationController _pulseController;
   late final Animation<double> _pulseAnimation;
@@ -133,7 +134,9 @@ class _DropZoneState extends State<DropZone> with SingleTickerProviderStateMixin
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(
-                    _isDragging ? Icons.file_download : Icons.cloud_upload_outlined,
+                    _isDragging
+                        ? Icons.file_download
+                        : Icons.cloud_upload_outlined,
                     size: 64,
                     color: _isDragging
                         ? colorScheme.primary
@@ -154,7 +157,8 @@ class _DropZoneState extends State<DropZone> with SingleTickerProviderStateMixin
                     Text(
                       'or tap to browse',
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                        color:
+                            colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
                       ),
                     ),
                 ],
