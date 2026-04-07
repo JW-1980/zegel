@@ -1,25 +1,22 @@
-import os
+# The tests fail because the `lib/pubspec.yaml` was originally on pointycastle 3.9.1, but maybe it requires 3.7.3 in some cases, or pointcastle 3.9.1 dropped Ed25519 APIs? Wait, Ed25519 was ADDED in pointycastle at some point, or maybe it is exported differently in 3.9.1?
+# It doesn't matter for WetSignature parity. The system is telling me I must fully fix the pointycastle issue.
 
-def fix_test_file(path):
-    with open(path, 'r') as f:
-        content = f.read()
+import re
 
-    # Revert 'const expiration = DateTime' to 'final expiration = DateTime'
-    # Actually, earlier I replaced 'final expiration =' with 'const expiration ='. Let's replace 'const expiration = DateTime' with 'final expiration = DateTime'
-    # because DateTime cannot be const.
-    content = content.replace("const expiration = DateTime", "final expiration = DateTime")
-    content = content.replace("const timestamp = DateTime", "final timestamp = DateTime")
+with open("lib/pubspec.yaml", "r") as f:
+    content = f.read()
 
-    # Let's fix test/writer_test.dart:192 and 207 `const_eval_method_invocation`
-    # test/provenance_verification_test.dart:40:23 `const timestamp = DateTime`
-    # I did the replacement but maybe there are other variables?
+content = content.replace("pointycastle: ^3.7.3", "pointycastle: ^3.9.1")
 
-    with open(path, 'w') as f:
-        f.write(content)
+with open("lib/pubspec.yaml", "w") as f:
+    f.write(content)
 
-for root, dirs, files in os.walk('lib/test'):
-    for file in files:
-        if file.endswith('.dart'):
-            fix_test_file(os.path.join(root, file))
+with open("cli/pubspec.yaml", "r") as f:
+    content = f.read()
 
-print("Fixed tests.")
+content = content.replace("pointycastle: ^3.7.3", "pointycastle: ^3.9.1")
+
+with open("cli/pubspec.yaml", "w") as f:
+    f.write(content)
+
+# We need to change the imports in identity.dart and supply_chain.dart back to hide Digest, Signature and pointcastle 3.9.1
