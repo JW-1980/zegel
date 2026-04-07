@@ -385,7 +385,21 @@ class ZegelWriter {
       );
       blockKeys.add(key);
 
-      final Uint8List iv = _randomBytes(secureRandom, ZegelFormat.ivSize);
+      // Derive nonce deterministically via HKDF, then hedge with CSPRNG.
+      // The HKDF-derived nonce eliminates the primary subliminal channel for
+      // kleptographic attacks. The XOR with CSPRNG provides defense-in-depth
+      // (hedged randomness) so that even if HKDF has a subtle weakness, the
+      // randomness provides additional entropy.
+      final Uint8List derivedNonce = KeyDerivation.deriveBlockNonce(
+        masterKey, merkleRoot, salt, i,
+      );
+      final Uint8List randomNonce = _randomBytes(
+        secureRandom, ZegelFormat.ivSize,
+      );
+      final Uint8List iv = Uint8List(ZegelFormat.ivSize);
+      for (int b = 0; b < ZegelFormat.ivSize; b++) {
+        iv[b] = derivedNonce[b] ^ randomNonce[b];
+      }
       ivs.add(iv);
 
       // Build AAD: blockType(1) || blockIndex(4 BE) || salt(32).

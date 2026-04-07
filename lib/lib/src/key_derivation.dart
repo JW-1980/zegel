@@ -95,6 +95,59 @@ class KeyDerivation {
     return Uint8List.fromList(hmac.convert(fileBytes).bytes);
   }
 
+  /// Derives a deterministic 12-byte AES-GCM nonce for a block.
+  ///
+  /// Uses HKDF-SHA256 with a separate info domain to derive a nonce that is:
+  /// - Deterministic (same inputs always produce the same nonce)
+  /// - Unique per block (block index is in the info string)
+  /// - Unique per file (salt is different per file)
+  ///
+  /// This eliminates the primary subliminal channel for kleptographic attacks:
+  /// a malicious RNG cannot leak key material through nonces when nonces are
+  /// derived deterministically from the key material.
+  ///
+  /// The nonce is further XORed with CSPRNG output (hedged randomness) so that
+  /// even if the HKDF derivation has a subtle weakness, the randomness
+  /// provides additional entropy.
+  ///
+  /// ```
+  /// ikm  = masterKey || merkleRoot (64 bytes)
+  /// salt = salt (32 bytes)
+  /// info = "zegel-block-nonce-v1:" + blockIndex
+  /// nonce = first 12 bytes of HKDF-Expand(prk, info)
+  /// ```
+  static Uint8List deriveBlockNonce(
+    Uint8List masterKey,
+    Uint8List merkleRoot,
+    Uint8List salt,
+    int blockIndex,
+  ) {
+    // IKM = masterKey || merkleRoot
+    final Uint8List ikm = Uint8List(masterKey.length + merkleRoot.length);
+    ikm.setRange(0, masterKey.length, masterKey);
+    ikm.setRange(masterKey.length, ikm.length, merkleRoot);
+
+    // HKDF-Extract: PRK = HMAC-SHA256(salt, IKM)
+    final hmacExtract = Hmac(sha256, salt);
+    final prk = Uint8List.fromList(hmacExtract.convert(ikm).bytes);
+
+    // Info string uses a DIFFERENT domain than block keys.
+    final String info = 'zegel-block-nonce-v1:$blockIndex';
+    final Uint8List infoBytes = Uint8List.fromList(utf8.encode(info));
+
+    // HKDF-Expand: T(1) = HMAC-SHA256(PRK, info || 0x01)
+    final Uint8List expandInput = Uint8List(infoBytes.length + 1);
+    expandInput.setRange(0, infoBytes.length, infoBytes);
+    expandInput[infoBytes.length] = 0x01;
+
+    final hmacExpand = Hmac(sha256, prk);
+    final Uint8List expanded =
+        Uint8List.fromList(hmacExpand.convert(expandInput).bytes);
+
+    // Return the first 12 bytes as the nonce.
+    return Uint8List.fromList(expanded.sublist(0, 12));
+  }
+
   /// Computes the key commitment hash (SEC-2).
   ///
   /// ```
