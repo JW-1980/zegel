@@ -225,11 +225,10 @@ class CanaryEmbedCommand extends Command<int> {
       // If this is a CONTENT block, add canary padding.
       if (entry.type == ZegelFormat.blockContent) {
         final padding = CanaryTrap.generatePadding(masterKey, recipientId, i);
-        final paddedPlaintext = Uint8List(plaintext.length + padding.length);
-        paddedPlaintext.setRange(0, plaintext.length, plaintext);
-        paddedPlaintext.setRange(
-            plaintext.length, paddedPlaintext.length, padding);
-        plaintext = paddedPlaintext;
+        final bb = BytesBuilder(copy: false)
+          ..add(plaintext)
+          ..add(padding);
+        plaintext = bb.takeBytes();
       }
 
       plaintexts.add(plaintext);
