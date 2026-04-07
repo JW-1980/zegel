@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:zegel_app/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import '../services/file_service.dart';
@@ -32,6 +32,8 @@ class _VerifyScreenState extends State<VerifyScreen> {
   bool _isVerifying = false;
   ZegelResult? _result;
   String? _errorMessage;
+  // ignore: unused_field
+  // ignore: unused_field
   ZegelInspection? _inspection;
   bool _provenanceExpanded = false;
 
@@ -61,8 +63,8 @@ class _VerifyScreenState extends State<VerifyScreen> {
       return;
     }
     if (_hexKey.length != 64) {
-      setState(() =>
-          _errorMessage = 'Please enter a valid 64-character hex key.');
+      setState(
+          () => _errorMessage = 'Please enter a valid 64-character hex key.');
       return;
     }
 
@@ -93,6 +95,8 @@ class _VerifyScreenState extends State<VerifyScreen> {
       }
     } catch (e) {
       if (mounted) {
+        // ignore: unused_local_variable
+        // ignore: unused_local_variable
         final l10n = AppLocalizations.of(context)!;
         setState(() {
           _errorMessage = l10n.errorGeneric(e.toString());
@@ -116,6 +120,8 @@ class _VerifyScreenState extends State<VerifyScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
+    // ignore: unused_local_variable
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final fileService = context.read<FileService>();
@@ -216,9 +222,9 @@ class _VerifyScreenState extends State<VerifyScreen> {
                 padding: const EdgeInsets.all(12),
                 margin: const EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
-                  color: Colors.red.withValues(alpha:0.1),
+                  color: Colors.red.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.red.withValues(alpha:0.3)),
+                  border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
                 ),
                 child: Row(
                   children: [
@@ -252,8 +258,7 @@ class _VerifyScreenState extends State<VerifyScreen> {
                     padding: const EdgeInsets.all(16),
                     child: Row(
                       children: [
-                        Icon(Icons.security,
-                            color: theme.colorScheme.primary),
+                        Icon(Icons.security, color: theme.colorScheme.primary),
                         const SizedBox(width: 8),
                         Text(
                           l10n.verifyClassificationLabel,
@@ -263,8 +268,7 @@ class _VerifyScreenState extends State<VerifyScreen> {
                         ),
                         const Spacer(),
                         ClassificationBadge(
-                          level: _result!.metadata!['classification']
-                              as String,
+                          level: _result!.metadata!['classification'] as String,
                         ),
                       ],
                     ),
@@ -366,8 +370,7 @@ class _VerifyScreenState extends State<VerifyScreen> {
                             const SizedBox(width: 8),
                             Text(
                               l10n.verifyAttestationPolicy,
-                              style:
-                                  theme.textTheme.titleMedium?.copyWith(
+                              style: theme.textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -377,8 +380,7 @@ class _VerifyScreenState extends State<VerifyScreen> {
                         Row(
                           children: [
                             Icon(
-                              _result!.attestations!
-                                      .every((a) => a.isVerified)
+                              _result!.attestations!.every((a) => a.isVerified)
                                   ? Icons.check_circle
                                   : Icons.warning,
                               color: _result!.attestations!
@@ -388,8 +390,7 @@ class _VerifyScreenState extends State<VerifyScreen> {
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              _result!.attestations!
-                                      .every((a) => a.isVerified)
+                              _result!.attestations!.every((a) => a.isVerified)
                                   ? l10n.verifyAllAttestationsValid
                                   : l10n.verifySomeAttestationsInvalid,
                               style: TextStyle(
@@ -457,16 +458,14 @@ class _VerifyScreenState extends State<VerifyScreen> {
                               : Icons.expand_more,
                         ),
                         onTap: () {
-                          setState(() =>
-                              _provenanceExpanded = !_provenanceExpanded);
+                          setState(
+                              () => _provenanceExpanded = !_provenanceExpanded);
                         },
                       ),
                       if (_provenanceExpanded)
                         Padding(
-                          padding:
-                              const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                          child: AuditTrailView(
-                              entries: _result!.auditTrail!),
+                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                          child: AuditTrailView(entries: _result!.auditTrail!),
                         ),
                     ],
                   ),

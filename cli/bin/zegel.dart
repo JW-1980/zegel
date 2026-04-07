@@ -2,21 +2,26 @@ import 'dart:io';
 
 import 'package:args/command_runner.dart';
 
-import 'package:zegel_cli/commands/seal_command.dart';
-import 'package:zegel_cli/commands/verify_command.dart';
+import 'package:zegel_cli/commands/attest_command.dart';
+import 'package:zegel_cli/commands/audit_command.dart';
+import 'package:zegel_cli/commands/batch_command.dart';
+import 'package:zegel_cli/commands/canary_command.dart';
+import 'package:zegel_cli/commands/classify_command.dart';
+import 'package:zegel_cli/commands/disclose_command.dart';
+import 'package:zegel_cli/commands/excerpt_command.dart';
 import 'package:zegel_cli/commands/extract_command.dart';
+import 'package:zegel_cli/commands/hierarchical_split_key_command.dart';
 import 'package:zegel_cli/commands/inspect_command.dart';
 import 'package:zegel_cli/commands/keygen_command.dart';
-import 'package:zegel_cli/commands/redact_command.dart';
-import 'package:zegel_cli/commands/split_key_command.dart';
-import 'package:zegel_cli/commands/attest_command.dart';
-import 'package:zegel_cli/commands/disclose_command.dart';
-import 'package:zegel_cli/commands/batch_command.dart';
 import 'package:zegel_cli/commands/manifest_command.dart';
-import 'package:zegel_cli/commands/classify_command.dart';
-import 'package:zegel_cli/commands/excerpt_command.dart';
-import 'package:zegel_cli/commands/version_chain_command.dart';
+import 'package:zegel_cli/commands/media_metadata_command.dart';
 import 'package:zegel_cli/commands/provenance_command.dart';
+import 'package:zegel_cli/commands/redact_command.dart';
+import 'package:zegel_cli/commands/seal_command.dart';
+import 'package:zegel_cli/commands/split_key_command.dart';
+import 'package:zegel_cli/commands/timestamp_command.dart';
+import 'package:zegel_cli/commands/verify_command.dart';
+import 'package:zegel_cli/commands/version_chain_command.dart';
 
 /// Application version.
 const String version = '1.3.0';
@@ -75,6 +80,15 @@ void main(List<String> arguments) async {
         '  version-chain-verify  Verify a sequence of .zgl files are linked\n'
         '  provenance-verify     Verify provenance chain in a .zgl file\n'
         '\n'
+        'Audit & Forensics commands:\n'
+        '  audit                 Audit trail operations (view, add, verify-chain)\n'
+        '  canary                Canary trap fingerprinting (embed, identify)\n'
+        '  timestamp             Trusted timestamp operations (create, verify)\n'
+        '\n'
+        'Advanced commands:\n'
+        '  hierarchical-split    Hierarchical key splitting (split, reconstruct)\n'
+        '  media-metadata        Media metadata operations (extract, view)\n'
+        '\n'
         'Global flags:\n'
         '  --help                Show help for a command\n'
         '  --version             Show the Zegel CLI version\n'
@@ -131,6 +145,15 @@ void main(List<String> arguments) async {
   // Versioning commands.
   runner.addCommand(VersionChainVerifyCommand());
   runner.addCommand(ProvenanceVerifyCommand());
+
+  // Audit & Forensics commands.
+  runner.addCommand(AuditCommand());
+  runner.addCommand(CanaryCommand());
+  runner.addCommand(TimestampCommand());
+
+  // Advanced commands.
+  runner.addCommand(HierarchicalSplitCommand());
+  runner.addCommand(MediaMetadataCommand());
 
   try {
     final exitCode = await runner.run(arguments) ?? 0;

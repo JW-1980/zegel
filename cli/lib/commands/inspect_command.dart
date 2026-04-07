@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:io' hide BytesBuilder;
 import 'dart:typed_data';
 
 import 'package:args/command_runner.dart';
@@ -52,14 +52,16 @@ class InspectCommand extends Command<int> {
   InspectCommand() {
     argParser.addFlag(
       'json',
-      help: 'Output header information as JSON.\n'
+      help:
+          'Output header information as JSON.\n'
           'Useful for piping to jq or other tools.',
       defaultsTo: false,
     );
 
     argParser.addFlag(
       'blocks',
-      help: 'Show block directory with type, size, and hash\n'
+      help:
+          'Show block directory with type, size, and hash\n'
           'for each block.',
       defaultsTo: false,
     );
@@ -85,7 +87,7 @@ class InspectCommand extends Command<int> {
     // Inspect header using the library.
     ZegelInspection inspection;
     try {
-      final reader = const ZegelReader();
+      const reader = ZegelReader();
       inspection = reader.inspect(fileBytes);
     } on ZegelFormatException catch (e) {
       exitError('Invalid .zgl file: ${e.message}');
@@ -150,9 +152,7 @@ class InspectCommand extends Command<int> {
 
     // Merkle root (from raw header).
     if (rawHeader != null) {
-      stdout.writeln(
-        '  Merkle root:  ${hexEncode(rawHeader.merkleRoot)}',
-      );
+      stdout.writeln('  Merkle root:  ${hexEncode(rawHeader.merkleRoot)}');
     }
 
     // Extended header fields.
@@ -174,9 +174,7 @@ class InspectCommand extends Command<int> {
       );
       final now = DateTime.now().toUtc();
       final expired = now.isAfter(expiresAt);
-      final status = expired
-          ? Ansi.error('EXPIRED')
-          : Ansi.success('active');
+      final status = expired ? Ansi.error('EXPIRED') : Ansi.success('active');
       stdout.writeln(
         '    Expiration:    ${formatTimestamp(expiresAt)} ($status)',
       );
@@ -231,16 +229,14 @@ class InspectCommand extends Command<int> {
         if (authority != null) {
           stdout.writeln('    Authority:   $authority');
         }
-        final classDate =
-            inspection.publicMetadata!['classification_date'];
+        final classDate = inspection.publicMetadata!['classification_date'];
         if (classDate != null) {
           stdout.writeln('    Date:        $classDate');
         }
       }
 
       // Regulatory hold (from public metadata).
-      final holdTimestamp =
-          inspection.publicMetadata!['regulatory_hold_until'];
+      final holdTimestamp = inspection.publicMetadata!['regulatory_hold_until'];
       if (holdTimestamp != null) {
         final holdDate = DateTime.fromMillisecondsSinceEpoch(
           (holdTimestamp as int) * 1000,
@@ -250,7 +246,7 @@ class InspectCommand extends Command<int> {
         final holdActive = now.isBefore(holdDate);
         final holdStr =
             inspection.publicMetadata!['regulatory_hold_date_str'] ??
-                formatTimestamp(holdDate);
+            formatTimestamp(holdDate);
         stdout.writeln();
         stdout.writeln(Ansi.header('  Regulatory Hold:'));
         stdout.writeln('    Until:       $holdStr');
@@ -275,9 +271,7 @@ class InspectCommand extends Command<int> {
         stdout.writeln();
         stdout.writeln(Ansi.header('  Attestations:'));
         stdout.writeln('    Count:       $attestationCount');
-        stdout.writeln(
-          '    Blocks:      ${attestationIndices.join(', ')}',
-        );
+        stdout.writeln('    Blocks:      ${attestationIndices.join(', ')}');
         stdout.writeln(
           '    ${Ansi.dim}(use "zegel verify" with key to see attestation details)${Ansi.reset}',
         );
@@ -295,7 +289,9 @@ class InspectCommand extends Command<int> {
     }
 
     // Block directory (from raw header).
-    if (showBlocks && rawHeader != null && rawHeader.blockDirectory.isNotEmpty) {
+    if (showBlocks &&
+        rawHeader != null &&
+        rawHeader.blockDirectory.isNotEmpty) {
       stdout.writeln();
       stdout.writeln(Ansi.header('  Block Directory:'));
       stdout.writeln(
@@ -343,9 +339,7 @@ class InspectCommand extends Command<int> {
       );
     }
     if (inspection.filename != null) {
-      buffer.writeln(
-        '  "filename": "${_jsonEscape(inspection.filename!)}",',
-      );
+      buffer.writeln('  "filename": "${_jsonEscape(inspection.filename!)}",');
     }
     buffer.writeln('  "block_count": ${inspection.blockCount},');
 
@@ -359,9 +353,7 @@ class InspectCommand extends Command<int> {
         inspection.expirationTimestamp! * 1000,
         isUtc: true,
       );
-      buffer.writeln(
-        '  "expires_at_iso": "${expiresAt.toIso8601String()}",',
-      );
+      buffer.writeln('  "expires_at_iso": "${expiresAt.toIso8601String()}",');
     }
 
     if (inspection.splitKeyParams != null) {
@@ -395,12 +387,8 @@ class InspectCommand extends Command<int> {
         buffer.writeln('    {');
         buffer.writeln('      "index": $i,');
         buffer.writeln('      "type": ${block.type},');
-        buffer.writeln(
-          '      "type_name": "${blockTypeName(block.type)}",',
-        );
-        buffer.writeln(
-          '      "ciphertext_length": ${block.ciphertextLength},',
-        );
+        buffer.writeln('      "type_name": "${blockTypeName(block.type)}",');
+        buffer.writeln('      "ciphertext_length": ${block.ciphertextLength},');
         buffer.writeln(
           '      "plaintext_hash": "${hexEncode(block.plaintextHash)}"',
         );

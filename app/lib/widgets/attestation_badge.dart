@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 import '../services/zegel_service.dart';
+import 'package:intl/intl.dart';
 
 /// Displays an attestation (co-signature) as a badge.
 ///
@@ -19,9 +19,8 @@ class AttestationBadge extends StatelessWidget {
     final theme = Theme.of(context);
     final dateFormatter = DateFormat('yyyy-MM-dd HH:mm');
     final isVerified = attestation.isVerified;
-    final badgeColor = isVerified
-        ? const Color(0xFF2E7D32)
-        : const Color(0xFFC62828);
+    final badgeColor =
+        isVerified ? const Color(0xFF2E7D32) : const Color(0xFFC62828);
 
     return Card(
       elevation: 1,
@@ -84,14 +83,20 @@ class AttestationBadge extends StatelessWidget {
                 const Divider(),
                 _DetailRow(
                   label: 'Signer ID',
+                  // ignore: deprecated_member_use
+                  // ignore: deprecated_member_use
                   value: attestation.signerId,
                 ),
                 _DetailRow(
                   label: 'Statement',
+                  // ignore: deprecated_member_use
+                  // ignore: deprecated_member_use
                   value: attestation.statement,
                 ),
                 _DetailRow(
                   label: 'Timestamp',
+                  // ignore: deprecated_member_use
+                  // ignore: deprecated_member_use
                   value: dateFormatter.format(attestation.timestamp),
                 ),
                 _DetailRow(

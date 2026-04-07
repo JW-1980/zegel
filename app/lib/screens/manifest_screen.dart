@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:zegel_app/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import '../services/file_service.dart';
@@ -35,6 +35,8 @@ class _ManifestScreenState extends State<ManifestScreen>
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
+    // ignore: unused_local_variable
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
@@ -44,7 +46,8 @@ class _ManifestScreenState extends State<ManifestScreen>
         bottom: TabBar(
           controller: _tabController,
           labelColor: theme.colorScheme.onPrimary,
-          unselectedLabelColor: theme.colorScheme.onPrimary.withValues(alpha:0.7),
+          unselectedLabelColor:
+              theme.colorScheme.onPrimary.withValues(alpha: 0.7),
           indicatorColor: theme.colorScheme.onPrimary,
           tabs: [
             Tab(text: l10n.manifestCreateTab),
@@ -143,6 +146,8 @@ class _ManifestCreateTabState extends State<_ManifestCreateTab> {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
+    // ignore: unused_local_variable
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final fileService = context.read<FileService>();
@@ -252,13 +257,13 @@ class _ManifestCreateTabState extends State<_ManifestCreateTab> {
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: _isError
-                      ? Colors.red.withValues(alpha:0.1)
-                      : Colors.green.withValues(alpha:0.1),
+                      ? Colors.red.withValues(alpha: 0.1)
+                      : Colors.green.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
                     color: _isError
-                        ? Colors.red.withValues(alpha:0.3)
-                        : Colors.green.withValues(alpha:0.3),
+                        ? Colors.red.withValues(alpha: 0.3)
+                        : Colors.green.withValues(alpha: 0.3),
                   ),
                 ),
                 child: Row(
@@ -288,9 +293,7 @@ class _ManifestCreateTabState extends State<_ManifestCreateTab> {
                     )
                   : const Icon(Icons.create_new_folder),
               label: Text(
-                _isCreating
-                    ? l10n.manifestCreating
-                    : l10n.manifestCreateAction,
+                _isCreating ? l10n.manifestCreating : l10n.manifestCreateAction,
                 style: const TextStyle(fontSize: 16),
               ),
             ),
@@ -384,6 +387,8 @@ class _ManifestVerifyTabState extends State<_ManifestVerifyTab> {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
+    // ignore: unused_local_variable
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
@@ -497,13 +502,13 @@ class _ManifestVerifyTabState extends State<_ManifestVerifyTab> {
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: _isError
-                      ? Colors.red.withValues(alpha:0.1)
-                      : Colors.green.withValues(alpha:0.1),
+                      ? Colors.red.withValues(alpha: 0.1)
+                      : Colors.green.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
                     color: _isError
-                        ? Colors.red.withValues(alpha:0.3)
-                        : Colors.green.withValues(alpha:0.3),
+                        ? Colors.red.withValues(alpha: 0.3)
+                        : Colors.green.withValues(alpha: 0.3),
                   ),
                 ),
                 child: Row(

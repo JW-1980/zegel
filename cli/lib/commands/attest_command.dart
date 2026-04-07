@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:io';
+import 'dart:io' hide BytesBuilder;
 import 'dart:math';
 import 'dart:typed_data';
 
@@ -65,7 +65,8 @@ class AttestCommand extends Command<int> {
 
     argParser.addOption(
       'signer-id',
-      help: 'Signer identifier string.\n'
+      help:
+          'Signer identifier string.\n'
           'Recommended format: "user:id:name@example.com" or\n'
           '"role:id:description".',
       valueHelp: 'id',
@@ -83,7 +84,8 @@ class AttestCommand extends Command<int> {
     argParser.addOption(
       'role',
       abbr: 'r',
-      help: 'Signer\'s role in the attestation workflow.\n'
+      help:
+          'Signer\'s role in the attestation workflow.\n'
           'Valid roles: owner, signer, witness, notary, auditor, reviewer.\n'
           'Roles are used by --check-attestation-policy during verification.',
       valueHelp: 'role',
@@ -92,7 +94,8 @@ class AttestCommand extends Command<int> {
     addKeyOptions(argParser);
     addOutputOption(
       argParser,
-      help: 'Output path for the attested .zgl file.\n'
+      help:
+          'Output path for the attested .zgl file.\n'
           'Defaults to overwriting the input file.',
     );
   }
@@ -175,7 +178,7 @@ class AttestCommand extends Command<int> {
     }
 
     // Verify the file first using the library.
-    final reader = const ZegelReader();
+    const reader = ZegelReader();
     ZegelResult result;
     try {
       result = reader.verify(fileBytes, masterKey);
@@ -302,8 +305,7 @@ class AttestCommand extends Command<int> {
 
       // Decrypt.
       final cipher = _createGCMCipher(false, blockKey, entry.iv);
-      final Uint8List input =
-          Uint8List(ciphertext.length + entry.tag.length);
+      final Uint8List input = Uint8List(ciphertext.length + entry.tag.length);
       input.setRange(0, ciphertext.length, ciphertext);
       input.setRange(ciphertext.length, input.length, entry.tag);
       final Uint8List plaintext = cipher.process(input);

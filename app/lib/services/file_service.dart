@@ -1,7 +1,7 @@
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
+import 'dart:io';
 
 /// Service for picking and saving files using platform dialogs.
 class FileService {
@@ -25,7 +25,6 @@ class FileService {
   Future<String?> pickZegelFile() async {
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ['zgl'],
       allowMultiple: false,
     );
     if (result != null && result.files.isNotEmpty) {
@@ -108,26 +107,20 @@ class FileService {
   Future<List<String>> listZegelFiles(String directoryPath) async {
     final dir = Directory(directoryPath);
     if (!await dir.exists()) return [];
-    final files = <String>[];
-    await for (final entity in dir.list()) {
-      if (entity is File && entity.path.endsWith('.zgl')) {
-        files.add(entity.path);
-      }
-    }
-    return files;
+    return dir.list()
+        .where((entity) => entity is File && entity.path.endsWith('.zgl'))
+        .map((entity) => entity.path)
+        .toList();
   }
 
   /// Lists all regular files in a directory (non-recursive).
   Future<List<String>> listAllFiles(String directoryPath) async {
     final dir = Directory(directoryPath);
     if (!await dir.exists()) return [];
-    final files = <String>[];
-    await for (final entity in dir.list()) {
-      if (entity is File) {
-        files.add(entity.path);
-      }
-    }
-    return files;
+    return dir.list()
+        .where((entity) => entity is File)
+        .map((entity) => entity.path)
+        .toList();
   }
 
   /// Saves bytes to a specific file path (no dialog).

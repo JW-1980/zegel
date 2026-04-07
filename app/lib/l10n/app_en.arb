@@ -797,5 +797,98 @@
   "helpContract": "Multi-party contract workflow with attestations and split keys",
   "@helpContract": {
     "description": "Help text for contract screen"
+  },
+
+  "inspectTitle": "Inspect",
+  "@inspectTitle": {
+    "description": "Title for the inspect screen"
+  },
+  "inspectFileLabel": "File to Inspect",
+  "@inspectFileLabel": {
+    "description": "Label for inspect file picker"
+  },
+  "helpInspect": "View file header information without the master key",
+  "@helpInspect": {
+    "description": "Help text for inspect screen"
+  },
+
+  "mediaMetadataTitle": "Media Metadata",
+  "@mediaMetadataTitle": {
+    "description": "Title for the media metadata screen"
+  },
+  "mediaMetadataFileLabel": "Media File (.zgl)",
+  "@mediaMetadataFileLabel": {
+    "description": "Label for media file picker"
+  },
+  "mediaMetadataLoadAction": "Load Metadata",
+  "@mediaMetadataLoadAction": {
+    "description": "Button to load media metadata"
+  },
+  "helpMediaMetadata": "View EXIF, GPS, and other media metadata from sealed files",
+  "@helpMediaMetadata": {
+    "description": "Help text for media metadata screen"
+  },
+
+  "timestampTitle": "Timestamps",
+  "@timestampTitle": {
+    "description": "Title for the timestamp screen"
+  },
+  "timestampCreateTab": "Create",
+  "@timestampCreateTab": {
+    "description": "Tab label for creating timestamps"
+  },
+  "timestampVerifyTab": "Verify",
+  "@timestampVerifyTab": {
+    "description": "Tab label for verifying timestamps"
+  },
+  "timestampFileLabel": "File to Timestamp",
+  "@timestampFileLabel": {
+    "description": "Label for timestamp file picker"
+  },
+  "timestampCreateAction": "Create Timestamp",
+  "@timestampCreateAction": {
+    "description": "Button to create a timestamp"
+  },
+  "timestampVerifyAction": "Verify Timestamp",
+  "@timestampVerifyAction": {
+    "description": "Button to verify a timestamp"
+  },
+  "helpTimestamp": "Request or verify trusted timestamps from a TSA",
+  "@helpTimestamp": {
+    "description": "Help text for timestamp screen"
+  },
+
+  "versionChainTitle": "Version Chain",
+  "@versionChainTitle": {
+    "description": "Title for the version chain screen"
+  },
+  "versionChainFileLabel": "Version Files",
+  "@versionChainFileLabel": {
+    "description": "Label for version chain file list"
+  },
+  "versionChainAddFile": "Add File",
+  "@versionChainAddFile": {
+    "description": "Button to add a file to version chain"
+  },
+  "versionChainVerifyAction": "Verify Version Chain",
+  "@versionChainVerifyAction": {
+    "description": "Button to verify the version chain"
+  },
+  "versionChainValid": "Version Chain VALID",
+  "@versionChainValid": {
+    "description": "Status when version chain is valid"
+  },
+  "versionChainInvalid": "Version Chain BROKEN",
+  "@versionChainInvalid": {
+    "description": "Status when version chain is broken"
+  },
+  "helpVersionChain": "View and verify version history and chain hashes",
+  "@helpVersionChain": {
+    "description": "Help text for version chain screen"
+  },
+
+  "drawerToolsSection": "Tools",
+  "@drawerToolsSection": {
+    "description": "Drawer section header for tools"
   }
 }

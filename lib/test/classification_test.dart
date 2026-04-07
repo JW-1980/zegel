@@ -23,7 +23,9 @@ void main() {
     });
 
     group('compare', () {
-      test('orders levels correctly: PUBLIC < INTERNAL < CONFIDENTIAL < SECRET < TOP_SECRET', () {
+      test(
+          'orders levels correctly: PUBLIC < INTERNAL < CONFIDENTIAL < SECRET < TOP_SECRET',
+          () {
         expect(
           Classification.compare(
             ZegelFormat.classificationPublic,
@@ -88,10 +90,9 @@ void main() {
 
         final classification =
             metadata['classification'] as Map<String, dynamic>;
-        expect(classification['level'],
-            equals(ZegelFormat.classificationSecret));
-        expect(classification['authority'],
-            equals('Classification Board'));
+        expect(
+            classification['level'], equals(ZegelFormat.classificationSecret));
+        expect(classification['authority'], equals('Classification Board'));
         expect(classification.containsKey('classified_at'), isTrue);
       });
 
@@ -160,8 +161,8 @@ void main() {
         // Inspect the declassified file to check the new level
         final inspection = const ZegelReader().inspect(declassified);
         expect(inspection.publicMetadata, isNotNull);
-        final classification =
-            inspection.publicMetadata!['classification'] as Map<String, dynamic>;
+        final classification = inspection.publicMetadata!['classification']
+            as Map<String, dynamic>;
         expect(
           classification['level'],
           equals(ZegelFormat.classificationConfidential),
@@ -281,15 +282,17 @@ void main() {
         // Public metadata should be readable without the master key
         final inspection = const ZegelReader().inspect(fileBytes);
         expect(inspection.publicMetadata, isNotNull);
-        final classification =
-            inspection.publicMetadata!['classification'] as Map<String, dynamic>;
+        final classification = inspection.publicMetadata!['classification']
+            as Map<String, dynamic>;
         expect(
           classification['level'],
           equals(ZegelFormat.classificationPublic),
         );
       });
 
-      test('HAS_CLASSIFICATION flag is set when classification metadata present', () {
+      test(
+          'HAS_CLASSIFICATION flag is set when classification metadata present',
+          () {
         final content = Uint8List.fromList(utf8.encode('Classified'));
         final classificationMeta = Classification.createClassificationMetadata(
           level: ZegelFormat.classificationSecret,

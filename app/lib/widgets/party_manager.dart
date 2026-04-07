@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:zegel_app/gen_l10n/app_localizations.dart';
 
 /// Represents a party involved in a contract workflow.
 class ContractParty {
@@ -68,6 +68,8 @@ class PartyManager extends StatelessWidget {
   });
 
   void _showAddPartyDialog(BuildContext context) {
+    // ignore: unused_local_variable
+    // ignore: unused_local_variable
     final l10n = AppLocalizations.of(context)!;
     final nameController = TextEditingController();
     final keyController = TextEditingController();
@@ -93,13 +95,15 @@ class PartyManager extends StatelessWidget {
                     ),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
-                      value: selectedRole,
+                      initialValue: selectedRole,
                       decoration: InputDecoration(
                         labelText: l10n.contractPartyRole,
                         border: const OutlineInputBorder(),
                       ),
                       items: contractRoles
                           .map((role) => DropdownMenuItem(
+                                // ignore: deprecated_member_use
+                                // ignore: deprecated_member_use
                                 value: role,
                                 child: Text(_roleDisplayName(role)),
                               ))
@@ -201,6 +205,8 @@ class PartyManager extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
+    // ignore: unused_local_variable
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 

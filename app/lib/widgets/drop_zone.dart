@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:desktop_drop/desktop_drop.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:zegel_app/gen_l10n/app_localizations.dart';
 
 /// The detected action based on the dropped file.
 enum DropAction {
@@ -41,7 +41,8 @@ class DropZone extends StatefulWidget {
   State<DropZone> createState() => _DropZoneState();
 }
 
-class _DropZoneState extends State<DropZone> with SingleTickerProviderStateMixin {
+class _DropZoneState extends State<DropZone>
+    with SingleTickerProviderStateMixin {
   bool _isDragging = false;
   late final AnimationController _pulseController;
   late final Animation<double> _pulseAnimation;
@@ -71,6 +72,8 @@ class _DropZoneState extends State<DropZone> with SingleTickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
+    // ignore: unused_local_variable
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
@@ -131,7 +134,9 @@ class _DropZoneState extends State<DropZone> with SingleTickerProviderStateMixin
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(
-                    _isDragging ? Icons.file_download : Icons.cloud_upload_outlined,
+                    _isDragging
+                        ? Icons.file_download
+                        : Icons.cloud_upload_outlined,
                     size: 64,
                     color: _isDragging
                         ? colorScheme.primary
@@ -152,7 +157,8 @@ class _DropZoneState extends State<DropZone> with SingleTickerProviderStateMixin
                     Text(
                       'or tap to browse',
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                        color:
+                            colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
                       ),
                     ),
                 ],
