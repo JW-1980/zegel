@@ -50,7 +50,8 @@ class KeygenCommand extends Command<int> {
   KeygenCommand() {
     addOutputOption(
       argParser,
-      help: 'Write key to a file instead of stdout.\n'
+      help:
+          'Write key to a file instead of stdout.\n'
           'With --hierarchical, this is the output directory.',
     );
 
@@ -69,7 +70,8 @@ class KeygenCommand extends Command<int> {
 
     argParser.addFlag(
       'hierarchical',
-      help: 'Generate a hierarchical key set:\n'
+      help:
+          'Generate a hierarchical key set:\n'
           '  - root.key: Master root key\n'
           '  - seal.key: Derived key for sealing\n'
           '  - attest.key: Derived key for attestations\n'
@@ -127,7 +129,8 @@ class KeygenCommand extends Command<int> {
         stderr.writeln();
         stderr.writeln('  File:   $outputPath');
         stderr.writeln(
-            '  Format: ${rawOutput ? 'raw (32 bytes)' : 'hex (64 characters)'}');
+          '  Format: ${rawOutput ? 'raw (32 bytes)' : 'hex (64 characters)'}',
+        );
         stderr.writeln('  Perms:  0600 (owner read/write only)');
         stderr.writeln();
         _printSecurityWarning();
@@ -215,11 +218,7 @@ class KeygenCommand extends Command<int> {
     stderr.writeln('  - Store it securely (password manager, hardware token).');
     stderr.writeln('  - Never commit key files to version control.');
     stderr.writeln('  - Never transmit keys over insecure channels.');
-    stderr.writeln(
-      '  - Consider split-key (M-of-N) for high-value documents:',
-    );
-    stderr.writeln(
-      '      zegel split-key -k <key> --threshold 3 --shares 5',
-    );
+    stderr.writeln('  - Consider split-key (M-of-N) for high-value documents:');
+    stderr.writeln('      zegel split-key -k <key> --threshold 3 --shares 5');
   }
 }

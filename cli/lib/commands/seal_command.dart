@@ -20,7 +20,8 @@ class SealCommand extends Command<int> {
   final String name = 'seal';
 
   @override
-  String get description => 'Seal a file into a tamper-proof .zgl container.\n'
+  String get description =>
+      'Seal a file into a tamper-proof .zgl container.\n'
       '\n'
       'Encrypts and integrity-protects a file using AES-256-GCM with a\n'
       'Merkle tree binding all blocks. The resulting .zgl file becomes\n'
@@ -78,7 +79,8 @@ class SealCommand extends Command<int> {
 
     argParser.addOption(
       'expires',
-      help: 'Cryptographic expiration date (YYYY-MM-DD). '
+      help:
+          'Cryptographic expiration date (YYYY-MM-DD). '
           'Content becomes undecryptable after this date.',
       valueHelp: 'YYYY-MM-DD',
     );
@@ -128,7 +130,8 @@ class SealCommand extends Command<int> {
 
     argParser.addFlag(
       'anonymous',
-      help: 'Omit the original filename from the .zgl header.\n'
+      help:
+          'Omit the original filename from the .zgl header.\n'
           'The content type is preserved but the filename field\n'
           'is set to an empty string.',
       defaultsTo: false,
@@ -136,7 +139,8 @@ class SealCommand extends Command<int> {
 
     argParser.addOption(
       'classification',
-      help: 'Classification level for the sealed file.\n'
+      help:
+          'Classification level for the sealed file.\n'
           'Stored in public metadata for inspection without a key.\n'
           'Levels: PUBLIC, INTERNAL, CONFIDENTIAL, SECRET, TOP_SECRET.',
       valueHelp: 'level',
@@ -144,14 +148,16 @@ class SealCommand extends Command<int> {
 
     argParser.addOption(
       'classification-authority',
-      help: 'Name of the authority who set the classification level.\n'
+      help:
+          'Name of the authority who set the classification level.\n'
           'Required when --classification is specified.',
       valueHelp: 'name',
     );
 
     argParser.addOption(
       'regulatory-hold-until',
-      help: 'Set a regulatory hold date (YYYY-MM-DD). Files under\n'
+      help:
+          'Set a regulatory hold date (YYYY-MM-DD). Files under\n'
           'regulatory hold can be extracted only after the hold expires.\n'
           'Stored in public metadata.',
       valueHelp: 'YYYY-MM-DD',
@@ -159,7 +165,8 @@ class SealCommand extends Command<int> {
 
     argParser.addOption(
       'tsa-url',
-      help: 'URL of a trusted timestamping authority (TSA) to use\n'
+      help:
+          'URL of a trusted timestamping authority (TSA) to use\n'
           'for an RFC 3161 timestamp. The timestamp response is\n'
           'stored as a PROVENANCE block.',
       valueHelp: 'url',
@@ -167,7 +174,8 @@ class SealCommand extends Command<int> {
 
     argParser.addFlag(
       'preserve-media-metadata',
-      help: 'Preserve media metadata (EXIF, ID3, etc.) from the input\n'
+      help:
+          'Preserve media metadata (EXIF, ID3, etc.) from the input\n'
           'file. By default, media metadata is stripped for privacy.\n'
           'When enabled, the original metadata is stored in a\n'
           'METADATA block.',
@@ -207,9 +215,11 @@ class SealCommand extends Command<int> {
       }
 
       if (password.length < 8) {
-        stderr.writeln(Ansi.warning(
-          'Warning: Password is very short. Consider using at least 12 characters.',
-        ));
+        stderr.writeln(
+          Ansi.warning(
+            'Warning: Password is very short. Consider using at least 12 characters.',
+          ),
+        );
       }
 
       // The library handles Argon2id derivation internally.
@@ -238,9 +248,7 @@ class SealCommand extends Command<int> {
       for (final entry in metadataArgs) {
         final eqIndex = entry.indexOf('=');
         if (eqIndex < 1) {
-          exitError(
-            'Invalid metadata format: "$entry". Expected key=value.',
-          );
+          exitError('Invalid metadata format: "$entry". Expected key=value.');
         }
         metadata[entry.substring(0, eqIndex)] = entry.substring(eqIndex + 1);
       }
@@ -258,8 +266,9 @@ class SealCommand extends Command<int> {
             'Invalid public metadata format: "$entry". Expected key=value.',
           );
         }
-        publicMetadata[entry.substring(0, eqIndex)] =
-            entry.substring(eqIndex + 1);
+        publicMetadata[entry.substring(0, eqIndex)] = entry.substring(
+          eqIndex + 1,
+        );
       }
     }
 
@@ -303,11 +312,13 @@ class SealCommand extends Command<int> {
       }
       // Add classification to public metadata.
       publicMetadata ??= <String, dynamic>{};
-      publicMetadata['classification'] =
-          classificationStr.toUpperCase().replaceAll('-', '_');
+      publicMetadata['classification'] = classificationStr
+          .toUpperCase()
+          .replaceAll('-', '_');
       publicMetadata['classification_authority'] = classificationAuthority;
-      publicMetadata['classification_date'] =
-          DateTime.now().toUtc().toIso8601String();
+      publicMetadata['classification_date'] = DateTime.now()
+          .toUtc()
+          .toIso8601String();
     }
 
     // Handle regulatory hold.
@@ -325,8 +336,9 @@ class SealCommand extends Command<int> {
     if (tsaUrl != null) {
       publicMetadata ??= <String, dynamic>{};
       publicMetadata['tsa_url'] = tsaUrl;
-      publicMetadata['tsa_timestamp_requested'] =
-          DateTime.now().toUtc().toIso8601String();
+      publicMetadata['tsa_timestamp_requested'] = DateTime.now()
+          .toUtc()
+          .toIso8601String();
     }
 
     // Parse content type.
@@ -338,8 +350,10 @@ class SealCommand extends Command<int> {
     final prevMerkleRootHex = argResults!['previous-merkle-root'] as String?;
     final prevSealHex = argResults!['previous-seal'] as String?;
     if (prevMerkleRootHex != null && prevSealHex != null) {
-      final prevRoot =
-          hexDecode(prevMerkleRootHex, label: 'previous-merkle-root');
+      final prevRoot = hexDecode(
+        prevMerkleRootHex,
+        label: 'previous-merkle-root',
+      );
       final prevSeal = hexDecode(prevSealHex, label: 'previous-seal');
       versionChainHash = ContentVersioning.computeChainHash(prevRoot, prevSeal);
     } else if (prevMerkleRootHex != null || prevSealHex != null) {
@@ -385,10 +399,12 @@ class SealCommand extends Command<int> {
     // Print success message.
     stdout.writeln(Ansi.success('Sealed successfully.'));
     stdout.writeln();
-    stdout
-        .writeln('  Input:    $inputPath (${formatFileSize(content.length)})');
     stdout.writeln(
-        '  Output:   $outputPath (${formatFileSize(sealedBytes.length)})');
+      '  Input:    $inputPath (${formatFileSize(content.length)})',
+    );
+    stdout.writeln(
+      '  Output:   $outputPath (${formatFileSize(sealedBytes.length)})',
+    );
     stdout.writeln('  Filename: $filename');
     stdout.writeln('  Type:     $contentType');
 
