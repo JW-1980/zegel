@@ -519,16 +519,20 @@ class ZegelService {
     String hexKey,
   ) async {
     final results = <ZegelResult>[];
-    for (final path in filePaths) {
-      try {
-        final result = await verify(path, hexKey);
-        results.add(result);
-      } catch (e) {
-        results.add(ZegelResult(
-          status: ZegelStatus.tampered,
-          message: 'Error: $e',
-        ));
-      }
+    const chunkSize = 10;
+    for (var i = 0; i < filePaths.length; i += chunkSize) {
+      final chunk = filePaths.skip(i).take(chunkSize).toList();
+      final chunkResults = await Future.wait(chunk.map((path) async {
+        try {
+          return await verify(path, hexKey);
+        } catch (e) {
+          return ZegelResult(
+            status: ZegelStatus.tampered,
+            message: 'Error: $e',
+          );
+        }
+      }));
+      results.addAll(chunkResults);
     }
     return results;
   }
@@ -542,9 +546,12 @@ class ZegelService {
     SealOptions options,
   ) async {
     final results = <Uint8List>[];
-    for (final path in filePaths) {
-      final sealed = await seal(path, hexKey, options);
-      results.add(sealed);
+    const chunkSize = 10;
+    for (var i = 0; i < filePaths.length; i += chunkSize) {
+      final chunk = filePaths.skip(i).take(chunkSize).toList();
+      final chunkResults =
+          await Future.wait(chunk.map((path) => seal(path, hexKey, options)));
+      results.addAll(chunkResults);
     }
     return results;
   }
