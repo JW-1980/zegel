@@ -1,8 +1,4 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
-
-||||||| original
 import 'package:flutter/services.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
@@ -11,7 +7,6 @@ import 'package:zegel/zegel.dart';
 import '../services/file_service.dart';
 import '../services/key_service.dart';
 import '../widgets/key_input.dart';
-import 'package:flutter/services.dart';
 
 /// Screen for managing canary traps (recipient fingerprinting).
 ///
@@ -37,6 +32,7 @@ class _CanaryScreenState extends State<CanaryScreen>
   String? _embedFilePath;
   String _masterKey = '';
   final List<_RecipientEntry> _recipients = [];
+  // ignore: prefer_final_fields
   bool _isEmbedding = false;
 
   // Identify tab state
@@ -50,7 +46,8 @@ class _CanaryScreenState extends State<CanaryScreen>
   String? _statusMessage;
   bool _isError = false;
 
-  final TextEditingController _recipientNameController = TextEditingController();
+  final TextEditingController _recipientNameController =
+      TextEditingController();
   final TextEditingController _candidateIdController = TextEditingController();
 
   @override
@@ -102,12 +99,7 @@ class _CanaryScreenState extends State<CanaryScreen>
 
   Future<void> _pickIdentifyFile() async {
     final fileService = context.read<FileService>();
-    final path = await fileService.pickFile(
-      type: FileType.any,
-||||||| original
-      allowedExtensions: ['zgl'],
-
-    );
+    final path = await fileService.pickZegelFile();
     if (path != null) {
       setState(() {
         _identifyFilePath = path;
@@ -173,7 +165,8 @@ class _CanaryScreenState extends State<CanaryScreen>
 
     try {
       final keyService = context.read<KeyService>();
-      final masterKeyBytes = Uint8List.fromList(keyService.hexToBytes(_identifyKey));
+      final masterKeyBytes =
+          Uint8List.fromList(keyService.hexToBytes(_identifyKey));
 
       // Convert candidate IDs to bytes
       final candidateIdBytes = _candidateIds

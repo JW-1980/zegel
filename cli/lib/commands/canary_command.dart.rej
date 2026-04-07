@@ -1,0 +1,10 @@
+--- cli/lib/commands/canary_command.dart
++++ cli/lib/commands/canary_command.dart
+@@ -534,7 +534,6 @@
+       throw ArgumentError('Input file does not exist: $path');
+     }
+
+-    final result = ZegelReader().inspect(file.readAsBytesSync());
+     final newBytes = Canary.removeCanaryFromBytes(file.readAsBytesSync());
+     File(outputPath).writeAsBytesSync(newBytes);
+     return 0;

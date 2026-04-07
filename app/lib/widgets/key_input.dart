@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
@@ -114,26 +113,26 @@ class _KeyInputState extends State<KeyInput> {
       if (mounted) {
         if (mounted) {
           // ignore: use_build_context_synchronously
-      // ignore: use_build_context_synchronously
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Invalid key file. Expected 64 hex characters or 32 raw bytes.',
+          // ignore: use_build_context_synchronously
+          // ignore: use_build_context_synchronously
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Invalid key file. Expected 64 hex characters or 32 raw bytes.',
+              ),
             ),
-          ),
-        );
+          );
         }
       }
     } catch (e) {
       if (mounted) {
         if (mounted) {
           // ignore: use_build_context_synchronously
-      // ignore: use_build_context_synchronously
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to load key file: $e')),
-        );
+          // ignore: use_build_context_synchronously
+          // ignore: use_build_context_synchronously
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to load key file: $e')),
+          );
         }
       }
     }
@@ -153,11 +152,11 @@ class _KeyInputState extends State<KeyInput> {
       if (mounted) {
         if (mounted) {
           // ignore: use_build_context_synchronously
-      // ignore: use_build_context_synchronously
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No saved keys found')),
-        );
+          // ignore: use_build_context_synchronously
+          // ignore: use_build_context_synchronously
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('No saved keys found')),
+          );
         }
       }
       return;
@@ -240,14 +239,14 @@ class _KeyInputState extends State<KeyInput> {
                       );
                       if (mounted) {
                         // ignore: use_build_context_synchronously
-      // ignore: use_build_context_synchronously
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Key copied to clipboard'),
-                          duration: Duration(seconds: 1),
-                        ),
-                      );
+                        // ignore: use_build_context_synchronously
+                        // ignore: use_build_context_synchronously
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Key copied to clipboard'),
+                            duration: Duration(seconds: 1),
+                          ),
+                        );
                       }
                     },
                   ),

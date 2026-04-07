@@ -1,6 +1,7 @@
 import 'dart:convert';
-import 'dart:io';
+import 'dart:io' hide BytesBuilder;
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:args/command_runner.dart';
 import 'package:crypto/crypto.dart' as crypto;
@@ -23,7 +24,8 @@ class AttestCommand extends Command<int> {
   final String name = 'attest';
 
   @override
-  String get description => 'Add a co-signature attestation to a .zgl file.\n'
+  String get description =>
+      'Add a co-signature attestation to a .zgl file.\n'
       '\n'
       'Creates an HMAC-SHA256 attestation over the Merkle root, signer ID,\n'
       'timestamp, statement, and role. The attestation is stored as an\n'
@@ -63,7 +65,8 @@ class AttestCommand extends Command<int> {
 
     argParser.addOption(
       'signer-id',
-      help: 'Signer identifier string.\n'
+      help:
+          'Signer identifier string.\n'
           'Recommended format: "user:id:name@example.com" or\n'
           '"role:id:description".',
       valueHelp: 'id',
@@ -81,7 +84,8 @@ class AttestCommand extends Command<int> {
     argParser.addOption(
       'role',
       abbr: 'r',
-      help: 'Signer\'s role in the attestation workflow.\n'
+      help:
+          'Signer\'s role in the attestation workflow.\n'
           'Valid roles: owner, signer, witness, notary, auditor, reviewer.\n'
           'Roles are used by --check-attestation-policy during verification.',
       valueHelp: 'role',
@@ -90,7 +94,8 @@ class AttestCommand extends Command<int> {
     addKeyOptions(argParser);
     addOutputOption(
       argParser,
-      help: 'Output path for the attested .zgl file.\n'
+      help:
+          'Output path for the attested .zgl file.\n'
           'Defaults to overwriting the input file.',
     );
   }
@@ -262,7 +267,8 @@ class AttestCommand extends Command<int> {
         header.expirationTimestamp! * 1000,
         isUtc: true,
       );
-      expirationDateStr = '${dt.year.toString().padLeft(4, '0')}-'
+      expirationDateStr =
+          '${dt.year.toString().padLeft(4, '0')}-'
           '${dt.month.toString().padLeft(2, '0')}-'
           '${dt.day.toString().padLeft(2, '0')}';
     }

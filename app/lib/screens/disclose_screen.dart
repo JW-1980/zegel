@@ -1,15 +1,14 @@
-import 'dart:typed_data';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import '../services/file_service.dart';
 import '../services/zegel_service.dart';
 import '../widgets/key_input.dart';
-import 'dart:io';
-import 'package:flutter/services.dart';
 
 /// Screen for selective disclosure of .zgl file blocks.
 ///
@@ -222,6 +221,8 @@ class _DiscloseScreenState extends State<DiscloseScreen>
       );
 
       if (savedPath != null && mounted) {
+        // ignore: unused_local_variable
+        // ignore: unused_local_variable
         final l10n = AppLocalizations.of(context)!;
         setState(() {
           _extractStatus = l10n.extractSuccess;
@@ -230,6 +231,8 @@ class _DiscloseScreenState extends State<DiscloseScreen>
       }
     } catch (e) {
       if (mounted) {
+        // ignore: unused_local_variable
+        // ignore: unused_local_variable
         final l10n = AppLocalizations.of(context)!;
         setState(() {
           _extractStatus = l10n.errorGeneric(e.toString());
@@ -245,6 +248,8 @@ class _DiscloseScreenState extends State<DiscloseScreen>
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
+    // ignore: unused_local_variable
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
@@ -254,8 +259,8 @@ class _DiscloseScreenState extends State<DiscloseScreen>
         bottom: TabBar(
           controller: _tabController,
           labelColor: theme.colorScheme.onPrimary,
-          unselectedLabelColor: theme.colorScheme.onPrimary.withValues(alpha:0.6),
-          unselectedLabelColor: theme.colorScheme.onPrimary.withValues(alpha: 0.6),
+          unselectedLabelColor:
+              theme.colorScheme.onPrimary.withValues(alpha: 0.6),
           indicatorColor: theme.colorScheme.onPrimary,
           tabs: const [
             Tab(text: 'Generate Token'),
@@ -376,6 +381,8 @@ class _DiscloseScreenState extends State<DiscloseScreen>
                     const Divider(),
                     ..._blocks!.map((block) {
                       return CheckboxListTile(
+                        // ignore: deprecated_member_use
+                        // ignore: deprecated_member_use
                         value: _selectedBlocks.contains(block.index),
                         onChanged: block.isRedacted
                             ? null
@@ -439,7 +446,6 @@ class _DiscloseScreenState extends State<DiscloseScreen>
               child: Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.red.withValues(alpha:0.1),
                   color: Colors.red.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -505,12 +511,17 @@ class _DiscloseScreenState extends State<DiscloseScreen>
                                 text: _generatedToken!.toJsonString(),
                               ),
                             );
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Token copied to clipboard'),
-                                duration: Duration(seconds: 1),
-                              ),
-                            );
+                            if (mounted) {
+                              // ignore: use_build_context_synchronously
+                              // ignore: use_build_context_synchronously
+                              // ignore: use_build_context_synchronously
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Token copied to clipboard'),
+                                  duration: Duration(seconds: 1),
+                                ),
+                              );
+                            }
                           },
                         ),
                         const SizedBox(width: 8),
@@ -675,13 +686,6 @@ class _DiscloseScreenState extends State<DiscloseScreen>
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: _extractIsError
-                      ? Colors.red.withValues(alpha:0.1)
-                      : Colors.green.withValues(alpha:0.1),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: _extractIsError
-                        ? Colors.red.withValues(alpha:0.3)
-                        : Colors.green.withValues(alpha:0.3),
                       ? Colors.red.withValues(alpha: 0.1)
                       : Colors.green.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),

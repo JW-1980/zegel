@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../services/zegel_service.dart';
 import 'classification_badge.dart';
-import 'package:intl/intl.dart';
 
 /// A card displaying detailed file metadata.
 ///
@@ -119,21 +119,20 @@ class FileInfoCard extends StatelessWidget {
             ),
             const Divider(),
             if (filename != null)
-              _InfoRow(label: 'Filename', // ignore: deprecated_member_use
- // ignore: deprecated_member_use
- value: filename!),
-||||||| original
-            if (filename != null)
-              _InfoRow(label: 'Filename', value: filename!),
-            if (filename != null) _InfoRow(label: 'Filename', value: filename!),
+              _InfoRow(
+                  label: 'Filename', // ignore: deprecated_member_use
+                  // ignore: deprecated_member_use
+                  value: filename!),
             if (fileSize != null)
-              _InfoRow(label: 'Size', // ignore: deprecated_member_use
- // ignore: deprecated_member_use
- value: _formatFileSize(fileSize!)),
+              _InfoRow(
+                  label: 'Size', // ignore: deprecated_member_use
+                  // ignore: deprecated_member_use
+                  value: _formatFileSize(fileSize!)),
             if (contentType != null)
-              _InfoRow(label: 'Content Type', // ignore: deprecated_member_use
- // ignore: deprecated_member_use
- value: contentType!),
+              _InfoRow(
+                  label: 'Content Type', // ignore: deprecated_member_use
+                  // ignore: deprecated_member_use
+                  value: contentType!),
             if (createdAt != null)
               _InfoRow(
                 label: 'Created',
@@ -142,9 +141,10 @@ class FileInfoCard extends StatelessWidget {
                 value: dateFormatter.format(createdAt!),
               ),
             if (blockCount != null)
-              _InfoRow(label: 'Block Count', // ignore: deprecated_member_use
- // ignore: deprecated_member_use
- value: blockCount.toString()),
+              _InfoRow(
+                  label: 'Block Count', // ignore: deprecated_member_use
+                  // ignore: deprecated_member_use
+                  value: blockCount.toString()),
             if (inspection != null) ...[
               _InfoRow(
                 label: 'Format Version',
@@ -211,12 +211,8 @@ class FileInfoCard extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Colors.amber.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(4),
-                      border:
-                          Border.all(color: Colors.amber.withValues(alpha: 0.5)),
-||||||| original
-                      border:
-                          Border.all(color: Colors.amber.withOpacity(0.5)),
-                      border: Border.all(color: Colors.amber.withOpacity(0.5)),
+                      border: Border.all(
+                          color: Colors.amber.withValues(alpha: 0.5)),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,

@@ -1,16 +1,12 @@
-
 import 'package:flutter/material.dart';
-
-||||||| original
-import 'package:flutter/services.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:zegel/zegel.dart';
 
 import '../services/file_service.dart';
 import '../services/zegel_service.dart';
 import '../widgets/key_input.dart';
-import 'package:intl/intl.dart';
 
 /// Screen for adding attestations to sealed .zgl files.
 ///
@@ -67,12 +63,7 @@ class _AttestScreenState extends State<AttestScreen> {
 
   Future<void> _pickFile() async {
     final fileService = context.read<FileService>();
-    final path = await fileService.pickFile(
-      type: FileType.any,
-||||||| original
-      allowedExtensions: ['zgl'],
-
-    );
+    final path = await fileService.pickZegelFile();
     if (path != null) {
       await _setFile(path);
     }
@@ -367,6 +358,7 @@ class _AttestScreenState extends State<AttestScreen> {
                     ),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<String>(
+                      // ignore: deprecated_member_use
                       value: _selectedRole,
                       decoration: const InputDecoration(
                         labelText: 'Role',

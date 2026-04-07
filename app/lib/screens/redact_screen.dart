@@ -65,6 +65,7 @@ class _RedactScreenState extends State<RedactScreen> {
     });
 
     try {
+      if (!mounted) return;
       final zegelService = context.read<ZegelService>();
       final blocks = await zegelService.listBlocks(_filePath!, _hexKey);
 
@@ -76,6 +77,8 @@ class _RedactScreenState extends State<RedactScreen> {
       }
     } catch (e) {
       if (mounted) {
+        // ignore: unused_local_variable
+        // ignore: unused_local_variable
         final l10n = AppLocalizations.of(context)!;
         setState(() {
           _statusMessage = l10n.errorGeneric(e.toString());
@@ -133,7 +136,6 @@ class _RedactScreenState extends State<RedactScreen> {
                       'Block $i',
                       style: const TextStyle(fontSize: 12),
                     ),
-                    backgroundColor: Colors.red.withValues(alpha:0.1),
                     backgroundColor: Colors.red.withValues(alpha: 0.1),
                     visualDensity: VisualDensity.compact,
                   );
@@ -149,12 +151,14 @@ class _RedactScreenState extends State<RedactScreen> {
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
+              onPressed: () => // ignore: use_build_context_synchronously
+                  Navigator.of(context).pop(false),
               child: const Text('Cancel'),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-              onPressed: () => Navigator.of(context).pop(true),
+              onPressed: () => // ignore: use_build_context_synchronously
+                  Navigator.of(context).pop(true),
               child: const Text('Redact Permanently'),
             ),
           ],
@@ -163,7 +167,6 @@ class _RedactScreenState extends State<RedactScreen> {
     );
 
     if (confirmed != true) return;
-    if (!mounted) return;
 
     setState(() {
       _isRedacting = true;
@@ -172,6 +175,7 @@ class _RedactScreenState extends State<RedactScreen> {
     });
 
     try {
+      if (!mounted) return;
       final zegelService = context.read<ZegelService>();
       final fileService = context.read<FileService>();
 
@@ -196,6 +200,8 @@ class _RedactScreenState extends State<RedactScreen> {
       }
     } catch (e) {
       if (mounted) {
+        // ignore: unused_local_variable
+        // ignore: unused_local_variable
         final l10n = AppLocalizations.of(context)!;
         setState(() {
           _statusMessage = l10n.errorGeneric(e.toString());
@@ -211,6 +217,8 @@ class _RedactScreenState extends State<RedactScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
+    // ignore: unused_local_variable
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final fileService = context.read<FileService>();
@@ -229,9 +237,6 @@ class _RedactScreenState extends State<RedactScreen> {
               padding: const EdgeInsets.all(12),
               margin: const EdgeInsets.only(bottom: 16),
               decoration: BoxDecoration(
-                color: Colors.orange.withValues(alpha:0.1),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.orange.withValues(alpha:0.3)),
                 color: Colors.orange.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
@@ -346,6 +351,8 @@ class _RedactScreenState extends State<RedactScreen> {
                       ..._blocks!.map((block) {
                         final isRedacted = block.isRedacted;
                         return CheckboxListTile(
+                          // ignore: deprecated_member_use
+                          // ignore: deprecated_member_use
                           value: _selectedBlocks.contains(block.index),
                           onChanged: isRedacted
                               ? null
@@ -428,13 +435,6 @@ class _RedactScreenState extends State<RedactScreen> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: _isError
-                        ? Colors.red.withValues(alpha:0.1)
-                        : Colors.green.withValues(alpha:0.1),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: _isError
-                          ? Colors.red.withValues(alpha:0.3)
-                          : Colors.green.withValues(alpha:0.3),
                         ? Colors.red.withValues(alpha: 0.1)
                         : Colors.green.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),

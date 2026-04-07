@@ -1,4 +1,5 @@
-import 'dart:io';
+import 'dart:io' hide BytesBuilder;
+import 'dart:typed_data';
 
 import 'package:args/command_runner.dart';
 import 'package:zegel/zegel.dart';
@@ -44,15 +45,13 @@ class SplitKeyCommand extends Command<int> {
 
   SplitKeyCommand() {
     addKeyOptions(argParser);
-    addOutputOption(
-      argParser,
-      help: 'Output directory for share files.',
-    );
+    addOutputOption(argParser, help: 'Output directory for share files.');
 
     argParser.addOption(
       'threshold',
       abbr: 't',
-      help: 'Minimum number of shares required to reconstruct (M).\n'
+      help:
+          'Minimum number of shares required to reconstruct (M).\n'
           'Must be at least 2.',
       valueHelp: 'M',
       mandatory: true,
@@ -61,7 +60,8 @@ class SplitKeyCommand extends Command<int> {
     argParser.addOption(
       'shares',
       abbr: 'n',
-      help: 'Total number of shares to generate (N).\n'
+      help:
+          'Total number of shares to generate (N).\n'
           'Must be >= threshold and <= 255.',
       valueHelp: 'N',
       mandatory: true,
@@ -75,7 +75,8 @@ class SplitKeyCommand extends Command<int> {
 
     argParser.addOption(
       'hierarchical',
-      help: 'Create a hierarchical share structure with multiple levels.\n'
+      help:
+          'Create a hierarchical share structure with multiple levels.\n'
           'Format: "level1:M/N,level2:M/N" (e.g., "board:3/5,exec:2/3").\n'
           'Each level gets its own subdirectory with share files.',
       valueHelp: 'spec',
@@ -100,9 +101,7 @@ class SplitKeyCommand extends Command<int> {
     }
 
     if (totalShares == null || totalShares < threshold || totalShares > 255) {
-      exitError(
-        'Total shares must be an integer between $threshold and 255.',
-      );
+      exitError('Total shares must be an integer between $threshold and 255.');
     }
 
     final outputDir = argResults!['output'] as String?;
@@ -119,11 +118,7 @@ class SplitKeyCommand extends Command<int> {
     final useHex = argResults!['hex'] as bool;
 
     // Split the key.
-    final shares = ShamirSecretSharing.split(
-      masterKey,
-      threshold,
-      totalShares,
-    );
+    final shares = ShamirSecretSharing.split(masterKey, threshold, totalShares);
 
     // Write each share to a file.
     for (var i = 0; i < shares.length; i++) {
@@ -150,7 +145,8 @@ class SplitKeyCommand extends Command<int> {
     stdout.writeln('  Threshold:  $threshold of $totalShares');
     stdout.writeln('  Share dir:  $outputDir');
     stdout.writeln(
-        '  Format:     ${useHex ? 'hex (66 characters)' : 'raw (33 bytes)'}');
+      '  Format:     ${useHex ? 'hex (66 characters)' : 'raw (33 bytes)'}',
+    );
     stdout.writeln('  Files:');
     for (var i = 0; i < shares.length; i++) {
       stdout.writeln('    share_${i + 1}.key');
@@ -188,7 +184,8 @@ class ReconstructCommand extends Command<int> {
   final String name = 'reconstruct';
 
   @override
-  String get description => 'Reconstruct a master key from Shamir shares.\n'
+  String get description =>
+      'Reconstruct a master key from Shamir shares.\n'
       '\n'
       'Reads M share files and uses Lagrange interpolation over GF(256)\n'
       'to reconstruct the original 32-byte master key.\n'
@@ -210,14 +207,16 @@ class ReconstructCommand extends Command<int> {
   ReconstructCommand() {
     addOutputOption(
       argParser,
-      help: 'Write reconstructed key to a file.\n'
+      help:
+          'Write reconstructed key to a file.\n'
           'If omitted, the key hex is written to stdout.',
     );
 
     argParser.addFlag(
       'quiet',
       abbr: 'q',
-      help: 'Only output the key hex (no warnings).\n'
+      help:
+          'Only output the key hex (no warnings).\n'
           'Useful for piping to other commands.',
       defaultsTo: false,
     );
@@ -226,10 +225,7 @@ class ReconstructCommand extends Command<int> {
   @override
   Future<int> run() async {
     if (argResults!.rest.length < 2) {
-      throw UsageException(
-        'At least 2 share files are required.',
-        usage,
-      );
+      throw UsageException('At least 2 share files are required.', usage);
     }
 
     // Read all share files.
@@ -304,19 +300,21 @@ class ReconstructCommand extends Command<int> {
         stdout.writeln('  Shares used: ${shares.length}');
         stdout.writeln('  Key file:    $outputPath');
         stdout.writeln();
-        stderr.writeln(Ansi.warning(
-          'Security Warning: Treat this key file with the same care as '
-          'the original key.',
-        ));
+        stderr.writeln(
+          Ansi.warning(
+            'Security Warning: Treat this key file with the same care as '
+            'the original key.',
+          ),
+        );
       }
     } else {
       stdout.writeln(keyHex);
 
       if (!quiet) {
         stderr.writeln();
-        stderr.writeln(Ansi.success(
-          'Key reconstructed from ${shares.length} shares.',
-        ));
+        stderr.writeln(
+          Ansi.success('Key reconstructed from ${shares.length} shares.'),
+        );
       }
     }
 

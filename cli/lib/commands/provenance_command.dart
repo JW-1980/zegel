@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:io';
+import 'dart:io' hide BytesBuilder;
 
 import 'package:args/command_runner.dart';
 import 'package:zegel/zegel.dart';
@@ -9,10 +9,12 @@ import 'common.dart';
 /// `zegel provenance-verify` - Verify provenance chain of a file.
 class ProvenanceVerifyCommand extends Command<int> {
   ProvenanceVerifyCommand() {
-    argParser.addOption('provenance',
-        abbr: 'p',
-        help: 'Path to provenance chain JSON file.',
-        valueHelp: 'path');
+    argParser.addOption(
+      'provenance',
+      abbr: 'p',
+      help: 'Path to provenance chain JSON file.',
+      valueHelp: 'path',
+    );
     addKeyOptions(argParser);
   }
 
@@ -49,11 +51,9 @@ class ProvenanceVerifyCommand extends Command<int> {
     final key = parseKeyFromArgs(argResults!);
     final provFile = File(provPath);
     if (!provFile.existsSync()) {
-      stderr.writeln('${Ansi.error('Error:')} Provenance file not found: $provPath');
-||||||| original
-      stderr.writeln(Ansi.error('Error:') + ' Provenance file not found: $provPath');
       stderr.writeln(
-          '${Ansi.error('Error:')} Provenance file not found: $provPath');
+        "${Ansi.error('Error:')} Provenance file not found: $provPath",
+      );
       return 1;
     }
 
@@ -75,7 +75,8 @@ class ProvenanceVerifyCommand extends Command<int> {
         isUtc: true,
       );
       stdout.writeln(
-          '  ${i + 1}. ${e["action"]} by ${e["actor"]} at ${formatTimestamp(ts)}');
+        '  ${i + 1}. ${e["action"]} by ${e["actor"]} at ${formatTimestamp(ts)}',
+      );
     }
 
     stdout.writeln();
