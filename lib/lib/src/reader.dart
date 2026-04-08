@@ -282,8 +282,9 @@ class ZegelReader {
           ),
         );
       }
-      final Uint8List computedCommitment =
-          KeyDerivation.computeKeyCommitment(blockKeys);
+      final Uint8List computedCommitment = KeyDerivation.computeKeyCommitment(
+        blockKeys,
+      );
 
       if (!_constantTimeEquals(computedCommitment, h.keyCommitment!)) {
         throw const ZegelTamperedException('Key commitment mismatch');
@@ -532,9 +533,7 @@ class ZegelReader {
 
       disclosedIndices.add(i);
 
-      final Uint8List blockKey = _hexToBytes(
-        blockKeysMap[indexStr] as String,
-      );
+      final Uint8List blockKey = _hexToBytes(blockKeysMap[indexStr] as String);
       final int bOffset = blockDataOffsets[i];
       final Uint8List ciphertext = Uint8List.sublistView(
         fileBytes,

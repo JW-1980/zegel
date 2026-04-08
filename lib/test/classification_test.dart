@@ -24,41 +24,42 @@ void main() {
 
     group('compare', () {
       test(
-          'orders levels correctly: PUBLIC < INTERNAL < CONFIDENTIAL < SECRET < TOP_SECRET',
-          () {
-        expect(
-          Classification.compare(
-            ZegelFormat.classificationPublic,
-            ZegelFormat.classificationInternal,
-          ),
-          lessThan(0),
-          reason: 'PUBLIC should be lower than INTERNAL',
-        );
-        expect(
-          Classification.compare(
-            ZegelFormat.classificationInternal,
-            ZegelFormat.classificationConfidential,
-          ),
-          lessThan(0),
-          reason: 'INTERNAL should be lower than CONFIDENTIAL',
-        );
-        expect(
-          Classification.compare(
-            ZegelFormat.classificationConfidential,
-            ZegelFormat.classificationSecret,
-          ),
-          lessThan(0),
-          reason: 'CONFIDENTIAL should be lower than SECRET',
-        );
-        expect(
-          Classification.compare(
-            ZegelFormat.classificationSecret,
-            ZegelFormat.classificationTopSecret,
-          ),
-          lessThan(0),
-          reason: 'SECRET should be lower than TOP_SECRET',
-        );
-      });
+        'orders levels correctly: PUBLIC < INTERNAL < CONFIDENTIAL < SECRET < TOP_SECRET',
+        () {
+          expect(
+            Classification.compare(
+              ZegelFormat.classificationPublic,
+              ZegelFormat.classificationInternal,
+            ),
+            lessThan(0),
+            reason: 'PUBLIC should be lower than INTERNAL',
+          );
+          expect(
+            Classification.compare(
+              ZegelFormat.classificationInternal,
+              ZegelFormat.classificationConfidential,
+            ),
+            lessThan(0),
+            reason: 'INTERNAL should be lower than CONFIDENTIAL',
+          );
+          expect(
+            Classification.compare(
+              ZegelFormat.classificationConfidential,
+              ZegelFormat.classificationSecret,
+            ),
+            lessThan(0),
+            reason: 'CONFIDENTIAL should be lower than SECRET',
+          );
+          expect(
+            Classification.compare(
+              ZegelFormat.classificationSecret,
+              ZegelFormat.classificationTopSecret,
+            ),
+            lessThan(0),
+            reason: 'SECRET should be lower than TOP_SECRET',
+          );
+        },
+      );
 
       test('same levels compare as equal', () {
         expect(
@@ -91,7 +92,9 @@ void main() {
         final classification =
             metadata['classification'] as Map<String, dynamic>;
         expect(
-            classification['level'], equals(ZegelFormat.classificationSecret));
+          classification['level'],
+          equals(ZegelFormat.classificationSecret),
+        );
         expect(classification['authority'], equals('Classification Board'));
         expect(classification.containsKey('classified_at'), isTrue);
       });
@@ -259,8 +262,11 @@ void main() {
         );
 
         final result = const ZegelReader().verify(declassified, masterKey);
-        expect(result.valid, isTrue,
-            reason: 'Declassified file must still verify');
+        expect(
+          result.valid,
+          isTrue,
+          reason: 'Declassified file must still verify',
+        );
       });
     });
 
@@ -291,30 +297,32 @@ void main() {
       });
 
       test(
-          'HAS_CLASSIFICATION flag is set when classification metadata present',
-          () {
-        final content = Uint8List.fromList(utf8.encode('Classified'));
-        final classificationMeta = Classification.createClassificationMetadata(
-          level: ZegelFormat.classificationSecret,
-          authority: 'Security Office',
-        );
-        final options = ZegelOptions(
-          contentType: 'text/plain',
-          filename: 'secret.txt',
-          salt: _zeroSalt(),
-          publicMetadata: classificationMeta,
-        );
-        final fileBytes = ZegelWriter(masterKey, options).seal(content);
+        'HAS_CLASSIFICATION flag is set when classification metadata present',
+        () {
+          final content = Uint8List.fromList(utf8.encode('Classified'));
+          final classificationMeta =
+              Classification.createClassificationMetadata(
+            level: ZegelFormat.classificationSecret,
+            authority: 'Security Office',
+          );
+          final options = ZegelOptions(
+            contentType: 'text/plain',
+            filename: 'secret.txt',
+            salt: _zeroSalt(),
+            publicMetadata: classificationMeta,
+          );
+          final fileBytes = ZegelWriter(masterKey, options).seal(content);
 
-        final inspection = const ZegelReader().inspect(fileBytes);
-        // The HAS_PUBLIC_METADATA flag should be set (classification is in
-        // public metadata)
-        expect(
-          inspection.flags & ZegelFormat.flagHasPublicMetadata,
-          isNonZero,
-          reason: 'Classification metadata should be in public metadata',
-        );
-      });
+          final inspection = const ZegelReader().inspect(fileBytes);
+          // The HAS_PUBLIC_METADATA flag should be set (classification is in
+          // public metadata)
+          expect(
+            inspection.flags & ZegelFormat.flagHasPublicMetadata,
+            isNonZero,
+            reason: 'Classification metadata should be in public metadata',
+          );
+        },
+      );
     });
   });
 }

@@ -101,8 +101,11 @@ void main() {
 
         // Each flag should be a power of 2
         for (final flag in flags) {
-          expect(flag & (flag - 1), equals(0),
-              reason: '0x${flag.toRadixString(16)} is not a power of 2');
+          expect(
+            flag & (flag - 1),
+            equals(0),
+            reason: '0x${flag.toRadixString(16)} is not a power of 2',
+          );
           expect(flag, greaterThan(0));
         }
 
@@ -113,8 +116,11 @@ void main() {
           orResult |= flag;
           sum += flag;
         }
-        expect(orResult, equals(sum),
-            reason: 'Flags overlap - some bits are shared');
+        expect(
+          orResult,
+          equals(sum),
+          reason: 'Flags overlap - some bits are shared',
+        );
       });
 
       test('all flags fit within uint16', () {
@@ -190,8 +196,11 @@ void main() {
         ];
 
         for (var i = 0; i < types.length; i++) {
-          expect(types[i], equals(i + 1),
-              reason: 'Block type at index $i should be ${i + 1}');
+          expect(
+            types[i],
+            equals(i + 1),
+            reason: 'Block type at index $i should be ${i + 1}',
+          );
         }
       });
 

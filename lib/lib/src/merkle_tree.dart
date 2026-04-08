@@ -106,10 +106,7 @@ class MerkleTree {
   ///
   /// Returns the list of sibling hashes needed to reconstruct the root from
   /// the leaf hash. Use [verifyInclusion] to check the proof.
-  static List<Uint8List> generateProof(
-    List<Uint8List> leafHashes,
-    int index,
-  ) {
+  static List<Uint8List> generateProof(List<Uint8List> leafHashes, int index) {
     if (index < 0 || index >= leafHashes.length) {
       throw RangeError.range(index, 0, leafHashes.length - 1, 'index');
     }

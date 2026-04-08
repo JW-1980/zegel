@@ -179,8 +179,9 @@ class BurnAfterRead {
     final String newHmac = _computeCounterHmac(masterKey, newCounter, maxReads);
 
     // Build updated public metadata.
-    final Map<String, dynamic> updatedPubMeta =
-        Map<String, dynamic>.from(pubMeta);
+    final Map<String, dynamic> updatedPubMeta = Map<String, dynamic>.from(
+      pubMeta,
+    );
     updatedPubMeta[_counterKey] = newCounter;
     updatedPubMeta[_counterHmacKey] = newHmac;
     updatedPubMeta[_counterNonceKey] = _bytesToHex(newCounterNonce);

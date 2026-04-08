@@ -154,10 +154,7 @@ void main() {
       });
 
       test('extracts correct metadata', () {
-        final metadata = {
-          'sealed_by': 'test-suite',
-          'document_id': 42,
-        };
+        final metadata = {'sealed_by': 'test-suite', 'document_id': 42};
         final fileBytes = _sealTestFile(content, masterKey, metadata: metadata);
 
         final result = const ZegelReader().verify(fileBytes, masterKey);

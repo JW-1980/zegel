@@ -24,7 +24,8 @@ Uint8List _extractSalt(Uint8List fileBytes) {
   final filenameLen = bd.getUint16(84, Endian.big);
   final saltOffset = 86 + filenameLen;
   return Uint8List.fromList(
-      fileBytes.sublist(saltOffset, saltOffset + ZegelFormat.saltSize));
+    fileBytes.sublist(saltOffset, saltOffset + ZegelFormat.saltSize),
+  );
 }
 
 /// Extracts the 32-byte Merkle root from a sealed .zgl file.
@@ -52,14 +53,21 @@ Uint8List _extractMerkleRoot(Uint8List fileBytes) {
   final directoryStart = blockCountOffset + 4 + extSize;
   final merkleRootOffset =
       directoryStart + (blockCount * ZegelFormat.blockDirectoryEntrySize);
-  return Uint8List.fromList(fileBytes.sublist(
-      merkleRootOffset, merkleRootOffset + ZegelFormat.hashSize));
+  return Uint8List.fromList(
+    fileBytes.sublist(
+      merkleRootOffset,
+      merkleRootOffset + ZegelFormat.hashSize,
+    ),
+  );
 }
 
 /// Generates a selective disclosure token for the given file and block indices.
 Map<String, dynamic> _generateToken(
-    Uint8List fileBytes, Uint8List masterKey, List<int> blockIndices,
-    {int? expiresAt}) {
+  Uint8List fileBytes,
+  Uint8List masterKey,
+  List<int> blockIndices, {
+  int? expiresAt,
+}) {
   final salt = _extractSalt(fileBytes);
   final merkleRoot = _extractMerkleRoot(fileBytes);
   return SelectiveDisclosure.generateToken(
@@ -131,13 +139,19 @@ void main() {
         // Each key should be a 64-char hex string (32 bytes)
         final key0 = blockKeys['0'] as String;
         final key2 = blockKeys['2'] as String;
-        expect(key0.length, equals(64),
-            reason: 'Block key should be 64 hex chars (32 bytes)');
+        expect(
+          key0.length,
+          equals(64),
+          reason: 'Block key should be 64 hex chars (32 bytes)',
+        );
         expect(key2.length, equals(64));
 
         // Should be valid hex
-        expect(RegExp(r'^[0-9a-f]+$').hasMatch(key0), isTrue,
-            reason: 'Block key should be lowercase hex');
+        expect(
+          RegExp(r'^[0-9a-f]+$').hasMatch(key0),
+          isTrue,
+          reason: 'Block key should be lowercase hex',
+        );
         expect(RegExp(r'^[0-9a-f]+$').hasMatch(key2), isTrue);
       });
 
@@ -167,8 +181,11 @@ void main() {
         final token = _generateToken(fileBytes, masterKey, [0, 2]);
 
         final tokenMerkleRoot = token['merkle_root'] as String;
-        expect(tokenMerkleRoot.length, equals(64),
-            reason: 'Merkle root should be 64 hex chars');
+        expect(
+          tokenMerkleRoot.length,
+          equals(64),
+          reason: 'Merkle root should be 64 hex chars',
+        );
 
         // Convert extracted merkle root to hex for comparison
         final expectedHex = _bytesToHex(merkleRoot);
@@ -211,30 +228,36 @@ void main() {
         // Partial token for blocks 0 and 2 only
         final token = _generateToken(fileBytes, masterKey, [0, 2]);
 
-        final partialResult =
-            const ZegelReader().extractWithToken(fileBytes, token);
+        final partialResult = const ZegelReader().extractWithToken(
+          fileBytes,
+          token,
+        );
         expect(partialResult.valid, isTrue);
 
         // Partial extraction should have less content since block 1 and 3 are skipped
         expect(
-            partialResult.content!.length, lessThan(fullResult.content!.length),
-            reason: 'Partial token should yield less content than full key');
+          partialResult.content!.length,
+          lessThan(fullResult.content!.length),
+          reason: 'Partial token should yield less content than full key',
+        );
       });
 
-      test('token works with metadata block (block 0 when metadata present)',
-          () {
-        final fileBytes = _createFourBlockFileWithMetadata(masterKey);
+      test(
+        'token works with metadata block (block 0 when metadata present)',
+        () {
+          final fileBytes = _createFourBlockFileWithMetadata(masterKey);
 
-        // Disclose only the metadata block (block 0)
-        final token = _generateToken(fileBytes, masterKey, [0]);
+          // Disclose only the metadata block (block 0)
+          final token = _generateToken(fileBytes, masterKey, [0]);
 
-        final result = const ZegelReader().extractWithToken(fileBytes, token);
-        expect(result.valid, isTrue);
+          final result = const ZegelReader().extractWithToken(fileBytes, token);
+          expect(result.valid, isTrue);
 
-        // Metadata should be accessible
-        expect(result.metadata, isNotNull);
-        expect(result.metadata!['sealed_by'], equals('disclosure-test'));
-      });
+          // Metadata should be accessible
+          expect(result.metadata, isNotNull);
+          expect(result.metadata!['sealed_by'], equals('disclosure-test'));
+        },
+      );
 
       test('token for single content block works', () {
         final fileBytes = _createFourBlockFileNoMetadata(masterKey);
@@ -281,8 +304,10 @@ void main() {
           salt: _zeroSalt(),
           metadata: {'sealed_by': 'other'},
         );
-        final fileBytes2 =
-            ZegelWriter(masterKey, options).seal(differentContent);
+        final fileBytes2 = ZegelWriter(
+          masterKey,
+          options,
+        ).seal(differentContent);
 
         // Generate token for file 1
         final token = _generateToken(fileBytes1, masterKey, [0, 2]);
@@ -312,18 +337,20 @@ void main() {
         );
       });
 
-      test('token with wrong version still works if block keys are correct',
-          () {
-        final fileBytes = _createFourBlockFileWithMetadata(masterKey);
+      test(
+        'token with wrong version still works if block keys are correct',
+        () {
+          final fileBytes = _createFourBlockFileWithMetadata(masterKey);
 
-        final token = _generateToken(fileBytes, masterKey, [0]);
-        token['version'] = 99; // wrong version
+          final token = _generateToken(fileBytes, masterKey, [0]);
+          token['version'] = 99; // wrong version
 
-        // The reader does not validate the version field in the token,
-        // so extraction should still succeed with correct block keys.
-        final result = const ZegelReader().extractWithToken(fileBytes, token);
-        expect(result.valid, isTrue);
-      });
+          // The reader does not validate the version field in the token,
+          // so extraction should still succeed with correct block keys.
+          final result = const ZegelReader().extractWithToken(fileBytes, token);
+          expect(result.valid, isTrue);
+        },
+      );
 
       test('token with tampered block key fails decryption', () {
         final fileBytes = _createFourBlockFileWithMetadata(masterKey);
@@ -388,8 +415,11 @@ void main() {
         final keys = token['block_keys'] as Map<String, dynamic>;
 
         final keySet = keys.values.toSet();
-        expect(keySet.length, equals(4),
-            reason: 'All block keys should be unique');
+        expect(
+          keySet.length,
+          equals(4),
+          reason: 'All block keys should be unique',
+        );
       });
     });
   });
