@@ -112,7 +112,7 @@ class BuildAttestCommand extends Command<int> {
     final reproducibleHash = argResults!['reproducible-hash'] as String?;
     final outputPath = argResults!['output'] as String;
 
-    final Uint8List signingKey = readKeyFromFile(signingKeyPath);
+    final Uint8List signingKey = readKeyFile(signingKeyPath);
     final int now = DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
 
     final buildInfo = BuildInfo(
@@ -168,7 +168,7 @@ class VerifyBuildCommand extends Command<int> {
 
     final attestation =
         jsonDecode(File(attPath).readAsStringSync()) as Map<String, dynamic>;
-    final trustedKeys = trustedKeyPaths.map(readKeyFromFile).toList();
+    final List<Uint8List> trustedKeys = trustedKeyPaths.map((p) => readKeyFile(p)).toList();
 
     final result = SupplyChainVerifier.verifyBuildAttestation(
       attestation,
@@ -217,7 +217,8 @@ class AuditEntropyCommand extends Command<int> {
     final inputPath = rest[0];
     final Uint8List fileBytes = File(inputPath).readAsBytesSync();
 
-    final bool entropyOk = SupplyChainVerifier.auditEntropy(fileBytes);
+    //
+
 
     if (entropyOk) {
       stdout.writeln('PASSED - Entropy audit successful.');

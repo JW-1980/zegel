@@ -1,1 +1,0 @@
-# If PointyCastle downgraded successfully to 3.7.3 but it STILL has Ed25519 not found errors, it means the class doesn't exist in 3.7.3 either. Let's see what version of pointycastle actually works for this code.
