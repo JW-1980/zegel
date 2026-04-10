@@ -3,8 +3,8 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:crypto/crypto.dart';
-import 'package:pointycastle/export.dart';
+import 'package:crypto/crypto.dart' as crypto;
+import 'package:pointycastle/export.dart' hide Digest, Signature;
 
 import 'format.dart';
 import 'reader.dart';

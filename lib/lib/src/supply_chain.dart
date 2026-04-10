@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:crypto/crypto.dart';
-import 'package:pointycastle/export.dart';
+import 'package:crypto/crypto.dart' as crypto;
+import 'package:pointycastle/export.dart' hide Digest, Signature;
 
 import 'format.dart';
 
@@ -363,7 +363,7 @@ extension _Ed25519SignatureToBytes on Ed25519Signature {
 }
 
 /// Sink that accumulates events into a list.
-class AccumulatorSink<T> implements Sink<T> {
+class AccumulatorSink<T> implements Sink<crypto.Digest> {
   /// The accumulated events.
   final List<T> events = <T>[];
 
