@@ -83,19 +83,27 @@ void main() {
             shares: [
               secretShares[0],
               secretShares[2],
-              secretShares[4]
+              secretShares[4],
             ], // any 3 of 5
           ),
         ];
 
-        final reconstructed =
-            HierarchicalSplitKey.reconstruct(providedShares, levels);
+        final reconstructed = HierarchicalSplitKey.reconstruct(
+          providedShares,
+          levels,
+        );
 
         expect(reconstructed, isNotNull);
-        expect(reconstructed.length, equals(32),
-            reason: 'Reconstructed key should be 32 bytes');
-        expect(reconstructed, equals(masterKey),
-            reason: 'Reconstructed key should match original master key');
+        expect(
+          reconstructed.length,
+          equals(32),
+          reason: 'Reconstructed key should be 32 bytes',
+        );
+        expect(
+          reconstructed,
+          equals(masterKey),
+          reason: 'Reconstructed key should match original master key',
+        );
       });
     });
 
@@ -123,41 +131,35 @@ void main() {
 
         // CONFIDENTIAL needs 2, provide only 1
         expect(
-          () => HierarchicalSplitKey.reconstruct(
-            <LevelShares>[
-              LevelShares(
-                classification: ZegelFormat.classificationConfidential,
-                shares: [confShares[0]], // only 1 of required 2
-              ),
-              LevelShares(
-                classification: ZegelFormat.classificationSecret,
-                shares: [secretShares[0], secretShares[1], secretShares[2]],
-              ),
-            ],
-            levels,
-          ),
+          () => HierarchicalSplitKey.reconstruct(<LevelShares>[
+            LevelShares(
+              classification: ZegelFormat.classificationConfidential,
+              shares: [confShares[0]], // only 1 of required 2
+            ),
+            LevelShares(
+              classification: ZegelFormat.classificationSecret,
+              shares: [secretShares[0], secretShares[1], secretShares[2]],
+            ),
+          ], levels),
           throwsA(isA<ArgumentError>()),
           reason: 'Insufficient shares should throw ArgumentError',
         );
 
         // SECRET needs 3, provide only 2
         expect(
-          () => HierarchicalSplitKey.reconstruct(
-            <LevelShares>[
-              LevelShares(
-                classification: ZegelFormat.classificationConfidential,
-                shares: [confShares[0], confShares[1]],
-              ),
-              LevelShares(
-                classification: ZegelFormat.classificationSecret,
-                shares: [
-                  secretShares[0],
-                  secretShares[1]
-                ], // only 2 of required 3
-              ),
-            ],
-            levels,
-          ),
+          () => HierarchicalSplitKey.reconstruct(<LevelShares>[
+            LevelShares(
+              classification: ZegelFormat.classificationConfidential,
+              shares: [confShares[0], confShares[1]],
+            ),
+            LevelShares(
+              classification: ZegelFormat.classificationSecret,
+              shares: [
+                secretShares[0],
+                secretShares[1],
+              ], // only 2 of required 3
+            ),
+          ], levels),
           throwsA(isA<ArgumentError>()),
           reason: 'Insufficient shares should throw ArgumentError',
         );
@@ -183,9 +185,11 @@ void main() {
 
         for (final entry in splitResult.sharesByLevel.entries) {
           for (final share in entry.value) {
-            expect(share.length, equals(33),
-                reason:
-                    'Each share should be 33 bytes (1 x-coord + 32 y-values)');
+            expect(
+              share.length,
+              equals(33),
+              reason: 'Each share should be 33 bytes (1 x-coord + 32 y-values)',
+            );
           }
         }
       });
@@ -210,9 +214,12 @@ void main() {
           final xCoords = <int>{};
           for (final share in entry.value) {
             final x = share[0]; // First byte is the x-coordinate
-            expect(xCoords.contains(x), isFalse,
-                reason:
-                    'x-coordinate $x should be unique within level ${entry.key}');
+            expect(
+              xCoords.contains(x),
+              isFalse,
+              reason:
+                  'x-coordinate $x should be unique within level ${entry.key}',
+            );
             xCoords.add(x);
           }
         }
@@ -232,63 +239,61 @@ void main() {
         final shares =
             splitResult.sharesByLevel[ZegelFormat.classificationConfidential]!;
         for (final share in shares) {
-          expect(share[0], greaterThan(0),
-              reason: 'x-coordinate must be > 0 (secret is at x=0)');
+          expect(
+            share[0],
+            greaterThan(0),
+            reason: 'x-coordinate must be > 0 (secret is at x=0)',
+          );
         }
       });
     });
 
     group('multi-level reconstruction consistency', () {
-      test('different share combinations at same level reconstruct same key',
-          () {
-        final levels = <ShareLevel>[
-          ShareLevel(
-            classification: ZegelFormat.classificationConfidential,
-            threshold: 2,
-            totalShares: 4,
-          ),
-        ];
+      test(
+        'different share combinations at same level reconstruct same key',
+        () {
+          final levels = <ShareLevel>[
+            ShareLevel(
+              classification: ZegelFormat.classificationConfidential,
+              threshold: 2,
+              totalShares: 4,
+            ),
+          ];
 
-        final splitResult = HierarchicalSplitKey.split(masterKey, levels);
+          final splitResult = HierarchicalSplitKey.split(masterKey, levels);
 
-        final shares =
-            splitResult.sharesByLevel[ZegelFormat.classificationConfidential]!;
+          final shares = splitResult
+              .sharesByLevel[ZegelFormat.classificationConfidential]!;
 
-        // Reconstruct using shares [0, 1]
-        final key1 = HierarchicalSplitKey.reconstruct(
-          <LevelShares>[
+          // Reconstruct using shares [0, 1]
+          final key1 = HierarchicalSplitKey.reconstruct(<LevelShares>[
             LevelShares(
               classification: ZegelFormat.classificationConfidential,
               shares: [shares[0], shares[1]],
             ),
-          ],
-          levels,
-        );
+          ], levels);
 
-        // Reconstruct using shares [2, 3]
-        final key2 = HierarchicalSplitKey.reconstruct(
-          <LevelShares>[
+          // Reconstruct using shares [2, 3]
+          final key2 = HierarchicalSplitKey.reconstruct(<LevelShares>[
             LevelShares(
               classification: ZegelFormat.classificationConfidential,
               shares: [shares[2], shares[3]],
             ),
-          ],
-          levels,
-        );
+          ], levels);
 
-        // Both should produce the same key
-        expect(key1, equals(key2),
+          // Both should produce the same key
+          expect(
+            key1,
+            equals(key2),
             reason:
-                'Any valid share combination should reconstruct the same key');
-      });
+                'Any valid share combination should reconstruct the same key',
+          );
+        },
+      );
 
       test('single level with threshold=2, total=2', () {
         final levels = <ShareLevel>[
-          ShareLevel(
-            classification: 'BASIC',
-            threshold: 2,
-            totalShares: 2,
-          ),
+          ShareLevel(classification: 'BASIC', threshold: 2, totalShares: 2),
         ];
 
         final splitResult = HierarchicalSplitKey.split(masterKey, levels);
@@ -296,19 +301,16 @@ void main() {
         final shares = splitResult.sharesByLevel['BASIC']!;
         expect(shares.length, equals(2));
 
-        final reconstructed = HierarchicalSplitKey.reconstruct(
-          <LevelShares>[
-            LevelShares(
-              classification: 'BASIC',
-              shares: shares,
-            ),
-          ],
-          levels,
-        );
+        final reconstructed = HierarchicalSplitKey.reconstruct(<LevelShares>[
+          LevelShares(classification: 'BASIC', shares: shares),
+        ], levels);
 
         expect(reconstructed.length, equals(32));
-        expect(reconstructed, equals(masterKey),
-            reason: 'Reconstructed key should match original master key');
+        expect(
+          reconstructed,
+          equals(masterKey),
+          reason: 'Reconstructed key should match original master key',
+        );
       });
     });
 
@@ -336,16 +338,18 @@ void main() {
 
         expect(splitResult.sharesByLevel.length, equals(3));
         expect(
-            splitResult
-                .sharesByLevel[ZegelFormat.classificationInternal]!.length,
-            equals(3));
+          splitResult.sharesByLevel[ZegelFormat.classificationInternal]!.length,
+          equals(3),
+        );
         expect(
-            splitResult
-                .sharesByLevel[ZegelFormat.classificationConfidential]!.length,
-            equals(5));
+          splitResult
+              .sharesByLevel[ZegelFormat.classificationConfidential]!.length,
+          equals(5),
+        );
         expect(
-            splitResult.sharesByLevel[ZegelFormat.classificationSecret]!.length,
-            equals(7));
+          splitResult.sharesByLevel[ZegelFormat.classificationSecret]!.length,
+          equals(7),
+        );
       });
 
       test('single level split', () {
@@ -361,9 +365,10 @@ void main() {
 
         expect(splitResult.sharesByLevel.length, equals(1));
         expect(
-            splitResult
-                .sharesByLevel[ZegelFormat.classificationConfidential]!.length,
-            equals(5));
+          splitResult
+              .sharesByLevel[ZegelFormat.classificationConfidential]!.length,
+          equals(5),
+        );
       });
     });
   });

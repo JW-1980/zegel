@@ -80,13 +80,19 @@ void main() {
         );
 
         // Token without 'expires_at' field should not be expired
-        expect(token.containsKey('expires_at'), isFalse,
-            reason:
-                'Token generated without expiration should not have expires_at');
+        expect(
+          token.containsKey('expires_at'),
+          isFalse,
+          reason:
+              'Token generated without expiration should not have expires_at',
+        );
 
         final expired = SelectiveDisclosure.isTokenExpired(token);
-        expect(expired, isFalse,
-            reason: 'Token without expiration should never be expired');
+        expect(
+          expired,
+          isFalse,
+          reason: 'Token without expiration should never be expired',
+        );
       });
 
       test('token with future expiration is not expired', () {
@@ -108,8 +114,11 @@ void main() {
         );
 
         final expired = SelectiveDisclosure.isTokenExpired(token);
-        expect(expired, isFalse,
-            reason: 'Token expiring in the future should not be expired');
+        expect(
+          expired,
+          isFalse,
+          reason: 'Token expiring in the future should not be expired',
+        );
       });
 
       test('token with past expiration is expired', () {
@@ -131,8 +140,11 @@ void main() {
         );
 
         final expired = SelectiveDisclosure.isTokenExpired(token);
-        expect(expired, isTrue,
-            reason: 'Token with past expiration should be expired');
+        expect(
+          expired,
+          isTrue,
+          reason: 'Token with past expiration should be expired',
+        );
       });
     });
 
@@ -185,8 +197,11 @@ void main() {
         );
 
         final result = const ZegelReader().extractWithToken(fileBytes, token);
-        expect(result.valid, isTrue,
-            reason: 'Non-expired token should allow extraction');
+        expect(
+          result.valid,
+          isTrue,
+          reason: 'Non-expired token should allow extraction',
+        );
       });
     });
 
@@ -209,8 +224,11 @@ void main() {
           expiresAt: expiresAt,
         );
 
-        expect(token.containsKey('expires_at'), isTrue,
-            reason: 'Token with expiration should include expires_at field');
+        expect(
+          token.containsKey('expires_at'),
+          isTrue,
+          reason: 'Token with expiration should include expires_at field',
+        );
         expect(token['expires_at'], equals(expiresAt));
       });
 
@@ -225,8 +243,11 @@ void main() {
           [0],
         );
 
-        expect(token.containsKey('expires_at'), isFalse,
-            reason: 'Token without expiration should not include expires_at');
+        expect(
+          token.containsKey('expires_at'),
+          isFalse,
+          reason: 'Token without expiration should not include expires_at',
+        );
       });
 
       test('token preserves all standard fields alongside expiration', () {

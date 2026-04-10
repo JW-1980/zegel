@@ -35,11 +35,7 @@ class ContentVersioning {
       previousMerkleRoot.length + previousMasterSeal.length,
     );
     input.setRange(0, previousMerkleRoot.length, previousMerkleRoot);
-    input.setRange(
-      previousMerkleRoot.length,
-      input.length,
-      previousMasterSeal,
-    );
+    input.setRange(previousMerkleRoot.length, input.length, previousMasterSeal);
     return Uint8List.fromList(sha256.convert(input).bytes);
   }
 

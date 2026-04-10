@@ -93,6 +93,11 @@ class CanaryTrap {
   /// [masterKey] is the 32-byte master key.
   /// [blockIndex] is the zero-based block index.
   /// [candidateRecipientIds] is the list of 32-byte candidate IDs to test.
+  /// Identifies the recipient of a leaked file by trying all candidates.
+  ///
+  /// Always iterates over ALL candidates to prevent timing side-channel
+  /// leakage that could reveal which candidate matched. The total execution
+  /// time is constant regardless of which (if any) candidate matches.
   static String? identifyRecipient(
     Uint8List blockContent,
     Uint8List masterKey,
@@ -101,35 +106,43 @@ class CanaryTrap {
   ) {
     if (blockContent.isEmpty) return null;
 
-    for (final Uint8List candidateId in candidateRecipientIds) {
+    // Accumulate the match across ALL candidates to prevent timing leakage.
+    // We always iterate the full list regardless of when a match is found.
+    int matchIndex = -1;
+
+    for (int c = 0; c < candidateRecipientIds.length; c++) {
+      final Uint8List candidateId = candidateRecipientIds[c];
       final Uint8List expectedPadding = generatePadding(
         masterKey,
         candidateId,
         blockIndex,
       );
 
-      // Check if blockContent ends with expectedPadding.
+      // Skip candidates where padding is longer than content.
       if (blockContent.length < expectedPadding.length) continue;
 
       final int startOffset = blockContent.length - expectedPadding.length;
-      bool match = true;
       // Constant-time comparison of the padding region.
       int diff = 0;
       for (int i = 0; i < expectedPadding.length; i++) {
         diff |= blockContent[startOffset + i] ^ expectedPadding[i];
       }
-      match = diff == 0;
 
-      if (match) {
-        // Return hex-encoded recipient ID.
-        final StringBuffer hexBuf = StringBuffer();
-        for (final byte in candidateId) {
-          hexBuf.write(byte.toRadixString(16).padLeft(2, '0'));
-        }
-        return hexBuf.toString();
+      // Branchless match accumulation: if diff==0, this candidate matched.
+      // We record the FIRST match only (matchIndex stays at first match).
+      if (diff == 0 && matchIndex < 0) {
+        matchIndex = c;
       }
     }
 
-    return null;
+    // Return result only after iterating ALL candidates.
+    if (matchIndex < 0) return null;
+
+    final Uint8List matchedId = candidateRecipientIds[matchIndex];
+    final StringBuffer hexBuf = StringBuffer();
+    for (final byte in matchedId) {
+      hexBuf.write(byte.toRadixString(16).padLeft(2, '0'));
+    }
+    return hexBuf.toString();
   }
 }

@@ -25,8 +25,10 @@ void main() {
     group('extractBasicMetadata', () {
       test('returns correct structure', () {
         final content = Uint8List.fromList([0x00, 0x01, 0x02, 0x03]);
-        final metadata =
-            MediaMetadata.extractBasicMetadata(content, 'test.bin');
+        final metadata = MediaMetadata.extractBasicMetadata(
+          content,
+          'test.bin',
+        );
 
         expect(metadata, isA<Map<String, dynamic>>());
         expect(metadata.containsKey('filename'), isTrue);
@@ -37,86 +39,140 @@ void main() {
 
       test('includes correct filename', () {
         final content = Uint8List.fromList([0x00, 0x01, 0x02, 0x03]);
-        final metadata =
-            MediaMetadata.extractBasicMetadata(content, 'document.pdf');
+        final metadata = MediaMetadata.extractBasicMetadata(
+          content,
+          'document.pdf',
+        );
 
         expect(metadata['filename'], equals('document.pdf'));
       });
 
       test('includes correct file size', () {
         final content = Uint8List.fromList(List.generate(100, (i) => i));
-        final metadata =
-            MediaMetadata.extractBasicMetadata(content, 'data.bin');
+        final metadata = MediaMetadata.extractBasicMetadata(
+          content,
+          'data.bin',
+        );
 
         expect(metadata['file_size'], equals(100));
       });
 
       test('includes content hash as hex string', () {
         final content = Uint8List.fromList([0x00, 0x01, 0x02, 0x03]);
-        final metadata =
-            MediaMetadata.extractBasicMetadata(content, 'test.bin');
+        final metadata = MediaMetadata.extractBasicMetadata(
+          content,
+          'test.bin',
+        );
 
         final hash = metadata['content_hash'] as String;
-        expect(hash.length, equals(64),
-            reason: 'SHA-256 hash should be 64 hex characters');
-        expect(RegExp(r'^[0-9a-f]+$').hasMatch(hash), isTrue,
-            reason: 'Hash should be lowercase hex');
+        expect(
+          hash.length,
+          equals(64),
+          reason: 'SHA-256 hash should be 64 hex characters',
+        );
+        expect(
+          RegExp(r'^[0-9a-f]+$').hasMatch(hash),
+          isTrue,
+          reason: 'Hash should be lowercase hex',
+        );
       });
 
       test('detects JPEG content type', () {
         // JPEG magic bytes: FF D8 FF
-        final content =
-            Uint8List.fromList([0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10]);
-        final metadata =
-            MediaMetadata.extractBasicMetadata(content, 'photo.jpg');
+        final content = Uint8List.fromList([
+          0xFF,
+          0xD8,
+          0xFF,
+          0xE0,
+          0x00,
+          0x10,
+        ]);
+        final metadata = MediaMetadata.extractBasicMetadata(
+          content,
+          'photo.jpg',
+        );
 
         expect(metadata['detected_type'], equals('image/jpeg'));
       });
 
       test('detects PNG content type', () {
         // PNG magic bytes: 89 50 4E 47
-        final content =
-            Uint8List.fromList([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A]);
-        final metadata =
-            MediaMetadata.extractBasicMetadata(content, 'image.png');
+        final content = Uint8List.fromList([
+          0x89,
+          0x50,
+          0x4E,
+          0x47,
+          0x0D,
+          0x0A,
+        ]);
+        final metadata = MediaMetadata.extractBasicMetadata(
+          content,
+          'image.png',
+        );
 
         expect(metadata['detected_type'], equals('image/png'));
       });
 
       test('detects PDF content type', () {
         // PDF magic bytes: 25 50 44 46 (%PDF)
-        final content =
-            Uint8List.fromList([0x25, 0x50, 0x44, 0x46, 0x2D, 0x31]);
-        final metadata =
-            MediaMetadata.extractBasicMetadata(content, 'report.pdf');
+        final content = Uint8List.fromList([
+          0x25,
+          0x50,
+          0x44,
+          0x46,
+          0x2D,
+          0x31,
+        ]);
+        final metadata = MediaMetadata.extractBasicMetadata(
+          content,
+          'report.pdf',
+        );
 
         expect(metadata['detected_type'], equals('application/pdf'));
       });
 
       test('detects ZIP content type', () {
         // ZIP magic bytes: 50 4B 03 04
-        final content =
-            Uint8List.fromList([0x50, 0x4B, 0x03, 0x04, 0x00, 0x00]);
-        final metadata =
-            MediaMetadata.extractBasicMetadata(content, 'archive.zip');
+        final content = Uint8List.fromList([
+          0x50,
+          0x4B,
+          0x03,
+          0x04,
+          0x00,
+          0x00,
+        ]);
+        final metadata = MediaMetadata.extractBasicMetadata(
+          content,
+          'archive.zip',
+        );
 
         expect(metadata['detected_type'], equals('application/zip'));
       });
 
       test('detects GIF content type', () {
         // GIF magic bytes: 47 49 46 (GIF)
-        final content =
-            Uint8List.fromList([0x47, 0x49, 0x46, 0x38, 0x39, 0x61]);
-        final metadata =
-            MediaMetadata.extractBasicMetadata(content, 'anim.gif');
+        final content = Uint8List.fromList([
+          0x47,
+          0x49,
+          0x46,
+          0x38,
+          0x39,
+          0x61,
+        ]);
+        final metadata = MediaMetadata.extractBasicMetadata(
+          content,
+          'anim.gif',
+        );
 
         expect(metadata['detected_type'], equals('image/gif'));
       });
 
       test('returns octet-stream for unknown content', () {
         final content = Uint8List.fromList([0x00, 0x01, 0x02, 0x03]);
-        final metadata =
-            MediaMetadata.extractBasicMetadata(content, 'mystery.dat');
+        final metadata = MediaMetadata.extractBasicMetadata(
+          content,
+          'mystery.dat',
+        );
 
         expect(metadata['detected_type'], equals('application/octet-stream'));
       });
@@ -124,8 +180,10 @@ void main() {
       test('handles very small content', () {
         // Content smaller than 4 bytes
         final content = Uint8List.fromList([0x01]);
-        final metadata =
-            MediaMetadata.extractBasicMetadata(content, 'tiny.bin');
+        final metadata = MediaMetadata.extractBasicMetadata(
+          content,
+          'tiny.bin',
+        );
 
         expect(metadata['file_size'], equals(1));
         expect(metadata['detected_type'], equals('unknown'));
@@ -134,16 +192,28 @@ void main() {
 
     group('stripMetadata', () {
       test('returns content with same length for basic types', () {
-        final content =
-            Uint8List.fromList([0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10]);
+        final content = Uint8List.fromList([
+          0xFF,
+          0xD8,
+          0xFF,
+          0xE0,
+          0x00,
+          0x10,
+        ]);
         final stripped = MediaMetadata.stripMetadata(content, 'image/jpeg');
 
         expect(stripped.length, equals(content.length));
       });
 
       test('populates strippedFields list', () {
-        final content =
-            Uint8List.fromList([0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10]);
+        final content = Uint8List.fromList([
+          0xFF,
+          0xD8,
+          0xFF,
+          0xE0,
+          0x00,
+          0x10,
+        ]);
         final strippedFields = <String>[];
         MediaMetadata.stripMetadata(
           content,
@@ -151,8 +221,11 @@ void main() {
           strippedFields: strippedFields,
         );
 
-        expect(strippedFields, isNotEmpty,
-            reason: 'Should report fields that would be stripped');
+        expect(
+          strippedFields,
+          isNotEmpty,
+          reason: 'Should report fields that would be stripped',
+        );
         expect(strippedFields, contains('GPS coordinates'));
         expect(strippedFields, contains('Camera make/model'));
       });
@@ -209,12 +282,20 @@ void main() {
 
     group('metadata in sealed files', () {
       test('basic metadata survives seal/extract roundtrip', () {
-        final content =
-            Uint8List.fromList([0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10]);
+        final content = Uint8List.fromList([
+          0xFF,
+          0xD8,
+          0xFF,
+          0xE0,
+          0x00,
+          0x10,
+        ]);
 
         // Extract basic metadata
-        final basicMeta =
-            MediaMetadata.extractBasicMetadata(content, 'photo.jpg');
+        final basicMeta = MediaMetadata.extractBasicMetadata(
+          content,
+          'photo.jpg',
+        );
 
         // Seal with metadata
         final options = ZegelOptions(
@@ -262,8 +343,11 @@ void main() {
 
         final result = const ZegelReader().verify(fileBytes, masterKey);
         expect(result.valid, isTrue);
-        expect(result.metadata, isNull,
-            reason: 'File sealed without metadata should have null metadata');
+        expect(
+          result.metadata,
+          isNull,
+          reason: 'File sealed without metadata should have null metadata',
+        );
       });
     });
   });
