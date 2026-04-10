@@ -354,7 +354,9 @@ class ZegelReader {
         gcmInput.setRange(ciphertext.length, gcmInput.length, entry.tag);
         plaintext = cipher.process(gcmInput);
       } on Exception {
-        throw ZegelTamperedException('Block $i: AES-GCM decryption failed');
+        throw const ZegelTamperedException(
+          'Tamper detected: block decryption failed',
+        );
       }
 
       // Verify plaintext hash BEFORE decompression.
@@ -364,7 +366,9 @@ class ZegelReader {
         sha256.convert(plaintext).bytes,
       );
       if (!_constantTimeEquals(ptHash, entry.hash)) {
-        throw ZegelTamperedException('Block $i: plaintext hash mismatch');
+        throw const ZegelTamperedException(
+          'Tamper detected: block integrity check failed',
+        );
       }
 
       // Decompress content blocks (if COMPRESSED flag is set).
@@ -569,7 +573,7 @@ class ZegelReader {
         plaintext = cipher.process(gcmInput);
       } on Exception {
         throw ZegelTamperedException(
-          'Block $i: AES-GCM decryption failed with token key',
+          'Tamper detected: token block decryption failed',
         );
       }
 
@@ -579,7 +583,7 @@ class ZegelReader {
       );
       if (!_constantTimeEquals(ptHash, entry.hash)) {
         throw ZegelTamperedException(
-          'Block $i: plaintext hash mismatch (token extraction)',
+          'Tamper detected: token block integrity check failed',
         );
       }
 
@@ -696,6 +700,15 @@ class ZegelReader {
     final int blockCountOffset = saltOffset + ZegelFormat.saltSize;
     h.blockCount = bd.getUint32(blockCountOffset, Endian.big);
 
+    // DoS prevention: reject files claiming an unreasonable block count
+    // before allocating memory for the directory.
+    if (h.blockCount > ZegelFormat.maxBlockCount) {
+      throw ZegelFormatException(
+        'Block count ${h.blockCount} exceeds maximum '
+        '${ZegelFormat.maxBlockCount}',
+      );
+    }
+
     // -------------------------------------------------------------------------
     // Extended header (flag-dependent, in spec-defined order)
     // -------------------------------------------------------------------------
@@ -742,6 +755,12 @@ class ZegelReader {
     if (h.flags & ZegelFormat.flagHasPublicMetadata != 0) {
       _requireBytes(fileBytes, cursor + 4, 'public metadata length');
       final int pubMetaLen = bd.getUint32(cursor, Endian.big);
+      if (pubMetaLen > ZegelFormat.maxPublicMetadataSize) {
+        throw ZegelFormatException(
+          'Public metadata size $pubMetaLen exceeds maximum '
+          '${ZegelFormat.maxPublicMetadataSize}',
+        );
+      }
       cursor += 4;
       _requireBytes(fileBytes, cursor + pubMetaLen, 'public metadata body');
       final String pubMetaJson = utf8.decode(

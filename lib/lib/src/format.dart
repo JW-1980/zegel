@@ -228,6 +228,16 @@ class ZegelFormat {
 
   /// HKDF info prefix for per-block key derivation.
   static const String hkdfInfoPrefix = 'zegel-block-key-v1:';
+
+  /// Maximum number of blocks allowed in a single file (DoS prevention).
+  ///
+  /// With the default 64 KiB block size, this allows files up to ~64 TiB.
+  /// A malicious file claiming more blocks than this will be rejected before
+  /// any memory allocation for the block directory.
+  static const int maxBlockCount = 1000000;
+
+  /// Maximum size of public metadata in bytes (DoS prevention).
+  static const int maxPublicMetadataSize = 10 * 1024 * 1024; // 10 MiB
 }
 
 // =============================================================================

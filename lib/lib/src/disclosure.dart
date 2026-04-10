@@ -108,7 +108,8 @@ class SelectiveDisclosure {
 
       // Build AAD: blockType(1) || blockIndex(4 BE) || salt(32).
       // Parse the salt from the file header.
-      final int fnLen = bd.getUint16(84, Endian.big);
+      final ByteData bdLocal = ByteData.sublistView(fileBytes);
+      final int fnLen = bdLocal.getUint16(84, Endian.big);
       final int saltOffset = 86 + fnLen;
       final Uint8List fileSalt = Uint8List.sublistView(
         fileBytes,
