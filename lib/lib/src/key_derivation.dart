@@ -87,10 +87,7 @@ class KeyDerivation {
   /// ```
   ///
   /// Returns a 64-byte HMAC-SHA512 digest.
-  static Uint8List computeMasterSeal(
-    Uint8List sealKey,
-    Uint8List fileBytes,
-  ) {
+  static Uint8List computeMasterSeal(Uint8List sealKey, Uint8List fileBytes) {
     final hmac = Hmac(sha512, sealKey);
     return Uint8List.fromList(hmac.convert(fileBytes).bytes);
   }

@@ -222,10 +222,7 @@ class RoyaltyBlock {
     this.expirationDate,
     this.contractReference,
   }) {
-    final double total = recipients.fold(
-      0.0,
-      (sum, r) => sum + r.percentage,
-    );
+    final double total = recipients.fold(0.0, (sum, r) => sum + r.percentage);
     if ((total - 100.0).abs() > 0.01) {
       throw ArgumentError(
         'Recipient percentages must sum to 100.0 (got $total)',
@@ -443,7 +440,8 @@ class MeasurementBlock {
       location: json['location'] as String?,
       calibration: json['calibration'] != null
           ? CalibrationInfo.fromJson(
-              json['calibration'] as Map<String, dynamic>)
+              json['calibration'] as Map<String, dynamic>,
+            )
           : null,
       batchId: json['batch_id'] as String?,
       sequenceNumber: json['sequence_number'] as int?,

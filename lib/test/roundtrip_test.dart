@@ -155,7 +155,7 @@ void main() {
         final jsonObj = {
           'key': 'value',
           'number': 42,
-          'array': [1, 2, 3]
+          'array': [1, 2, 3],
         };
         final jsonStr = jsonEncode(jsonObj);
         final content = Uint8List.fromList(utf8.encode(jsonStr));
@@ -172,10 +172,7 @@ void main() {
     group('with metadata', () {
       test('preserves simple metadata', () {
         final content = Uint8List.fromList(utf8.encode('content'));
-        final metadata = {
-          'sealed_by': 'test-suite',
-          'document_id': 42,
-        };
+        final metadata = {'sealed_by': 'test-suite', 'document_id': 42};
         final options = ZegelOptions(
           contentType: 'text/plain',
           filename: 'meta.txt',
@@ -246,31 +243,37 @@ void main() {
         expect(result.content, equals(content));
       });
 
-      test('compressed file is smaller than uncompressed for compressible data',
-          () {
-        final text = 'AAAA' * 10000;
-        final content = Uint8List.fromList(utf8.encode(text));
+      test(
+        'compressed file is smaller than uncompressed for compressible data',
+        () {
+          final text = 'AAAA' * 10000;
+          final content = Uint8List.fromList(utf8.encode(text));
 
-        final optionsCompressed = ZegelOptions(
-          contentType: 'text/plain',
-          filename: 'test.txt',
-          salt: _zeroSalt(),
-          compress: true,
-        );
-        final optionsUncompressed = ZegelOptions(
-          contentType: 'text/plain',
-          filename: 'test.txt',
-          salt: _zeroSalt(),
-          compress: false,
-        );
+          final optionsCompressed = ZegelOptions(
+            contentType: 'text/plain',
+            filename: 'test.txt',
+            salt: _zeroSalt(),
+            compress: true,
+          );
+          final optionsUncompressed = ZegelOptions(
+            contentType: 'text/plain',
+            filename: 'test.txt',
+            salt: _zeroSalt(),
+            compress: false,
+          );
 
-        final compressed =
-            ZegelWriter(masterKey, optionsCompressed).seal(content);
-        final uncompressed =
-            ZegelWriter(masterKey, optionsUncompressed).seal(content);
+          final compressed = ZegelWriter(
+            masterKey,
+            optionsCompressed,
+          ).seal(content);
+          final uncompressed = ZegelWriter(
+            masterKey,
+            optionsUncompressed,
+          ).seal(content);
 
-        expect(compressed.length, lessThan(uncompressed.length));
-      });
+          expect(compressed.length, lessThan(uncompressed.length));
+        },
+      );
 
       test('binary content with compression roundtrips', () {
         final content = _randomBytes(8192);
@@ -292,10 +295,7 @@ void main() {
           contentType: 'text/plain',
           filename: 'public-meta.txt',
           salt: _zeroSalt(),
-          publicMetadata: {
-            'classification': 'public',
-            'file_size': 7,
-          },
+          publicMetadata: {'classification': 'public', 'file_size': 7},
         );
         final fileBytes = ZegelWriter(masterKey, options).seal(content);
 
@@ -366,10 +366,7 @@ void main() {
         final fileBytes = ZegelWriter(masterKey, options).seal(content);
 
         final inspection = const ZegelReader().inspect(fileBytes);
-        expect(
-          inspection.flags & ZegelFormat.flagHasKeyCommitment,
-          isNonZero,
-        );
+        expect(inspection.flags & ZegelFormat.flagHasKeyCommitment, isNonZero);
       });
     });
 

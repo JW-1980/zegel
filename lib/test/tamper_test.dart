@@ -204,11 +204,16 @@ void main() {
 
         final tampered = Uint8List.fromList(fileBytes);
         // Increment the ciphertext length by 1
-        final currentLen =
-            ByteData.sublistView(tampered, ctLenOffset, ctLenOffset + 4)
-                .getUint32(0, Endian.big);
-        ByteData.sublistView(tampered, ctLenOffset, ctLenOffset + 4)
-            .setUint32(0, currentLen + 1, Endian.big);
+        final currentLen = ByteData.sublistView(
+          tampered,
+          ctLenOffset,
+          ctLenOffset + 4,
+        ).getUint32(0, Endian.big);
+        ByteData.sublistView(
+          tampered,
+          ctLenOffset,
+          ctLenOffset + 4,
+        ).setUint32(0, currentLen + 1, Endian.big);
 
         expect(
           () => const ZegelReader().verify(tampered, masterKey),
@@ -222,8 +227,9 @@ void main() {
       test('truncate file by 1 byte -> fails', () {
         final fileBytes = _createValidFile();
 
-        final truncated =
-            Uint8List.fromList(fileBytes.sublist(0, fileBytes.length - 1));
+        final truncated = Uint8List.fromList(
+          fileBytes.sublist(0, fileBytes.length - 1),
+        );
 
         expect(
           () => const ZegelReader().verify(truncated, masterKey),
@@ -261,9 +267,11 @@ void main() {
         final ctLengths = <int>[];
         for (var i = 0; i < 3; i++) {
           final entryStart = dirStart + i * 65;
-          final ctLen =
-              ByteData.sublistView(fileBytes, entryStart + 33, entryStart + 37)
-                  .getUint32(0, Endian.big);
+          final ctLen = ByteData.sublistView(
+            fileBytes,
+            entryStart + 33,
+            entryStart + 37,
+          ).getUint32(0, Endian.big);
           ctLengths.add(ctLen);
         }
 
@@ -276,11 +284,13 @@ void main() {
           final tampered = Uint8List.fromList(fileBytes);
 
           // Swap the ciphertext of block 0 and block 1
-          final block0Data =
-              Uint8List.fromList(fileBytes.sublist(block0Start, block1Start));
+          final block0Data = Uint8List.fromList(
+            fileBytes.sublist(block0Start, block1Start),
+          );
           final block1End = block1Start + ctLengths[1];
-          final block1Data =
-              Uint8List.fromList(fileBytes.sublist(block1Start, block1End));
+          final block1Data = Uint8List.fromList(
+            fileBytes.sublist(block1Start, block1End),
+          );
 
           // If blocks are the same size, we can swap directly
           // For different sizes, we need to handle the offset shift
@@ -308,9 +318,11 @@ void main() {
 
         // Parse directory entries for ciphertext lengths
         final dirStart = offsets['directory']!;
-        final ctLen0 =
-            ByteData.sublistView(fileBytes, dirStart + 33, dirStart + 37)
-                .getUint32(0, Endian.big);
+        final ctLen0 = ByteData.sublistView(
+          fileBytes,
+          dirStart + 33,
+          dirStart + 37,
+        ).getUint32(0, Endian.big);
 
         // Replace block 0 ciphertext with its bitwise complement
         final tampered = Uint8List.fromList(fileBytes);

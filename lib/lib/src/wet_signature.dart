@@ -101,10 +101,7 @@ class WetSignature {
 /// Configuration for multi-party wet signature requirements.
 class WetSignatureConfig {
   /// Creates a [WetSignatureConfig].
-  const WetSignatureConfig({
-    required this.requiredSignatures,
-    this.roles,
-  });
+  const WetSignatureConfig({required this.requiredSignatures, this.roles});
 
   /// Number of signatures required for the document to be considered
   /// fully signed. Must be >= 1.
@@ -127,9 +124,8 @@ class WetSignatureConfig {
   factory WetSignatureConfig.fromJson(Map<String, dynamic> json) {
     return WetSignatureConfig(
       requiredSignatures: json['required_signatures'] as int,
-      roles: (json['roles'] as List<dynamic>?)
-          ?.map((r) => r as String)
-          .toList(),
+      roles:
+          (json['roles'] as List<dynamic>?)?.map((r) => r as String).toList(),
     );
   }
 }
@@ -178,14 +174,24 @@ class WetSignatureUtils {
     WetSignature signature,
     Uint8List masterKey,
   ) {
-    final message = Uint8List.fromList(utf8.encode(
-      '${signature.signerName}:${signature.signerCity}:${signature.signedAt}',
-    ));
+    final message = Uint8List.fromList(
+      utf8.encode(
+        '${signature.signerName}:${signature.signerCity}:${signature.signedAt}',
+      ),
+    );
     final combined = Uint8List(
       signature.signatureImage.length + message.length,
     );
-    combined.setRange(0, signature.signatureImage.length, signature.signatureImage);
-    combined.setRange(signature.signatureImage.length, combined.length, message);
+    combined.setRange(
+      0,
+      signature.signatureImage.length,
+      signature.signatureImage,
+    );
+    combined.setRange(
+      signature.signatureImage.length,
+      combined.length,
+      message,
+    );
 
     final hmac = Hmac(sha256, masterKey);
     return Uint8List.fromList(hmac.convert(combined).bytes);

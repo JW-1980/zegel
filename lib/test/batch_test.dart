@@ -54,8 +54,11 @@ void main() {
 
         expect(results.length, equals(5));
         for (final result in results) {
-          expect(result['success'], isTrue,
-              reason: '${result['name']} should verify successfully');
+          expect(
+            result['success'],
+            isTrue,
+            reason: '${result['name']} should verify successfully',
+          );
         }
       });
 
@@ -77,8 +80,11 @@ void main() {
         expect(results[0]['success'], isTrue);
         expect(results[1]['success'], isTrue);
         // File 2 should be invalid
-        expect(results[2]['success'], isFalse,
-            reason: 'Tampered file should fail verification');
+        expect(
+          results[2]['success'],
+          isFalse,
+          reason: 'Tampered file should fail verification',
+        );
         expect(results[3]['success'], isTrue);
         expect(results[4]['success'], isTrue);
       });
@@ -116,8 +122,11 @@ void main() {
         final results = BatchOperations.batchVerify(files, masterKey);
 
         for (final result in results) {
-          expect(result['duration_ms'], isNotNull,
-              reason: 'Each result should include elapsed time');
+          expect(
+            result['duration_ms'],
+            isNotNull,
+            reason: 'Each result should include elapsed time',
+          );
           expect(result['duration_ms'], isA<int>());
           // Duration should be non-negative
           expect(result['duration_ms'] as int, greaterThanOrEqualTo(0));
@@ -130,24 +139,18 @@ void main() {
           masterKey,
         );
 
-        expect(results, isEmpty,
-            reason: 'Empty input should return empty results');
+        expect(
+          results,
+          isEmpty,
+          reason: 'Empty input should return empty results',
+        );
       });
 
       test('preserves names in results', () {
         final files = <MapEntry<String, Uint8List>>[
-          MapEntry(
-            'quarterly-report-Q1',
-            _createSealedFile(masterKey, 'q1'),
-          ),
-          MapEntry(
-            'quarterly-report-Q2',
-            _createSealedFile(masterKey, 'q2'),
-          ),
-          MapEntry(
-            'quarterly-report-Q3',
-            _createSealedFile(masterKey, 'q3'),
-          ),
+          MapEntry('quarterly-report-Q1', _createSealedFile(masterKey, 'q1')),
+          MapEntry('quarterly-report-Q2', _createSealedFile(masterKey, 'q2')),
+          MapEntry('quarterly-report-Q3', _createSealedFile(masterKey, 'q3')),
         ];
 
         final results = BatchOperations.batchVerify(files, masterKey);
@@ -162,15 +165,15 @@ void main() {
       test('seals multiple files with same key', () {
         final inputs = <MapEntry<String, Uint8List>>[];
         for (var i = 0; i < 3; i++) {
-          inputs.add(MapEntry(
-            'doc_$i.txt',
-            Uint8List.fromList(utf8.encode('Document $i')),
-          ));
+          inputs.add(
+            MapEntry(
+              'doc_$i.txt',
+              Uint8List.fromList(utf8.encode('Document $i')),
+            ),
+          );
         }
 
-        const baseOptions = ZegelOptions(
-          contentType: 'text/plain',
-        );
+        const baseOptions = ZegelOptions(contentType: 'text/plain');
 
         final sealedFiles = BatchOperations.batchSeal(
           inputs,
@@ -194,15 +197,15 @@ void main() {
       test('applies base options to all files', () {
         final inputs = <MapEntry<String, Uint8List>>[];
         for (var i = 0; i < 3; i++) {
-          inputs.add(MapEntry(
-            'doc_$i.txt',
-            Uint8List.fromList(utf8.encode('AAAA' * 1000)),
-          ));
+          inputs.add(
+            MapEntry(
+              'doc_$i.txt',
+              Uint8List.fromList(utf8.encode('AAAA' * 1000)),
+            ),
+          );
         }
 
-        const baseOptions = ZegelOptions(
-          compress: true,
-        );
+        const baseOptions = ZegelOptions(compress: true);
 
         final sealedFiles = BatchOperations.batchSeal(
           inputs,
@@ -228,14 +231,8 @@ void main() {
             'report.pdf',
             Uint8List.fromList(utf8.encode('PDF content')),
           ),
-          MapEntry(
-            'photo.jpg',
-            Uint8List.fromList(utf8.encode('Image data')),
-          ),
-          MapEntry(
-            'notes.txt',
-            Uint8List.fromList(utf8.encode('Plain text')),
-          ),
+          MapEntry('photo.jpg', Uint8List.fromList(utf8.encode('Image data'))),
+          MapEntry('notes.txt', Uint8List.fromList(utf8.encode('Plain text'))),
         ];
 
         const baseOptions = ZegelOptions(

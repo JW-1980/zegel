@@ -72,30 +72,36 @@ void main() {
 
         // Redacted file should still verify
         final result = const ZegelReader().verify(redactedBytes, masterKey);
-        expect(result.valid, isTrue,
-            reason: 'Redacted file should verify (Merkle root preserved)');
+        expect(
+          result.valid,
+          isTrue,
+          reason: 'Redacted file should verify (Merkle root preserved)',
+        );
       });
 
       test(
-          'extracting redacted file returns blocks 0 and 2, block 1 marked redacted',
-          () {
-        final fileBytes = _createThreeBlockFile(masterKey);
-        final redactedBytes = Redaction.redactBlocks(fileBytes, masterKey, [1]);
+        'extracting redacted file returns blocks 0 and 2, block 1 marked redacted',
+        () {
+          final fileBytes = _createThreeBlockFile(masterKey);
+          final redactedBytes = Redaction.redactBlocks(fileBytes, masterKey, [
+            1,
+          ]);
 
-        final result = const ZegelReader().verify(redactedBytes, masterKey);
-        expect(result.valid, isTrue);
+          final result = const ZegelReader().verify(redactedBytes, masterKey);
+          expect(result.valid, isTrue);
 
-        // The result should indicate which blocks are redacted
-        expect(result.redactedBlocks, isNotNull);
-        expect(result.redactedBlocks, contains(1));
-        expect(result.redactedBlocks, isNot(contains(0)));
-        expect(result.redactedBlocks, isNot(contains(2)));
+          // The result should indicate which blocks are redacted
+          expect(result.redactedBlocks, isNotNull);
+          expect(result.redactedBlocks, contains(1));
+          expect(result.redactedBlocks, isNot(contains(0)));
+          expect(result.redactedBlocks, isNot(contains(2)));
 
-        // Content from blocks 0 and 2 should be available
-        // Block 0: first 65536 bytes, Block 2: last 100 bytes
-        // Block 1 content is lost
-        expect(result.content, isNotNull);
-      });
+          // Content from blocks 0 and 2 should be available
+          // Block 0: first 65536 bytes, Block 2: last 100 bytes
+          // Block 1 content is lost
+          expect(result.content, isNotNull);
+        },
+      );
 
       test('redacted block type is 0x06 (REDACTED)', () {
         final fileBytes = _createThreeBlockFile(masterKey);
@@ -106,7 +112,9 @@ void main() {
         final block1TypeOffset =
             offsets['directory']! + 1 * ZegelFormat.blockDirectoryEntrySize;
         expect(
-            redactedBytes[block1TypeOffset], equals(ZegelFormat.blockRedacted));
+          redactedBytes[block1TypeOffset],
+          equals(ZegelFormat.blockRedacted),
+        );
       });
 
       test('original plaintext hash preserved for Merkle tree', () {
@@ -117,17 +125,22 @@ void main() {
         final block1HashOffset =
             offsets['directory']! + 1 * ZegelFormat.blockDirectoryEntrySize + 1;
         final originalHash = Uint8List.fromList(
-            fileBytes.sublist(block1HashOffset, block1HashOffset + 32));
+          fileBytes.sublist(block1HashOffset, block1HashOffset + 32),
+        );
 
         // Redact block 1
         final redactedBytes = Redaction.redactBlocks(fileBytes, masterKey, [1]);
 
         // Hash should be preserved
         final redactedHash = Uint8List.fromList(
-            redactedBytes.sublist(block1HashOffset, block1HashOffset + 32));
-        expect(redactedHash, equals(originalHash),
-            reason:
-                'Plaintext hash must be preserved after redaction for Merkle tree integrity');
+          redactedBytes.sublist(block1HashOffset, block1HashOffset + 32),
+        );
+        expect(
+          redactedHash,
+          equals(originalHash),
+          reason:
+              'Plaintext hash must be preserved after redaction for Merkle tree integrity',
+        );
       });
 
       test('Merkle root is preserved after redaction', () {
@@ -137,13 +150,20 @@ void main() {
         final offsets = _offsetsForMulti(3);
         final merkleRootOffset = offsets['merkleRoot']!;
 
-        final originalRoot =
-            fileBytes.sublist(merkleRootOffset, merkleRootOffset + 32);
-        final redactedRoot =
-            redactedBytes.sublist(merkleRootOffset, merkleRootOffset + 32);
+        final originalRoot = fileBytes.sublist(
+          merkleRootOffset,
+          merkleRootOffset + 32,
+        );
+        final redactedRoot = redactedBytes.sublist(
+          merkleRootOffset,
+          merkleRootOffset + 32,
+        );
 
-        expect(redactedRoot, equals(originalRoot),
-            reason: 'Merkle root should be identical after redaction');
+        expect(
+          redactedRoot,
+          equals(originalRoot),
+          reason: 'Merkle root should be identical after redaction',
+        );
       });
     });
 
@@ -178,8 +198,10 @@ void main() {
         final redactedBytes = Redaction.redactBlocks(fileBytes, masterKey, [1]);
 
         // Verify the redacted file is valid first
-        final validResult =
-            const ZegelReader().verify(redactedBytes, masterKey);
+        final validResult = const ZegelReader().verify(
+          redactedBytes,
+          masterKey,
+        );
         expect(validResult.valid, isTrue);
 
         // Now tamper with block 0's ciphertext
@@ -201,32 +223,41 @@ void main() {
     group('redacting multiple blocks', () {
       test('redact blocks 0 and 2', () {
         final fileBytes = _createThreeBlockFile(masterKey);
-        final redactedBytes =
-            Redaction.redactBlocks(fileBytes, masterKey, [0, 2]);
+        final redactedBytes = Redaction.redactBlocks(fileBytes, masterKey, [
+          0,
+          2,
+        ]);
 
         final result = const ZegelReader().verify(redactedBytes, masterKey);
         expect(result.valid, isTrue);
 
         final offsets = _offsetsForMulti(3);
         // Block 0 should be REDACTED
-        expect(redactedBytes[offsets['directory']!],
-            equals(ZegelFormat.blockRedacted));
+        expect(
+          redactedBytes[offsets['directory']!],
+          equals(ZegelFormat.blockRedacted),
+        );
         // Block 1 should still be CONTENT
         expect(
-            redactedBytes[
-                offsets['directory']! + ZegelFormat.blockDirectoryEntrySize],
-            equals(ZegelFormat.blockContent));
+          redactedBytes[
+              offsets['directory']! + ZegelFormat.blockDirectoryEntrySize],
+          equals(ZegelFormat.blockContent),
+        );
         // Block 2 should be REDACTED
         expect(
-            redactedBytes[offsets['directory']! +
-                2 * ZegelFormat.blockDirectoryEntrySize],
-            equals(ZegelFormat.blockRedacted));
+          redactedBytes[
+              offsets['directory']! + 2 * ZegelFormat.blockDirectoryEntrySize],
+          equals(ZegelFormat.blockRedacted),
+        );
       });
 
       test('redacting all blocks -> verifies but no content extractable', () {
         final fileBytes = _createThreeBlockFile(masterKey);
-        final redactedBytes =
-            Redaction.redactBlocks(fileBytes, masterKey, [0, 1, 2]);
+        final redactedBytes = Redaction.redactBlocks(fileBytes, masterKey, [
+          0,
+          1,
+          2,
+        ]);
 
         // Should still verify (Merkle root preserved)
         final result = const ZegelReader().verify(redactedBytes, masterKey);
@@ -273,13 +304,18 @@ void main() {
         final redactedBytes = Redaction.redactBlocks(fileBytes, masterKey, [1]);
 
         // Seals should differ (ciphertext changed, flags may have changed)
-        final originalSeal =
-            fileBytes.sublist(fileBytes.length - ZegelFormat.sealSize);
-        final redactedSeal =
-            redactedBytes.sublist(redactedBytes.length - ZegelFormat.sealSize);
+        final originalSeal = fileBytes.sublist(
+          fileBytes.length - ZegelFormat.sealSize,
+        );
+        final redactedSeal = redactedBytes.sublist(
+          redactedBytes.length - ZegelFormat.sealSize,
+        );
 
-        expect(redactedSeal, isNot(equals(originalSeal)),
-            reason: 'Seal should be recomputed after redaction');
+        expect(
+          redactedSeal,
+          isNot(equals(originalSeal)),
+          reason: 'Seal should be recomputed after redaction',
+        );
       });
     });
 
@@ -291,30 +327,37 @@ void main() {
 
         // Get block 1 ciphertext from original
         final dirStart = offsets['directory']!;
-        final ct0Len =
-            ByteData.sublistView(fileBytes, dirStart + 33, dirStart + 37)
-                .getUint32(0, Endian.big);
+        final ct0Len = ByteData.sublistView(
+          fileBytes,
+          dirStart + 33,
+          dirStart + 37,
+        ).getUint32(0, Endian.big);
         final ct1Len = ByteData.sublistView(
-                fileBytes,
-                dirStart + ZegelFormat.blockDirectoryEntrySize + 33,
-                dirStart + ZegelFormat.blockDirectoryEntrySize + 37)
-            .getUint32(0, Endian.big);
+          fileBytes,
+          dirStart + ZegelFormat.blockDirectoryEntrySize + 33,
+          dirStart + ZegelFormat.blockDirectoryEntrySize + 37,
+        ).getUint32(0, Endian.big);
 
         final block1Start = merkleRootEnd + ct0Len;
         final block1End = block1Start + ct1Len;
 
-        final originalBlock1 =
-            Uint8List.fromList(fileBytes.sublist(block1Start, block1End));
+        final originalBlock1 = Uint8List.fromList(
+          fileBytes.sublist(block1Start, block1End),
+        );
 
         // Redact
         final redactedBytes = Redaction.redactBlocks(fileBytes, masterKey, [1]);
 
-        final redactedBlock1 =
-            Uint8List.fromList(redactedBytes.sublist(block1Start, block1End));
+        final redactedBlock1 = Uint8List.fromList(
+          redactedBytes.sublist(block1Start, block1End),
+        );
 
-        expect(redactedBlock1, isNot(equals(originalBlock1)),
-            reason:
-                'Redacted ciphertext should be random, different from original');
+        expect(
+          redactedBlock1,
+          isNot(equals(originalBlock1)),
+          reason:
+              'Redacted ciphertext should be random, different from original',
+        );
       });
     });
   });

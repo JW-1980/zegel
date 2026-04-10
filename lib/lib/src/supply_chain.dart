@@ -2,10 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:crypto/crypto.dart' as crypto;
-import 'package:pointycastle/export.dart' hide Digest, Signature;
-
-import 'format.dart';
+import 'package:crypto/crypto.dart';
+import 'package:pinenacl/ed25519.dart' as pinenacl;
 
 /// Supply chain verification: binary integrity and build provenance (v1.2+).
 ///
@@ -104,27 +102,9 @@ class SupplyChainVerifier {
       sha256.convert(infoBytes).bytes,
     );
 
-    final Ed25519Signer signer = Ed25519Signer();
-    signer.init(
-      true,
-      PrivateKeyParameter<Ed25519PrivateKeyParameters>(
-        Ed25519PrivateKeyParameters(signingKey),
-      ),
-    );
-    signer.update(digest, 0, digest.length);
-    final Uint8List signature = signer.generateSignature().toUint8List();
-
-    // Derive public key for reference.
-    final Ed25519KeyPairGenerator keyGen = Ed25519KeyPairGenerator();
-    final secureRandom = FortunaRandom();
-    secureRandom.seed(KeyParameter(signingKey));
-    keyGen.init(ParametersWithRandom(
-      Ed25519KeyGenerationParameters(),
-      secureRandom,
-    ));
-    final pair = keyGen.generateKeyPair();
-    final publicKey =
-        (pair.publicKey as Ed25519PublicKeyParameters).key;
+    final sk = pinenacl.SigningKey.fromSeed(signingKey);
+    final signature = Uint8List.fromList(sk.sign(digest).signature.asTypedList);
+    final publicKey = Uint8List.fromList(sk.verifyKey.asTypedList);
 
     return <String, dynamic>{
       'type': 'build_attestation',
@@ -173,19 +153,12 @@ class SupplyChainVerifier {
     );
 
     // First verify the signature with the embedded public key.
-    final Ed25519Signer verifier = Ed25519Signer();
-    verifier.init(
-      false,
-      PublicKeyParameter<Ed25519PublicKeyParameters>(
-        Ed25519PublicKeyParameters(embeddedPubKey),
-      ),
-    );
-    verifier.update(digest, 0, digest.length);
-
     bool signatureValid;
     try {
-      signatureValid = verifier.verifySignature(
-        Ed25519Signature(signatureBytes),
+      final verifyKey = pinenacl.VerifyKey(embeddedPubKey);
+      signatureValid = verifyKey.verify(
+        signature: pinenacl.Signature(signatureBytes),
+        message: digest,
       );
     } on Exception {
       signatureValid = false;
@@ -355,15 +328,8 @@ class BuildAttestationResult {
   final String reason;
 }
 
-/// Extension adding `toUint8List` to Ed25519Signature for convenience.
-extension _Ed25519SignatureToBytes on Ed25519Signature {
-  Uint8List toUint8List() {
-    return Uint8List.fromList(bytes);
-  }
-}
-
 /// Sink that accumulates events into a list.
-class AccumulatorSink<T> implements Sink<crypto.Digest> {
+class AccumulatorSink<T> implements Sink<T> {
   /// The accumulated events.
   final List<T> events = <T>[];
 

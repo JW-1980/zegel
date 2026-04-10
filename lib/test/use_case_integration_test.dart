@@ -96,9 +96,9 @@ List<Uint8List> _getLeafHashes(Uint8List fileBytes) {
   for (int i = 0; i < blockCount; i++) {
     final entryOffset = cursor + (i * ZegelFormat.blockDirectoryEntrySize);
     // Skip type (1 byte); hash is next 32 bytes.
-    hashes.add(Uint8List.fromList(
-      fileBytes.sublist(entryOffset + 1, entryOffset + 33),
-    ));
+    hashes.add(
+      Uint8List.fromList(fileBytes.sublist(entryOffset + 1, entryOffset + 33)),
+    );
   }
   return hashes;
 }
@@ -125,105 +125,122 @@ void main() {
     });
 
     test(
-        'full contract workflow: seal, attest by multiple parties, verify policy',
-        () {
-      // 1. Seal the contract
-      final contractText = utf8.encode(
-        'PURCHASE AGREEMENT\n'
-        'Property: 123 Main St\n'
-        'Price: EUR 350,000\n'
-        'Buyer: Alice Johnson\n'
-        'Seller: Bob Smith\n'
-        'Date: 2026-01-28',
-      );
-      final content = Uint8List.fromList(contractText);
-      final options = ZegelOptions(
-        contentType: 'text/plain',
-        filename: 'purchase-agreement.txt',
-        salt: _zeroSalt(),
-        metadata: {
-          'document_type': 'purchase_agreement',
-          'property_address': '123 Main St',
-          'price_eur': 350000,
-        },
-      );
-      final fileBytes = ZegelWriter(masterKey, options).seal(content);
-      final merkleRoot = _getMerkleRoot(fileBytes);
+      'full contract workflow: seal, attest by multiple parties, verify policy',
+      () {
+        // 1. Seal the contract
+        final contractText = utf8.encode(
+          'PURCHASE AGREEMENT\n'
+          'Property: 123 Main St\n'
+          'Price: EUR 350,000\n'
+          'Buyer: Alice Johnson\n'
+          'Seller: Bob Smith\n'
+          'Date: 2026-01-28',
+        );
+        final content = Uint8List.fromList(contractText);
+        final options = ZegelOptions(
+          contentType: 'text/plain',
+          filename: 'purchase-agreement.txt',
+          salt: _zeroSalt(),
+          metadata: {
+            'document_type': 'purchase_agreement',
+            'property_address': '123 Main St',
+            'price_eur': 350000,
+          },
+        );
+        final fileBytes = ZegelWriter(masterKey, options).seal(content);
+        final merkleRoot = _getMerkleRoot(fileBytes);
 
-      // 2. Buyer attests with role "signer"
-      final buyerKey = _signerKey('buyer-alice');
-      final buyerAttestation = Attestation.createRoleAttestation(
-        merkleRoot,
-        'alice.johnson@email.com',
-        buyerKey,
-        'I agree to purchase the property at the stated price',
-        ZegelFormat.roleSigner,
-        timestamp: DateTime.utc(2026, 1, 28, 10, 0, 0),
-      );
-      expect(buyerAttestation['role'], equals(ZegelFormat.roleSigner));
+        // 2. Buyer attests with role "signer"
+        final buyerKey = _signerKey('buyer-alice');
+        final buyerAttestation = Attestation.createRoleAttestation(
+          merkleRoot,
+          'alice.johnson@email.com',
+          buyerKey,
+          'I agree to purchase the property at the stated price',
+          ZegelFormat.roleSigner,
+          timestamp: DateTime.utc(2026, 1, 28, 10, 0, 0),
+        );
+        expect(buyerAttestation['role'], equals(ZegelFormat.roleSigner));
 
-      // 3. Seller attests with role "owner"
-      final sellerKey = _signerKey('seller-bob');
-      final sellerAttestation = Attestation.createRoleAttestation(
-        merkleRoot,
-        'bob.smith@email.com',
-        sellerKey,
-        'I agree to sell the property at the stated price',
-        ZegelFormat.roleOwner,
-        timestamp: DateTime.utc(2026, 1, 28, 10, 30, 0),
-      );
-      expect(sellerAttestation['role'], equals(ZegelFormat.roleOwner));
+        // 3. Seller attests with role "owner"
+        final sellerKey = _signerKey('seller-bob');
+        final sellerAttestation = Attestation.createRoleAttestation(
+          merkleRoot,
+          'bob.smith@email.com',
+          sellerKey,
+          'I agree to sell the property at the stated price',
+          ZegelFormat.roleOwner,
+          timestamp: DateTime.utc(2026, 1, 28, 10, 30, 0),
+        );
+        expect(sellerAttestation['role'], equals(ZegelFormat.roleOwner));
 
-      // 4. Notary attests with role "notary"
-      final notaryKey = _signerKey('notary-office');
-      final notaryAttestation = Attestation.createRoleAttestation(
-        merkleRoot,
-        'notary@dutch-notary.nl',
-        notaryKey,
-        'I have verified the identities of both parties and notarize this agreement',
-        ZegelFormat.roleNotary,
-        timestamp: DateTime.utc(2026, 1, 28, 11, 0, 0),
-      );
-      expect(notaryAttestation['role'], equals(ZegelFormat.roleNotary));
+        // 4. Notary attests with role "notary"
+        final notaryKey = _signerKey('notary-office');
+        final notaryAttestation = Attestation.createRoleAttestation(
+          merkleRoot,
+          'notary@dutch-notary.nl',
+          notaryKey,
+          'I have verified the identities of both parties and notarize this agreement',
+          ZegelFormat.roleNotary,
+          timestamp: DateTime.utc(2026, 1, 28, 11, 0, 0),
+        );
+        expect(notaryAttestation['role'], equals(ZegelFormat.roleNotary));
 
-      // 5. Check attestation policy requires all three roles
-      final attestations = [
-        buyerAttestation,
-        sellerAttestation,
-        notaryAttestation,
-      ];
-      final signerKeys = {
-        'alice.johnson@email.com': buyerKey,
-        'bob.smith@email.com': sellerKey,
-        'notary@dutch-notary.nl': notaryKey,
-      };
+        // 5. Check attestation policy requires all three roles
+        final attestations = [
+          buyerAttestation,
+          sellerAttestation,
+          notaryAttestation,
+        ];
+        final signerKeys = {
+          'alice.johnson@email.com': buyerKey,
+          'bob.smith@email.com': sellerKey,
+          'notary@dutch-notary.nl': notaryKey,
+        };
 
-      final policyResult = Attestation.checkPolicy(
-        attestations,
-        [ZegelFormat.roleSigner, ZegelFormat.roleOwner, ZegelFormat.roleNotary],
-        merkleRoot,
-        signerKeys,
-      );
-      expect(policyResult.allRolesFulfilled, isTrue,
-          reason: 'All three parties have attested');
+        final policyResult = Attestation.checkPolicy(
+          attestations,
+          [
+            ZegelFormat.roleSigner,
+            ZegelFormat.roleOwner,
+            ZegelFormat.roleNotary,
+          ],
+          merkleRoot,
+          signerKeys,
+        );
+        expect(
+          policyResult.allRolesFulfilled,
+          isTrue,
+          reason: 'All three parties have attested',
+        );
 
-      // 6. Verify all attestations individually
-      expect(
-        Attestation.verifyRoleAttestation(
-            buyerAttestation, merkleRoot, buyerKey),
-        isTrue,
-      );
-      expect(
-        Attestation.verifyRoleAttestation(
-            sellerAttestation, merkleRoot, sellerKey),
-        isTrue,
-      );
-      expect(
-        Attestation.verifyRoleAttestation(
-            notaryAttestation, merkleRoot, notaryKey),
-        isTrue,
-      );
-    });
+        // 6. Verify all attestations individually
+        expect(
+          Attestation.verifyRoleAttestation(
+            buyerAttestation,
+            merkleRoot,
+            buyerKey,
+          ),
+          isTrue,
+        );
+        expect(
+          Attestation.verifyRoleAttestation(
+            sellerAttestation,
+            merkleRoot,
+            sellerKey,
+          ),
+          isTrue,
+        );
+        expect(
+          Attestation.verifyRoleAttestation(
+            notaryAttestation,
+            merkleRoot,
+            notaryKey,
+          ),
+          isTrue,
+        );
+      },
+    );
 
     test('selective disclosure: bank sees only financial terms', () {
       // Create a multi-block contract where blocks contain different sections.
@@ -313,9 +330,11 @@ void main() {
 
       for (final quarter in quarters) {
         final content = Uint8List.fromList(
-          utf8.encode('Financial statement for $quarter 2025\n'
-              'Revenue: EUR 1,200,000\n'
-              'Expenses: EUR 900,000\n'),
+          utf8.encode(
+            'Financial statement for $quarter 2025\n'
+            'Revenue: EUR 1,200,000\n'
+            'Expenses: EUR 900,000\n',
+          ),
         );
         final options = ZegelOptions(
           contentType: 'text/plain',
@@ -329,22 +348,19 @@ void main() {
         );
         final fileBytes = ZegelWriter(masterKey, options).seal(content);
 
-        sealedStatements.add(MapEntry(
-          'statement_${quarter}_2025',
-          fileBytes,
-        ));
+        sealedStatements.add(MapEntry('statement_${quarter}_2025', fileBytes));
       }
 
       // Batch verify all
-      final results = BatchOperations.batchVerify(
-        sealedStatements,
-        masterKey,
-      );
+      final results = BatchOperations.batchVerify(sealedStatements, masterKey);
 
       expect(results.length, equals(4));
       for (var i = 0; i < results.length; i++) {
-        expect(results[i]['success'], isTrue,
-            reason: '${quarters[i]} statement should verify');
+        expect(
+          results[i]['success'],
+          isTrue,
+          reason: '${quarters[i]} statement should verify',
+        );
         expect(results[i]['name'] as String, contains(quarters[i]));
       }
     });
@@ -355,9 +371,7 @@ void main() {
       final sealedFiles = <String, Uint8List>{};
 
       for (final quarter in ['Q1', 'Q2', 'Q3', 'Q4']) {
-        final content = Uint8List.fromList(
-          utf8.encode('Statement $quarter'),
-        );
+        final content = Uint8List.fromList(utf8.encode('Statement $quarter'));
         final options = ZegelOptions(
           contentType: 'text/plain',
           filename: 'stmt_$quarter.txt',
@@ -388,8 +402,11 @@ void main() {
       // Check that all files match the manifest
       final checkResult = ZegelManifest.checkFiles(manifest, merkleRoots);
       for (final filename in merkleRoots.keys) {
-        expect(checkResult[filename], isTrue,
-            reason: '$filename should match the manifest');
+        expect(
+          checkResult[filename],
+          isTrue,
+          reason: '$filename should match the manifest',
+        );
       }
     });
   });
@@ -452,14 +469,18 @@ void main() {
         merkleRoot,
         universityKey,
       );
-      expect(isValid, isTrue,
-          reason:
-              'Employer should be able to verify the university attestation');
+      expect(
+        isValid,
+        isTrue,
+        reason: 'Employer should be able to verify the university attestation',
+      );
 
       // Employer can also inspect public metadata without the master key
       final inspection = const ZegelReader().inspect(fileBytes);
       expect(
-          inspection.publicMetadata!['issuer'], equals('Technical University'));
+        inspection.publicMetadata!['issuer'],
+        equals('Technical University'),
+      );
       expect(inspection.publicMetadata!['document_type'], equals('diploma'));
     });
   });
@@ -513,8 +534,10 @@ void main() {
       final declInspection = const ZegelReader().inspect(declassified);
       final declClassInfo = declInspection.publicMetadata!['classification']
           as Map<String, dynamic>;
-      expect(declClassInfo['level'],
-          equals(ZegelFormat.classificationConfidential));
+      expect(
+        declClassInfo['level'],
+        equals(ZegelFormat.classificationConfidential),
+      );
 
       // 5. Verify declassified file is still valid
       final result = const ZegelReader().verify(declassified, masterKey);
@@ -567,16 +590,20 @@ void main() {
       // The verifier only needs the Merkle root (from public header)
       // and the proof data
       final isValid = ExcerptProof.verifyProof(proof, merkleRoot);
-      expect(isValid, isTrue,
-          reason:
-              'Third party should be able to verify the excerpt without the key');
+      expect(
+        isValid,
+        isTrue,
+        reason:
+            'Third party should be able to verify the excerpt without the key',
+      );
 
       // Verify the Merkle root in the proof matches the file
       expect(
-          proof['merkle_root'],
-          equals(merkleRoot
-              .map((b) => b.toRadixString(16).padLeft(2, '0'))
-              .join()));
+        proof['merkle_root'],
+        equals(
+          merkleRoot.map((b) => b.toRadixString(16).padLeft(2, '0')).join(),
+        ),
+      );
     });
   });
 
@@ -686,8 +713,10 @@ void main() {
 
     test('seal with split key for secure submission', () {
       final content = Uint8List.fromList(
-        utf8.encode('Confidential whistleblower report: '
-            'Evidence of fraudulent accounting practices...'),
+        utf8.encode(
+          'Confidential whistleblower report: '
+          'Evidence of fraudulent accounting practices...',
+        ),
       );
       final options = ZegelOptions(
         contentType: 'text/plain',
@@ -711,15 +740,19 @@ void main() {
       expect(shares.length, equals(5));
 
       // Reconstruct with any 3 of 5 shares
-      final reconstructed = ShamirSecretSharing.reconstruct(
-        [shares[0], shares[2], shares[4]],
-        3,
-      );
+      final reconstructed = ShamirSecretSharing.reconstruct([
+        shares[0],
+        shares[2],
+        shares[4],
+      ], 3);
 
       // Verify with reconstructed key
       final verifyResult = const ZegelReader().verify(fileBytes, reconstructed);
-      expect(verifyResult.valid, isTrue,
-          reason: 'Reconstructed key should verify the file');
+      expect(
+        verifyResult.valid,
+        isTrue,
+        reason: 'Reconstructed key should verify the file',
+      );
     });
   });
 
@@ -739,12 +772,13 @@ void main() {
         utf8.encode('Product LOT-2026-001 certification data'),
       );
       final sealedProduct = ZegelWriter(
-          masterKey,
-          ZegelOptions(
-            contentType: 'application/octet-stream',
-            filename: 'product_lot_2026_001.bin',
-            salt: _zeroSalt(),
-          )).seal(productData);
+        masterKey,
+        ZegelOptions(
+          contentType: 'application/octet-stream',
+          filename: 'product_lot_2026_001.bin',
+          salt: _zeroSalt(),
+        ),
+      ).seal(productData);
       final merkleRoot = _getMerkleRoot(sealedProduct);
 
       final signingKey = _signerKey('supply-chain');
@@ -804,8 +838,11 @@ void main() {
         entries,
         signingKey,
       );
-      expect(chainResult['valid'], isTrue,
-          reason: 'Supply chain provenance should verify');
+      expect(
+        chainResult['valid'],
+        isTrue,
+        reason: 'Supply chain provenance should verify',
+      );
 
       // Verify chronological ordering manually
       for (int i = 1; i < entries.length; i++) {
@@ -877,10 +914,15 @@ void main() {
       expect(v2Result.valid, isTrue);
 
       // Verify the version chain
-      final chainValid =
-          ContentVersioning.verifyVersionChain([v1Bytes, v2Bytes]);
-      expect(chainValid, isTrue,
-          reason: 'Software version chain should verify');
+      final chainValid = ContentVersioning.verifyVersionChain([
+        v1Bytes,
+        v2Bytes,
+      ]);
+      expect(
+        chainValid,
+        isTrue,
+        reason: 'Software version chain should verify',
+      );
 
       // Inspect v2 for version info
       final v2Inspection = const ZegelReader().inspect(v2Bytes);
@@ -924,7 +966,10 @@ void main() {
       );
       expect(
         Attestation.verifyRoleAttestation(
-            draft1Attestation, draft1Root, lawyerKey),
+          draft1Attestation,
+          draft1Root,
+          lawyerKey,
+        ),
         isTrue,
       );
 
@@ -970,19 +1015,26 @@ void main() {
 
       expect(
         Attestation.verifyRoleAttestation(
-            partyAAttestation, draft2Root, partyAKey),
+          partyAAttestation,
+          draft2Root,
+          partyAKey,
+        ),
         isTrue,
       );
       expect(
         Attestation.verifyRoleAttestation(
-            partyBAttestation, draft2Root, partyBKey),
+          partyBAttestation,
+          draft2Root,
+          partyBKey,
+        ),
         isTrue,
       );
 
       // Verify version chain
-      final chainValid = ContentVersioning.verifyVersionChain(
-        [draft1Bytes, draft2Bytes],
-      );
+      final chainValid = ContentVersioning.verifyVersionChain([
+        draft1Bytes,
+        draft2Bytes,
+      ]);
       expect(chainValid, isTrue);
     });
   });
@@ -1089,8 +1141,10 @@ void main() {
         [0, 1], // metadata + first content block (cardiology data)
       );
 
-      final cardioResult =
-          const ZegelReader().extractWithToken(fileBytes, cardioToken);
+      final cardioResult = const ZegelReader().extractWithToken(
+        fileBytes,
+        cardioToken,
+      );
       expect(cardioResult.valid, isTrue);
       // Metadata was disclosed
       expect(cardioResult.metadata, isNotNull);
