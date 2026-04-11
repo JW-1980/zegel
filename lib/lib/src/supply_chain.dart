@@ -129,7 +129,7 @@ class SupplyChainVerifier {
   ) {
     // Verify the attestation type.
     if (attestation['type'] != 'build_attestation') {
-      return BuildAttestationResult(
+      return const BuildAttestationResult(
         valid: false,
         trustedBuilder: false,
         buildInfo: null,
@@ -231,6 +231,17 @@ class SupplyChainVerifier {
 
 /// Build information for provenance tracking.
 class BuildInfo {
+
+  /// Deserialises from a JSON-compatible map.
+  factory BuildInfo.fromJson(Map<String, dynamic> json) {
+    return BuildInfo(
+      version: json['version'] as String,
+      commitHash: json['commit_hash'] as String,
+      buildTimestamp: json['build_timestamp'] as int,
+      builderIdentity: json['builder_identity'] as String,
+      reproducibleBuildHash: json['reproducible_build_hash'] as String?,
+    );
+  }
   /// Creates a [BuildInfo].
   const BuildInfo({
     required this.version,
@@ -268,17 +279,6 @@ class BuildInfo {
       result['reproducible_build_hash'] = reproducibleBuildHash;
     }
     return result;
-  }
-
-  /// Deserialises from a JSON-compatible map.
-  factory BuildInfo.fromJson(Map<String, dynamic> json) {
-    return BuildInfo(
-      version: json['version'] as String,
-      commitHash: json['commit_hash'] as String,
-      buildTimestamp: json['build_timestamp'] as int,
-      builderIdentity: json['builder_identity'] as String,
-      reproducibleBuildHash: json['reproducible_build_hash'] as String?,
-    );
   }
 }
 

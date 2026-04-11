@@ -687,7 +687,7 @@ void main() {
 
   group('Structured blocks roundtrip', () {
     test('SbomBlock encode/decode', () {
-      final sbom = SbomBlock(
+      const sbom = SbomBlock(
         packages: [
           SbomPackage(
             name: 'crypto',
@@ -717,19 +717,19 @@ void main() {
     test('RoyaltyBlock encode/decode', () {
       final royalty = RoyaltyBlock(
         recipients: [
-          RoyaltyRecipient(
+          const RoyaltyRecipient(
             identifier: 'artist-001',
             percentage: 60.0,
             name: 'Main Artist',
             role: 'creator',
           ),
-          RoyaltyRecipient(
+          const RoyaltyRecipient(
             identifier: 'producer-001',
             percentage: 25.0,
             name: 'Producer',
             role: 'producer',
           ),
-          RoyaltyRecipient(
+          const RoyaltyRecipient(
             identifier: 'label-001',
             percentage: 15.0,
             name: 'Record Label',
@@ -752,8 +752,8 @@ void main() {
       expect(
         () => RoyaltyBlock(
           recipients: [
-            RoyaltyRecipient(identifier: 'a', percentage: 50.0),
-            RoyaltyRecipient(identifier: 'b', percentage: 30.0),
+            const RoyaltyRecipient(identifier: 'a', percentage: 50.0),
+            const RoyaltyRecipient(identifier: 'b', percentage: 30.0),
             // Missing 20%
           ],
         ),
@@ -762,7 +762,7 @@ void main() {
     });
 
     test('MeasurementBlock encode/decode', () {
-      final measurement = MeasurementBlock(
+      const measurement = MeasurementBlock(
         timestamp: 1700000000,
         sensorId: 'temp-sensor-01',
         value: 2.5,
@@ -781,9 +781,9 @@ void main() {
     });
 
     test('PrivilegeLogBlock encode/decode', () {
-      final privilegeLog = PrivilegeLogBlock(
+      const privilegeLog = PrivilegeLogBlock(
         entries: [
-          const RedactionBasis(
+          RedactionBasis(
             blockIndex: 3,
             legalAuthority: 'FOIA Exemption 5',
             reason: 'Deliberative process privilege',

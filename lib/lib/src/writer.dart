@@ -175,11 +175,6 @@ class ZegelOptions {
 /// final sealed = writer.seal(pdfBytes);
 /// ```
 class ZegelWriter {
-  /// Minimum Argon2id time cost (iterations) per OWASP 2024 guidelines.
-  static const int minArgon2TimeCost = 2;
-
-  /// Minimum Argon2id memory cost in KiB per OWASP 2024 guidelines (19 MiB).
-  static const int minArgon2MemoryCost = 19456;
 
   /// Creates a writer with the given 32-byte [masterKey] and [options].
   ///
@@ -208,6 +203,11 @@ class ZegelWriter {
       }
     }
   }
+  /// Minimum Argon2id time cost (iterations) per OWASP 2024 guidelines.
+  static const int minArgon2TimeCost = 2;
+
+  /// Minimum Argon2id memory cost in KiB per OWASP 2024 guidelines (19 MiB).
+  static const int minArgon2MemoryCost = 19456;
 
   /// The 32-byte master encryption key.
   final Uint8List masterKey;
