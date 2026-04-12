@@ -33,6 +33,21 @@ const String wetSignatureSubtype = 'wet_signature';
 
 /// A single wet (handwritten) signature with signer metadata.
 class WetSignature {
+
+  /// Decodes a wet signature from block bytes.
+  factory WetSignature.decode(Uint8List data) {
+    final Map<String, dynamic> json =
+        jsonDecode(utf8.decode(data)) as Map<String, dynamic>;
+    return WetSignature(
+      signatureImage: base64Decode(json['signature_image_b64'] as String),
+      signerName: json['signer_name'] as String,
+      signerCity: json['signer_city'] as String,
+      signedAt: json['signed_at'] as int,
+      signerId: json['signer_id'] as String?,
+      signerRole: json['signer_role'] as String?,
+      imageFormat: json['image_format'] as String? ?? 'png',
+    );
+  }
   /// Creates a [WetSignature].
   const WetSignature({
     required this.signatureImage,
@@ -81,25 +96,19 @@ class WetSignature {
     if (signerRole != null) json['signer_role'] = signerRole;
     return Uint8List.fromList(utf8.encode(jsonEncode(json)));
   }
-
-  /// Decodes a wet signature from block bytes.
-  factory WetSignature.decode(Uint8List data) {
-    final Map<String, dynamic> json =
-        jsonDecode(utf8.decode(data)) as Map<String, dynamic>;
-    return WetSignature(
-      signatureImage: base64Decode(json['signature_image_b64'] as String),
-      signerName: json['signer_name'] as String,
-      signerCity: json['signer_city'] as String,
-      signedAt: json['signed_at'] as int,
-      signerId: json['signer_id'] as String?,
-      signerRole: json['signer_role'] as String?,
-      imageFormat: json['image_format'] as String? ?? 'png',
-    );
-  }
 }
 
 /// Configuration for multi-party wet signature requirements.
 class WetSignatureConfig {
+
+  /// Decodes from JSON.
+  factory WetSignatureConfig.fromJson(Map<String, dynamic> json) {
+    return WetSignatureConfig(
+      requiredSignatures: json['required_signatures'] as int,
+      roles:
+          (json['roles'] as List<dynamic>?)?.map((r) => r as String).toList(),
+    );
+  }
   /// Creates a [WetSignatureConfig].
   const WetSignatureConfig({required this.requiredSignatures, this.roles});
 
@@ -118,15 +127,6 @@ class WetSignatureConfig {
     };
     if (roles != null) json['roles'] = roles;
     return json;
-  }
-
-  /// Decodes from JSON.
-  factory WetSignatureConfig.fromJson(Map<String, dynamic> json) {
-    return WetSignatureConfig(
-      requiredSignatures: json['required_signatures'] as int,
-      roles:
-          (json['roles'] as List<dynamic>?)?.map((r) => r as String).toList(),
-    );
   }
 }
 
