@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:zegel/zegel.dart';
@@ -93,7 +95,7 @@ class _EnvelopeScreenState extends State<EnvelopeScreen> {
     });
   }
 
-  void _createEnvelope() {
+  Future<void> _createEnvelope() async {
     // Validate inputs.
     if (_subjectController.text.trim().isEmpty) {
       _showError('Subject is required');
@@ -162,18 +164,39 @@ class _EnvelopeScreenState extends State<EnvelopeScreen> {
       ),
     );
 
-    setState(() {
-      _createdEnvelope = envelope;
-    });
+    // Save envelope to a JSON file so it persists across sessions.
+    try {
+      final encoded = envelope.encode();
+      final homeDir = Platform.environment['HOME'] ??
+          Platform.environment['USERPROFILE'] ??
+          '.';
+      final outputPath = '$homeDir/zegel-envelope-${envelope.id}.json';
+      await File(outputPath).writeAsBytes(encoded);
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Envelope created with ${envelope.recipients.length} recipients',
-        ),
-        backgroundColor: Colors.green,
-      ),
-    );
+      setState(() {
+        _createdEnvelope = envelope;
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Envelope saved to ${outputPath.split('/').last} '
+              '(${envelope.recipients.length} recipients)',
+            ),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 4),
+            action: SnackBarAction(
+              label: 'OK',
+              textColor: Colors.white,
+              onPressed: () {},
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      _showError('Failed to save envelope: $e');
+    }
   }
 
   void _showError(String message) {

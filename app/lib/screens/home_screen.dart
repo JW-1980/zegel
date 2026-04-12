@@ -399,10 +399,10 @@ class _HomeScreenState extends State<HomeScreen> {
           const Divider(),
 
           // Signing Workflows (v1.4)
-          sectionHeader('Signing'),
-          drawerItem(Icons.draw, 'Wet Signature',
+          sectionHeader(l10n.drawerSigningSection),
+          drawerItem(Icons.draw, l10n.wetSignatureTitle,
               () => _navigateTo(const WetSignatureScreen())),
-          drawerItem(Icons.send, 'Signing Envelope',
+          drawerItem(Icons.send, l10n.envelopeTitle,
               () => _navigateTo(const EnvelopeScreen())),
 
           const Divider(),
