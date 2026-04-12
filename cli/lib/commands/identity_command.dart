@@ -59,7 +59,7 @@ class SignCommand extends Command<int> {
     final outputPath = argResults!['output'] as String? ?? inputPath;
 
     final Uint8List fileBytes = File(inputPath).readAsBytesSync();
-    final Uint8List signingKey = readKeyFromFile(signingKeyPath);
+    final Uint8List signingKey = readKeyFile(signingKeyPath);
 
     // Create identity and sign.
     final signatureData = ZegelIdentity.sign(fileBytes, signingKey);
@@ -144,7 +144,7 @@ class VerifySignatureCommand extends Command<int> {
 
       // Check against expected public key if provided.
       if (pubKeyPath != null) {
-        final Uint8List expectedKey = readKeyFromFile(pubKeyPath);
+        final Uint8List expectedKey = readKeyFile(pubKeyPath);
         final String expectedHex = expectedKey
             .map((b) => b.toRadixString(16).padLeft(2, '0'))
             .join();

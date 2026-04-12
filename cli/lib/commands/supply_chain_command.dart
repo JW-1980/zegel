@@ -112,7 +112,7 @@ class BuildAttestCommand extends Command<int> {
     final reproducibleHash = argResults!['reproducible-hash'] as String?;
     final outputPath = argResults!['output'] as String;
 
-    final Uint8List signingKey = readKeyFromFile(signingKeyPath);
+    final Uint8List signingKey = readKeyFile(signingKeyPath);
     final int now = DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
 
     final buildInfo = BuildInfo(

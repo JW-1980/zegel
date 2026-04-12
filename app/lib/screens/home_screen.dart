@@ -26,6 +26,8 @@ import 'attest_screen.dart';
 import 'audit_screen.dart';
 import 'canary_screen.dart';
 import 'keygen_screen.dart';
+import 'wet_signature_screen.dart';
+import 'envelope_screen.dart';
 
 /// The main home screen of the Zegel application.
 ///
@@ -335,7 +337,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 Text(
-                  'Tamper-Proof Container Format',
+                  'v1.4 — Tamper-Proof Container Format',
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onPrimary.withValues(alpha: 0.8),
                   ),
@@ -393,6 +395,15 @@ class _HomeScreenState extends State<HomeScreen> {
               () => _navigateTo(const CredentialScreen())),
           drawerItem(Icons.history, l10n.provenanceTitle,
               () => _navigateTo(const ProvenanceScreen())),
+
+          const Divider(),
+
+          // Signing Workflows (v1.4)
+          sectionHeader('Signing'),
+          drawerItem(Icons.draw, 'Wet Signature',
+              () => _navigateTo(const WetSignatureScreen())),
+          drawerItem(Icons.send, 'Signing Envelope',
+              () => _navigateTo(const EnvelopeScreen())),
 
           const Divider(),
 

@@ -182,12 +182,96 @@ class _EnvelopeScreenState extends State<EnvelopeScreen> {
     );
   }
 
+  void _showHelpSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.6,
+        maxChildSize: 0.9,
+        expand: false,
+        builder: (context, scrollController) => SingleChildScrollView(
+          controller: scrollController,
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              Text(
+                'How Signing Envelopes Work',
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+              const SizedBox(height: 16),
+              const _HelpStep(
+                number: '1',
+                title: 'Add Recipients',
+                description:
+                    'Add the people who need to sign. Set each person\'s '
+                    'role (signer, approver, witness) and authentication method.',
+              ),
+              const _HelpStep(
+                number: '2',
+                title: 'Choose Routing',
+                description:
+                    'Sequential: each person signs in order. '
+                    'Parallel: everyone signs at the same time. '
+                    'Mixed: groups sign in sequence, within groups in parallel.',
+              ),
+              const _HelpStep(
+                number: '3',
+                title: 'Send the Envelope',
+                description:
+                    'The envelope is sealed with Zegel\'s tamper-proof '
+                    'format. Any modification after sending is detected.',
+              ),
+              const _HelpStep(
+                number: '4',
+                title: 'Collect Signatures',
+                description:
+                    'Each recipient uses the Wet Signature pad or digital '
+                    'attestation to sign. An audit trail records every action.',
+              ),
+              const _HelpStep(
+                number: '5',
+                title: 'Certificate of Completion',
+                description:
+                    'Once all parties sign, a tamper-evident Certificate '
+                    'of Completion is generated with the full audit trail.',
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                'All signatures and audit events are cryptographically '
+                'chained, making any tampering immediately detectable.',
+                style: TextStyle(fontStyle: FontStyle.italic),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Signing Envelope'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.help_outline),
+            tooltip: 'How envelopes work',
+            onPressed: () => _showHelpSheet(context),
+          ),
           IconButton(
             icon: const Icon(Icons.save),
             tooltip: 'Create Envelope',
@@ -620,5 +704,61 @@ class _RecipientDraft {
   void dispose() {
     nameController.dispose();
     emailController.dispose();
+  }
+}
+
+/// A numbered step in the help bottom sheet.
+class _HelpStep extends StatelessWidget {
+  final String number;
+  final String title;
+  final String description;
+
+  const _HelpStep({
+    required this.number,
+    required this.title,
+    required this.description,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CircleAvatar(
+            radius: 14,
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            child: Text(
+              number,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onPrimary,
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  description,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
