@@ -250,7 +250,7 @@ cross-file replay attacks.
 ```
 plaintext  = block content (bytes)
 key        = derived block key (32 bytes)
-iv         = random 12 bytes (unique per block)
+iv         = HKDF-derived nonce XOR CSPRNG (12 bytes, hedged randomness)
 aad        = block_type (1 byte) || block_index (uint32 BE) || master_salt (32 bytes)
 tag_length = 16 bytes
 
@@ -262,6 +262,28 @@ The AAD is **37 bytes**: 1 byte block type + 4 bytes block index (big-endian) +
 - A ciphertext cannot be moved to a different block position (block_index check)
 - A ciphertext cannot be used in a different file (salt check)
 - A ciphertext's block type cannot be changed (block_type check)
+
+**v1.4 Hedged Nonce Derivation (Anti-Kleptographic):**
+
+```
+derived_nonce = HKDF-Expand(
+  PRK = HMAC-SHA256(salt, master_key || merkle_root),
+  info = "zegel-block-nonce-v1:" || block_index,
+  length = 12
+)
+random_nonce = CSPRNG(12 bytes)
+iv = derived_nonce XOR random_nonce
+```
+
+The nonce uses hedged randomness: a deterministic HKDF-derived component XORed
+with CSPRNG output. This provides two defenses:
+1. **Against kleptographic attacks**: Even if the CSPRNG is backdoored, the
+   HKDF-derived component prevents the attacker from controlling the nonce
+   to leak key material through subliminal channels.
+2. **Against HKDF weaknesses**: Even if the HKDF derivation has a subtle
+   weakness, the CSPRNG provides additional entropy.
+
+As long as EITHER source is honest, the nonce is secure.
 
 ### 5.5 Block Compression (GEN-2, v1.1)
 

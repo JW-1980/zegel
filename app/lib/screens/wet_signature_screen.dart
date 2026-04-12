@@ -7,8 +7,6 @@ import 'package:provider/provider.dart';
 import 'package:zegel/zegel.dart';
 
 import '../services/file_service.dart';
-import '../services/zegel_service.dart';
-import '../widgets/key_input.dart';
 
 /// Screen for capturing handwritten (wet) signatures.
 ///
@@ -29,7 +27,7 @@ class WetSignatureScreen extends StatefulWidget {
 
 class _WetSignatureScreenState extends State<WetSignatureScreen> {
   String? _filePath;
-  String _masterKeyHex = '';
+
   bool _isLoading = false;
   String? _statusMessage;
   bool _isError = false;
@@ -46,7 +44,7 @@ class _WetSignatureScreenState extends State<WetSignatureScreen> {
   bool _hasSigned = false;
 
   // Existing signatures on the file.
-  List<WetSignature> _existingSignatures = [];
+  final List<WetSignature> _existingSignatures = [];
 
   @override
   void initState() {
@@ -91,7 +89,7 @@ class _WetSignatureScreenState extends State<WetSignatureScreen> {
     // Render strokes to an image.
     final recorder = ui.PictureRecorder();
     final canvas = Canvas(recorder);
-    final size = const Size(400, 200);
+    const size = Size(400, 200);
 
     // White background.
     canvas.drawRect(
