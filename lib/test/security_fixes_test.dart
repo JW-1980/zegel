@@ -744,44 +744,42 @@ void main() {
 
     test('MeasurementBlock encode/decode', () {
       final measurement = MeasurementBlock(
-        readings: [
-          MeasurementReading(
-            timestamp: 1700000000,
-            sensorId: 'temp-sensor-01',
-            value: 2.5,
-            unit: 'celsius',
-            calibrationDate: 1690000000,
-            location: {'lat': 52.3676, 'lon': 4.9041},
-          ),
-        ],
-        deviceId: 'logger-XYZ',
-        deviceModel: 'TempLogger Pro',
+        timestamp: 1700000000,
+        sensorId: 'temp-sensor-01',
+        value: 2.5,
+        unit: 'celsius',
+        measurementType: 'temperature',
+        location: 'lat:52.3676,lon:4.9041',
+        calibration: const CalibrationInfo(
+          calibratedAt: 1690000000,
+          calibrationAuthority: 'NIST',
+          accuracy: '+/- 0.1',
+        ),
       );
 
       final encoded = measurement.encode();
       final decoded = MeasurementBlock.decode(encoded);
 
-      expect(decoded.readings.length, equals(1));
-      expect(decoded.readings[0].value, equals(2.5));
-      expect(decoded.readings[0].unit, equals('celsius'));
-      expect(decoded.readings[0].location!['lat'], equals(52.3676));
-      expect(decoded.deviceId, equals('logger-XYZ'));
+      expect(decoded.value, equals(2.5));
+      expect(decoded.unit, equals('celsius'));
+      expect(decoded.sensorId, equals('temp-sensor-01'));
+      expect(decoded.location, equals('lat:52.3676,lon:4.9041'));
+      expect(decoded.calibration!.calibrationAuthority, equals('NIST'));
     });
 
     test('PrivilegeLogBlock encode/decode', () {
       final privilegeLog = PrivilegeLogBlock(
         entries: [
-          PrivilegeLogEntry(
+          RedactionBasis(
             blockIndex: 3,
             legalAuthority: 'FOIA Exemption 5',
             reason: 'Deliberative process privilege',
             date: 1700000000,
-            reviewer: 'J. Smith, Esq.',
-            privilegeType: 'deliberative-process',
+            authorisedBy: 'J. Smith, Esq.',
+            caseReference: 'ACME-2024-001',
           ),
         ],
         caseTitle: 'ACME v. State',
-        jurisdiction: 'US Federal',
       );
 
       final encoded = privilegeLog.encode();
@@ -791,7 +789,6 @@ void main() {
       expect(decoded.entries[0].blockIndex, equals(3));
       expect(decoded.entries[0].legalAuthority, equals('FOIA Exemption 5'));
       expect(decoded.caseTitle, equals('ACME v. State'));
-      expect(decoded.jurisdiction, equals('US Federal'));
     });
   });
 
