@@ -231,7 +231,6 @@ class SupplyChainVerifier {
 
 /// Build information for provenance tracking.
 class BuildInfo {
-
   /// Deserialises from a JSON-compatible map.
   factory BuildInfo.fromJson(Map<String, dynamic> json) {
     return BuildInfo(
@@ -242,6 +241,7 @@ class BuildInfo {
       reproducibleBuildHash: json['reproducible_build_hash'] as String?,
     );
   }
+
   /// Creates a [BuildInfo].
   const BuildInfo({
     required this.version,

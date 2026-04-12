@@ -175,7 +175,6 @@ class ZegelOptions {
 /// final sealed = writer.seal(pdfBytes);
 /// ```
 class ZegelWriter {
-
   /// Creates a writer with the given 32-byte [masterKey] and [options].
   ///
   /// Throws [ArgumentError] if:
@@ -203,6 +202,7 @@ class ZegelWriter {
       }
     }
   }
+
   /// Minimum Argon2id time cost (iterations) per OWASP 2024 guidelines.
   static const int minArgon2TimeCost = 2;
 
@@ -391,10 +391,14 @@ class ZegelWriter {
       // (hedged randomness) so that even if HKDF has a subtle weakness, the
       // randomness provides additional entropy.
       final Uint8List derivedNonce = KeyDerivation.deriveBlockNonce(
-        masterKey, merkleRoot, salt, i,
+        masterKey,
+        merkleRoot,
+        salt,
+        i,
       );
       final Uint8List randomNonce = _randomBytes(
-        secureRandom, ZegelFormat.ivSize,
+        secureRandom,
+        ZegelFormat.ivSize,
       );
       final Uint8List iv = Uint8List(ZegelFormat.ivSize);
       for (int b = 0; b < ZegelFormat.ivSize; b++) {

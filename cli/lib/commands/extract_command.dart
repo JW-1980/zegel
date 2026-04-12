@@ -47,7 +47,8 @@ class ExtractCommand extends Command<int> {
     addKeyOptions(argParser);
     addOutputOption(
       argParser,
-      help: 'Output file path. Defaults to the original filename\n'
+      help:
+          'Output file path. Defaults to the original filename\n'
           'stored in the .zgl header.',
     );
 
@@ -60,14 +61,16 @@ class ExtractCommand extends Command<int> {
 
     argParser.addFlag(
       'skip-redacted',
-      help: 'Continue extraction even if some blocks are redacted.\n'
+      help:
+          'Continue extraction even if some blocks are redacted.\n'
           'Redacted blocks are replaced with empty content.',
       defaultsTo: true,
     );
 
     argParser.addFlag(
       'check-regulatory-hold',
-      help: 'Check for regulatory hold metadata. If a hold is active\n'
+      help:
+          'Check for regulatory hold metadata. If a hold is active\n'
           '(hold date is in the future), refuse extraction with exit code 3.',
       defaultsTo: false,
     );
@@ -155,7 +158,7 @@ class ExtractCommand extends Command<int> {
         if (now.isBefore(holdDate)) {
           final holdStr =
               inspection.publicMetadata!['regulatory_hold_date_str'] ??
-                  formatTimestamp(holdDate);
+              formatTimestamp(holdDate);
           stderr.writeln(
             '${Ansi.error('REGULATORY HOLD')} - File is under regulatory hold.',
           );

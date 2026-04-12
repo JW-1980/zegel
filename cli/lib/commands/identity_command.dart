@@ -17,7 +17,8 @@ class SignCommand extends Command<int> {
   final String name = 'sign';
 
   @override
-  final String description = 'Sign a .zgl file with an Ed25519 signing key.\n'
+  final String description =
+      'Sign a .zgl file with an Ed25519 signing key.\n'
       '\n'
       'Creates a digital signature over the file\'s Merkle root, master seal,\n'
       'and timestamp using Ed25519. The signature is embedded as a SIGNATURE\n'
@@ -29,7 +30,8 @@ class SignCommand extends Command<int> {
       ..addOption(
         'signing-key',
         abbr: 's',
-        help: 'Path to the Ed25519 private key file (32 bytes raw or '
+        help:
+            'Path to the Ed25519 private key file (32 bytes raw or '
             '64-char hex).',
         mandatory: true,
       )
@@ -40,7 +42,8 @@ class SignCommand extends Command<int> {
       ..addOption(
         'output',
         abbr: 'o',
-        help: 'Output path for the signed file. If omitted, the file is '
+        help:
+            'Output path for the signed file. If omitted, the file is '
             'modified in place.',
       );
   }
@@ -61,7 +64,10 @@ class SignCommand extends Command<int> {
     final Uint8List signingKey = readKeyFile(signingKeyPath);
 
     // Create identity and sign.
-    final ZegelSignature signatureData = ZegelIdentity.sign(fileBytes, signingKey);
+    final ZegelSignature signatureData = ZegelIdentity.sign(
+      fileBytes,
+      signingKey,
+    );
 
     final signatureJson = <String, dynamic>{
       'type': 'ed25519_signature',
@@ -135,10 +141,16 @@ class VerifySignatureCommand extends Command<int> {
     final Map<String, dynamic> signatureData =
         jsonDecode(sigJson) as Map<String, dynamic>;
 
-
-    final Uint8List pubKey = _hexToBytes(signatureData['public_key_hex'] as String);
+    final Uint8List pubKey = _hexToBytes(
+      signatureData['public_key_hex'] as String,
+    );
     final String sigHex = signatureData['signature'] as String;
-    final int timestamp = signatureData['timestamp'] is int ? signatureData['timestamp'] as int : DateTime.parse(signatureData['timestamp'] as String).millisecondsSinceEpoch ~/ 1000;
+    final int timestamp = signatureData['timestamp'] is int
+        ? signatureData['timestamp'] as int
+        : DateTime.parse(
+                signatureData['timestamp'] as String,
+              ).millisecondsSinceEpoch ~/
+              1000;
 
     final ZegelSignature sig = ZegelSignature(
       signature: _hexToBytes(sigHex),
@@ -147,7 +159,6 @@ class VerifySignatureCommand extends Command<int> {
     );
 
     final bool valid = ZegelIdentity.verify(fileBytes, pubKey, sig);
-
 
     if (valid) {
       stdout.writeln('VALID - Signature verification passed.');
@@ -159,16 +170,15 @@ class VerifySignatureCommand extends Command<int> {
       // Check against expected public key if provided.
       if (pubKeyPath != null) {
         final Uint8List expectedKey = readKeyFile(pubKeyPath);
-        final String expectedHex =
-            expectedKey.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
+        final String expectedHex = expectedKey
+            .map((b) => b.toRadixString(16).padLeft(2, '0'))
+            .join();
         final String actualHex = signatureData['public_key_hex'] as String;
 
         if (expectedHex == actualHex) {
           stdout.writeln('  Public key matches expected key.');
         } else {
-          stderr.writeln(
-            'WARNING: Public key does NOT match expected key!',
-          );
+          stderr.writeln('WARNING: Public key does NOT match expected key!');
           stderr.writeln('  Expected: $expectedHex');
           stderr.writeln('  Actual:   $actualHex');
           return 1;
@@ -231,13 +241,14 @@ class IdentityKeygenCommand extends Command<int> {
     stdout.writeln('  Private key: $privatePath (KEEP SECRET)');
     stdout.writeln('  Public key:  $publicPath (share freely)');
     stdout.writeln('');
-    stdout.writeln('Public key hex: '
-        '${publicKey.map((b) => b.toRadixString(16).padLeft(2, '0')).join()}');
+    stdout.writeln(
+      'Public key hex: '
+      '${publicKey.map((b) => b.toRadixString(16).padLeft(2, '0')).join()}',
+    );
 
     return 0;
   }
 }
-
 
 Uint8List _hexToBytes(String hexStr) {
   if (hexStr.length % 2 != 0) {

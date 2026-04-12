@@ -28,7 +28,8 @@ class VerifyBinaryCommand extends Command<int> {
       ..addOption(
         'binary',
         abbr: 'b',
-        help: 'Path to the binary to verify. If omitted, verifies the '
+        help:
+            'Path to the binary to verify. If omitted, verifies the '
             'currently running binary.',
       )
       ..addOption(
@@ -47,10 +48,12 @@ class VerifyBinaryCommand extends Command<int> {
 
     stdout.writeln('Verifying binary: $binaryPath');
 
-    final Uint8List actualHash =
-        await SupplyChainVerifier.computeBinaryHash(binaryPath);
-    final String actualHex =
-        actualHash.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
+    final Uint8List actualHash = await SupplyChainVerifier.computeBinaryHash(
+      binaryPath,
+    );
+    final String actualHex = actualHash
+        .map((b) => b.toRadixString(16).padLeft(2, '0'))
+        .join();
 
     stdout.writeln('  SHA-256: $actualHex');
 
@@ -97,13 +100,18 @@ class BuildAttestCommand extends Command<int> {
       ..addOption('build-version', help: 'Software version.', mandatory: true)
       ..addOption('commit', help: 'Git commit hash.', mandatory: true)
       ..addOption('builder', help: 'Builder identity.', mandatory: true)
-      ..addOption('signing-key',
-          help: 'Ed25519 private key file.', mandatory: true)
+      ..addOption(
+        'signing-key',
+        help: 'Ed25519 private key file.',
+        mandatory: true,
+      )
       ..addOption('reproducible-hash', help: 'Reproducible build hash.')
-      ..addOption('output',
-          abbr: 'o',
-          help: 'Output JSON file.',
-          defaultsTo: 'build-attestation.json');
+      ..addOption(
+        'output',
+        abbr: 'o',
+        help: 'Output JSON file.',
+        defaultsTo: 'build-attestation.json',
+      );
   }
 
   @override
@@ -160,10 +168,17 @@ class VerifyBuildCommand extends Command<int> {
 
   VerifyBuildCommand() {
     argParser
-      ..addOption('attestation',
-          abbr: 'a', help: 'Attestation JSON file.', mandatory: true)
-      ..addMultiOption('trusted-key',
-          abbr: 't', help: 'Trusted builder public key file(s).');
+      ..addOption(
+        'attestation',
+        abbr: 'a',
+        help: 'Attestation JSON file.',
+        mandatory: true,
+      )
+      ..addMultiOption(
+        'trusted-key',
+        abbr: 't',
+        help: 'Trusted builder public key file(s).',
+      );
   }
 
   @override
@@ -173,8 +188,9 @@ class VerifyBuildCommand extends Command<int> {
 
     final attestation =
         jsonDecode(File(attPath).readAsStringSync()) as Map<String, dynamic>;
-    final List<Uint8List> trustedKeys =
-        trustedKeyPaths.map((p) => readKeyFile(p)).toList();
+    final List<Uint8List> trustedKeys = trustedKeyPaths
+        .map((p) => readKeyFile(p))
+        .toList();
 
     final result = SupplyChainVerifier.verifyBuildAttestation(
       attestation,

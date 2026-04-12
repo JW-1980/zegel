@@ -20,7 +20,6 @@ import 'dart:typed_data';
 
 /// A Software Bill of Materials (SBOM) entry describing a software package.
 class SbomPackage {
-
   /// Deserialises from a JSON-compatible map.
   factory SbomPackage.fromJson(Map<String, dynamic> json) {
     return SbomPackage(
@@ -33,6 +32,7 @@ class SbomPackage {
       purl: json['purl'] as String?,
     );
   }
+
   /// Creates an [SbomPackage].
   const SbomPackage({
     required this.name,
@@ -86,7 +86,6 @@ class SbomPackage {
 /// license information. Useful for supply chain transparency and compliance
 /// (e.g. Executive Order 14028 on software supply chain security).
 class SbomBlock {
-
   /// Deserialises from a JSON-compatible map.
   factory SbomBlock.fromJson(Map<String, dynamic> json) {
     final List<dynamic> packagesJson = json['packages'] as List<dynamic>;
@@ -100,6 +99,7 @@ class SbomBlock {
       toolVersion: json['tool_version'] as String?,
     );
   }
+
   /// Creates an [SbomBlock].
   const SbomBlock({
     required this.packages,
@@ -156,7 +156,6 @@ class SbomBlock {
 
 /// A single payment split recipient.
 class RoyaltyRecipient {
-
   /// Deserialises from a JSON-compatible map.
   factory RoyaltyRecipient.fromJson(Map<String, dynamic> json) {
     return RoyaltyRecipient(
@@ -167,6 +166,7 @@ class RoyaltyRecipient {
       role: json['role'] as String?,
     );
   }
+
   /// Creates a [RoyaltyRecipient].
   const RoyaltyRecipient({
     required this.identifier,
@@ -211,7 +211,6 @@ class RoyaltyRecipient {
 /// percentages are tamper-evident: any modification to the split ratios
 /// will be detected by the Merkle tree.
 class RoyaltyBlock {
-
   /// Deserialises from a JSON-compatible map.
   factory RoyaltyBlock.fromJson(Map<String, dynamic> json) {
     final List<dynamic> recipientsJson = json['recipients'] as List<dynamic>;
@@ -225,6 +224,7 @@ class RoyaltyBlock {
       contractReference: json['contract_reference'] as String?,
     );
   }
+
   /// Creates a [RoyaltyBlock].
   ///
   /// Throws [ArgumentError] if percentages do not sum to 100.0 (within
@@ -293,7 +293,6 @@ class RoyaltyBlock {
 
 /// Calibration metadata for a sensor measurement.
 class CalibrationInfo {
-
   /// Deserialises from a JSON-compatible map.
   factory CalibrationInfo.fromJson(Map<String, dynamic> json) {
     return CalibrationInfo(
@@ -305,6 +304,7 @@ class CalibrationInfo {
       resolution: json['resolution'] as String?,
     );
   }
+
   /// Creates a [CalibrationInfo].
   const CalibrationInfo({
     required this.calibratedAt,
@@ -360,7 +360,6 @@ class CalibrationInfo {
 /// metadata. Useful for IoT, scientific instruments, environmental
 /// monitoring, and industrial quality control.
 class MeasurementBlock {
-
   /// Deserialises from a JSON-compatible map.
   factory MeasurementBlock.fromJson(Map<String, dynamic> json) {
     return MeasurementBlock(
@@ -379,6 +378,7 @@ class MeasurementBlock {
       sequenceNumber: json['sequence_number'] as int?,
     );
   }
+
   /// Creates a [MeasurementBlock].
   const MeasurementBlock({
     required this.timestamp,
@@ -455,7 +455,6 @@ class MeasurementBlock {
 
 /// Legal basis record for a single redaction.
 class RedactionBasis {
-
   /// Deserialises from a JSON-compatible map.
   factory RedactionBasis.fromJson(Map<String, dynamic> json) {
     return RedactionBasis(
@@ -468,6 +467,7 @@ class RedactionBasis {
       caseReference: json['case_reference'] as String?,
     );
   }
+
   /// Creates a [RedactionBasis].
   const RedactionBasis({
     required this.blockIndex,
@@ -524,7 +524,6 @@ class RedactionBasis {
 /// corresponding entry in the privilege log explaining the authority and
 /// reason for redaction.
 class PrivilegeLogBlock {
-
   /// Deserialises from a JSON-compatible map.
   factory PrivilegeLogBlock.fromJson(Map<String, dynamic> json) {
     final List<dynamic> entriesJson = json['entries'] as List<dynamic>;
@@ -537,6 +536,7 @@ class PrivilegeLogBlock {
       caseTitle: json['case_title'] as String?,
     );
   }
+
   /// Creates a [PrivilegeLogBlock].
   const PrivilegeLogBlock({
     required this.entries,

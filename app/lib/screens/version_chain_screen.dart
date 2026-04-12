@@ -119,17 +119,20 @@ class _VersionChainScreenState extends State<VersionChainScreen> {
         Map<String, dynamic>? versionInfo;
         if (inspection.publicMetadata != null &&
             inspection.publicMetadata!.containsKey('version_info')) {
-          versionInfo = inspection.publicMetadata!['version_info']
-              as Map<String, dynamic>?;
+          versionInfo =
+              inspection.publicMetadata!['version_info']
+                  as Map<String, dynamic>?;
         }
 
-        versions.add(_VersionEntry(
-          filename: fileService.getFileName(filePath),
-          version: inspection.version,
-          timestamp: inspection.timestamp,
-          chainHash: chainHash,
-          versionInfo: versionInfo,
-        ));
+        versions.add(
+          _VersionEntry(
+            filename: fileService.getFileName(filePath),
+            version: inspection.version,
+            timestamp: inspection.timestamp,
+            chainHash: chainHash,
+            versionInfo: versionInfo,
+          ),
+        );
       }
 
       // Verify chain integrity if we have 2+ files
@@ -145,14 +148,16 @@ class _VersionChainScreenState extends State<VersionChainScreen> {
       // Update chain validity for each entry
       final updatedVersions = <_VersionEntry>[];
       for (int i = 0; i < versions.length; i++) {
-        updatedVersions.add(_VersionEntry(
-          filename: versions[i].filename,
-          version: versions[i].version,
-          timestamp: versions[i].timestamp,
-          chainHash: versions[i].chainHash,
-          isChainValid: i == 0 ? true : chainValid,
-          versionInfo: versions[i].versionInfo,
-        ));
+        updatedVersions.add(
+          _VersionEntry(
+            filename: versions[i].filename,
+            version: versions[i].version,
+            timestamp: versions[i].timestamp,
+            chainHash: versions[i].chainHash,
+            isChainValid: i == 0 ? true : chainValid,
+            versionInfo: versions[i].versionInfo,
+          ),
+        );
       }
 
       if (mounted) {
@@ -473,8 +478,10 @@ class _VersionChainScreenState extends State<VersionChainScreen> {
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.timeline,
-                              color: theme.colorScheme.primary),
+                          Icon(
+                            Icons.timeline,
+                            color: theme.colorScheme.primary,
+                          ),
                           const SizedBox(width: 8),
                           Text(
                             'Version Timeline',
@@ -529,8 +536,8 @@ class _VersionChainScreenState extends State<VersionChainScreen> {
                         color: isFirst
                             ? theme.colorScheme.primary
                             : (version.isChainValid
-                                ? Colors.green
-                                : Colors.red),
+                                  ? Colors.green
+                                  : Colors.red),
                       ),
                       child: Center(
                         child: Text(
@@ -547,8 +554,9 @@ class _VersionChainScreenState extends State<VersionChainScreen> {
                       Expanded(
                         child: Container(
                           width: 2,
-                          color:
-                              theme.colorScheme.outline.withValues(alpha: 0.3),
+                          color: theme.colorScheme.outline.withValues(
+                            alpha: 0.3,
+                          ),
                         ),
                       ),
                   ],
@@ -560,8 +568,9 @@ class _VersionChainScreenState extends State<VersionChainScreen> {
                   margin: const EdgeInsets.only(bottom: 16),
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.surfaceContainerHighest
-                        .withValues(alpha: 0.3),
+                    color: theme.colorScheme.surfaceContainerHighest.withValues(
+                      alpha: 0.3,
+                    ),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
                       color: theme.colorScheme.outline.withValues(alpha: 0.2),

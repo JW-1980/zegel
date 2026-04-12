@@ -113,8 +113,9 @@ class _EnvelopeScreenState extends State<EnvelopeScreen> {
 
     // Build envelope.
     final now = DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
-    final expiresAt =
-        _expirationDays != null ? now + _expirationDays! * 86400 : null;
+    final expiresAt = _expirationDays != null
+        ? now + _expirationDays! * 86400
+        : null;
 
     final envelopeRecipients = <EnvelopeRecipient>[];
     for (var i = 0; i < _recipients.length; i++) {
@@ -157,7 +158,8 @@ class _EnvelopeScreenState extends State<EnvelopeScreen> {
       EnvelopeEvent(
         timestamp: now,
         eventType: 'envelope_created',
-        description: 'Envelope created with ${envelope.recipients.length} '
+        description:
+            'Envelope created with ${envelope.recipients.length} '
             'recipient(s), routing: ${_routingMode.name}',
       ),
     );
@@ -320,8 +322,12 @@ class _EnvelopeScreenState extends State<EnvelopeScreen> {
                         DropdownButton<int>(
                           value: _reminderIntervalDays,
                           items: [1, 2, 3, 5, 7, 14]
-                              .map((d) =>
-                                  DropdownMenuItem(value: d, child: Text('$d')))
+                              .map(
+                                (d) => DropdownMenuItem(
+                                  value: d,
+                                  child: Text('$d'),
+                                ),
+                              )
                               .toList(),
                           onChanged: (v) {
                             if (v != null) {
@@ -333,8 +339,12 @@ class _EnvelopeScreenState extends State<EnvelopeScreen> {
                         DropdownButton<int>(
                           value: _reminderMaxCount,
                           items: [1, 2, 3, 5, 10]
-                              .map((c) =>
-                                  DropdownMenuItem(value: c, child: Text('$c')))
+                              .map(
+                                (c) => DropdownMenuItem(
+                                  value: c,
+                                  child: Text('$c'),
+                                ),
+                              )
                               .toList(),
                           onChanged: (v) {
                             if (v != null) {
@@ -353,12 +363,30 @@ class _EnvelopeScreenState extends State<EnvelopeScreen> {
                       DropdownButton<int?>(
                         value: _expirationDays,
                         items: [
-                          const DropdownMenuItem(value: null, child: Text('Never')),
-                          const DropdownMenuItem(value: 7, child: Text('7 days')),
-                          const DropdownMenuItem(value: 14, child: Text('14 days')),
-                          const DropdownMenuItem(value: 30, child: Text('30 days')),
-                          const DropdownMenuItem(value: 60, child: Text('60 days')),
-                          const DropdownMenuItem(value: 90, child: Text('90 days')),
+                          const DropdownMenuItem(
+                            value: null,
+                            child: Text('Never'),
+                          ),
+                          const DropdownMenuItem(
+                            value: 7,
+                            child: Text('7 days'),
+                          ),
+                          const DropdownMenuItem(
+                            value: 14,
+                            child: Text('14 days'),
+                          ),
+                          const DropdownMenuItem(
+                            value: 30,
+                            child: Text('30 days'),
+                          ),
+                          const DropdownMenuItem(
+                            value: 60,
+                            child: Text('60 days'),
+                          ),
+                          const DropdownMenuItem(
+                            value: 90,
+                            child: Text('90 days'),
+                          ),
                         ],
                         onChanged: (v) => setState(() => _expirationDays = v),
                       ),
@@ -371,7 +399,8 @@ class _EnvelopeScreenState extends State<EnvelopeScreen> {
             const SizedBox(height: 16),
 
             // Created envelope preview
-            if (_createdEnvelope != null) _buildEnvelopePreview(_createdEnvelope!),
+            if (_createdEnvelope != null)
+              _buildEnvelopePreview(_createdEnvelope!),
 
             const SizedBox(height: 24),
 
@@ -431,10 +460,7 @@ class _EnvelopeScreenState extends State<EnvelopeScreen> {
           children: [
             Row(
               children: [
-                CircleAvatar(
-                  radius: 16,
-                  child: Text('${index + 1}'),
-                ),
+                CircleAvatar(radius: 16, child: Text('${index + 1}')),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
@@ -489,10 +515,10 @@ class _EnvelopeScreenState extends State<EnvelopeScreen> {
                       border: OutlineInputBorder(),
                     ),
                     items: RecipientRole.values
-                        .map((r) => DropdownMenuItem(
-                              value: r,
-                              child: Text(r.name),
-                            ))
+                        .map(
+                          (r) =>
+                              DropdownMenuItem(value: r, child: Text(r.name)),
+                        )
                         .toList(),
                     onChanged: (v) {
                       if (v != null) {
@@ -511,10 +537,10 @@ class _EnvelopeScreenState extends State<EnvelopeScreen> {
                       border: OutlineInputBorder(),
                     ),
                     items: AuthenticationMethod.values
-                        .map((a) => DropdownMenuItem(
-                              value: a,
-                              child: Text(a.name),
-                            ))
+                        .map(
+                          (a) =>
+                              DropdownMenuItem(value: a, child: Text(a.name)),
+                        )
                         .toList(),
                     onChanged: (v) {
                       if (v != null) {
@@ -534,10 +560,9 @@ class _EnvelopeScreenState extends State<EnvelopeScreen> {
                       border: OutlineInputBorder(),
                     ),
                     items: List.generate(10, (i) => i + 1)
-                        .map((o) => DropdownMenuItem(
-                              value: o,
-                              child: Text('$o'),
-                            ))
+                        .map(
+                          (o) => DropdownMenuItem(value: o, child: Text('$o')),
+                        )
                         .toList(),
                     onChanged: (v) {
                       if (v != null) {
@@ -568,10 +593,9 @@ class _EnvelopeScreenState extends State<EnvelopeScreen> {
                 const SizedBox(width: 8),
                 Text(
                   'Envelope Created',
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleMedium
-                      ?.copyWith(color: Colors.green.shade900),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: Colors.green.shade900,
+                  ),
                 ),
               ],
             ),
@@ -583,11 +607,7 @@ class _EnvelopeScreenState extends State<EnvelopeScreen> {
             Text('Recipients: ${envelope.recipients.length}'),
             if (envelope.expiresAt != null)
               Text(
-                'Expires: ${DateFormat('yyyy-MM-dd').format(
-                  DateTime.fromMillisecondsSinceEpoch(
-                    envelope.expiresAt! * 1000,
-                  ),
-                )}',
+                'Expires: ${DateFormat('yyyy-MM-dd').format(DateTime.fromMillisecondsSinceEpoch(envelope.expiresAt! * 1000))}',
               ),
             const SizedBox(height: 8),
             const Text(

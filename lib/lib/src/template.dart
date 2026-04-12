@@ -187,9 +187,8 @@ class TemplateField {
       required: json['required'] as bool? ?? true,
       label: json['label'] as String?,
       defaultValue: json['default_value'] as String?,
-      options: (json['options'] as List<dynamic>?)
-          ?.map((o) => o as String)
-          .toList(),
+      options:
+          (json['options'] as List<dynamic>?)?.map((o) => o as String).toList(),
     );
   }
 }
@@ -338,9 +337,8 @@ class EnvelopeTemplate {
     }).toList();
 
     final now = DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
-    final expiresAt = expirationDays != null
-        ? now + (expirationDays! * 24 * 3600)
-        : null;
+    final expiresAt =
+        expirationDays != null ? now + (expirationDays! * 24 * 3600) : null;
 
     return Envelope(
       id: envelopeId,
@@ -415,10 +413,9 @@ class EnvelopeTemplate {
       createdAt: json['created_at'] as int?,
       updatedAt: json['updated_at'] as int?,
       author: json['author'] as String?,
-      tags: (json['tags'] as List<dynamic>?)
-              ?.map((t) => t as String)
-              .toList() ??
-          <String>[],
+      tags:
+          (json['tags'] as List<dynamic>?)?.map((t) => t as String).toList() ??
+              <String>[],
       expirationDays: json['expiration_days'] as int?,
       remindersEnabled: json['reminders_enabled'] as bool? ?? false,
       reminderIntervalDays: json['reminder_interval_days'] as int? ?? 3,

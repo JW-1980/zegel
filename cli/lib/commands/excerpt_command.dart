@@ -30,7 +30,8 @@ class ExcerptProofCommand extends Command<int> {
   String get name => 'excerpt-proof';
 
   @override
-  String get description => 'Generate a Merkle inclusion proof for a block.\n\n'
+  String get description =>
+      'Generate a Merkle inclusion proof for a block.\n\n'
       'Creates a cryptographic proof that a specific block belongs to\n'
       'a sealed file, without revealing other blocks.\n\n'
       'Examples:\n'
@@ -51,8 +52,9 @@ class ExcerptProofCommand extends Command<int> {
     final header = RawZegelHeader.parse(fileBytes);
 
     // Use the block hashes from the directory as leaf hashes
-    final leafHashes =
-        header.blockDirectory.map((e) => e.plaintextHash).toList();
+    final leafHashes = header.blockDirectory
+        .map((e) => e.plaintextHash)
+        .toList();
 
     final proof = ExcerptProof.generateProof(leafHashes, blockIndex);
 
@@ -90,7 +92,8 @@ class VerifyExcerptCommand extends Command<int> {
   String get name => 'verify-excerpt';
 
   @override
-  String get description => 'Verify a Merkle inclusion proof.\n\n'
+  String get description =>
+      'Verify a Merkle inclusion proof.\n\n'
       'Checks that an excerpt proof is valid against a sealed file\'s\n'
       'Merkle root.\n\n'
       'Examples:\n'

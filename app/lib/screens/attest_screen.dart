@@ -187,9 +187,7 @@ class _AttestScreenState extends State<AttestScreen> {
     final fileService = context.read<FileService>();
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.attestAction),
-      ),
+      appBar: AppBar(title: Text(l10n.attestAction)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -202,10 +200,7 @@ class _AttestScreenState extends State<AttestScreen> {
                 padding: const EdgeInsets.all(12),
                 child: Row(
                   children: [
-                    Icon(
-                      Icons.info_outline,
-                      color: theme.colorScheme.primary,
-                    ),
+                    Icon(Icons.info_outline, color: theme.colorScheme.primary),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
@@ -296,10 +291,7 @@ class _AttestScreenState extends State<AttestScreen> {
                   children: [
                     Row(
                       children: [
-                        Icon(
-                          Icons.key,
-                          color: theme.colorScheme.primary,
-                        ),
+                        Icon(Icons.key, color: theme.colorScheme.primary),
                         const SizedBox(width: 8),
                         Text(
                           'Signer Key',
@@ -333,10 +325,7 @@ class _AttestScreenState extends State<AttestScreen> {
                   children: [
                     Row(
                       children: [
-                        Icon(
-                          Icons.approval,
-                          color: theme.colorScheme.primary,
-                        ),
+                        Icon(Icons.approval, color: theme.colorScheme.primary),
                         const SizedBox(width: 8),
                         Text(
                           'New Attestation',
@@ -415,10 +404,7 @@ class _AttestScreenState extends State<AttestScreen> {
                     children: [
                       Row(
                         children: [
-                          Icon(
-                            Icons.history,
-                            color: theme.colorScheme.primary,
-                          ),
+                          Icon(Icons.history, color: theme.colorScheme.primary),
                           const SizedBox(width: 8),
                           Text(
                             'Existing Attestations',
