@@ -48,3 +48,7 @@ export 'src/identity.dart';
 export 'src/supply_chain.dart';
 export 'src/structured_blocks.dart';
 export 'src/wet_signature.dart';
+export 'src/envelope.dart';
+export 'src/template.dart';
+export 'src/certificate_of_completion.dart';
+export 'src/bulk_send.dart';
