@@ -121,14 +121,21 @@ void main() {
       });
     });
 
-    group('deterministic Merkle root', () {
-      test('Merkle root for single block equals SHA-256 of content', () {
+    group('deterministic Merkle root (v1.4: RFC 6962 domain separation)', () {
+      test('Merkle root for single block is domain-separated leaf hash', () {
         final content = Uint8List.fromList(utf8.encode('Hello, Zegel!'));
         final contentHash = _sha256(content);
 
-        // For a single leaf tree, root = leaf hash
+        // v1.4: single leaf root = SHA-256(0x00 || contentHash), NOT contentHash.
         final merkleRoot = MerkleTree.buildRoot([contentHash]);
-        expect(merkleRoot, equals(contentHash));
+
+        // Compute expected: SHA-256(0x00 || contentHash)
+        final leafPrefixed = Uint8List(1 + contentHash.length);
+        leafPrefixed[0] = 0x00;
+        leafPrefixed.setRange(1, leafPrefixed.length, contentHash);
+        final expectedRoot = _sha256(leafPrefixed);
+
+        expect(merkleRoot, equals(expectedRoot));
       });
 
       test('Merkle root for known two-block content is deterministic', () {
@@ -142,11 +149,25 @@ void main() {
         final root = MerkleTree.buildRoot([hash0, hash1]);
         expect(root.length, equals(32));
 
-        // Compute expected root manually
-        final combined = Uint8List(64);
-        combined.setAll(0, hash0);
-        combined.setAll(32, hash1);
-        final expectedRoot = _sha256(combined);
+        // Compute expected root with RFC 6962 domain separation.
+        // Leaf 0: SHA-256(0x00 || hash0)
+        final leaf0Prefixed = Uint8List(1 + hash0.length);
+        leaf0Prefixed[0] = 0x00;
+        leaf0Prefixed.setRange(1, leaf0Prefixed.length, hash0);
+        final leaf0Ds = _sha256(leaf0Prefixed);
+
+        // Leaf 1: SHA-256(0x00 || hash1)
+        final leaf1Prefixed = Uint8List(1 + hash1.length);
+        leaf1Prefixed[0] = 0x00;
+        leaf1Prefixed.setRange(1, leaf1Prefixed.length, hash1);
+        final leaf1Ds = _sha256(leaf1Prefixed);
+
+        // Internal node: SHA-256(0x01 || leaf0Ds || leaf1Ds)
+        final nodePrefixed = Uint8List(1 + 64);
+        nodePrefixed[0] = 0x01;
+        nodePrefixed.setRange(1, 33, leaf0Ds);
+        nodePrefixed.setRange(33, 65, leaf1Ds);
+        final expectedRoot = _sha256(nodePrefixed);
 
         expect(root, equals(expectedRoot));
       });
@@ -157,7 +178,9 @@ void main() {
         final masterKey = _testKey();
         final salt = _zeroSalt();
         final content = Uint8List.fromList(utf8.encode('Hello, Zegel!'));
-        final merkleRoot = _sha256(content); // single block = content hash
+        // v1.4: single leaf root = SHA-256(0x00 || content_hash)
+        final contentHash = _sha256(content);
+        final merkleRoot = MerkleTree.buildRoot([contentHash]);
 
         // IKM = master_key || merkle_root (64 bytes)
         final ikm = Uint8List(64);
@@ -195,7 +218,8 @@ void main() {
         final masterKey = _testKey();
         final salt = _zeroSalt();
         final content = Uint8List.fromList(utf8.encode('Hello, Zegel!'));
-        final merkleRoot = _sha256(content);
+        // v1.4: domain-separated Merkle root.
+        final merkleRoot = MerkleTree.buildRoot([_sha256(content)]);
 
         // seal_key = HMAC-SHA256(merkle_root, master_key || salt)
         final sealKeyInput = Uint8List(64);
@@ -302,10 +326,12 @@ void main() {
         // Directory entry total: 1 + 32 + 4 + 12 + 16 = 65 bytes
         // Directory ends at 131 + 65 = 196
 
-        // Merkle root at 196-227 (32 bytes)
+        // Merkle root at 196-227 (32 bytes).
+        // v1.4: single leaf root = SHA-256(0x00 || content_hash)
         final merkleRoot = fileBytes.sublist(196, 228);
         expect(merkleRoot.length, equals(32));
-        expect(merkleRoot, equals(_sha256(content)));
+        final expectedRoot = MerkleTree.buildRoot([_sha256(content)]);
+        expect(merkleRoot, equals(expectedRoot));
 
         // Encrypted block data at 228 through (end - 64)
         const blockDataStart = 228;
