@@ -571,7 +571,7 @@ class ZegelReader {
         gcmInput.setRange(ciphertext.length, gcmInput.length, entry.tag);
         plaintext = cipher.process(gcmInput);
       } on Exception {
-        throw ZegelTamperedException(
+        throw const ZegelTamperedException(
           'Tamper detected: token block decryption failed',
         );
       }
@@ -581,7 +581,7 @@ class ZegelReader {
         sha256.convert(plaintext).bytes,
       );
       if (!_constantTimeEquals(ptHash, entry.hash)) {
-        throw ZegelTamperedException(
+        throw const ZegelTamperedException(
           'Tamper detected: token block integrity check failed',
         );
       }
