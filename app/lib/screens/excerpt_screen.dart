@@ -46,9 +46,8 @@ class _ExcerptScreenState extends State<ExcerptScreen>
         bottom: TabBar(
           controller: _tabController,
           labelColor: theme.colorScheme.onPrimary,
-          unselectedLabelColor: theme.colorScheme.onPrimary.withValues(
-            alpha: 0.7,
-          ),
+          unselectedLabelColor:
+              theme.colorScheme.onPrimary.withValues(alpha: 0.7),
           indicatorColor: theme.colorScheme.onPrimary,
           tabs: [
             Tab(text: l10n.excerptGenerateTab),
@@ -58,7 +57,10 @@ class _ExcerptScreenState extends State<ExcerptScreen>
       ),
       body: TabBarView(
         controller: _tabController,
-        children: const [_ExcerptGenerateTab(), _ExcerptVerifyTab()],
+        children: const [
+          _ExcerptGenerateTab(),
+          _ExcerptVerifyTab(),
+        ],
       ),
     );
   }
@@ -145,10 +147,8 @@ class _ExcerptGenerateTabState extends State<_ExcerptGenerateTab> {
         _hexKey,
         _selectedBlocks.toList()..sort(),
       );
-      final savedPath = await fileService.saveFile(
-        proofJson,
-        'excerpt_proof.json',
-      );
+      final savedPath =
+          await fileService.saveFile(proofJson, 'excerpt_proof.json');
       if (savedPath != null && mounted) {
         setState(() {
           _statusMessage = 'Excerpt proof saved.';
@@ -352,9 +352,7 @@ class _ExcerptGenerateTabState extends State<_ExcerptGenerateTab> {
                       width: 20,
                       height: 20,
                       child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
+                          strokeWidth: 2, color: Colors.white),
                     )
                   : const Icon(Icons.receipt_long),
               label: Text(
@@ -434,9 +432,8 @@ class _ExcerptVerifyTabState extends State<_ExcerptVerifyTab> {
       if (mounted) {
         setState(() {
           _isValid = valid;
-          _statusMessage = valid
-              ? 'Excerpt proof is VALID'
-              : 'Excerpt proof is INVALID';
+          _statusMessage =
+              valid ? 'Excerpt proof is VALID' : 'Excerpt proof is INVALID';
         });
       }
     } catch (e) {
@@ -472,10 +469,8 @@ class _ExcerptVerifyTabState extends State<_ExcerptVerifyTab> {
                 children: [
                   Row(
                     children: [
-                      Icon(
-                        Icons.verified_user,
-                        color: theme.colorScheme.primary,
-                      ),
+                      Icon(Icons.verified_user,
+                          color: theme.colorScheme.primary),
                       const SizedBox(width: 8),
                       Text(
                         l10n.excerptZglFileLabel,
@@ -519,10 +514,8 @@ class _ExcerptVerifyTabState extends State<_ExcerptVerifyTab> {
                 children: [
                   Row(
                     children: [
-                      Icon(
-                        Icons.receipt_long,
-                        color: theme.colorScheme.primary,
-                      ),
+                      Icon(Icons.receipt_long,
+                          color: theme.colorScheme.primary),
                       const SizedBox(width: 8),
                       Text(
                         l10n.excerptProofFileLabel,
@@ -569,9 +562,7 @@ class _ExcerptVerifyTabState extends State<_ExcerptVerifyTab> {
                       width: 20,
                       height: 20,
                       child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
+                          strokeWidth: 2, color: Colors.white),
                     )
                   : const Icon(Icons.verified),
               label: Text(
@@ -592,9 +583,8 @@ class _ExcerptVerifyTabState extends State<_ExcerptVerifyTab> {
                     height: 120,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: (_isValid! ? Colors.green : Colors.red).withValues(
-                        alpha: 0.1,
-                      ),
+                      color: (_isValid! ? Colors.green : Colors.red)
+                          .withValues(alpha: 0.1),
                       border: Border.all(
                         color: _isValid! ? Colors.green : Colors.red,
                         width: 3,

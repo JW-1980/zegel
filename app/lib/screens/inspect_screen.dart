@@ -131,7 +131,9 @@ class _InspectScreenState extends State<InspectScreen> {
     final fileService = context.read<FileService>();
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.inspectAction)),
+      appBar: AppBar(
+        title: Text(l10n.inspectAction),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -146,7 +148,10 @@ class _InspectScreenState extends State<InspectScreen> {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.search, color: theme.colorScheme.primary),
+                        Icon(
+                          Icons.search,
+                          color: theme.colorScheme.primary,
+                        ),
                         const SizedBox(width: 8),
                         Text(
                           'File to Inspect',
@@ -309,16 +314,14 @@ class _InspectScreenState extends State<InspectScreen> {
                         spacing: 8,
                         runSpacing: 8,
                         children: _getFlagNames(_inspection!.flags)
-                            .map(
-                              (name) => Chip(
-                                label: Text(
-                                  name,
-                                  style: const TextStyle(fontSize: 12),
-                                ),
-                                backgroundColor:
-                                    theme.colorScheme.primaryContainer,
-                              ),
-                            )
+                            .map((name) => Chip(
+                                  label: Text(
+                                    name,
+                                    style: const TextStyle(fontSize: 12),
+                                  ),
+                                  backgroundColor:
+                                      theme.colorScheme.primaryContainer,
+                                ))
                             .toList(),
                       ),
                       if (_getFlagNames(_inspection!.flags).isEmpty)
@@ -383,9 +386,8 @@ class _InspectScreenState extends State<InspectScreen> {
               // Expiration (if present)
               if (_inspection!.expirationTimestamp != null) ...[
                 Card(
-                  color: _isExpired()
-                      ? Colors.red.shade50
-                      : Colors.orange.shade50,
+                  color:
+                      _isExpired() ? Colors.red.shade50 : Colors.orange.shade50,
                   child: Padding(
                     padding: const EdgeInsets.all(16),
                     child: Column(
@@ -463,10 +465,8 @@ class _InspectScreenState extends State<InspectScreen> {
                       children: [
                         Row(
                           children: [
-                            Icon(
-                              Icons.description,
-                              color: theme.colorScheme.primary,
-                            ),
+                            Icon(Icons.description,
+                                color: theme.colorScheme.primary),
                             const SizedBox(width: 8),
                             Text(
                               'Public Metadata',
@@ -477,13 +477,12 @@ class _InspectScreenState extends State<InspectScreen> {
                           ],
                         ),
                         const Divider(),
-                        ..._inspection!.publicMetadata!.entries.map(
-                          (entry) => _buildInfoRow(
-                            entry.key,
-                            entry.value.toString(),
-                            theme,
-                          ),
-                        ),
+                        ..._inspection!.publicMetadata!.entries
+                            .map((entry) => _buildInfoRow(
+                                  entry.key,
+                                  entry.value.toString(),
+                                  theme,
+                                )),
                       ],
                     ),
                   ),

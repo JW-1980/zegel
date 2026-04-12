@@ -46,9 +46,8 @@ class _ManifestScreenState extends State<ManifestScreen>
         bottom: TabBar(
           controller: _tabController,
           labelColor: theme.colorScheme.onPrimary,
-          unselectedLabelColor: theme.colorScheme.onPrimary.withValues(
-            alpha: 0.7,
-          ),
+          unselectedLabelColor:
+              theme.colorScheme.onPrimary.withValues(alpha: 0.7),
           indicatorColor: theme.colorScheme.onPrimary,
           tabs: [
             Tab(text: l10n.manifestCreateTab),
@@ -58,7 +57,10 @@ class _ManifestScreenState extends State<ManifestScreen>
       ),
       body: TabBarView(
         controller: _tabController,
-        children: const [_ManifestCreateTab(), _ManifestVerifyTab()],
+        children: const [
+          _ManifestCreateTab(),
+          _ManifestVerifyTab(),
+        ],
       ),
     );
   }
@@ -122,10 +124,8 @@ class _ManifestCreateTabState extends State<_ManifestCreateTab> {
         _signerKeyHex,
         _signerIdController.text.trim(),
       );
-      final savedPath = await fileService.saveFile(
-        manifestBytes,
-        'manifest.json',
-      );
+      final savedPath =
+          await fileService.saveFile(manifestBytes, 'manifest.json');
       if (savedPath != null && mounted) {
         setState(() {
           _statusMessage = 'Manifest created and saved.';
@@ -210,11 +210,8 @@ class _ManifestCreateTabState extends State<_ManifestCreateTab> {
                           ),
                         ),
                         trailing: IconButton(
-                          icon: const Icon(
-                            Icons.remove_circle_outline,
-                            color: Colors.red,
-                            size: 20,
-                          ),
+                          icon: const Icon(Icons.remove_circle_outline,
+                              color: Colors.red, size: 20),
                           onPressed: () => _removeFile(entry.key),
                         ),
                       );
@@ -292,9 +289,7 @@ class _ManifestCreateTabState extends State<_ManifestCreateTab> {
                       width: 20,
                       height: 20,
                       child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
+                          strokeWidth: 2, color: Colors.white),
                     )
                   : const Icon(Icons.create_new_folder),
               label: Text(
@@ -411,10 +406,8 @@ class _ManifestVerifyTabState extends State<_ManifestVerifyTab> {
                 children: [
                   Row(
                     children: [
-                      Icon(
-                        Icons.receipt_long,
-                        color: theme.colorScheme.primary,
-                      ),
+                      Icon(Icons.receipt_long,
+                          color: theme.colorScheme.primary),
                       const SizedBox(width: 8),
                       Text(
                         l10n.manifestFileLabel,
@@ -541,9 +534,7 @@ class _ManifestVerifyTabState extends State<_ManifestVerifyTab> {
                       width: 20,
                       height: 20,
                       child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
+                          strokeWidth: 2, color: Colors.white),
                     )
                   : const Icon(Icons.verified_user),
               label: Text(
@@ -571,23 +562,21 @@ class _ManifestVerifyTabState extends State<_ManifestVerifyTab> {
                       ),
                     ),
                     const Divider(),
-                    ..._results!.map(
-                      (r) => ListTile(
-                        dense: true,
-                        contentPadding: EdgeInsets.zero,
-                        leading: Icon(
-                          r.isValid ? Icons.check_circle : Icons.error,
-                          color: r.isValid ? Colors.green : Colors.red,
-                        ),
-                        title: Text(r.filename),
-                        subtitle: Text(
-                          r.message,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
+                    ..._results!.map((r) => ListTile(
+                          dense: true,
+                          contentPadding: EdgeInsets.zero,
+                          leading: Icon(
+                            r.isValid ? Icons.check_circle : Icons.error,
+                            color: r.isValid ? Colors.green : Colors.red,
                           ),
-                        ),
-                      ),
-                    ),
+                          title: Text(r.filename),
+                          subtitle: Text(
+                            r.message,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        )),
                   ],
                 ),
               ),

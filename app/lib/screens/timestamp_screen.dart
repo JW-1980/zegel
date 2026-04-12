@@ -70,8 +70,7 @@ class _TimestampScreenState extends State<TimestampScreen>
     }
     if (_hexKey.length != 64) {
       setState(
-        () => _errorMessage = 'Please enter a valid 64-character hex key.',
-      );
+          () => _errorMessage = 'Please enter a valid 64-character hex key.');
       return;
     }
 
@@ -141,8 +140,7 @@ class _TimestampScreenState extends State<TimestampScreen>
     }
     if (_hexKey.length != 64) {
       setState(
-        () => _errorMessage = 'Please enter a valid 64-character hex key.',
-      );
+          () => _errorMessage = 'Please enter a valid 64-character hex key.');
       return;
     }
     if (_timestampToken == null) {
@@ -437,10 +435,7 @@ class _TimestampScreenState extends State<TimestampScreen>
             _buildMessageBox(_errorMessage!, Colors.red, Icons.error),
           if (_successMessage != null)
             _buildMessageBox(
-              _successMessage!,
-              Colors.green,
-              Icons.check_circle,
-            ),
+                _successMessage!, Colors.green, Icons.check_circle),
 
           // Timestamp token display
           if (_timestampToken != null) ...[
@@ -453,10 +448,8 @@ class _TimestampScreenState extends State<TimestampScreen>
                   children: [
                     Row(
                       children: [
-                        Icon(
-                          Icons.receipt_long,
-                          color: theme.colorScheme.primary,
-                        ),
+                        Icon(Icons.receipt_long,
+                            color: theme.colorScheme.primary),
                         const SizedBox(width: 8),
                         Text(
                           'Timestamp Token',
@@ -480,15 +473,13 @@ class _TimestampScreenState extends State<TimestampScreen>
                     _buildInfoRow(
                       'Merkle Root',
                       _truncateHash(
-                        _timestampToken!['merkle_root']?.toString() ?? '',
-                      ),
+                          _timestampToken!['merkle_root']?.toString() ?? ''),
                       theme,
                     ),
                     _buildInfoRow(
                       'Signature',
                       _truncateHash(
-                        _timestampToken!['signature']?.toString() ?? '',
-                      ),
+                          _timestampToken!['signature']?.toString() ?? ''),
                       theme,
                     ),
                   ],
@@ -541,10 +532,8 @@ class _TimestampScreenState extends State<TimestampScreen>
                 children: [
                   Row(
                     children: [
-                      Icon(
-                        Icons.verified_user,
-                        color: theme.colorScheme.primary,
-                      ),
+                      Icon(Icons.verified_user,
+                          color: theme.colorScheme.primary),
                       const SizedBox(width: 8),
                       Text(
                         'File to Verify',
@@ -678,10 +667,7 @@ class _TimestampScreenState extends State<TimestampScreen>
             _buildMessageBox(_errorMessage!, Colors.red, Icons.error),
           if (_successMessage != null)
             _buildMessageBox(
-              _successMessage!,
-              Colors.green,
-              Icons.check_circle,
-            ),
+                _successMessage!, Colors.green, Icons.check_circle),
         ],
       ),
     );
@@ -701,7 +687,10 @@ class _TimestampScreenState extends State<TimestampScreen>
           Icon(icon, color: color),
           const SizedBox(width: 8),
           Expanded(
-            child: Text(message, style: TextStyle(color: color.shade900)),
+            child: Text(
+              message,
+              style: TextStyle(color: color.shade900),
+            ),
           ),
         ],
       ),

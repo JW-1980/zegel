@@ -47,9 +47,8 @@ class _BatchScreenState extends State<BatchScreen>
         bottom: TabBar(
           controller: _tabController,
           labelColor: theme.colorScheme.onPrimary,
-          unselectedLabelColor: theme.colorScheme.onPrimary.withValues(
-            alpha: 0.7,
-          ),
+          unselectedLabelColor:
+              theme.colorScheme.onPrimary.withValues(alpha: 0.7),
           indicatorColor: theme.colorScheme.onPrimary,
           tabs: [
             Tab(text: l10n.batchVerifyTab),
@@ -59,7 +58,10 @@ class _BatchScreenState extends State<BatchScreen>
       ),
       body: TabBarView(
         controller: _tabController,
-        children: const [_BatchVerifyTab(), _BatchSealTab()],
+        children: const [
+          _BatchVerifyTab(),
+          _BatchSealTab(),
+        ],
       ),
     );
   }
@@ -126,9 +128,8 @@ class _BatchVerifyTabState extends State<_BatchVerifyTab> {
 
       const chunkSize = 20;
       for (int i = 0; i < files.length; i += chunkSize) {
-        final end = (i + chunkSize < files.length)
-            ? i + chunkSize
-            : files.length;
+        final end =
+            (i + chunkSize < files.length) ? i + chunkSize : files.length;
         final chunk = files.sublist(i, end);
 
         final futures = chunk.map((filePath) async {
@@ -166,9 +167,9 @@ class _BatchVerifyTabState extends State<_BatchVerifyTab> {
     } catch (e) {
       if (mounted) {
         // ignore: use_build_context_synchronously
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Batch verify error: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Batch verify error: $e')),
+        );
       }
     } finally {
       if (mounted) {
@@ -256,10 +257,9 @@ class _BatchVerifyTabState extends State<_BatchVerifyTab> {
                 child: Column(
                   children: [
                     LinearProgressIndicator(
-                      // ignore: deprecated_member_use
-                      // ignore: deprecated_member_use
-                      value: _progress,
-                    ),
+                        // ignore: deprecated_member_use
+// ignore: deprecated_member_use
+                        value: _progress),
                     const SizedBox(height: 8),
                     Text(
                       '$_processedFiles / $_totalFiles files processed',
@@ -278,8 +278,8 @@ class _BatchVerifyTabState extends State<_BatchVerifyTab> {
             child: ElevatedButton.icon(
               onPressed:
                   _isProcessing || _folderPath == null || _hexKey.length != 64
-                  ? null
-                  : _startBatchVerify,
+                      ? null
+                      : _startBatchVerify,
               icon: _isProcessing
                   ? const SizedBox(
                       width: 20,
@@ -423,19 +423,15 @@ class _BatchSealTabState extends State<_BatchSealTab> {
       const chunkSize = 20;
 
       for (int i = 0; i < files.length; i += chunkSize) {
-        final end = (i + chunkSize < files.length)
-            ? i + chunkSize
-            : files.length;
+        final end =
+            (i + chunkSize < files.length) ? i + chunkSize : files.length;
         final chunk = files.sublist(i, end);
 
         final futures = chunk.map((filePath) async {
           final stopwatch = Stopwatch()..start();
           try {
-            final sealedBytes = await zegelService.seal(
-              filePath,
-              _hexKey,
-              options,
-            );
+            final sealedBytes =
+                await zegelService.seal(filePath, _hexKey, options);
             final fileName = fileService.getFileName(filePath);
             final outputPath = '$_outputFolder/$fileName.zgl';
             await fileService.saveFileToPath(sealedBytes, outputPath);
@@ -471,9 +467,9 @@ class _BatchSealTabState extends State<_BatchSealTab> {
     } catch (e) {
       if (mounted) {
         // ignore: use_build_context_synchronously
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Batch seal error: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Batch seal error: $e')),
+        );
       }
     } finally {
       if (mounted) {
@@ -551,10 +547,8 @@ class _BatchSealTabState extends State<_BatchSealTab> {
                 children: [
                   Row(
                     children: [
-                      Icon(
-                        Icons.folder_special,
-                        color: theme.colorScheme.primary,
-                      ),
+                      Icon(Icons.folder_special,
+                          color: theme.colorScheme.primary),
                       const SizedBox(width: 8),
                       Text(
                         l10n.batchOutputFolder,
@@ -639,10 +633,9 @@ class _BatchSealTabState extends State<_BatchSealTab> {
                 child: Column(
                   children: [
                     LinearProgressIndicator(
-                      // ignore: deprecated_member_use
-                      // ignore: deprecated_member_use
-                      value: _progress,
-                    ),
+                        // ignore: deprecated_member_use
+// ignore: deprecated_member_use
+                        value: _progress),
                     const SizedBox(height: 8),
                     Text(
                       '$_processedFiles / $_totalFiles files processed',
@@ -659,8 +652,7 @@ class _BatchSealTabState extends State<_BatchSealTab> {
           SizedBox(
             height: 50,
             child: ElevatedButton.icon(
-              onPressed:
-                  _isProcessing ||
+              onPressed: _isProcessing ||
                       _inputFolder == null ||
                       _outputFolder == null ||
                       _hexKey.length != 64

@@ -79,9 +79,8 @@ class _KeygenScreenState extends State<KeygenScreen> {
       final keyService = context.read<KeyService>();
 
       // Save as raw 32 bytes
-      final bytes = Uint8List.fromList(
-        keyService.hexToBytes(_generatedKeyHex!),
-      );
+      final bytes =
+          Uint8List.fromList(keyService.hexToBytes(_generatedKeyHex!));
       final savedPath = await fileService.saveFile(bytes, 'zegel_key.bin');
 
       if (savedPath != null && mounted) {
@@ -152,7 +151,9 @@ class _KeygenScreenState extends State<KeygenScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.generateKeyAction)),
+      appBar: AppBar(
+        title: Text(l10n.generateKeyAction),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -248,7 +249,10 @@ class _KeygenScreenState extends State<KeygenScreen> {
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.key, color: theme.colorScheme.primary),
+                          Icon(
+                            Icons.key,
+                            color: theme.colorScheme.primary,
+                          ),
                           const SizedBox(width: 8),
                           Text(
                             'Generated Key',
@@ -304,9 +308,8 @@ class _KeygenScreenState extends State<KeygenScreen> {
                           color: theme.colorScheme.surfaceContainerHighest,
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
-                            color: theme.colorScheme.outline.withValues(
-                              alpha: 0.3,
-                            ),
+                            color: theme.colorScheme.outline
+                                .withValues(alpha: 0.3),
                           ),
                         ),
                         child: Row(
@@ -351,9 +354,8 @@ class _KeygenScreenState extends State<KeygenScreen> {
                           color: theme.colorScheme.surfaceContainerHighest,
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
-                            color: theme.colorScheme.outline.withValues(
-                              alpha: 0.3,
-                            ),
+                            color: theme.colorScheme.outline
+                                .withValues(alpha: 0.3),
                           ),
                         ),
                         child: Row(
@@ -397,7 +399,10 @@ class _KeygenScreenState extends State<KeygenScreen> {
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.save, color: theme.colorScheme.primary),
+                          Icon(
+                            Icons.save,
+                            color: theme.colorScheme.primary,
+                          ),
                           const SizedBox(width: 8),
                           Text(
                             'Save Key',
@@ -464,9 +469,8 @@ class _KeygenScreenState extends State<KeygenScreen> {
                                 ),
                                 const SizedBox(width: 8),
                                 ElevatedButton(
-                                  onPressed: _isSaving
-                                      ? null
-                                      : _saveToSecureStorage,
+                                  onPressed:
+                                      _isSaving ? null : _saveToSecureStorage,
                                   child: const Text('Save'),
                                 ),
                               ],
@@ -574,7 +578,10 @@ class _SecurityTip extends StatelessWidget {
   final IconData icon;
   final String text;
 
-  const _SecurityTip({required this.icon, required this.text});
+  const _SecurityTip({
+    required this.icon,
+    required this.text,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -582,12 +589,19 @@ class _SecurityTip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
         children: [
-          Icon(icon, size: 16, color: Colors.orange.shade700),
+          Icon(
+            icon,
+            size: 16,
+            color: Colors.orange.shade700,
+          ),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               text,
-              style: TextStyle(fontSize: 13, color: Colors.orange.shade900),
+              style: TextStyle(
+                fontSize: 13,
+                color: Colors.orange.shade900,
+              ),
             ),
           ),
         ],
@@ -616,7 +630,11 @@ class _KeyProperty extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
-          Icon(icon, size: 16, color: theme.colorScheme.primary),
+          Icon(
+            icon,
+            size: 16,
+            color: theme.colorScheme.primary,
+          ),
           const SizedBox(width: 8),
           SizedBox(
             width: 100,
@@ -627,7 +645,12 @@ class _KeyProperty extends StatelessWidget {
               ),
             ),
           ),
-          Expanded(child: Text(value, style: theme.textTheme.bodyMedium)),
+          Expanded(
+            child: Text(
+              value,
+              style: theme.textTheme.bodyMedium,
+            ),
+          ),
         ],
       ),
     );

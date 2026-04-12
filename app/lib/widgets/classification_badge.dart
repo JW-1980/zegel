@@ -81,7 +81,11 @@ class ClassificationBadge extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.shield, size: 16, color: color),
+          Icon(
+            Icons.shield,
+            size: 16,
+            color: color,
+          ),
           const SizedBox(width: 6),
           Text(
             _displayText(),

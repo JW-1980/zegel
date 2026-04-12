@@ -15,7 +15,11 @@ class StatusBadge extends StatefulWidget {
   /// Whether to animate the state change.
   final bool animate;
 
-  const StatusBadge({super.key, required this.status, this.animate = true});
+  const StatusBadge({
+    super.key,
+    required this.status,
+    this.animate = true,
+  });
 
   @override
   State<StatusBadge> createState() => _StatusBadgeState();
@@ -34,10 +38,9 @@ class _StatusBadgeState extends State<StatusBadge>
       duration: const Duration(milliseconds: 600),
       vsync: this,
     );
-    _scaleAnimation = Tween<double>(
-      begin: 0.5,
-      end: 1.0,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.elasticOut));
+    _scaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.elasticOut),
+    );
     _opacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
@@ -125,7 +128,11 @@ class _StatusBadgeState extends State<StatusBadge>
                     color: color.withValues(alpha: 0.1),
                     border: Border.all(color: color, width: 3),
                   ),
-                  child: Icon(_statusIcon(), size: 64, color: color),
+                  child: Icon(
+                    _statusIcon(),
+                    size: 64,
+                    color: color,
+                  ),
                 ),
                 const SizedBox(height: 16),
                 Text(
@@ -159,6 +166,9 @@ class AnimatedBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListenableBuilder(listenable: listenable, builder: builder);
+    return ListenableBuilder(
+      listenable: listenable,
+      builder: builder,
+    );
   }
 }

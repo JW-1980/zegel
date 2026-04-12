@@ -64,8 +64,7 @@ class _VerifyScreenState extends State<VerifyScreen> {
     }
     if (_hexKey.length != 64) {
       setState(
-        () => _errorMessage = 'Please enter a valid 64-character hex key.',
-      );
+          () => _errorMessage = 'Please enter a valid 64-character hex key.');
       return;
     }
 
@@ -111,8 +110,10 @@ class _VerifyScreenState extends State<VerifyScreen> {
     if (_filePath == null) return;
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) =>
-            ExtractScreen(initialFilePath: _filePath, initialKey: _hexKey),
+        builder: (_) => ExtractScreen(
+          initialFilePath: _filePath,
+          initialKey: _hexKey,
+        ),
       ),
     );
   }
@@ -126,7 +127,9 @@ class _VerifyScreenState extends State<VerifyScreen> {
     final fileService = context.read<FileService>();
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.verifyAction)),
+      appBar: AppBar(
+        title: Text(l10n.verifyAction),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -310,10 +313,8 @@ class _VerifyScreenState extends State<VerifyScreen> {
                     padding: const EdgeInsets.all(16),
                     child: Row(
                       children: [
-                        Icon(
-                          Icons.access_time,
-                          color: theme.colorScheme.primary,
-                        ),
+                        Icon(Icons.access_time,
+                            color: theme.colorScheme.primary),
                         const SizedBox(width: 8),
                         Text(
                           l10n.verifyTimestampAuthority,
@@ -364,10 +365,8 @@ class _VerifyScreenState extends State<VerifyScreen> {
                       children: [
                         Row(
                           children: [
-                            Icon(
-                              Icons.policy,
-                              color: theme.colorScheme.primary,
-                            ),
+                            Icon(Icons.policy,
+                                color: theme.colorScheme.primary),
                             const SizedBox(width: 8),
                             Text(
                               l10n.verifyAttestationPolicy,
@@ -384,10 +383,8 @@ class _VerifyScreenState extends State<VerifyScreen> {
                               _result!.attestations!.every((a) => a.isVerified)
                                   ? Icons.check_circle
                                   : Icons.warning,
-                              color:
-                                  _result!.attestations!.every(
-                                    (a) => a.isVerified,
-                                  )
+                              color: _result!.attestations!
+                                      .every((a) => a.isVerified)
                                   ? Colors.green
                                   : Colors.orange,
                             ),
@@ -398,10 +395,8 @@ class _VerifyScreenState extends State<VerifyScreen> {
                                   : l10n.verifySomeAttestationsInvalid,
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                color:
-                                    _result!.attestations!.every(
-                                      (a) => a.isVerified,
-                                    )
+                                color: _result!.attestations!
+                                        .every((a) => a.isVerified)
                                     ? Colors.green
                                     : Colors.orange,
                               ),
@@ -443,10 +438,8 @@ class _VerifyScreenState extends State<VerifyScreen> {
                   child: Column(
                     children: [
                       ListTile(
-                        leading: Icon(
-                          Icons.timeline,
-                          color: theme.colorScheme.primary,
-                        ),
+                        leading: Icon(Icons.timeline,
+                            color: theme.colorScheme.primary),
                         title: Text(
                           l10n.verifyProvenancePreview,
                           style: theme.textTheme.titleMedium?.copyWith(
@@ -466,8 +459,7 @@ class _VerifyScreenState extends State<VerifyScreen> {
                         ),
                         onTap: () {
                           setState(
-                            () => _provenanceExpanded = !_provenanceExpanded,
-                          );
+                              () => _provenanceExpanded = !_provenanceExpanded);
                         },
                       ),
                       if (_provenanceExpanded)

@@ -46,9 +46,8 @@ class _CredentialScreenState extends State<CredentialScreen>
         bottom: TabBar(
           controller: _tabController,
           labelColor: theme.colorScheme.onPrimary,
-          unselectedLabelColor: theme.colorScheme.onPrimary.withValues(
-            alpha: 0.7,
-          ),
+          unselectedLabelColor:
+              theme.colorScheme.onPrimary.withValues(alpha: 0.7),
           indicatorColor: theme.colorScheme.onPrimary,
           tabs: [
             Tab(text: l10n.credentialIssueTab),
@@ -58,7 +57,10 @@ class _CredentialScreenState extends State<CredentialScreen>
       ),
       body: TabBarView(
         controller: _tabController,
-        children: const [_CredentialIssueTab(), _CredentialVerifyTab()],
+        children: const [
+          _CredentialIssueTab(),
+          _CredentialVerifyTab(),
+        ],
       ),
     );
   }
@@ -263,10 +265,8 @@ class _CredentialIssueTabState extends State<_CredentialIssueTab> {
                 children: [
                   Row(
                     children: [
-                      Icon(
-                        Icons.card_membership,
-                        color: theme.colorScheme.primary,
-                      ),
+                      Icon(Icons.card_membership,
+                          color: theme.colorScheme.primary),
                       const SizedBox(width: 8),
                       Text(
                         l10n.credentialTypeLabel,
@@ -415,9 +415,7 @@ class _CredentialIssueTabState extends State<_CredentialIssueTab> {
                       width: 20,
                       height: 20,
                       child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
+                          strokeWidth: 2, color: Colors.white),
                     )
                   : const Icon(Icons.verified),
               label: Text(
@@ -482,9 +480,8 @@ class _CredentialVerifyTabState extends State<_CredentialVerifyTab> {
       if (mounted) {
         setState(() {
           _credentialInfo = info;
-          _statusMessage = info.isValid
-              ? 'Credential is VALID'
-              : 'Credential is INVALID';
+          _statusMessage =
+              info.isValid ? 'Credential is VALID' : 'Credential is INVALID';
           _isError = !info.isValid;
         });
       }
@@ -560,17 +557,14 @@ class _CredentialVerifyTabState extends State<_CredentialVerifyTab> {
           SizedBox(
             height: 50,
             child: ElevatedButton.icon(
-              onPressed: _isVerifying || _filePath == null
-                  ? null
-                  : _verifyCredential,
+              onPressed:
+                  _isVerifying || _filePath == null ? null : _verifyCredential,
               icon: _isVerifying
                   ? const SizedBox(
                       width: 20,
                       height: 20,
                       child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
+                          strokeWidth: 2, color: Colors.white),
                     )
                   : const Icon(Icons.verified),
               label: Text(
@@ -631,10 +625,8 @@ class _CredentialVerifyTabState extends State<_CredentialVerifyTab> {
                   children: [
                     Row(
                       children: [
-                        Icon(
-                          Icons.card_membership,
-                          color: theme.colorScheme.primary,
-                        ),
+                        Icon(Icons.card_membership,
+                            color: theme.colorScheme.primary),
                         const SizedBox(width: 8),
                         Text(
                           l10n.credentialDetailsLabel,
@@ -742,7 +734,9 @@ class _CredentialDetailRow extends StatelessWidget {
               ),
             ),
           ),
-          Expanded(child: Text(value, style: theme.textTheme.bodyMedium)),
+          Expanded(
+            child: Text(value, style: theme.textTheme.bodyMedium),
+          ),
         ],
       ),
     );

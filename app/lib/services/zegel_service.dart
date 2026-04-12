@@ -200,11 +200,11 @@ class DisclosureToken {
   });
 
   Map<String, dynamic> toJson() => {
-    'version': version,
-    'merkle_root': merkleRoot,
-    'block_keys': blockKeys.map((k, v) => MapEntry(k.toString(), v)),
-    'created_at': createdAt.millisecondsSinceEpoch ~/ 1000,
-  };
+        'version': version,
+        'merkle_root': merkleRoot,
+        'block_keys': blockKeys.map((k, v) => MapEntry(k.toString(), v)),
+        'created_at': createdAt.millisecondsSinceEpoch ~/ 1000,
+      };
 
   factory DisclosureToken.fromJson(Map<String, dynamic> json) {
     final blockKeysRaw = json['block_keys'] as Map<String, dynamic>;
@@ -540,7 +540,9 @@ class ZegelService {
     String hexKey,
     SealOptions options,
   ) async {
-    return Future.wait(filePaths.map((path) => seal(path, hexKey, options)));
+    return Future.wait(
+      filePaths.map((path) => seal(path, hexKey, options)),
+    );
   }
 
   // ======================================================================
@@ -634,7 +636,10 @@ class ZegelService {
   ///
   /// No master key is required for verification.
   /// Returns true if the proof is valid.
-  Future<bool> verifyExcerptProof(String filePath, String proofPath) async {
+  Future<bool> verifyExcerptProof(
+    String filePath,
+    String proofPath,
+  ) async {
     // Delegate to the zegel library.
     throw UnimplementedError(
       'Verify excerpt proof operation requires the zegel core library. '

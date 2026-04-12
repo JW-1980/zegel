@@ -98,19 +98,16 @@ class _AuditScreenState extends State<AuditScreen> {
 
       // Verify chain integrity using the AuditTrail class
       final entries = result.auditTrail ?? [];
-      final chainValid =
-          entries.isEmpty ||
+      final chainValid = entries.isEmpty ||
           AuditTrail.verifyChain(
             entries
-                .map(
-                  (e) => <String, dynamic>{
-                    'actor': e.actor,
-                    'action': e.action,
-                    'timestamp': e.timestamp.millisecondsSinceEpoch ~/ 1000,
-                    if (e.details != null) 'details': e.details,
-                    'chain_hash': e.chainHash,
-                  },
-                )
+                .map((e) => <String, dynamic>{
+                      'actor': e.actor,
+                      'action': e.action,
+                      'timestamp': e.timestamp.millisecondsSinceEpoch ~/ 1000,
+                      if (e.details != null) 'details': e.details,
+                      'chain_hash': e.chainHash,
+                    })
                 .toList(),
           );
 
@@ -189,9 +186,8 @@ class _AuditScreenState extends State<AuditScreen> {
       final newEntry = AuditTrail.createEntry(
         _actor.trim(),
         _action,
-        details: _details.isNotEmpty
-            ? Map<String, dynamic>.from(_details)
-            : null,
+        details:
+            _details.isNotEmpty ? Map<String, dynamic>.from(_details) : null,
         previousChainHash: previousChainHash,
       );
 
@@ -239,7 +235,9 @@ class _AuditScreenState extends State<AuditScreen> {
     final fileService = context.read<FileService>();
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.auditTrailTitle)),
+      appBar: AppBar(
+        title: Text(l10n.auditTrailTitle),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -252,7 +250,10 @@ class _AuditScreenState extends State<AuditScreen> {
                 padding: const EdgeInsets.all(12),
                 child: Row(
                   children: [
-                    Icon(Icons.info_outline, color: theme.colorScheme.primary),
+                    Icon(
+                      Icons.info_outline,
+                      color: theme.colorScheme.primary,
+                    ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
@@ -388,9 +389,8 @@ class _AuditScreenState extends State<AuditScreen> {
                                   : 'Chain Integrity Broken',
                               style: theme.textTheme.titleSmall?.copyWith(
                                 fontWeight: FontWeight.bold,
-                                color: _isChainValid
-                                    ? Colors.green
-                                    : Colors.red,
+                                color:
+                                    _isChainValid ? Colors.green : Colors.red,
                               ),
                             ),
                             Text(

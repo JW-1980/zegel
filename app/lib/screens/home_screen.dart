@@ -67,7 +67,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _navigateToSeal([String? filePath]) {
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => SealScreen(initialFilePath: filePath)),
+      MaterialPageRoute(
+        builder: (_) => SealScreen(initialFilePath: filePath),
+      ),
     );
   }
 
@@ -80,15 +82,15 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _navigateToExtract() {
-    Navigator.of(
-      context,
-    ).push(MaterialPageRoute(builder: (_) => const ExtractScreen()));
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const ExtractScreen()),
+    );
   }
 
   void _navigateToSettings() {
-    Navigator.of(
-      context,
-    ).push(MaterialPageRoute(builder: (_) => const SettingsScreen()));
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const SettingsScreen()),
+    );
   }
 
   Future<void> _onTapDropZone() async {
@@ -96,12 +98,10 @@ class _HomeScreenState extends State<HomeScreen> {
     final path = await fileService.pickFile();
     if (path != null) {
       final isZgl = fileService.isZegelFile(path);
-      _onFileDropped(
-        DropResult(
-          filePath: path,
-          action: isZgl ? DropAction.verify : DropAction.seal,
-        ),
-      );
+      _onFileDropped(DropResult(
+        filePath: path,
+        action: isZgl ? DropAction.verify : DropAction.seal,
+      ));
     }
   }
 
@@ -149,7 +149,10 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           children: [
             // Drag and drop zone
-            DropZone(onFileDropped: _onFileDropped, onTap: _onTapDropZone),
+            DropZone(
+              onFileDropped: _onFileDropped,
+              onTap: _onTapDropZone,
+            ),
             const SizedBox(height: 24),
             // Recent files list
             if (_recentFiles.isNotEmpty) ...[
@@ -224,17 +227,15 @@ class _HomeScreenState extends State<HomeScreen> {
                       Icon(
                         Icons.shield_outlined,
                         size: 48,
-                        color: theme.colorScheme.onSurfaceVariant.withValues(
-                          alpha: 0.3,
-                        ),
+                        color: theme.colorScheme.onSurfaceVariant
+                            .withValues(alpha: 0.3),
                       ),
                       const SizedBox(height: 12),
                       Text(
                         'Drop a file above to get started',
                         style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant.withValues(
-                            alpha: 0.5,
-                          ),
+                          color: theme.colorScheme.onSurfaceVariant
+                              .withValues(alpha: 0.5),
                         ),
                       ),
                     ],
@@ -274,7 +275,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _navigateTo(Widget screen) {
-    Navigator.of(context).push(MaterialPageRoute(builder: (_) => screen));
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => screen),
+    );
   }
 
   Widget _buildDrawer(BuildContext context, AppLocalizations l10n) {
@@ -311,7 +314,9 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: EdgeInsets.zero,
         children: [
           DrawerHeader(
-            decoration: BoxDecoration(color: theme.colorScheme.primary),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.primary,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.end,
@@ -344,120 +349,63 @@ class _HomeScreenState extends State<HomeScreen> {
           drawerItem(Icons.lock, l10n.sealAction, _navigateToSeal),
           drawerItem(Icons.verified_user, l10n.verifyAction, _navigateToVerify),
           drawerItem(
-            Icons.file_download,
-            l10n.extractAction,
-            _navigateToExtract,
-          ),
-          drawerItem(
-            Icons.search,
-            l10n.inspectAction,
-            () => _navigateTo(const InspectScreen()),
-          ),
+              Icons.file_download, l10n.extractAction, _navigateToExtract),
+          drawerItem(Icons.search, l10n.inspectAction,
+              () => _navigateTo(const InspectScreen())),
 
           const Divider(),
 
           // Security
           sectionHeader(l10n.drawerSecuritySection),
-          drawerItem(
-            Icons.content_cut,
-            l10n.redactAction,
-            () => _navigateTo(const RedactScreen()),
-          ),
-          drawerItem(
-            Icons.key,
-            l10n.splitKeyAction,
-            () => _navigateTo(const SplitKeyScreen()),
-          ),
-          drawerItem(
-            Icons.security,
-            l10n.classificationTitle,
-            () => _navigateTo(const ClassificationScreen()),
-          ),
-          drawerItem(
-            Icons.approval,
-            l10n.attestAction,
-            () => _navigateTo(const AttestScreen()),
-          ),
-          drawerItem(
-            Icons.timeline,
-            l10n.auditTrailTitle,
-            () => _navigateTo(const AuditScreen()),
-          ),
-          drawerItem(
-            Icons.track_changes,
-            'Canary Traps',
-            () => _navigateTo(const CanaryScreen()),
-          ),
+          drawerItem(Icons.content_cut, l10n.redactAction,
+              () => _navigateTo(const RedactScreen())),
+          drawerItem(Icons.key, l10n.splitKeyAction,
+              () => _navigateTo(const SplitKeyScreen())),
+          drawerItem(Icons.security, l10n.classificationTitle,
+              () => _navigateTo(const ClassificationScreen())),
+          drawerItem(Icons.approval, l10n.attestAction,
+              () => _navigateTo(const AttestScreen())),
+          drawerItem(Icons.timeline, l10n.auditTrailTitle,
+              () => _navigateTo(const AuditScreen())),
+          drawerItem(Icons.track_changes, 'Canary Traps',
+              () => _navigateTo(const CanaryScreen())),
 
           const Divider(),
 
           // Disclosure
           sectionHeader(l10n.drawerDisclosureSection),
-          drawerItem(
-            Icons.visibility,
-            l10n.disclosureAction,
-            () => _navigateTo(const DiscloseScreen()),
-          ),
-          drawerItem(
-            Icons.receipt_long,
-            l10n.excerptTitle,
-            () => _navigateTo(const ExcerptScreen()),
-          ),
+          drawerItem(Icons.visibility, l10n.disclosureAction,
+              () => _navigateTo(const DiscloseScreen())),
+          drawerItem(Icons.receipt_long, l10n.excerptTitle,
+              () => _navigateTo(const ExcerptScreen())),
 
           const Divider(),
 
           // Advanced
           sectionHeader(l10n.drawerAdvancedSection),
-          drawerItem(
-            Icons.batch_prediction,
-            l10n.batchOperationsTitle,
-            () => _navigateTo(const BatchScreen()),
-          ),
-          drawerItem(
-            Icons.list_alt,
-            l10n.manifestTitle,
-            () => _navigateTo(const ManifestScreen()),
-          ),
-          drawerItem(
-            Icons.description,
-            l10n.contractTitle,
-            () => _navigateTo(const ContractScreen()),
-          ),
-          drawerItem(
-            Icons.school,
-            l10n.credentialTitle,
-            () => _navigateTo(const CredentialScreen()),
-          ),
-          drawerItem(
-            Icons.history,
-            l10n.provenanceTitle,
-            () => _navigateTo(const ProvenanceScreen()),
-          ),
+          drawerItem(Icons.batch_prediction, l10n.batchOperationsTitle,
+              () => _navigateTo(const BatchScreen())),
+          drawerItem(Icons.list_alt, l10n.manifestTitle,
+              () => _navigateTo(const ManifestScreen())),
+          drawerItem(Icons.description, l10n.contractTitle,
+              () => _navigateTo(const ContractScreen())),
+          drawerItem(Icons.school, l10n.credentialTitle,
+              () => _navigateTo(const CredentialScreen())),
+          drawerItem(Icons.history, l10n.provenanceTitle,
+              () => _navigateTo(const ProvenanceScreen())),
 
           const Divider(),
 
           // Tools
           sectionHeader(l10n.drawerToolsSection),
-          drawerItem(
-            Icons.casino,
-            l10n.generateKeyAction,
-            () => _navigateTo(const KeygenScreen()),
-          ),
-          drawerItem(
-            Icons.image,
-            l10n.mediaMetadataTitle,
-            () => _navigateTo(const MediaMetadataScreen()),
-          ),
-          drawerItem(
-            Icons.access_time,
-            l10n.timestampTitle,
-            () => _navigateTo(const TimestampScreen()),
-          ),
-          drawerItem(
-            Icons.history_edu,
-            l10n.versionChainTitle,
-            () => _navigateTo(const VersionChainScreen()),
-          ),
+          drawerItem(Icons.casino, l10n.generateKeyAction,
+              () => _navigateTo(const KeygenScreen())),
+          drawerItem(Icons.image, l10n.mediaMetadataTitle,
+              () => _navigateTo(const MediaMetadataScreen())),
+          drawerItem(Icons.access_time, l10n.timestampTitle,
+              () => _navigateTo(const TimestampScreen())),
+          drawerItem(Icons.history_edu, l10n.versionChainTitle,
+              () => _navigateTo(const VersionChainScreen())),
 
           const Divider(),
 

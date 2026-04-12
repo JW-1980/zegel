@@ -259,9 +259,8 @@ class _DiscloseScreenState extends State<DiscloseScreen>
         bottom: TabBar(
           controller: _tabController,
           labelColor: theme.colorScheme.onPrimary,
-          unselectedLabelColor: theme.colorScheme.onPrimary.withValues(
-            alpha: 0.6,
-          ),
+          unselectedLabelColor:
+              theme.colorScheme.onPrimary.withValues(alpha: 0.6),
           indicatorColor: theme.colorScheme.onPrimary,
           tabs: const [
             Tab(text: 'Generate Token'),
@@ -346,7 +345,9 @@ class _DiscloseScreenState extends State<DiscloseScreen>
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
                   : const Icon(Icons.list),
-              label: Text(_isLoadingBlocks ? 'Loading...' : 'Load Block List'),
+              label: Text(
+                _isLoadingBlocks ? 'Loading...' : 'Load Block List',
+              ),
             ),
 
           // Block list
@@ -655,8 +656,7 @@ class _DiscloseScreenState extends State<DiscloseScreen>
           SizedBox(
             height: 50,
             child: ElevatedButton.icon(
-              onPressed:
-                  _isExtracting ||
+              onPressed: _isExtracting ||
                       _extractFilePath == null ||
                       _loadedToken == null
                   ? null
