@@ -321,7 +321,7 @@ class _EnvelopeScreenState extends State<EnvelopeScreen> {
                         const Text('Remind every '),
                         DropdownButton<int>(
                           value: _reminderIntervalDays,
-                          items: [1, 2, 3, 5, 7, 14]
+                          items: const [1, 2, 3, 5, 7, 14]
                               .map(
                                 (d) => DropdownMenuItem(
                                   value: d,
@@ -338,7 +338,7 @@ class _EnvelopeScreenState extends State<EnvelopeScreen> {
                         const Text(' days, up to '),
                         DropdownButton<int>(
                           value: _reminderMaxCount,
-                          items: [1, 2, 3, 5, 10]
+                          items: const [1, 2, 3, 5, 10]
                               .map(
                                 (c) => DropdownMenuItem(
                                   value: c,
@@ -362,28 +362,28 @@ class _EnvelopeScreenState extends State<EnvelopeScreen> {
                       const Text('Expires after: '),
                       DropdownButton<int?>(
                         value: _expirationDays,
-                        items: [
-                          const DropdownMenuItem(
+                        items: const [
+                          DropdownMenuItem(
                             value: null,
                             child: Text('Never'),
                           ),
-                          const DropdownMenuItem(
+                          DropdownMenuItem(
                             value: 7,
                             child: Text('7 days'),
                           ),
-                          const DropdownMenuItem(
+                          DropdownMenuItem(
                             value: 14,
                             child: Text('14 days'),
                           ),
-                          const DropdownMenuItem(
+                          DropdownMenuItem(
                             value: 30,
                             child: Text('30 days'),
                           ),
-                          const DropdownMenuItem(
+                          DropdownMenuItem(
                             value: 60,
                             child: Text('60 days'),
                           ),
-                          const DropdownMenuItem(
+                          DropdownMenuItem(
                             value: 90,
                             child: Text('90 days'),
                           ),
