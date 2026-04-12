@@ -352,13 +352,13 @@ class _EnvelopeScreenState extends State<EnvelopeScreen> {
                       const Text('Expires after: '),
                       DropdownButton<int?>(
                         value: _expirationDays,
-                        items: [
-                          const DropdownMenuItem(value: null, child: Text('Never')),
-                          const DropdownMenuItem(value: 7, child: Text('7 days')),
-                          const DropdownMenuItem(value: 14, child: Text('14 days')),
-                          const DropdownMenuItem(value: 30, child: Text('30 days')),
-                          const DropdownMenuItem(value: 60, child: Text('60 days')),
-                          const DropdownMenuItem(value: 90, child: Text('90 days')),
+                        items: const [
+                          DropdownMenuItem(value: null, child: Text('Never')),
+                          DropdownMenuItem(value: 7, child: Text('7 days')),
+                          DropdownMenuItem(value: 14, child: Text('14 days')),
+                          DropdownMenuItem(value: 30, child: Text('30 days')),
+                          DropdownMenuItem(value: 60, child: Text('60 days')),
+                          DropdownMenuItem(value: 90, child: Text('90 days')),
                         ],
                         onChanged: (v) => setState(() => _expirationDays = v),
                       ),
