@@ -93,9 +93,7 @@ class Classification {
       classification['declassify_on'] = declassifyOn.toUtc().toIso8601String();
     }
 
-    return <String, dynamic>{
-      'classification': classification,
-    };
+    return <String, dynamic>{'classification': classification};
   }
 
   /// Declassifies a sealed .zgl file by reducing its classification level.
@@ -165,24 +163,22 @@ class Classification {
     // Apply optional redactions first.
     Uint8List workingBytes = fileBytes;
     if (redactBlocks != null && redactBlocks.isNotEmpty) {
-      workingBytes =
-          Redaction.redactBlocks(workingBytes, masterKey, redactBlocks);
+      workingBytes = Redaction.redactBlocks(
+        workingBytes,
+        masterKey,
+        redactBlocks,
+      );
     }
 
     // Re-verify after redaction (if applied) and re-extract.
     final ZegelResult postRedactResult = reader.verify(workingBytes, masterKey);
     if (!postRedactResult.valid) {
-      throw const ZegelTamperedException(
-        'Post-redaction verification failed',
-      );
+      throw const ZegelTamperedException('Post-redaction verification failed');
     }
 
     // Build updated public metadata with declassification record.
     final Map<String, dynamic> updatedClassification =
-        createClassificationMetadata(
-      level: newLevel,
-      authority: authority,
-    );
+        createClassificationMetadata(level: newLevel, authority: authority);
 
     // Add declassification history.
     final List<Map<String, dynamic>> history = <Map<String, dynamic>>[];

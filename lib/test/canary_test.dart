@@ -34,8 +34,9 @@ void main() {
 
     setUp(() {
       masterKey = _testKey();
-      content =
-          Uint8List.fromList(utf8.encode('Confidential document content'));
+      content = Uint8List.fromList(
+        utf8.encode('Confidential document content'),
+      );
       recipientA = _recipientId('user:1:alice@example.com');
       recipientB = _recipientId('user:2:bob@example.com');
     });
@@ -45,28 +46,47 @@ void main() {
         final paddingA = CanaryTrap.generatePadding(masterKey, recipientA, 0);
         final paddingB = CanaryTrap.generatePadding(masterKey, recipientB, 0);
 
-        expect(paddingA, isNot(equals(paddingB)),
-            reason: 'Different recipients should produce different padding');
+        expect(
+          paddingA,
+          isNot(equals(paddingB)),
+          reason: 'Different recipients should produce different padding',
+        );
       });
 
       test('padding length is always 1-16 bytes', () {
         // Test with multiple block indices and recipients
         for (var blockIndex = 0; blockIndex < 20; blockIndex++) {
-          final paddingA =
-              CanaryTrap.generatePadding(masterKey, recipientA, blockIndex);
-          final paddingB =
-              CanaryTrap.generatePadding(masterKey, recipientB, blockIndex);
+          final paddingA = CanaryTrap.generatePadding(
+            masterKey,
+            recipientA,
+            blockIndex,
+          );
+          final paddingB = CanaryTrap.generatePadding(
+            masterKey,
+            recipientB,
+            blockIndex,
+          );
 
-          expect(paddingA.length, greaterThanOrEqualTo(1),
-              reason: 'Padding for A at block $blockIndex should be >= 1 byte');
-          expect(paddingA.length, lessThanOrEqualTo(16),
-              reason:
-                  'Padding for A at block $blockIndex should be <= 16 bytes');
-          expect(paddingB.length, greaterThanOrEqualTo(1),
-              reason: 'Padding for B at block $blockIndex should be >= 1 byte');
-          expect(paddingB.length, lessThanOrEqualTo(16),
-              reason:
-                  'Padding for B at block $blockIndex should be <= 16 bytes');
+          expect(
+            paddingA.length,
+            greaterThanOrEqualTo(1),
+            reason: 'Padding for A at block $blockIndex should be >= 1 byte',
+          );
+          expect(
+            paddingA.length,
+            lessThanOrEqualTo(16),
+            reason: 'Padding for A at block $blockIndex should be <= 16 bytes',
+          );
+          expect(
+            paddingB.length,
+            greaterThanOrEqualTo(1),
+            reason: 'Padding for B at block $blockIndex should be >= 1 byte',
+          );
+          expect(
+            paddingB.length,
+            lessThanOrEqualTo(16),
+            reason: 'Padding for B at block $blockIndex should be <= 16 bytes',
+          );
         }
       });
 
@@ -83,17 +103,26 @@ void main() {
 
         // While they could theoretically be the same by coincidence,
         // it is extremely unlikely with HMAC-SHA256
-        expect(padding0, isNot(equals(padding1)),
-            reason: 'Different block indices should produce different padding');
+        expect(
+          padding0,
+          isNot(equals(padding1)),
+          reason: 'Different block indices should produce different padding',
+        );
       });
 
       test('last byte of padding equals padding length (PKCS#7 style)', () {
         for (var blockIndex = 0; blockIndex < 10; blockIndex++) {
-          final padding =
-              CanaryTrap.generatePadding(masterKey, recipientA, blockIndex);
-          expect(padding.last, equals(padding.length),
-              reason:
-                  'Last byte should equal padding length at block $blockIndex');
+          final padding = CanaryTrap.generatePadding(
+            masterKey,
+            recipientA,
+            blockIndex,
+          );
+          expect(
+            padding.last,
+            equals(padding.length),
+            reason:
+                'Last byte should equal padding length at block $blockIndex',
+          );
         }
       });
     });
@@ -121,10 +150,16 @@ void main() {
         final resultA = reader.verify(fileA, masterKey);
         final resultB = reader.verify(fileB, masterKey);
 
-        expect(resultA.valid, isTrue,
-            reason: 'File sealed for recipient A should verify');
-        expect(resultB.valid, isTrue,
-            reason: 'File sealed for recipient B should verify');
+        expect(
+          resultA.valid,
+          isTrue,
+          reason: 'File sealed for recipient A should verify',
+        );
+        expect(
+          resultB.valid,
+          isTrue,
+          reason: 'File sealed for recipient B should verify',
+        );
       });
 
       test('different ciphertexts for different recipients', () {
@@ -147,8 +182,11 @@ void main() {
         // The encrypted block data should differ due to different canary padding
         // (Even with same IV, which won't happen in practice since IVs are random)
         // Files should differ somewhere in the encrypted data region
-        expect(fileA, isNot(equals(fileB)),
-            reason: 'Files for different recipients should differ');
+        expect(
+          fileA,
+          isNot(equals(fileB)),
+          reason: 'Files for different recipients should differ',
+        );
       });
 
       test('canary flag is set in output file', () {
@@ -174,12 +212,18 @@ void main() {
         // Construct a block with canary padding for recipient A
         // Block index 0 is used (content block index when no metadata)
         const blockIndex = 0;
-        final padding =
-            CanaryTrap.generatePadding(masterKey, recipientA, blockIndex);
+        final padding = CanaryTrap.generatePadding(
+          masterKey,
+          recipientA,
+          blockIndex,
+        );
         final blockWithPadding = Uint8List(content.length + padding.length);
         blockWithPadding.setRange(0, content.length, content);
         blockWithPadding.setRange(
-            content.length, blockWithPadding.length, padding);
+          content.length,
+          blockWithPadding.length,
+          padding,
+        );
 
         final identified = CanaryTrap.identifyRecipient(
           blockWithPadding,
@@ -189,18 +233,27 @@ void main() {
         );
 
         final expectedHex = _bytesToHex(recipientA);
-        expect(identified, equals(expectedHex),
-            reason: 'Should identify recipient A');
+        expect(
+          identified,
+          equals(expectedHex),
+          reason: 'Should identify recipient A',
+        );
       });
 
       test('identifyRecipient correctly identifies recipient B', () {
         const blockIndex = 0;
-        final padding =
-            CanaryTrap.generatePadding(masterKey, recipientB, blockIndex);
+        final padding = CanaryTrap.generatePadding(
+          masterKey,
+          recipientB,
+          blockIndex,
+        );
         final blockWithPadding = Uint8List(content.length + padding.length);
         blockWithPadding.setRange(0, content.length, content);
         blockWithPadding.setRange(
-            content.length, blockWithPadding.length, padding);
+          content.length,
+          blockWithPadding.length,
+          padding,
+        );
 
         final identified = CanaryTrap.identifyRecipient(
           blockWithPadding,
@@ -210,19 +263,28 @@ void main() {
         );
 
         final expectedHex = _bytesToHex(recipientB);
-        expect(identified, equals(expectedHex),
-            reason: 'Should identify recipient B');
+        expect(
+          identified,
+          equals(expectedHex),
+          reason: 'Should identify recipient B',
+        );
       });
 
       test('identifyRecipient returns null for unknown recipient', () {
         final unknownRecipient = _recipientId('user:3:charlie@example.com');
         const blockIndex = 0;
-        final padding =
-            CanaryTrap.generatePadding(masterKey, unknownRecipient, blockIndex);
+        final padding = CanaryTrap.generatePadding(
+          masterKey,
+          unknownRecipient,
+          blockIndex,
+        );
         final blockWithPadding = Uint8List(content.length + padding.length);
         blockWithPadding.setRange(0, content.length, content);
         blockWithPadding.setRange(
-            content.length, blockWithPadding.length, padding);
+          content.length,
+          blockWithPadding.length,
+          padding,
+        );
 
         final identified = CanaryTrap.identifyRecipient(
           blockWithPadding,
@@ -231,18 +293,27 @@ void main() {
           [recipientA, recipientB], // charlie not in candidates
         );
 
-        expect(identified, isNull,
-            reason: 'Should return null for unknown recipient');
+        expect(
+          identified,
+          isNull,
+          reason: 'Should return null for unknown recipient',
+        );
       });
 
       test('identifyRecipient works with many candidates', () {
         const blockIndex = 0;
-        final padding =
-            CanaryTrap.generatePadding(masterKey, recipientA, blockIndex);
+        final padding = CanaryTrap.generatePadding(
+          masterKey,
+          recipientA,
+          blockIndex,
+        );
         final blockWithPadding = Uint8List(content.length + padding.length);
         blockWithPadding.setRange(0, content.length, content);
         blockWithPadding.setRange(
-            content.length, blockWithPadding.length, padding);
+          content.length,
+          blockWithPadding.length,
+          padding,
+        );
 
         // Create 100 candidate IDs with recipient A somewhere in the list
         final candidates = List.generate(
@@ -323,8 +394,11 @@ void main() {
         const blockIndex = 0;
         final message = Uint8List(recipientA.length + 4);
         message.setAll(0, recipientA);
-        ByteData.sublistView(message, recipientA.length, recipientA.length + 4)
-            .setUint32(0, blockIndex, Endian.big);
+        ByteData.sublistView(
+          message,
+          recipientA.length,
+          recipientA.length + 4,
+        ).setUint32(0, blockIndex, Endian.big);
 
         final mac = Hmac(sha256, masterKey).convert(message);
         final macBytes = mac.bytes;
@@ -336,8 +410,11 @@ void main() {
         }
         expectedPadding[padLen - 1] = padLen;
 
-        final actualPadding =
-            CanaryTrap.generatePadding(masterKey, recipientA, blockIndex);
+        final actualPadding = CanaryTrap.generatePadding(
+          masterKey,
+          recipientA,
+          blockIndex,
+        );
         expect(actualPadding, equals(expectedPadding));
       });
     });

@@ -99,14 +99,11 @@ class ShamirSecretSharing {
     final random = Random.secure();
 
     // Initialize shares: shares[i] = [x-coordinate, y0, y1, ..., y31]
-    final List<Uint8List> shares = List<Uint8List>.generate(
-      totalShares,
-      (i) {
-        final share = Uint8List(33);
-        share[0] = i + 1; // x-coordinate: 1..N
-        return share;
-      },
-    );
+    final List<Uint8List> shares = List<Uint8List>.generate(totalShares, (i) {
+      final share = Uint8List(33);
+      share[0] = i + 1; // x-coordinate: 1..N
+      return share;
+    });
 
     // For each byte position of the secret
     for (int byteIdx = 0; byteIdx < 32; byteIdx++) {
@@ -170,9 +167,7 @@ class ShamirSecretSharing {
         throw ArgumentError('Share $i has invalid x-coordinate 0');
       }
       if (!seen.add(xCoords[i])) {
-        throw ArgumentError(
-          'Duplicate x-coordinate ${xCoords[i]} in shares',
-        );
+        throw ArgumentError('Duplicate x-coordinate ${xCoords[i]} in shares');
       }
     }
 

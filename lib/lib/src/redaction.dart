@@ -66,15 +66,16 @@ class Redaction {
     // Validate block indices.
     for (final int idx in blockIndices) {
       if (idx < 0 || idx >= blockCount) {
-        throw ArgumentError(
-          'Block index $idx out of range [0, $blockCount)',
-        );
+        throw ArgumentError('Block index $idx out of range [0, $blockCount)');
       }
     }
 
     // Compute extended header size.
-    final int extHeaderSize =
-        _computeExtendedHeaderSize(result, flags, blockCountOffset + 4);
+    final int extHeaderSize = _computeExtendedHeaderSize(
+      result,
+      flags,
+      blockCountOffset + 4,
+    );
 
     // Block directory starts after extended header.
     final int directoryStart = blockCountOffset + 4 + extHeaderSize;

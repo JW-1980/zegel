@@ -20,9 +20,7 @@ Uint8List _otherKey() {
 
 /// Creates a 32-byte test Merkle root.
 Uint8List _testMerkleRoot() {
-  return Uint8List.fromList(
-    sha256.convert([0x01, 0x02, 0x03]).bytes,
-  );
+  return Uint8List.fromList(sha256.convert([0x01, 0x02, 0x03]).bytes);
 }
 
 /// Creates a provenance chain of [count] entries using
@@ -73,8 +71,11 @@ void main() {
         final entries = _createChain(signerKey, merkleRoot, 5);
 
         final result = ProvenanceVerification.verifyChain(entries, signerKey);
-        expect(result['valid'], isTrue,
-            reason: 'Chronologically ordered entries should pass verification');
+        expect(
+          result['valid'],
+          isTrue,
+          reason: 'Chronologically ordered entries should pass verification',
+        );
       });
 
       test('fails for out-of-order timestamps', () {
@@ -89,9 +90,12 @@ void main() {
         final result = ProvenanceVerification.verifyChain(entries, signerKey);
         // Out-of-order timestamps or broken chain links should cause errors
         final errors = result['errors'] as List<String>;
-        expect(errors, isNotEmpty,
-            reason:
-                'Non-chronological timestamps should produce verification errors');
+        expect(
+          errors,
+          isNotEmpty,
+          reason:
+              'Non-chronological timestamps should produce verification errors',
+        );
       });
     });
 
@@ -105,13 +109,22 @@ void main() {
           timestamp: DateTime.utc(2026, 1, 15, 12, 0, 0),
         );
 
-        expect(entry.containsKey('signature'), isTrue,
-            reason: 'Signed entry must contain signature');
+        expect(
+          entry.containsKey('signature'),
+          isTrue,
+          reason: 'Signed entry must contain signature',
+        );
         final sigHex = entry['signature'] as String;
-        expect(sigHex.length, equals(64),
-            reason: 'HMAC-SHA256 should be 64 hex chars (32 bytes)');
-        expect(RegExp(r'^[0-9a-f]+$').hasMatch(sigHex), isTrue,
-            reason: 'Signature should be lowercase hex');
+        expect(
+          sigHex.length,
+          equals(64),
+          reason: 'HMAC-SHA256 should be 64 hex chars (32 bytes)',
+        );
+        expect(
+          RegExp(r'^[0-9a-f]+$').hasMatch(sigHex),
+          isTrue,
+          reason: 'Signature should be lowercase hex',
+        );
       });
 
       test('includes actor and action', () {
@@ -180,8 +193,11 @@ void main() {
         // Verify each entry individually via verifyChain with single entry
         for (final entry in entries) {
           final result = ProvenanceVerification.verifyChain([entry], signerKey);
-          expect(result['valid'], isTrue,
-              reason: 'Entry signature should verify with correct key');
+          expect(
+            result['valid'],
+            isTrue,
+            reason: 'Entry signature should verify with correct key',
+          );
         }
       });
 
@@ -193,8 +209,11 @@ void main() {
         for (final entry in entries) {
           final result = ProvenanceVerification.verifyChain([entry], wrongKey);
           final errors = result['errors'] as List<String>;
-          expect(errors, isNotEmpty,
-              reason: 'Entry signature should fail with wrong key');
+          expect(
+            errors,
+            isNotEmpty,
+            reason: 'Entry signature should fail with wrong key',
+          );
         }
       });
 
@@ -211,11 +230,15 @@ void main() {
         final tampered = Map<String, dynamic>.from(entry);
         tampered['action'] = 'deleted';
 
-        final result =
-            ProvenanceVerification.verifyChain([tampered], signerKey);
+        final result = ProvenanceVerification.verifyChain([
+          tampered,
+        ], signerKey);
         final errors = result['errors'] as List<String>;
-        expect(errors, isNotEmpty,
-            reason: 'Tampered entry should fail signature verification');
+        expect(
+          errors,
+          isNotEmpty,
+          reason: 'Tampered entry should fail signature verification',
+        );
       });
     });
 
@@ -223,12 +246,12 @@ void main() {
       test('full chain verification succeeds', () {
         final entries = _createChain(signerKey, merkleRoot, 5);
 
-        final result = ProvenanceVerification.verifyChain(
-          entries,
-          signerKey,
+        final result = ProvenanceVerification.verifyChain(entries, signerKey);
+        expect(
+          result['valid'],
+          isTrue,
+          reason: 'Valid chain should pass full verification',
         );
-        expect(result['valid'], isTrue,
-            reason: 'Valid chain should pass full verification');
       });
 
       test('broken chain hash fails', () {
@@ -237,12 +260,12 @@ void main() {
         // Tamper with the event_hash of entry 2
         entries[2]['event_hash'] = 'ff' * 32;
 
-        final result = ProvenanceVerification.verifyChain(
-          entries,
-          signerKey,
+        final result = ProvenanceVerification.verifyChain(entries, signerKey);
+        expect(
+          result['valid'],
+          isFalse,
+          reason: 'Broken chain hash should fail verification',
         );
-        expect(result['valid'], isFalse,
-            reason: 'Broken chain hash should fail verification');
       });
     });
 
@@ -252,19 +275,22 @@ void main() {
           <Map<String, dynamic>>[],
           signerKey,
         );
-        expect(result['valid'], isTrue,
-            reason: 'Empty chain should be considered valid');
+        expect(
+          result['valid'],
+          isTrue,
+          reason: 'Empty chain should be considered valid',
+        );
       });
 
       test('single entry chain is valid', () {
         final entries = _createChain(signerKey, merkleRoot, 1);
 
-        final result = ProvenanceVerification.verifyChain(
-          entries,
-          signerKey,
+        final result = ProvenanceVerification.verifyChain(entries, signerKey);
+        expect(
+          result['valid'],
+          isTrue,
+          reason: 'Single entry chain should be valid',
         );
-        expect(result['valid'], isTrue,
-            reason: 'Single entry chain should be valid');
       });
 
       test('chain with same-second timestamps is valid', () {
@@ -285,13 +311,16 @@ void main() {
           previousEventHash: entry1['event_hash'] as String,
         );
 
-        final result = ProvenanceVerification.verifyChain(
-          [entry1, entry2],
-          signerKey,
-        );
+        final result = ProvenanceVerification.verifyChain([
+          entry1,
+          entry2,
+        ], signerKey);
         // Same-second timestamps should be acceptable (non-strictly ordered)
-        expect(result['valid'], isTrue,
-            reason: 'Same-second timestamps should be acceptable');
+        expect(
+          result['valid'],
+          isTrue,
+          reason: 'Same-second timestamps should be acceptable',
+        );
       });
     });
   });

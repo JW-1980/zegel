@@ -37,8 +37,11 @@ void main() {
 
         // Verify the manifest signature
         final isValid = ZegelManifest.verify(manifest, signerKey);
-        expect(isValid, isTrue,
-            reason: 'Manifest signature should verify with correct key');
+        expect(
+          isValid,
+          isTrue,
+          reason: 'Manifest signature should verify with correct key',
+        );
       });
 
       test('manifest with wrong signer key fails verification', () {
@@ -56,8 +59,11 @@ void main() {
         );
 
         final isValid = ZegelManifest.verify(manifest, wrongKey);
-        expect(isValid, isFalse,
-            reason: 'Manifest signature should fail with wrong key');
+        expect(
+          isValid,
+          isFalse,
+          reason: 'Manifest signature should fail with wrong key',
+        );
       });
     });
 
@@ -108,8 +114,11 @@ void main() {
         };
 
         final results = ZegelManifest.checkFiles(manifest, actualRoots);
-        expect(results['doc_2.txt'], isFalse,
-            reason: 'Missing file should be reported as not matching');
+        expect(
+          results['doc_2.txt'],
+          isFalse,
+          reason: 'Missing file should be reported as not matching',
+        );
       });
 
       test('checkFiles detects tampered file (wrong Merkle root)', () {
@@ -133,8 +142,11 @@ void main() {
         };
 
         final results = ZegelManifest.checkFiles(manifest, actualRoots);
-        expect(results['audit_1.txt'], isFalse,
-            reason: 'Tampered file should be reported as not matching');
+        expect(
+          results['audit_1.txt'],
+          isFalse,
+          reason: 'Tampered file should be reported as not matching',
+        );
         expect(results['audit_0.txt'], isTrue);
         expect(results['audit_2.txt'], isTrue);
       });
@@ -173,8 +185,11 @@ void main() {
         expect(files, isEmpty);
 
         final isValid = ZegelManifest.verify(manifest, signerKey);
-        expect(isValid, isTrue,
-            reason: 'Empty manifest should still have a valid signature');
+        expect(
+          isValid,
+          isTrue,
+          reason: 'Empty manifest should still have a valid signature',
+        );
       });
 
       test('manifest preserves file order', () {
@@ -194,12 +209,18 @@ void main() {
 
         final files = manifest['files'] as List<dynamic>;
         // Order should be preserved, not sorted
-        expect((files[0] as Map<String, dynamic>)['filename'],
-            equals('z-last.txt'));
-        expect((files[1] as Map<String, dynamic>)['filename'],
-            equals('a-first.txt'));
-        expect((files[2] as Map<String, dynamic>)['filename'],
-            equals('m-middle.txt'));
+        expect(
+          (files[0] as Map<String, dynamic>)['filename'],
+          equals('z-last.txt'),
+        );
+        expect(
+          (files[1] as Map<String, dynamic>)['filename'],
+          equals('a-first.txt'),
+        );
+        expect(
+          (files[2] as Map<String, dynamic>)['filename'],
+          equals('m-middle.txt'),
+        );
       });
 
       test('manifest file entries include merkle_root', () {
@@ -218,8 +239,11 @@ void main() {
         final fileEntry = files[0] as Map<String, dynamic>;
         expect(fileEntry['filename'], equals('sized.txt'));
         expect(fileEntry['merkle_root'], isNotNull);
-        expect((fileEntry['merkle_root'] as String).length, equals(64),
-            reason: 'Merkle root hex should be 64 chars (32 bytes)');
+        expect(
+          (fileEntry['merkle_root'] as String).length,
+          equals(64),
+          reason: 'Merkle root hex should be 64 chars (32 bytes)',
+        );
       });
     });
   });

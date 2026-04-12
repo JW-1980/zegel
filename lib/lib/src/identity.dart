@@ -4,7 +4,7 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
-import 'package:pointycastle/export.dart';
+import 'package:pinenacl/ed25519.dart' as pinenacl;
 
 import 'format.dart';
 import 'reader.dart';
@@ -26,23 +26,15 @@ class ZegelIdentity {
   /// Returns a [ZegelKeyPair] containing the 32-byte private key seed and the
   /// 32-byte public key.
   static ZegelKeyPair generateKeyPair() {
-    final SecureRandom secureRandom = _createSecureRandom();
-    final Ed25519KeyPairGenerator keyGen = Ed25519KeyPairGenerator();
-    keyGen.init(ParametersWithRandom(
-      Ed25519KeyGenerationParameters(),
-      secureRandom,
-    ));
-
-    final AsymmetricKeyPair<PublicKey, PrivateKey> pair =
-        keyGen.generateKeyPair();
-    final Ed25519PrivateKeyParameters privateKey =
-        pair.privateKey as Ed25519PrivateKeyParameters;
-    final Ed25519PublicKeyParameters publicKey =
-        pair.publicKey as Ed25519PublicKeyParameters;
-
+    final seed = Uint8List(32);
+    final rng = Random.secure();
+    for (int i = 0; i < 32; i++) {
+      seed[i] = rng.nextInt(256);
+    }
+    final signingKey = pinenacl.SigningKey.fromSeed(seed);
     return ZegelKeyPair(
-      privateKey: Uint8List.fromList(privateKey.key),
-      publicKey: Uint8List.fromList(publicKey.key),
+      privateKey: Uint8List.fromList(signingKey.asTypedList),
+      publicKey: Uint8List.fromList(signingKey.verifyKey.asTypedList),
     );
   }
 
@@ -77,26 +69,27 @@ class ZegelIdentity {
           timestampBytes.length,
     );
     int offset = 0;
-    message.setRange(offset, offset + markers.merkleRoot.length,
-        markers.merkleRoot);
+    message.setRange(
+      offset,
+      offset + markers.merkleRoot.length,
+      markers.merkleRoot,
+    );
     offset += markers.merkleRoot.length;
-    message.setRange(offset, offset + markers.masterSeal.length,
-        markers.masterSeal);
+    message.setRange(
+      offset,
+      offset + markers.masterSeal.length,
+      markers.masterSeal,
+    );
     offset += markers.masterSeal.length;
     message.setRange(offset, offset + timestampBytes.length, timestampBytes);
 
     final Uint8List digest = Uint8List.fromList(sha256.convert(message).bytes);
 
     // Sign with Ed25519.
-    final Ed25519Signer signer = Ed25519Signer();
-    signer.init(
-      true,
-      PrivateKeyParameter<Ed25519PrivateKeyParameters>(
-        Ed25519PrivateKeyParameters(privateKey),
-      ),
+    final signingKey = pinenacl.SigningKey.fromSeed(privateKey);
+    final signature = Uint8List.fromList(
+      signingKey.sign(digest).signature.asTypedList,
     );
-    signer.update(digest, 0, digest.length);
-    final Uint8List signature = signer.generateSignature().toUint8List();
 
     return ZegelSignature(
       signature: signature,
@@ -132,28 +125,29 @@ class ZegelIdentity {
           timestampBytes.length,
     );
     int offset = 0;
-    message.setRange(offset, offset + markers.merkleRoot.length,
-        markers.merkleRoot);
+    message.setRange(
+      offset,
+      offset + markers.merkleRoot.length,
+      markers.merkleRoot,
+    );
     offset += markers.merkleRoot.length;
-    message.setRange(offset, offset + markers.masterSeal.length,
-        markers.masterSeal);
+    message.setRange(
+      offset,
+      offset + markers.masterSeal.length,
+      markers.masterSeal,
+    );
     offset += markers.masterSeal.length;
     message.setRange(offset, offset + timestampBytes.length, timestampBytes);
 
     final Uint8List digest = Uint8List.fromList(sha256.convert(message).bytes);
 
     // Verify with Ed25519.
-    final Ed25519Signer verifier = Ed25519Signer();
-    verifier.init(
-      false,
-      PublicKeyParameter<Ed25519PublicKeyParameters>(
-        Ed25519PublicKeyParameters(publicKey),
-      ),
-    );
-    verifier.update(digest, 0, digest.length);
-
     try {
-      return verifier.verifySignature(Ed25519Signature(sig.signature));
+      final verifyKey = pinenacl.VerifyKey(publicKey);
+      return verifyKey.verify(
+        signature: pinenacl.Signature(sig.signature),
+        message: digest,
+      );
     } on Exception {
       return false;
     }
@@ -232,17 +226,6 @@ class ZegelIdentity {
     );
   }
 
-  static SecureRandom _createSecureRandom() {
-    final FortunaRandom secureRandom = FortunaRandom();
-    final Random rng = Random.secure();
-    final Uint8List seed = Uint8List(32);
-    for (int i = 0; i < 32; i++) {
-      seed[i] = rng.nextInt(256);
-    }
-    secureRandom.seed(KeyParameter(seed));
-    return secureRandom;
-  }
-
   static String _bytesToHex(Uint8List bytes) {
     final StringBuffer buf = StringBuffer();
     for (final byte in bytes) {
@@ -281,10 +264,7 @@ class _FileIntegrityMarkers {
 /// An Ed25519 signing keypair for Zegel identity.
 class ZegelKeyPair {
   /// Creates a [ZegelKeyPair].
-  const ZegelKeyPair({
-    required this.privateKey,
-    required this.publicKey,
-  });
+  const ZegelKeyPair({required this.privateKey, required this.publicKey});
 
   /// The 32-byte Ed25519 private key seed.
   final Uint8List privateKey;
@@ -372,27 +352,9 @@ class DeviceAttestation {
       sha256.convert(infoBytes).bytes,
     );
 
-    final Ed25519Signer signer = Ed25519Signer();
-    signer.init(
-      true,
-      PrivateKeyParameter<Ed25519PrivateKeyParameters>(
-        Ed25519PrivateKeyParameters(signingKey),
-      ),
-    );
-    signer.update(digest, 0, digest.length);
-    final Uint8List signature = signer.generateSignature().toUint8List();
-
-    // Derive the public key from the private key for verification reference.
-    final Ed25519KeyPairGenerator keyGen = Ed25519KeyPairGenerator();
-    final secureRandom = FortunaRandom();
-    secureRandom.seed(KeyParameter(signingKey));
-    keyGen.init(ParametersWithRandom(
-      Ed25519KeyGenerationParameters(),
-      secureRandom,
-    ));
-    final pair = keyGen.generateKeyPair();
-    final publicKey =
-        (pair.publicKey as Ed25519PublicKeyParameters).key;
+    final sk = pinenacl.SigningKey.fromSeed(signingKey);
+    final signature = Uint8List.fromList(sk.sign(digest).signature.asTypedList);
+    final publicKey = Uint8List.fromList(sk.verifyKey.asTypedList);
 
     return <String, dynamic>{
       'device_info': infoMap,
@@ -413,8 +375,8 @@ class DeviceAttestation {
     Map<String, dynamic> attestation, {
     Uint8List? publicKey,
   }) {
-    final Uint8List pubKey = publicKey ??
-        _hexToBytes(attestation['public_key_hex'] as String);
+    final Uint8List pubKey =
+        publicKey ?? _hexToBytes(attestation['public_key_hex'] as String);
 
     if (pubKey.length != 32) {
       throw ArgumentError('Public key must be exactly 32 bytes');
@@ -432,17 +394,12 @@ class DeviceAttestation {
       attestation['signature_hex'] as String,
     );
 
-    final Ed25519Signer verifier = Ed25519Signer();
-    verifier.init(
-      false,
-      PublicKeyParameter<Ed25519PublicKeyParameters>(
-        Ed25519PublicKeyParameters(pubKey),
-      ),
-    );
-    verifier.update(digest, 0, digest.length);
-
     try {
-      return verifier.verifySignature(Ed25519Signature(signatureBytes));
+      final verifyKey = pinenacl.VerifyKey(pubKey);
+      return verifyKey.verify(
+        signature: pinenacl.Signature(signatureBytes),
+        message: digest,
+      );
     } on Exception {
       return false;
     }
@@ -468,6 +425,17 @@ class DeviceAttestation {
 
 /// Captured device and platform information.
 class DeviceInfo {
+
+  /// Deserialises from a JSON-compatible map.
+  factory DeviceInfo.fromJson(Map<String, dynamic> json) {
+    return DeviceInfo(
+      operatingSystem: json['operating_system'] as String,
+      operatingSystemVersion: json['operating_system_version'] as String,
+      dartVersion: json['dart_version'] as String,
+      hostnameHash: _hexToBytes(json['hostname_hash_hex'] as String),
+      capturedAt: json['captured_at'] as int,
+    );
+  }
   /// Creates a [DeviceInfo].
   const DeviceInfo({
     required this.operatingSystem,
@@ -503,17 +471,6 @@ class DeviceInfo {
     };
   }
 
-  /// Deserialises from a JSON-compatible map.
-  factory DeviceInfo.fromJson(Map<String, dynamic> json) {
-    return DeviceInfo(
-      operatingSystem: json['operating_system'] as String,
-      operatingSystemVersion: json['operating_system_version'] as String,
-      dartVersion: json['dart_version'] as String,
-      hostnameHash: _hexToBytes(json['hostname_hash_hex'] as String),
-      capturedAt: json['captured_at'] as int,
-    );
-  }
-
   static String _bytesToHex(Uint8List bytes) {
     final StringBuffer buf = StringBuffer();
     for (final byte in bytes) {
@@ -529,12 +486,5 @@ class DeviceInfo {
       bytes[i] = int.parse(hex.substring(i * 2, i * 2 + 2), radix: 16);
     }
     return bytes;
-  }
-}
-
-/// Extension adding `toUint8List` to Ed25519Signature for convenience.
-extension _Ed25519SignatureToBytes on Ed25519Signature {
-  Uint8List toUint8List() {
-    return Uint8List.fromList(bytes);
   }
 }

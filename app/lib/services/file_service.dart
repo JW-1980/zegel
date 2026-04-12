@@ -9,7 +9,7 @@ class FileService {
   ///
   /// Returns the file path, or null if the user cancelled.
   Future<String?> pickFile() async {
-    final result = await FilePicker.platform.pickFiles(
+    final result = await FilePicker.pickFiles(
       type: FileType.any,
       allowMultiple: false,
     );
@@ -23,7 +23,7 @@ class FileService {
   ///
   /// Returns the file path, or null if the user cancelled.
   Future<String?> pickZegelFile() async {
-    final result = await FilePicker.platform.pickFiles(
+    final result = await FilePicker.pickFiles(
       type: FileType.custom,
       allowMultiple: false,
     );
@@ -37,7 +37,7 @@ class FileService {
   ///
   /// Returns the saved file path, or null if the user cancelled.
   Future<String?> saveFile(Uint8List bytes, String suggestedName) async {
-    final outputPath = await FilePicker.platform.saveFile(
+    final outputPath = await FilePicker.saveFile(
       dialogTitle: 'Save file',
       fileName: suggestedName,
     );
@@ -98,7 +98,7 @@ class FileService {
   ///
   /// Returns the directory path, or null if the user cancelled.
   Future<String?> pickDirectory() async {
-    return FilePicker.platform.getDirectoryPath(
+    return FilePicker.getDirectoryPath(
       dialogTitle: 'Select folder',
     );
   }

@@ -87,7 +87,8 @@ class StreamingSealWriter {
     // Apply canary padding if configured.
     Uint8List processed = data;
     final int contentStartIndex = (options.metadata != null) ? 1 : 0;
-    final int contentBlockIndex = _plaintexts.length; // index among content blocks
+    final int contentBlockIndex =
+        _plaintexts.length; // index among content blocks
 
     if (options.recipientId != null) {
       final Uint8List padding = CanaryTrap.generatePadding(
@@ -406,9 +407,7 @@ class StreamingSealWriter {
     final Uint8List indexBytes = Uint8List.fromList(
       utf8.encode(_plaintexts.length.toString()),
     );
-    final Uint8List input = Uint8List(
-      _chainState.length + indexBytes.length,
-    );
+    final Uint8List input = Uint8List(_chainState.length + indexBytes.length);
     input.setRange(0, _chainState.length, _chainState);
     input.setRange(_chainState.length, input.length, indexBytes);
     return Uint8List.fromList(sha256.convert(input).bytes);

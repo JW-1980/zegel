@@ -62,8 +62,11 @@ void main() {
             timestamp: DateTime.utc(2026, 1, 15, 12, 0, 0),
           );
 
-          expect(attestation['role'], equals(role),
-              reason: 'Role "$role" should be accepted and stored');
+          expect(
+            attestation['role'],
+            equals(role),
+            reason: 'Role "$role" should be accepted and stored',
+          );
           expect(attestation['hmac_hex'], isNotNull);
         }
       });
@@ -92,8 +95,11 @@ void main() {
           timestamp: DateTime.utc(2026, 1, 15, 12, 0, 0),
         );
 
-        expect(attestation.containsKey('role'), isFalse,
-            reason: 'Role should be absent when not specified');
+        expect(
+          attestation.containsKey('role'),
+          isFalse,
+          reason: 'Role should be absent when not specified',
+        );
       });
     });
 
@@ -182,14 +188,17 @@ void main() {
           [
             ZegelFormat.roleSigner,
             ZegelFormat.roleNotary,
-            ZegelFormat.roleAuditor
+            ZegelFormat.roleAuditor,
           ],
           merkleRoot,
           signerKeys,
         );
 
-        expect(result.allRolesFulfilled, isTrue,
-            reason: 'All required roles are present');
+        expect(
+          result.allRolesFulfilled,
+          isTrue,
+          reason: 'All required roles are present',
+        );
         expect(result.missingRoles, isEmpty);
       });
 
@@ -207,9 +216,7 @@ void main() {
           ),
         ];
 
-        final signerKeys = <String, Uint8List>{
-          'signer@example.com': signerKey,
-        };
+        final signerKeys = <String, Uint8List>{'signer@example.com': signerKey};
 
         final result = Attestation.checkPolicy(
           attestations,
@@ -218,8 +225,11 @@ void main() {
           signerKeys,
         );
 
-        expect(result.allRolesFulfilled, isFalse,
-            reason: 'Notary role is missing');
+        expect(
+          result.allRolesFulfilled,
+          isFalse,
+          reason: 'Notary role is missing',
+        );
         expect(result.missingRoles, contains(ZegelFormat.roleNotary));
       });
 
@@ -239,9 +249,7 @@ void main() {
         ];
 
         // Provide wrong key for verification
-        final signerKeys = <String, Uint8List>{
-          'signer@example.com': wrongKey,
-        };
+        final signerKeys = <String, Uint8List>{'signer@example.com': wrongKey};
 
         final result = Attestation.checkPolicy(
           attestations,
@@ -250,8 +258,11 @@ void main() {
           signerKeys,
         );
 
-        expect(result.allRolesFulfilled, isFalse,
-            reason: 'Policy check should fail when HMAC verification fails');
+        expect(
+          result.allRolesFulfilled,
+          isFalse,
+          reason: 'Policy check should fail when HMAC verification fails',
+        );
         expect(result.invalidSigners, contains('signer@example.com'));
       });
 
@@ -263,8 +274,11 @@ void main() {
           <String, Uint8List>{},
         );
 
-        expect(result.allRolesFulfilled, isTrue,
-            reason: 'No required roles means policy is trivially satisfied');
+        expect(
+          result.allRolesFulfilled,
+          isTrue,
+          reason: 'No required roles means policy is trivially satisfied',
+        );
         expect(result.missingRoles, isEmpty);
       });
     });
