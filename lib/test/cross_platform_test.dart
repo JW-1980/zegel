@@ -64,9 +64,9 @@ void main() {
         );
       });
 
-      test('version is (1, 2)', () {
+      test('version is (1, 4)', () {
         expect(fileBytes[8], equals(1));
-        expect(fileBytes[9], equals(2));
+        expect(fileBytes[9], equals(4));
       });
 
       test('flags are 0x0000', () {
@@ -268,8 +268,8 @@ void main() {
         // Offset 8: Version major
         expect(fileBytes[8], equals(1));
 
-        // Offset 9: Version minor
-        expect(fileBytes[9], equals(2));
+        // Offset 9: Version minor (v1.4)
+        expect(fileBytes[9], equals(4));
 
         // Offset 10-11: Flags (uint16 BE)
         final flags =
