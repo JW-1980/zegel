@@ -151,14 +151,16 @@ class _RedactScreenState extends State<RedactScreen> {
           ),
           actions: [
             TextButton(
-              onPressed: () => // ignore: use_build_context_synchronously
-                  Navigator.of(context).pop(false),
+              onPressed:
+                  () => // ignore: use_build_context_synchronously
+                      Navigator.of(context).pop(false),
               child: const Text('Cancel'),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-              onPressed: () => // ignore: use_build_context_synchronously
-                  Navigator.of(context).pop(true),
+              onPressed:
+                  () => // ignore: use_build_context_synchronously
+                      Navigator.of(context).pop(true),
               child: const Text('Redact Permanently'),
             ),
           ],
@@ -188,8 +190,10 @@ class _RedactScreenState extends State<RedactScreen> {
       final suggestedName = fileService
           .getFileName(_filePath!)
           .replaceAll('.zgl', '_redacted.zgl');
-      final savedPath =
-          await fileService.saveFile(redactedBytes, suggestedName);
+      final savedPath = await fileService.saveFile(
+        redactedBytes,
+        suggestedName,
+      );
 
       if (savedPath != null && mounted) {
         setState(() {
@@ -224,9 +228,7 @@ class _RedactScreenState extends State<RedactScreen> {
     final fileService = context.read<FileService>();
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.redactAction),
-      ),
+      appBar: AppBar(title: Text(l10n.redactAction)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -404,9 +406,7 @@ class _RedactScreenState extends State<RedactScreen> {
                   onPressed: _isRedacting || _selectedBlocks.isEmpty
                       ? null
                       : _redactSelected,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                  ),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                   icon: _isRedacting
                       ? const SizedBox(
                           width: 20,

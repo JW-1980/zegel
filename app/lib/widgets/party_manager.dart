@@ -14,11 +14,7 @@ class ContractParty {
     this.keyHex = '',
   });
 
-  ContractParty copyWith({
-    String? name,
-    String? role,
-    String? keyHex,
-  }) {
+  ContractParty copyWith({String? name, String? role, String? keyHex}) {
     return ContractParty(
       name: name ?? this.name,
       role: role ?? this.role,
@@ -101,12 +97,14 @@ class PartyManager extends StatelessWidget {
                         border: const OutlineInputBorder(),
                       ),
                       items: contractRoles
-                          .map((role) => DropdownMenuItem(
-                                // ignore: deprecated_member_use
-                                // ignore: deprecated_member_use
-                                value: role,
-                                child: Text(_roleDisplayName(role)),
-                              ))
+                          .map(
+                            (role) => DropdownMenuItem(
+                              // ignore: deprecated_member_use
+                              // ignore: deprecated_member_use
+                              value: role,
+                              child: Text(_roleDisplayName(role)),
+                            ),
+                          )
                           .toList(),
                       onChanged: (v) {
                         if (v != null) {
@@ -122,11 +120,14 @@ class PartyManager extends StatelessWidget {
                         hintText: l10n.contractPartyKeyHint,
                       ),
                       style: const TextStyle(
-                          fontFamily: 'monospace', fontSize: 12),
+                        fontFamily: 'monospace',
+                        fontSize: 12,
+                      ),
                       maxLength: 64,
                       inputFormatters: [
                         FilteringTextInputFormatter.allow(
-                            RegExp(r'[0-9a-fA-F]')),
+                          RegExp(r'[0-9a-fA-F]'),
+                        ),
                         LengthLimitingTextInputFormatter(64),
                       ],
                     ),
@@ -142,11 +143,13 @@ class PartyManager extends StatelessWidget {
                   onPressed: () {
                     final name = nameController.text.trim();
                     if (name.isEmpty) return;
-                    onAddParty(ContractParty(
-                      name: name,
-                      role: selectedRole,
-                      keyHex: keyController.text.trim(),
-                    ));
+                    onAddParty(
+                      ContractParty(
+                        name: name,
+                        role: selectedRole,
+                        keyHex: keyController.text.trim(),
+                      ),
+                    );
                     Navigator.of(dialogContext).pop();
                   },
                   child: Text(l10n.contractAddPartyAction),
@@ -251,8 +254,9 @@ class PartyManager extends StatelessWidget {
               contentPadding: EdgeInsets.zero,
               leading: CircleAvatar(
                 radius: 18,
-                backgroundColor:
-                    theme.colorScheme.primary.withValues(alpha: 0.1),
+                backgroundColor: theme.colorScheme.primary.withValues(
+                  alpha: 0.1,
+                ),
                 child: Icon(
                   _roleIcon(party.role),
                   size: 20,
@@ -288,8 +292,11 @@ class PartyManager extends StatelessWidget {
                 ],
               ),
               trailing: IconButton(
-                icon: const Icon(Icons.remove_circle_outline,
-                    color: Colors.red, size: 20),
+                icon: const Icon(
+                  Icons.remove_circle_outline,
+                  color: Colors.red,
+                  size: 20,
+                ),
                 onPressed: enabled ? () => onRemoveParty(index) : null,
               ),
             );

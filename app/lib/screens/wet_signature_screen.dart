@@ -119,9 +119,7 @@ class _WetSignatureScreenState extends State<WetSignatureScreen> {
       size.width.toInt(),
       size.height.toInt(),
     );
-    final byteData = await image.toByteData(
-      format: ui.ImageByteFormat.png,
-    );
+    final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
 
     if (byteData == null) {
       throw StateError('Failed to export signature as PNG');
@@ -306,9 +304,9 @@ class _WetSignatureScreenState extends State<WetSignatureScreen> {
                     const SizedBox(height: 8),
                     Text(
                       'Use your finger, stylus, or mouse to sign above',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Colors.grey,
-                          ),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodySmall?.copyWith(color: Colors.grey),
                     ),
                   ],
                 ),
@@ -434,9 +432,7 @@ class _WetSignatureScreenState extends State<WetSignatureScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: _isError
-                      ? Colors.red.shade50
-                      : Colors.green.shade50,
+                  color: _isError ? Colors.red.shade50 : Colors.green.shade50,
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
                     color: _isError
@@ -474,20 +470,18 @@ class _WetSignatureScreenState extends State<WetSignatureScreen> {
                 style: Theme.of(context).textTheme.titleMedium,
               ),
               const SizedBox(height: 8),
-              ..._existingSignatures.map((sig) => Card(
-                    child: ListTile(
-                      leading: const Icon(Icons.draw, color: Colors.blue),
-                      title: Text(sig.signerName),
-                      subtitle: Text(
-                        '${sig.signerCity} - ${DateFormat('dd MMM yyyy HH:mm').format(
-                          DateTime.fromMillisecondsSinceEpoch(
-                            sig.signedAt * 1000,
-                          ),
-                        )}'
-                        '${sig.signerRole != null ? ' (${sig.signerRole})' : ''}',
-                      ),
+              ..._existingSignatures.map(
+                (sig) => Card(
+                  child: ListTile(
+                    leading: const Icon(Icons.draw, color: Colors.blue),
+                    title: Text(sig.signerName),
+                    subtitle: Text(
+                      '${sig.signerCity} - ${DateFormat('dd MMM yyyy HH:mm').format(DateTime.fromMillisecondsSinceEpoch(sig.signedAt * 1000))}'
+                      '${sig.signerRole != null ? ' (${sig.signerRole})' : ''}',
                     ),
-                  )),
+                  ),
+                ),
+              ),
             ],
           ],
         ),
@@ -498,10 +492,7 @@ class _WetSignatureScreenState extends State<WetSignatureScreen> {
 
 /// Custom painter for the signature canvas.
 class _SignaturePainter extends CustomPainter {
-  _SignaturePainter({
-    required this.strokes,
-    required this.currentStroke,
-  });
+  _SignaturePainter({required this.strokes, required this.currentStroke});
 
   final List<List<Offset>> strokes;
   final List<Offset> currentStroke;
@@ -546,12 +537,7 @@ class _SignaturePainter extends CustomPainter {
           (stroke[i].dx + stroke[i + 1].dx) / 2,
           (stroke[i].dy + stroke[i + 1].dy) / 2,
         );
-        path.quadraticBezierTo(
-          stroke[i].dx,
-          stroke[i].dy,
-          mid.dx,
-          mid.dy,
-        );
+        path.quadraticBezierTo(stroke[i].dx, stroke[i].dy, mid.dx, mid.dy);
       } else {
         path.lineTo(stroke[i].dx, stroke[i].dy);
       }

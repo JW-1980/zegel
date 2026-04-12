@@ -34,15 +34,9 @@ class _ZegelAppState extends State<ZegelApp> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        Provider<FileService>(
-          create: (_) => FileService(),
-        ),
-        Provider<KeyService>(
-          create: (_) => KeyService(),
-        ),
-        Provider<ZegelService>(
-          create: (_) => ZegelService(),
-        ),
+        Provider<FileService>(create: (_) => FileService()),
+        Provider<KeyService>(create: (_) => KeyService()),
+        Provider<ZegelService>(create: (_) => ZegelService()),
         ChangeNotifierProvider<LocaleNotifier>(
           create: (_) => LocaleNotifier(_locale, _setLocale),
         ),
@@ -59,10 +53,7 @@ class _ZegelAppState extends State<ZegelApp> {
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            supportedLocales: const [
-              Locale('en'),
-              Locale('nl'),
-            ],
+            supportedLocales: const [Locale('en'), Locale('nl')],
             theme: _buildTheme(),
             home: const HomeScreen(),
           );
@@ -90,18 +81,14 @@ class _ZegelAppState extends State<ZegelApp> {
       ),
       cardTheme: CardThemeData(
         elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(4),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: deepTeal,
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(4),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
@@ -109,15 +96,11 @@ class _ZegelAppState extends State<ZegelApp> {
           foregroundColor: deepTeal,
           side: const BorderSide(color: deepTeal),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(4),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(4),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(4)),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(4),
           borderSide: const BorderSide(color: deepTeal, width: 2),
