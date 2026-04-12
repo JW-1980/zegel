@@ -9,7 +9,7 @@ import 'common.dart';
 /// Inspects a .zgl file's header without requiring the master key.
 ///
 /// Usage:
-///   zegel inspect <file.zgl>
+///   zegel inspect &lt;file.zgl&gt;
 ///
 /// Displays version, flags, timestamp, content type, filename,
 /// block count, classification level, regulatory hold date,

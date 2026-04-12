@@ -13,7 +13,7 @@ import 'common.dart';
 /// Parent command for canary trap fingerprinting operations.
 ///
 /// Usage:
-///   zegel canary <subcommand> [options]
+///   zegel canary &lt;subcommand&gt; [options]
 ///
 /// Subcommands:
 ///   embed    Embed a canary trap for a specific recipient

@@ -10,7 +10,7 @@ import 'common.dart';
 /// Parent command for media metadata operations.
 ///
 /// Usage:
-///   zegel media-metadata <subcommand> [options]
+///   zegel media-metadata &lt;subcommand&gt; [options]
 ///
 /// Subcommands:
 ///   extract  Extract metadata from a media file

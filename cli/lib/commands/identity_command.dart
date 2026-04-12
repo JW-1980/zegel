@@ -10,7 +10,7 @@ import 'common.dart';
 /// Command to sign a .zgl file with an Ed25519 key.
 ///
 /// ```
-/// zegel sign <file.zgl> --signing-key <key-file> -o <signed.zgl>
+/// zegel sign &lt;file.zgl&gt; --signing-key &lt;key-file&gt; -o &lt;signed.zgl&gt;
 /// ```
 class SignCommand extends Command<int> {
   @override
@@ -98,7 +98,7 @@ class SignCommand extends Command<int> {
 /// Command to verify an Ed25519 signature on a .zgl file.
 ///
 /// ```
-/// zegel verify-signature <file.zgl> --signature <file.sig.json> --public-key <key-file>
+/// zegel verify-signature &lt;file.zgl&gt; --signature &lt;file.sig.json&gt; --public-key &lt;key-file&gt;
 /// ```
 class VerifySignatureCommand extends Command<int> {
   @override
@@ -196,7 +196,7 @@ class VerifySignatureCommand extends Command<int> {
 /// Command to generate an Ed25519 signing keypair.
 ///
 /// ```
-/// zegel identity-keygen -o <key-prefix>
+/// zegel identity-keygen -o &lt;key-prefix&gt;
 /// ```
 class IdentityKeygenCommand extends Command<int> {
   @override

@@ -13,7 +13,7 @@ import 'common.dart';
 /// Parent command for audit trail operations.
 ///
 /// Usage:
-///   zegel audit <subcommand> [options]
+///   zegel audit &lt;subcommand&gt; [options]
 ///
 /// Subcommands:
 ///   view          View audit trail entries in a .zgl file
