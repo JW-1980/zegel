@@ -1,0 +1,18 @@
+# Zegel Docker Compose - One-click deployment
+#
+# Usage:
+#   docker compose run --rm zegel seal document.pdf --key-file /data/master.key -o /data/document.zgl
+#   docker compose run --rm zegel verify /data/document.zgl --key-file /data/master.key
+#   docker compose run --rm zegel keygen -o /data/master.key
+#
+# Mount your working directory to /data inside the container.
+
+services:
+  zegel:
+    build: .
+    image: zegel/zegel:latest
+    volumes:
+      - ./data:/data
+    working_dir: /data
+    # Override entrypoint for interactive shell access:
+    #   docker compose run --rm --entrypoint /bin/bash zegel
