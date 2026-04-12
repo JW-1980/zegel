@@ -4,6 +4,11 @@ on:
   push:
     tags: ['v*']
 
+permissions:
+  contents: write
+  id-token: write        # Required for Sigstore keyless signing (OIDC)
+  attestations: write    # Required for SLSA build attestations
+
 jobs:
   build:
     uses: ./.github/workflows/build.yml
@@ -14,12 +19,16 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      id-token: write
+      attestations: write
     steps:
       - uses: actions/checkout@v4
+
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
           path: artifacts
+
       - name: Prepare release assets
         run: |
           mkdir -p release
@@ -37,6 +46,47 @@ jobs:
           # Generate checksums
           cd release
           sha256sum * > SHA256SUMS.txt
+
+      # ====================================================================
+      # Sigstore keyless signing (defense against trojanized binaries)
+      # ====================================================================
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v3
+        with:
+          cosign-release: 'v2.4.1'
+
+      - name: Sign all release artifacts with Sigstore
+        working-directory: release
+        run: |
+          for artifact in *; do
+            if [ "$artifact" = "SHA256SUMS.txt" ]; then
+              continue
+            fi
+            echo "Signing $artifact..."
+            cosign sign-blob \
+              --yes \
+              --output-signature "${artifact}.sig" \
+              --output-certificate "${artifact}.pem" \
+              "$artifact"
+          done
+
+      # ====================================================================
+      # SLSA Level 2 build provenance attestation
+      # ====================================================================
+      - name: Generate SLSA build provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: |
+            release/zegel-linux-x64
+            release/zegel-windows-x64.exe
+            release/zegel-macos-x64
+            release/zegel-linux-gui-x64.tar.gz
+            release/zegel-windows-gui-x64.zip
+            release/zegel-macos-gui-x64.zip
+            release/zegel-android.apk
+            release/zegel-ios-nosign.zip
+            release/zegel-web.tar.gz
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
@@ -66,7 +116,38 @@ jobs:
             | Web | `zegel-web.tar.gz` |
 
             ### Verification
-            Verify downloads with `SHA256SUMS.txt`:
+
+            All release artifacts are cryptographically signed with
+            [Sigstore](https://sigstore.dev/) and include
+            [SLSA Level 2](https://slsa.dev/spec/v1.0/levels) build provenance.
+
+            **SHA-256 checksums:**
             ```
             sha256sum -c SHA256SUMS.txt
+            ```
+
+            **Verify Sigstore signature (keyless, identity-based):**
+            ```bash
+            cosign verify-blob \
+              --certificate zegel-linux-x64.pem \
+              --signature zegel-linux-x64.sig \
+              --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+              --certificate-identity-regexp "https://github.com/JW-1980/zegel/.*" \
+              zegel-linux-x64
+            ```
+
+            **Verify SLSA provenance:**
+            ```bash
+            gh attestation verify zegel-linux-x64 --owner JW-1980
+            ```
+
+            **Self-verify the binary after installation:**
+            ```bash
+            zegel verify-binary --binary $(which zegel) \
+              --expected-hash $(grep zegel-linux-x64 SHA256SUMS.txt | cut -d' ' -f1)
+            ```
+
+            **Audit entropy of a sealed file (detect backdoored RNG):**
+            ```bash
+            zegel audit-entropy your-file.zgl
             ```
