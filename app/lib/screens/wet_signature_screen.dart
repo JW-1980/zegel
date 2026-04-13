@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -183,17 +185,43 @@ class _WetSignatureScreenState extends State<WetSignatureScreen> {
         signerRole: role.isNotEmpty ? role : null,
       );
 
-      // The ZegelService would add this as an attestation block to the file.
-      // For now, encode and show success.
+      // Encode the signature and save it as a sidecar file.
       final encoded = signature.encode();
 
-      setState(() {
-        _statusMessage =
-            'Signature captured successfully (${encoded.length} bytes). '
-            'Signed by $name from $city on '
-            '${DateFormat('yyyy-MM-dd HH:mm').format(DateTime.now())}.';
-        _isError = false;
-      });
+      // Save the signature data alongside the .zgl file.
+      if (_filePath != null) {
+        final sigPath = '${_filePath!}.sig-$name.json';
+        final sigJson = {
+          'type': 'wet_signature',
+          'signer_name': name,
+          'signer_city': city,
+          'signer_role': role.isNotEmpty ? role : null,
+          'signed_at': now,
+          'signature_size_bytes': signatureImage.length,
+          'encoding': 'base64_png',
+          'data_base64': base64Encode(signatureImage),
+        };
+        await File(sigPath).writeAsString(
+          const JsonEncoder.withIndent('  ').convert(sigJson),
+        );
+
+        setState(() {
+          _statusMessage =
+              'Signature saved to ${sigPath.split('/').last}\n'
+              'Signed by $name from $city on '
+              '${DateFormat('yyyy-MM-dd HH:mm').format(DateTime.now())}.\n'
+              '(${encoded.length} bytes encoded)';
+          _isError = false;
+          _existingSignatures.add(signature);
+        });
+      } else {
+        setState(() {
+          _statusMessage =
+              'Signature captured (${encoded.length} bytes). '
+              'No file selected — signature not saved to disk.';
+          _isError = false;
+        });
+      }
     } catch (e) {
       setState(() {
         _statusMessage = 'Error: $e';

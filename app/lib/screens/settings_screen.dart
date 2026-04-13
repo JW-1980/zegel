@@ -419,6 +419,64 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           const SizedBox(height: 16),
 
+          // Theme / Appearance (Item 1, 5 from SUGGESTED_IMPROVEMENTS)
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.palette, color: theme.colorScheme.primary),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Appearance',
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  RadioListTile<ThemeMode>(
+                    title: const Text('System default'),
+                    subtitle: const Text('Follow your device settings'),
+                    value: ThemeMode.system,
+                    groupValue: context.watch<ThemeNotifier>().themeMode,
+                    onChanged: (value) {
+                      if (value != null) {
+                        context.read<ThemeNotifier>().setThemeMode(value);
+                      }
+                    },
+                  ),
+                  RadioListTile<ThemeMode>(
+                    title: const Text('Light'),
+                    value: ThemeMode.light,
+                    groupValue: context.watch<ThemeNotifier>().themeMode,
+                    onChanged: (value) {
+                      if (value != null) {
+                        context.read<ThemeNotifier>().setThemeMode(value);
+                      }
+                    },
+                  ),
+                  RadioListTile<ThemeMode>(
+                    title: const Text('Dark'),
+                    subtitle: const Text('Reduced eye strain, saves battery on OLED'),
+                    value: ThemeMode.dark,
+                    groupValue: context.watch<ThemeNotifier>().themeMode,
+                    onChanged: (value) {
+                      if (value != null) {
+                        context.read<ThemeNotifier>().setThemeMode(value);
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+
           // Default classification level
           Card(
             child: Padding(
