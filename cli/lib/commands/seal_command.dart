@@ -9,12 +9,12 @@ import 'common.dart';
 /// Seals a file into a tamper-proof .zgl container.
 ///
 /// Usage:
-///   zegel seal <input-file> -k <key-hex> -o <output.zgl>
+///   zegel seal &lt;input-file&gt; -k &lt;key-hex&gt; -o &lt;output.zgl&gt;
 ///       [--metadata key=value...] [--compress] [--password]
-///       [--expires YYYY-MM-DD] [--recipient-id <hex>]
-///       [--enable-disclosure] [--anonymous] [--classification <level>]
-///       [--classification-authority <name>] [--regulatory-hold-until <date>]
-///       [--tsa-url <url>] [--preserve-media-metadata]
+///       [--expires YYYY-MM-DD] [--recipient-id &lt;hex&gt;]
+///       [--enable-disclosure] [--anonymous] [--classification &lt;level&gt;]
+///       [--classification-authority &lt;name&gt;] [--regulatory-hold-until &lt;date&gt;]
+///       [--tsa-url &lt;url&gt;] [--preserve-media-metadata]
 class SealCommand extends Command<int> {
   @override
   final String name = 'seal';

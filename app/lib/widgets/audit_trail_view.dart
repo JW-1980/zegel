@@ -45,10 +45,7 @@ class AuditTrailView extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(
-                  Icons.timeline,
-                  color: theme.colorScheme.primary,
-                ),
+                Icon(Icons.timeline, color: theme.colorScheme.primary),
                 const SizedBox(width: 8),
                 Text(
                   l10n.auditTrailTitle,
@@ -245,8 +242,9 @@ class _AuditEntryTile extends StatelessWidget {
                     style: theme.textTheme.bodySmall?.copyWith(
                       fontFamily: 'monospace',
                       fontSize: 10,
-                      color:
-                          colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+                      color: colorScheme.onSurfaceVariant.withValues(
+                        alpha: 0.6,
+                      ),
                     ),
                   ),
                 ],

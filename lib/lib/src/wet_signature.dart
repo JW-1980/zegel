@@ -33,7 +33,6 @@ const String wetSignatureSubtype = 'wet_signature';
 
 /// A single wet (handwritten) signature with signer metadata.
 class WetSignature {
-
   /// Decodes a wet signature from block bytes.
   factory WetSignature.decode(Uint8List data) {
     final Map<String, dynamic> json =
@@ -48,6 +47,7 @@ class WetSignature {
       imageFormat: json['image_format'] as String? ?? 'png',
     );
   }
+
   /// Creates a [WetSignature].
   const WetSignature({
     required this.signatureImage,
@@ -100,7 +100,6 @@ class WetSignature {
 
 /// Configuration for multi-party wet signature requirements.
 class WetSignatureConfig {
-
   /// Decodes from JSON.
   factory WetSignatureConfig.fromJson(Map<String, dynamic> json) {
     return WetSignatureConfig(
@@ -109,6 +108,7 @@ class WetSignatureConfig {
           (json['roles'] as List<dynamic>?)?.map((r) => r as String).toList(),
     );
   }
+
   /// Creates a [WetSignatureConfig].
   const WetSignatureConfig({required this.requiredSignatures, this.roles});
 

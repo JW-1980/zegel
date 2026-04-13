@@ -78,12 +78,14 @@ class ManifestCreateCommand extends Command<int> {
     }
 
     final entries = <String, Uint8List>{};
-    await Future.wait(files.map((file) async {
-      final name = file.path.split(Platform.pathSeparator).last;
-      final bytes = await file.readAsBytes();
-      final header = RawZegelHeader.parse(bytes);
-      entries[name] = header.merkleRoot;
-    }));
+    await Future.wait(
+      files.map((file) async {
+        final name = file.path.split(Platform.pathSeparator).last;
+        final bytes = await file.readAsBytes();
+        final header = RawZegelHeader.parse(bytes);
+        entries[name] = header.merkleRoot;
+      }),
+    );
 
     final manifest = ZegelManifest.create(entries, key, signerId);
     File(

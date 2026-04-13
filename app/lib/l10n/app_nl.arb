@@ -230,5 +230,11 @@
   "versionChainInvalid": "Versieketen GEBROKEN",
   "helpVersionChain": "Versiegeschiedenis en ketenhashs bekijken en verifi\u00ebren",
 
-  "drawerToolsSection": "Hulpmiddelen"
+  "drawerToolsSection": "Hulpmiddelen",
+
+  "drawerSigningSection": "Ondertekening",
+  "wetSignatureTitle": "Handtekening",
+  "envelopeTitle": "Ondertekeningsenvelop",
+  "envelopeCreate": "Envelop Aanmaken",
+  "envelopeCreated": "Envelop Aangemaakt"
 }

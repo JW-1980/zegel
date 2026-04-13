@@ -10,7 +10,7 @@ import 'common.dart';
 /// Generates a selective disclosure token for specific blocks.
 ///
 /// Usage:
-///   zegel disclose <file.zgl> -k <key-hex> --blocks 0,2 -o <token.json>
+///   zegel disclose &lt;file.zgl&gt; -k &lt;key-hex&gt; --blocks 0,2 -o &lt;token.json&gt;
 ///
 /// The token contains per-block derived keys that allow a third party
 /// to decrypt only the specified blocks without having the master key.
@@ -266,7 +266,7 @@ class DiscloseCommand extends Command<int> {
 /// Extracts content from a .zgl file using a selective disclosure token.
 ///
 /// Usage:
-///   zegel extract-with-token <file.zgl> --token <token.json> -o <output-file>
+///   zegel extract-with-token &lt;file.zgl&gt; --token &lt;token.json&gt; -o &lt;output-file&gt;
 ///
 /// Only the blocks listed in the token can be decrypted and extracted.
 /// No master key is required - the token contains per-block keys.

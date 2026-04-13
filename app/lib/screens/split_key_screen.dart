@@ -168,8 +168,9 @@ class _SplitKeyScreenState extends State<SplitKeyScreen>
         bottom: TabBar(
           controller: _tabController,
           labelColor: theme.colorScheme.onPrimary,
-          unselectedLabelColor:
-              theme.colorScheme.onPrimary.withValues(alpha: 0.6),
+          unselectedLabelColor: theme.colorScheme.onPrimary.withValues(
+            alpha: 0.6,
+          ),
           indicatorColor: theme.colorScheme.onPrimary,
           tabs: const [
             Tab(text: 'Split Key'),
@@ -242,11 +243,11 @@ class _SplitKeyScreenState extends State<SplitKeyScreen>
                           inputFormatters: [
                             FilteringTextInputFormatter.digitsOnly,
                           ],
-                          controller:
-                              TextEditingController(text: '$_threshold'),
-                          onChanged: (v) => setState(
-                            () => _threshold = int.tryParse(v) ?? 3,
+                          controller: TextEditingController(
+                            text: '$_threshold',
                           ),
+                          onChanged: (v) =>
+                              setState(() => _threshold = int.tryParse(v) ?? 3),
                         ),
                       ),
                       const SizedBox(width: 16),
@@ -261,8 +262,9 @@ class _SplitKeyScreenState extends State<SplitKeyScreen>
                           inputFormatters: [
                             FilteringTextInputFormatter.digitsOnly,
                           ],
-                          controller:
-                              TextEditingController(text: '$_totalShares'),
+                          controller: TextEditingController(
+                            text: '$_totalShares',
+                          ),
                           onChanged: (v) => setState(
                             () => _totalShares = int.tryParse(v) ?? 5,
                           ),
@@ -398,11 +400,11 @@ class _SplitKeyScreenState extends State<SplitKeyScreen>
                               icon: const Icon(Icons.share, size: 18),
                               tooltip: 'Share',
                               onPressed: () {
-                                Share.share(
+                                SharePlus.instance.share(ShareParams(text:
                                   share,
                                   subject:
                                       'Zegel Key Share ${index + 1} of $_totalShares',
-                                );
+                                ));
                               },
                             ),
                           ],

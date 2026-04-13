@@ -31,11 +31,7 @@ class DropZone extends StatefulWidget {
   /// Called when the user taps the zone to open a file picker.
   final VoidCallback? onTap;
 
-  const DropZone({
-    super.key,
-    required this.onFileDropped,
-    this.onTap,
-  });
+  const DropZone({super.key, required this.onFileDropped, this.onTap});
 
   @override
   State<DropZone> createState() => _DropZoneState();
@@ -112,10 +108,7 @@ class _DropZoneState extends State<DropZone>
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 200),
             curve: Curves.easeInOut,
-            constraints: const BoxConstraints(
-              minHeight: 220,
-              maxHeight: 300,
-            ),
+            constraints: const BoxConstraints(minHeight: 220, maxHeight: 300),
             decoration: BoxDecoration(
               color: _isDragging
                   ? colorScheme.primary.withValues(alpha: 0.08)
@@ -157,8 +150,9 @@ class _DropZoneState extends State<DropZone>
                     Text(
                       'or tap to browse',
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color:
-                            colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                        color: colorScheme.onSurfaceVariant.withValues(
+                          alpha: 0.5,
+                        ),
                       ),
                     ),
                 ],

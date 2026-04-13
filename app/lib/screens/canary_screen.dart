@@ -165,8 +165,9 @@ class _CanaryScreenState extends State<CanaryScreen>
 
     try {
       final keyService = context.read<KeyService>();
-      final masterKeyBytes =
-          Uint8List.fromList(keyService.hexToBytes(_identifyKey));
+      final masterKeyBytes = Uint8List.fromList(
+        keyService.hexToBytes(_identifyKey),
+      );
 
       // Convert candidate IDs to bytes
       final candidateIdBytes = _candidateIds
@@ -238,10 +239,7 @@ class _CanaryScreenState extends State<CanaryScreen>
       ),
       body: TabBarView(
         controller: _tabController,
-        children: [
-          _buildEmbedTab(context),
-          _buildIdentifyTab(context),
-        ],
+        children: [_buildEmbedTab(context), _buildIdentifyTab(context)],
       ),
     );
   }
@@ -263,10 +261,7 @@ class _CanaryScreenState extends State<CanaryScreen>
               padding: const EdgeInsets.all(12),
               child: Row(
                 children: [
-                  Icon(
-                    Icons.info_outline,
-                    color: theme.colorScheme.primary,
-                  ),
+                  Icon(Icons.info_outline, color: theme.colorScheme.primary),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
@@ -289,10 +284,7 @@ class _CanaryScreenState extends State<CanaryScreen>
               padding: const EdgeInsets.all(12),
               child: Row(
                 children: [
-                  Icon(
-                    Icons.warning_amber,
-                    color: Colors.orange.shade700,
-                  ),
+                  Icon(Icons.warning_amber, color: Colors.orange.shade700),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
@@ -318,10 +310,7 @@ class _CanaryScreenState extends State<CanaryScreen>
                 children: [
                   Row(
                     children: [
-                      Icon(
-                        Icons.description,
-                        color: theme.colorScheme.primary,
-                      ),
+                      Icon(Icons.description, color: theme.colorScheme.primary),
                       const SizedBox(width: 8),
                       Text(
                         'File to Seal',
@@ -395,10 +384,7 @@ class _CanaryScreenState extends State<CanaryScreen>
                 children: [
                   Row(
                     children: [
-                      Icon(
-                        Icons.people,
-                        color: theme.colorScheme.primary,
-                      ),
+                      Icon(Icons.people, color: theme.colorScheme.primary),
                       const SizedBox(width: 8),
                       Text(
                         'Recipients',
@@ -484,7 +470,8 @@ class _CanaryScreenState extends State<CanaryScreen>
           SizedBox(
             height: 50,
             child: ElevatedButton.icon(
-              onPressed: _isEmbedding ||
+              onPressed:
+                  _isEmbedding ||
                       _embedFilePath == null ||
                       _masterKey.length != 64 ||
                       _recipients.isEmpty
@@ -539,10 +526,7 @@ class _CanaryScreenState extends State<CanaryScreen>
               padding: const EdgeInsets.all(12),
               child: Row(
                 children: [
-                  Icon(
-                    Icons.info_outline,
-                    color: theme.colorScheme.primary,
-                  ),
+                  Icon(Icons.info_outline, color: theme.colorScheme.primary),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
@@ -566,10 +550,7 @@ class _CanaryScreenState extends State<CanaryScreen>
                 children: [
                   Row(
                     children: [
-                      Icon(
-                        Icons.warning,
-                        color: theme.colorScheme.error,
-                      ),
+                      Icon(Icons.warning, color: theme.colorScheme.error),
                       const SizedBox(width: 8),
                       Text(
                         'Leaked File',
@@ -751,10 +732,7 @@ class _CanaryScreenState extends State<CanaryScreen>
                   children: [
                     Row(
                       children: [
-                        Icon(
-                          Icons.check_circle,
-                          color: Colors.green.shade700,
-                        ),
+                        Icon(Icons.check_circle, color: Colors.green.shade700),
                         const SizedBox(width: 8),
                         Text(
                           'Leak Source Identified',
