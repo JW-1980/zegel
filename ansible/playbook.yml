@@ -1,0 +1,114 @@
+# Zegel Ansible playbook (improvement #107).
+#
+# Provisions a single host to run Zegel: creates the service user,
+# downloads the latest release binary, installs a systemd unit, and
+# (optionally) configures UFW to allow the HTTP port.
+#
+# Run with:
+#   ansible-playbook -i inventory.yml ansible/playbook.yml
+
+- name: Deploy Zegel
+  hosts: zegel
+  become: true
+  vars:
+    zegel_version: "1.3.0"
+    zegel_user: "zegel"
+    zegel_group: "zegel"
+    zegel_install_dir: "/opt/zegel"
+    zegel_data_dir: "/var/lib/zegel"
+    zegel_bin: "/usr/local/bin/zegel"
+    zegel_tsa_url: ""
+    zegel_webhook_url: ""
+    zegel_webhook_secret: ""
+    zegel_open_firewall: false
+    zegel_port: 8080
+
+  tasks:
+    - name: Ensure required packages are installed
+      ansible.builtin.package:
+        name:
+          - curl
+          - tar
+          - ca-certificates
+        state: present
+
+    - name: Create Zegel group
+      ansible.builtin.group:
+        name: "{{ zegel_group }}"
+        system: true
+
+    - name: Create Zegel user
+      ansible.builtin.user:
+        name: "{{ zegel_user }}"
+        group: "{{ zegel_group }}"
+        shell: /usr/sbin/nologin
+        system: true
+        home: "{{ zegel_install_dir }}"
+        create_home: true
+
+    - name: Ensure data directory exists
+      ansible.builtin.file:
+        path: "{{ zegel_data_dir }}"
+        state: directory
+        owner: "{{ zegel_user }}"
+        group: "{{ zegel_group }}"
+        mode: "0750"
+
+    - name: Download release tarball
+      ansible.builtin.get_url:
+        url: "https://github.com/jw-1980/zegel/releases/download/v{{ zegel_version }}/zegel-{{ zegel_version }}-linux-x64.tar.gz"
+        dest: "/tmp/zegel.tar.gz"
+        mode: "0644"
+
+    - name: Extract Zegel binary
+      ansible.builtin.unarchive:
+        src: "/tmp/zegel.tar.gz"
+        dest: "{{ zegel_install_dir }}"
+        remote_src: true
+        owner: "{{ zegel_user }}"
+        group: "{{ zegel_group }}"
+
+    - name: Symlink /usr/local/bin/zegel
+      ansible.builtin.file:
+        src: "{{ zegel_install_dir }}/zegel"
+        dest: "{{ zegel_bin }}"
+        state: link
+
+    - name: Install systemd unit
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/zegel.service
+        mode: "0644"
+        content: |
+          [Unit]
+          Description=Zegel tamper-proof container service
+          After=network-online.target
+          Wants=network-online.target
+
+          [Service]
+          Type=simple
+          User={{ zegel_user }}
+          Group={{ zegel_group }}
+          Environment=ZEGEL_DATA_DIR={{ zegel_data_dir }}
+          Environment=ZEGEL_TSA_URL={{ zegel_tsa_url }}
+          Environment=ZEGEL_WEBHOOK_URL={{ zegel_webhook_url }}
+          Environment=ZEGEL_WEBHOOK_SECRET={{ zegel_webhook_secret }}
+          ExecStart={{ zegel_bin }} serve --port {{ zegel_port }}
+          Restart=on-failure
+          RestartSec=5
+
+          [Install]
+          WantedBy=multi-user.target
+
+    - name: Reload systemd and enable the unit
+      ansible.builtin.systemd:
+        name: zegel
+        daemon_reload: true
+        enabled: true
+        state: started
+
+    - name: Open firewall
+      ansible.builtin.ufw:
+        rule: allow
+        port: "{{ zegel_port }}"
+        proto: tcp
+      when: zegel_open_firewall
