@@ -9,7 +9,7 @@ import 'common.dart';
 /// Permanently redacts specific blocks from a .zgl file.
 ///
 /// Usage:
-///   zegel redact <file.zgl> -k <key-hex> --blocks 1,3,5 -o <redacted.zgl>
+///   zegel redact &lt;file.zgl&gt; -k &lt;key-hex&gt; --blocks 1,3,5 -o &lt;redacted.zgl&gt;
 ///
 /// Redaction is irreversible. The original content of redacted blocks
 /// is permanently destroyed and replaced with random bytes.
@@ -55,8 +55,7 @@ class RedactCommand extends Command<int> {
     argParser.addOption(
       'blocks',
       abbr: 'b',
-      help:
-          'Comma-separated list of block indices to redact.\n'
+      help: 'Comma-separated list of block indices to redact.\n'
           'Use "zegel inspect --blocks" to see available indices.',
       valueHelp: '1,3,5',
       mandatory: true,
@@ -64,24 +63,21 @@ class RedactCommand extends Command<int> {
 
     argParser.addFlag(
       'confirm',
-      help:
-          'Skip confirmation prompt (dangerous).\n'
+      help: 'Skip confirmation prompt (dangerous).\n'
           'Use in scripts where interactive prompts are not possible.',
       defaultsTo: false,
     );
 
     argParser.addFlag(
       'declassify',
-      help:
-          'Lower the classification level after redaction.\n'
+      help: 'Lower the classification level after redaction.\n'
           'Must be used with --new-classification.',
       defaultsTo: false,
     );
 
     argParser.addOption(
       'new-classification',
-      help:
-          'New classification level after declassification.\n'
+      help: 'New classification level after declassification.\n'
           'Must be lower than the current level.\n'
           'Levels: PUBLIC, INTERNAL, CONFIDENTIAL, SECRET, TOP_SECRET.',
       valueHelp: 'level',

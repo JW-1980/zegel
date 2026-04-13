@@ -81,9 +81,7 @@ class Attestation {
 
     // hmac = HMAC-SHA256(signerKey, message)
     final hmac = Hmac(sha256, signerKey);
-    final Uint8List hmacBytes = Uint8List.fromList(
-      hmac.convert(message).bytes,
-    );
+    final Uint8List hmacBytes = Uint8List.fromList(hmac.convert(message).bytes);
 
     return <String, dynamic>{
       'signer_id': signerId,
@@ -213,9 +211,7 @@ class Attestation {
 
     // hmac = HMAC-SHA256(signerKey, message)
     final hmac = Hmac(sha256, signerKey);
-    final Uint8List hmacBytes = Uint8List.fromList(
-      hmac.convert(message).bytes,
-    );
+    final Uint8List hmacBytes = Uint8List.fromList(hmac.convert(message).bytes);
 
     return <String, dynamic>{
       'signer_id': signerId,

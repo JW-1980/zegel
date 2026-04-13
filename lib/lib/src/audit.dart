@@ -51,8 +51,9 @@ class AuditTrail {
     final String entryJson = jsonEncode(entry);
     final Uint8List entryJsonBytes = Uint8List.fromList(utf8.encode(entryJson));
 
-    final Uint8List hashInput =
-        Uint8List(prevHash.length + entryJsonBytes.length);
+    final Uint8List hashInput = Uint8List(
+      prevHash.length + entryJsonBytes.length,
+    );
     hashInput.setRange(0, prevHash.length, prevHash);
     hashInput.setRange(prevHash.length, hashInput.length, entryJsonBytes);
 
@@ -77,8 +78,9 @@ class AuditTrail {
       final String storedHash = entry['chain_hash'] as String;
 
       // Rebuild the entry without chain_hash for hashing.
-      final Map<String, dynamic> entryWithoutHash =
-          Map<String, dynamic>.from(entry);
+      final Map<String, dynamic> entryWithoutHash = Map<String, dynamic>.from(
+        entry,
+      );
       entryWithoutHash.remove('chain_hash');
 
       final String entryJson = jsonEncode(entryWithoutHash);
@@ -86,8 +88,9 @@ class AuditTrail {
         utf8.encode(entryJson),
       );
 
-      final Uint8List hashInput =
-          Uint8List(previousHash.length + entryJsonBytes.length);
+      final Uint8List hashInput = Uint8List(
+        previousHash.length + entryJsonBytes.length,
+      );
       hashInput.setRange(0, previousHash.length, previousHash);
       hashInput.setRange(previousHash.length, hashInput.length, entryJsonBytes);
 

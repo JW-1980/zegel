@@ -127,9 +127,7 @@ class BulkRecipient {
               ? (fields[phoneIdx].isEmpty ? null : fields[phoneIdx])
               : null,
           accessCode: accessCodeIdx >= 0 && fields.length > accessCodeIdx
-              ? (fields[accessCodeIdx].isEmpty
-                  ? null
-                  : fields[accessCodeIdx])
+              ? (fields[accessCodeIdx].isEmpty ? null : fields[accessCodeIdx])
               : null,
           customFields: customFields,
         ),
@@ -184,11 +182,10 @@ class BulkRecipient {
     return BulkRecipient(
       name: json['name'] as String,
       email: json['email'] as String,
-      customFields:
-          (json['custom_fields'] as Map<String, dynamic>?)?.map(
-                (k, v) => MapEntry(k, v as String),
-              ) ??
-              <String, String>{},
+      customFields: (json['custom_fields'] as Map<String, dynamic>?)?.map(
+            (k, v) => MapEntry(k, v as String),
+          ) ??
+          <String, String>{},
       accessCode: json['access_code'] as String?,
       phoneNumber: json['phone_number'] as String?,
       company: json['company'] as String?,

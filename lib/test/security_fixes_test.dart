@@ -76,8 +76,7 @@ void main() {
       final naiveCombined = Uint8List(64);
       naiveCombined.setRange(0, 32, naiveLeaf1);
       naiveCombined.setRange(32, 64, naiveLeaf2);
-      final naiveRoot =
-          Uint8List.fromList(sha256.convert(naiveCombined).bytes);
+      final naiveRoot = Uint8List.fromList(sha256.convert(naiveCombined).bytes);
 
       expect(root, isNot(equals(naiveRoot)),
           reason: 'Domain-separated root must differ from naive root');
@@ -194,7 +193,8 @@ void main() {
       badShare[0] = 0;
 
       expect(
-        () => ShamirSecretSharing.reconstruct([badShare, shares[1], shares[2]], 3),
+        () => ShamirSecretSharing.reconstruct(
+            [badShare, shares[1], shares[2]], 3),
         throwsA(isA<ArgumentError>().having(
           (e) => e.message,
           'message',
@@ -610,11 +610,13 @@ void main() {
       }
 
       final content = Uint8List.fromList(utf8.encode('Wrong key test'));
-      final sealed = ZegelWriter(key, const ZegelOptions(
-        contentType: 'text/plain',
-        filename: 'test.txt',
-        salt: null,
-      )).seal(content);
+      final sealed = ZegelWriter(
+          key,
+          const ZegelOptions(
+            contentType: 'text/plain',
+            filename: 'test.txt',
+            salt: null,
+          )).seal(content);
 
       expect(
         () => const ZegelReader().verify(sealed, wrongKey),
@@ -664,7 +666,7 @@ void main() {
 
   group('Structured blocks roundtrip', () {
     test('SbomBlock encode/decode', () {
-      final sbom = SbomBlock(
+      const sbom = SbomBlock(
         packages: [
           SbomPackage(
             name: 'crypto',
@@ -698,19 +700,19 @@ void main() {
     test('RoyaltyBlock encode/decode', () {
       final royalty = RoyaltyBlock(
         recipients: [
-          RoyaltyRecipient(
+          const RoyaltyRecipient(
             identifier: 'artist-001',
             percentage: 60.0,
             name: 'Main Artist',
             role: 'creator',
           ),
-          RoyaltyRecipient(
+          const RoyaltyRecipient(
             identifier: 'producer-001',
             percentage: 25.0,
             name: 'Producer',
             role: 'producer',
           ),
-          RoyaltyRecipient(
+          const RoyaltyRecipient(
             identifier: 'label-001',
             percentage: 15.0,
             name: 'Record Label',
@@ -733,8 +735,8 @@ void main() {
       expect(
         () => RoyaltyBlock(
           recipients: [
-            RoyaltyRecipient(identifier: 'a', percentage: 50.0),
-            RoyaltyRecipient(identifier: 'b', percentage: 30.0),
+            const RoyaltyRecipient(identifier: 'a', percentage: 50.0),
+            const RoyaltyRecipient(identifier: 'b', percentage: 30.0),
             // Missing 20%
           ],
         ),
@@ -743,7 +745,7 @@ void main() {
     });
 
     test('MeasurementBlock encode/decode', () {
-      final measurement = MeasurementBlock(
+      const measurement = MeasurementBlock(
         timestamp: 1700000000,
         sensorId: 'temp-sensor-01',
         value: 2.5,
@@ -768,7 +770,7 @@ void main() {
     });
 
     test('PrivilegeLogBlock encode/decode', () {
-      final privilegeLog = PrivilegeLogBlock(
+      const privilegeLog = PrivilegeLogBlock(
         entries: [
           RedactionBasis(
             blockIndex: 3,

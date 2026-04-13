@@ -120,19 +120,22 @@ class FileInfoCard extends StatelessWidget {
             const Divider(),
             if (filename != null)
               _InfoRow(
-                  label: 'Filename', // ignore: deprecated_member_use
-                  // ignore: deprecated_member_use
-                  value: filename!),
+                label: 'Filename', // ignore: deprecated_member_use
+                // ignore: deprecated_member_use
+                value: filename!,
+              ),
             if (fileSize != null)
               _InfoRow(
-                  label: 'Size', // ignore: deprecated_member_use
-                  // ignore: deprecated_member_use
-                  value: _formatFileSize(fileSize!)),
+                label: 'Size', // ignore: deprecated_member_use
+                // ignore: deprecated_member_use
+                value: _formatFileSize(fileSize!),
+              ),
             if (contentType != null)
               _InfoRow(
-                  label: 'Content Type', // ignore: deprecated_member_use
-                  // ignore: deprecated_member_use
-                  value: contentType!),
+                label: 'Content Type', // ignore: deprecated_member_use
+                // ignore: deprecated_member_use
+                value: contentType!,
+              ),
             if (createdAt != null)
               _InfoRow(
                 label: 'Created',
@@ -142,9 +145,10 @@ class FileInfoCard extends StatelessWidget {
               ),
             if (blockCount != null)
               _InfoRow(
-                  label: 'Block Count', // ignore: deprecated_member_use
-                  // ignore: deprecated_member_use
-                  value: blockCount.toString()),
+                label: 'Block Count', // ignore: deprecated_member_use
+                // ignore: deprecated_member_use
+                value: blockCount.toString(),
+              ),
             if (inspection != null) ...[
               _InfoRow(
                 label: 'Format Version',
@@ -206,19 +210,25 @@ class FileInfoCard extends StatelessWidget {
                     ),
                   ),
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.amber.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(4),
                       border: Border.all(
-                          color: Colors.amber.withValues(alpha: 0.5)),
+                        color: Colors.amber.withValues(alpha: 0.5),
+                      ),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.gavel,
-                            size: 12, color: Colors.amber.shade800),
+                        Icon(
+                          Icons.gavel,
+                          size: 12,
+                          color: Colors.amber.shade800,
+                        ),
                         const SizedBox(width: 4),
                         Text(
                           'HELD UNTIL $regulatoryHoldUntil',
@@ -304,10 +314,7 @@ class FileInfoCard extends StatelessWidget {
                 runSpacing: 4,
                 children: _decodedFlags(flags!).map((flag) {
                   return Chip(
-                    label: Text(
-                      flag,
-                      style: const TextStyle(fontSize: 11),
-                    ),
+                    label: Text(flag, style: const TextStyle(fontSize: 11)),
                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     visualDensity: VisualDensity.compact,
                     padding: EdgeInsets.zero,
@@ -367,12 +374,7 @@ class _InfoRow extends StatelessWidget {
               ),
             ),
           ),
-          Expanded(
-            child: Text(
-              value,
-              style: theme.textTheme.bodyMedium,
-            ),
-          ),
+          Expanded(child: Text(value, style: theme.textTheme.bodyMedium)),
         ],
       ),
     );

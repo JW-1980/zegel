@@ -20,29 +20,41 @@ void main() {
     group('GF(256) arithmetic', () {
       test('multiply: 0 * x = 0 for any x', () {
         for (var x = 0; x < 256; x++) {
-          expect(ShamirSecretSharing.gfMultiply(0, x), equals(0),
-              reason: '0 * $x should equal 0');
+          expect(
+            ShamirSecretSharing.gfMultiply(0, x),
+            equals(0),
+            reason: '0 * $x should equal 0',
+          );
         }
       });
 
       test('multiply: x * 0 = 0 for any x', () {
         for (var x = 0; x < 256; x++) {
-          expect(ShamirSecretSharing.gfMultiply(x, 0), equals(0),
-              reason: '$x * 0 should equal 0');
+          expect(
+            ShamirSecretSharing.gfMultiply(x, 0),
+            equals(0),
+            reason: '$x * 0 should equal 0',
+          );
         }
       });
 
       test('multiply: 1 * x = x for any x', () {
         for (var x = 0; x < 256; x++) {
-          expect(ShamirSecretSharing.gfMultiply(1, x), equals(x),
-              reason: '1 * $x should equal $x');
+          expect(
+            ShamirSecretSharing.gfMultiply(1, x),
+            equals(x),
+            reason: '1 * $x should equal $x',
+          );
         }
       });
 
       test('multiply: x * 1 = x for any x', () {
         for (var x = 0; x < 256; x++) {
-          expect(ShamirSecretSharing.gfMultiply(x, 1), equals(x),
-              reason: '$x * 1 should equal $x');
+          expect(
+            ShamirSecretSharing.gfMultiply(x, 1),
+            equals(x),
+            reason: '$x * 1 should equal $x',
+          );
         }
       });
 
@@ -72,8 +84,11 @@ void main() {
         for (var a = 1; a < 256; a++) {
           final inv = ShamirSecretSharing.gfInverse(a);
           final product = ShamirSecretSharing.gfMultiply(a, inv);
-          expect(product, equals(1),
-              reason: '$a * inverse($a) = $a * $inv = $product, expected 1');
+          expect(
+            product,
+            equals(1),
+            reason: '$a * inverse($a) = $a * $inv = $product, expected 1',
+          );
         }
       });
 
@@ -85,8 +100,11 @@ void main() {
         for (var a = 1; a < 256; a++) {
           final inv = ShamirSecretSharing.gfInverse(a);
           final invInv = ShamirSecretSharing.gfInverse(inv);
-          expect(invInv, equals(a),
-              reason: 'inverse(inverse($a)) should equal $a');
+          expect(
+            invInv,
+            equals(a),
+            reason: 'inverse(inverse($a)) should equal $a',
+          );
         }
       });
 
@@ -106,9 +124,11 @@ void main() {
 
         expect(shares.length, equals(3));
         for (final share in shares) {
-          expect(share.length, equals(33),
-              reason:
-                  'Each share should be 33 bytes (1 x-coord + 32 y-values)');
+          expect(
+            share.length,
+            equals(33),
+            reason: 'Each share should be 33 bytes (1 x-coord + 32 y-values)',
+          );
         }
       });
 
@@ -124,10 +144,15 @@ void main() {
         ];
 
         for (var i = 0; i < combinations.length; i++) {
-          final reconstructed =
-              ShamirSecretSharing.reconstruct(combinations[i], 2);
-          expect(reconstructed, equals(key),
-              reason: 'Combination $i should reconstruct correctly');
+          final reconstructed = ShamirSecretSharing.reconstruct(
+            combinations[i],
+            2,
+          );
+          expect(
+            reconstructed,
+            equals(key),
+            reason: 'Combination $i should reconstruct correctly',
+          );
         }
       });
 
@@ -157,24 +182,31 @@ void main() {
         // with M=1 using one share, we do Lagrange interp at x=0 with
         // a single point, which just gives f(xi) = yi at x=0, which is wrong
         // because the actual polynomial is degree 1.
-        expect(reconstructed, isNot(equals(key)),
-            reason:
-                'Reconstructing with fewer shares than threshold should produce wrong key');
+        expect(
+          reconstructed,
+          isNot(equals(key)),
+          reason:
+              'Reconstructing with fewer shares than threshold should produce wrong key',
+        );
       });
 
-      test('split with threshold=3, total=5 -> reconstruct with shares 1,3,5',
-          () {
-        final key = _testKey();
-        final shares = ShamirSecretSharing.split(key, 3, 5);
+      test(
+        'split with threshold=3, total=5 -> reconstruct with shares 1,3,5',
+        () {
+          final key = _testKey();
+          final shares = ShamirSecretSharing.split(key, 3, 5);
 
-        expect(shares.length, equals(5));
+          expect(shares.length, equals(5));
 
-        // Use shares at indices 0, 2, 4 (x-coordinates 1, 3, 5)
-        final selectedShares = [shares[0], shares[2], shares[4]];
-        final reconstructed =
-            ShamirSecretSharing.reconstruct(selectedShares, 3);
-        expect(reconstructed, equals(key));
-      });
+          // Use shares at indices 0, 2, 4 (x-coordinates 1, 3, 5)
+          final selectedShares = [shares[0], shares[2], shares[4]];
+          final reconstructed = ShamirSecretSharing.reconstruct(
+            selectedShares,
+            3,
+          );
+          expect(reconstructed, equals(key));
+        },
+      );
 
       test('split with threshold=5, total=5 (all shares required)', () {
         final key = _testKey();
@@ -201,8 +233,11 @@ void main() {
         final shares = ShamirSecretSharing.split(key, 3, 5);
 
         for (var i = 0; i < shares.length; i++) {
-          expect(shares[i].length, equals(33),
-              reason: 'Share $i should be 33 bytes');
+          expect(
+            shares[i].length,
+            equals(33),
+            reason: 'Share $i should be 33 bytes',
+          );
         }
       });
 
@@ -211,12 +246,18 @@ void main() {
         final shares = ShamirSecretSharing.split(key, 3, 5);
 
         final xCoords = shares.map((s) => s[0]).toSet();
-        expect(xCoords.length, equals(5),
-            reason: 'All x-coordinates should be unique');
+        expect(
+          xCoords.length,
+          equals(5),
+          reason: 'All x-coordinates should be unique',
+        );
 
         for (var i = 0; i < 5; i++) {
-          expect(shares[i][0], equals(i + 1),
-              reason: 'Share $i x-coordinate should be ${i + 1}');
+          expect(
+            shares[i][0],
+            equals(i + 1),
+            reason: 'Share $i x-coordinate should be ${i + 1}',
+          );
         }
       });
 
@@ -225,8 +266,11 @@ void main() {
         final shares = ShamirSecretSharing.split(key, 2, 3);
 
         for (final share in shares) {
-          expect(share[0], isNot(equals(0)),
-              reason: 'x-coordinate must not be 0 (that is the secret)');
+          expect(
+            share[0],
+            isNot(equals(0)),
+            reason: 'x-coordinate must not be 0 (that is the secret)',
+          );
         }
       });
     });
@@ -246,10 +290,15 @@ void main() {
         // Any 2 of 10 should work
         for (var i = 0; i < 10; i++) {
           for (var j = i + 1; j < 10; j++) {
-            final reconstructed =
-                ShamirSecretSharing.reconstruct([shares[i], shares[j]], 2);
-            expect(reconstructed, equals(key),
-                reason: 'Shares $i and $j should reconstruct key');
+            final reconstructed = ShamirSecretSharing.reconstruct([
+              shares[i],
+              shares[j],
+            ], 2);
+            expect(
+              reconstructed,
+              equals(key),
+              reason: 'Shares $i and $j should reconstruct key',
+            );
           }
         }
       });
@@ -259,8 +308,11 @@ void main() {
         final shares = ShamirSecretSharing.split(key, 3, 7);
 
         // Pick 3 non-adjacent shares
-        final reconstructed = ShamirSecretSharing.reconstruct(
-            [shares[0], shares[3], shares[6]], 3);
+        final reconstructed = ShamirSecretSharing.reconstruct([
+          shares[0],
+          shares[3],
+          shares[6],
+        ], 3);
         expect(reconstructed, equals(key));
       });
 
@@ -278,33 +330,43 @@ void main() {
       test('key with all zeros', () {
         final key = Uint8List(32);
         final shares = ShamirSecretSharing.split(key, 2, 3);
-        final reconstructed =
-            ShamirSecretSharing.reconstruct([shares[0], shares[1]], 2);
+        final reconstructed = ShamirSecretSharing.reconstruct([
+          shares[0],
+          shares[1],
+        ], 2);
         expect(reconstructed, equals(key));
       });
 
       test('key with all 0xFF', () {
         final key = _filledKey(0xFF);
         final shares = ShamirSecretSharing.split(key, 2, 3);
-        final reconstructed =
-            ShamirSecretSharing.reconstruct([shares[0], shares[2]], 2);
+        final reconstructed = ShamirSecretSharing.reconstruct([
+          shares[0],
+          shares[2],
+        ], 2);
         expect(reconstructed, equals(key));
       });
 
       test('key with sequential bytes', () {
         final key = Uint8List.fromList(List.generate(32, (i) => i));
         final shares = ShamirSecretSharing.split(key, 3, 5);
-        final reconstructed = ShamirSecretSharing.reconstruct(
-            [shares[1], shares[2], shares[4]], 3);
+        final reconstructed = ShamirSecretSharing.reconstruct([
+          shares[1],
+          shares[2],
+          shares[4],
+        ], 3);
         expect(reconstructed, equals(key));
       });
 
       test('key with alternating bytes', () {
         final key = Uint8List.fromList(
-            List.generate(32, (i) => i.isEven ? 0xAA : 0x55));
+          List.generate(32, (i) => i.isEven ? 0xAA : 0x55),
+        );
         final shares = ShamirSecretSharing.split(key, 2, 4);
-        final reconstructed =
-            ShamirSecretSharing.reconstruct([shares[1], shares[3]], 2);
+        final reconstructed = ShamirSecretSharing.reconstruct([
+          shares[1],
+          shares[3],
+        ], 2);
         expect(reconstructed, equals(key));
       });
     });
@@ -341,8 +403,11 @@ void main() {
         // All shares should be different (y-values differ)
         for (var i = 0; i < shares.length; i++) {
           for (var j = i + 1; j < shares.length; j++) {
-            expect(shares[i], isNot(equals(shares[j])),
-                reason: 'Shares $i and $j should differ');
+            expect(
+              shares[i],
+              isNot(equals(shares[j])),
+              reason: 'Shares $i and $j should differ',
+            );
           }
         }
       });
@@ -352,8 +417,11 @@ void main() {
         final shares = ShamirSecretSharing.split(key, 3, 20);
         expect(shares.length, equals(20));
 
-        final reconstructed = ShamirSecretSharing.reconstruct(
-            [shares[5], shares[10], shares[15]], 3);
+        final reconstructed = ShamirSecretSharing.reconstruct([
+          shares[5],
+          shares[10],
+          shares[15],
+        ], 3);
         expect(reconstructed, equals(key));
       });
     });
@@ -379,18 +447,25 @@ void main() {
           }
           if (diffFound) break;
         }
-        expect(diffFound, isTrue,
-            reason: 'Two independent splits should produce different shares');
+        expect(
+          diffFound,
+          isTrue,
+          reason: 'Two independent splits should produce different shares',
+        );
       });
 
       test('reconstruction is deterministic', () {
         final key = _testKey();
         final shares = ShamirSecretSharing.split(key, 2, 3);
 
-        final result1 =
-            ShamirSecretSharing.reconstruct([shares[0], shares[1]], 2);
-        final result2 =
-            ShamirSecretSharing.reconstruct([shares[0], shares[1]], 2);
+        final result1 = ShamirSecretSharing.reconstruct([
+          shares[0],
+          shares[1],
+        ], 2);
+        final result2 = ShamirSecretSharing.reconstruct([
+          shares[0],
+          shares[1],
+        ], 2);
 
         expect(result1, equals(result2));
         expect(result1, equals(key));

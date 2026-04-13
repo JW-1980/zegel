@@ -11,9 +11,9 @@ dependencies:
     path: ../lib
   args: ^2.4.2
   crypto: ^3.0.3
-  pointycastle: ^3.7.3
+  pointycastle: ^3.9.1
   path: ^1.8.3
 
 dev_dependencies:
   test: ^1.24.0
-  lints: ^3.0.0
+  lints: ^6.1.0

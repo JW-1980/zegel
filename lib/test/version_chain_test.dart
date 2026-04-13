@@ -65,9 +65,7 @@ Uint8List _getMerkleRoot(Uint8List fileBytes) {
 
 /// Extracts the master seal (last 64 bytes) from a sealed file.
 Uint8List _getMasterSeal(Uint8List fileBytes) {
-  return Uint8List.fromList(
-    fileBytes.sublist(fileBytes.length - 64),
-  );
+  return Uint8List.fromList(fileBytes.sublist(fileBytes.length - 64));
 }
 
 void main() {
@@ -125,8 +123,11 @@ void main() {
         // Verify the chain: v1 -> v2 -> v3
         final chain = [v1Bytes, v2Bytes, v3Bytes];
         final result = ContentVersioning.verifyVersionChain(chain);
-        expect(result, isTrue,
-            reason: 'Properly linked version chain should verify');
+        expect(
+          result,
+          isTrue,
+          reason: 'Properly linked version chain should verify',
+        );
       });
 
       test('fails for files with broken chain', () {
@@ -151,8 +152,11 @@ void main() {
 
         final chain = [v1Bytes, v2Bytes];
         final result = ContentVersioning.verifyVersionChain(chain);
-        expect(result, isFalse,
-            reason: 'Broken chain hash should fail verification');
+        expect(
+          result,
+          isFalse,
+          reason: 'Broken chain hash should fail verification',
+        );
       });
     });
 
@@ -199,8 +203,11 @@ void main() {
         final versionInfo = metadata['version_info'] as Map<String, dynamic>;
         expect(versionInfo['version_number'], equals(1));
         // previous_filename should be absent for version 1
-        expect(versionInfo.containsKey('previous_filename'), isFalse,
-            reason: 'First version should have no previous filename');
+        expect(
+          versionInfo.containsKey('previous_filename'),
+          isFalse,
+          reason: 'First version should have no previous filename',
+        );
       });
     });
 
@@ -212,10 +219,7 @@ void main() {
         final masterSeal = Uint8List(64);
         masterSeal[0] = 0xAB;
 
-        final hash = ContentVersioning.computeChainHash(
-          merkleRoot,
-          masterSeal,
-        );
+        final hash = ContentVersioning.computeChainHash(merkleRoot, masterSeal);
 
         expect(hash.length, equals(32));
       });

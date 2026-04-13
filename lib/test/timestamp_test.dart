@@ -42,23 +42,20 @@ void main() {
       test('produces a non-empty map', () {
         final merkleRoot = _testMerkleRoot();
         final masterSeal = _testMasterSeal();
-        final request = TrustedTimestamp.createRequest(
-          merkleRoot,
-          masterSeal,
-        );
+        final request = TrustedTimestamp.createRequest(merkleRoot, masterSeal);
 
         expect(request, isNotNull);
-        expect(request, isNotEmpty,
-            reason: 'Timestamp request should be non-empty');
+        expect(
+          request,
+          isNotEmpty,
+          reason: 'Timestamp request should be non-empty',
+        );
       });
 
       test('request contains required fields', () {
         final merkleRoot = _testMerkleRoot();
         final masterSeal = _testMasterSeal();
-        final request = TrustedTimestamp.createRequest(
-          merkleRoot,
-          masterSeal,
-        );
+        final request = TrustedTimestamp.createRequest(merkleRoot, masterSeal);
 
         expect(request.containsKey('version'), isTrue);
         expect(request['version'], equals(1));
@@ -134,10 +131,16 @@ void main() {
 
         expect(token.containsKey('merkle_root'), isTrue);
         final rootHex = token['merkle_root'] as String;
-        expect(rootHex.length, equals(64),
-            reason: 'Merkle root hex should be 64 characters (32 bytes)');
-        expect(RegExp(r'^[0-9a-f]+$').hasMatch(rootHex), isTrue,
-            reason: 'Merkle root hex should be lowercase hex');
+        expect(
+          rootHex.length,
+          equals(64),
+          reason: 'Merkle root hex should be 64 characters (32 bytes)',
+        );
+        expect(
+          RegExp(r'^[0-9a-f]+$').hasMatch(rootHex),
+          isTrue,
+          reason: 'Merkle root hex should be lowercase hex',
+        );
       });
 
       test('local token includes current timestamp', () {
@@ -210,8 +213,11 @@ void main() {
 
         expect(token.containsKey('signature'), isTrue);
         final sigHex = token['signature'] as String;
-        expect(sigHex.length, equals(64),
-            reason: 'Signature hex should be 64 chars for HMAC-SHA256');
+        expect(
+          sigHex.length,
+          equals(64),
+          reason: 'Signature hex should be 64 chars for HMAC-SHA256',
+        );
       });
     });
 
@@ -233,8 +239,11 @@ void main() {
           masterSeal,
           signerKey,
         );
-        expect(isValid, isTrue,
-            reason: 'Valid local token should pass verification');
+        expect(
+          isValid,
+          isTrue,
+          reason: 'Valid local token should pass verification',
+        );
       });
 
       test('fails with wrong signer key', () {
@@ -257,8 +266,11 @@ void main() {
           masterSeal,
           wrongKey,
         );
-        expect(isValid, isFalse,
-            reason: 'Token signed with different key should fail verification');
+        expect(
+          isValid,
+          isFalse,
+          reason: 'Token signed with different key should fail verification',
+        );
       });
     });
 

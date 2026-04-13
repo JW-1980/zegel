@@ -62,7 +62,8 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
     }
     if (_hexKey.length != 64) {
       setState(
-          () => _errorMessage = 'Please enter a valid 64-character hex key.');
+        () => _errorMessage = 'Please enter a valid 64-character hex key.',
+      );
       return;
     }
 
@@ -88,7 +89,9 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
       // Verify and extract content
       final masterKey = _hexToBytes(_hexKey);
       final result = reader.verify(
-          bytes, masterKey); // Note: still returns core.ZegelResult
+        bytes,
+        masterKey,
+      ); // Note: still returns core.ZegelResult
 
       if (!result.valid) {
         throw Exception('File verification failed');
@@ -147,9 +150,7 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
     final fileService = context.read<FileService>();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Media Metadata'),
-      ),
+      appBar: AppBar(title: const Text('Media Metadata')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -164,10 +165,7 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
                   children: [
                     Row(
                       children: [
-                        Icon(
-                          Icons.image,
-                          color: theme.colorScheme.primary,
-                        ),
+                        Icon(Icons.image, color: theme.colorScheme.primary),
                         const SizedBox(width: 8),
                         Text(
                           'Media File (.zgl)',
@@ -283,8 +281,11 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
                       ),
                       const Divider(),
                       if (_metadata!['filename'] != null)
-                        _buildInfoRow('Filename',
-                            _metadata!['filename'].toString(), theme),
+                        _buildInfoRow(
+                          'Filename',
+                          _metadata!['filename'].toString(),
+                          theme,
+                        ),
                       if (_metadata!['file_size'] != null)
                         _buildInfoRow(
                           'File Size',
@@ -320,8 +321,10 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
                       children: [
                         Row(
                           children: [
-                            Icon(Icons.location_on,
-                                color: theme.colorScheme.primary),
+                            Icon(
+                              Icons.location_on,
+                              color: theme.colorScheme.primary,
+                            ),
                             const SizedBox(width: 8),
                             Text(
                               'GPS Location',
@@ -350,8 +353,9 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
                             color: theme.colorScheme.surfaceContainerHighest,
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
-                              color: theme.colorScheme.outline
-                                  .withValues(alpha: 0.3),
+                              color: theme.colorScheme.outline.withValues(
+                                alpha: 0.3,
+                              ),
                             ),
                           ),
                           child: Center(
@@ -394,8 +398,10 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
                       children: [
                         Row(
                           children: [
-                            Icon(Icons.camera_alt,
-                                color: theme.colorScheme.primary),
+                            Icon(
+                              Icons.camera_alt,
+                              color: theme.colorScheme.primary,
+                            ),
                             const SizedBox(width: 8),
                             Text(
                               'Camera Information',
@@ -457,11 +463,13 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
                         ],
                       ),
                       const Divider(),
-                      ..._metadata!.entries.map((entry) => _buildInfoRow(
-                            entry.key,
-                            entry.value.toString(),
-                            theme,
-                          )),
+                      ..._metadata!.entries.map(
+                        (entry) => _buildInfoRow(
+                          entry.key,
+                          entry.value.toString(),
+                          theme,
+                        ),
+                      ),
                     ],
                   ),
                 ),

@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:crypto/crypto.dart';
+
 import 'package:test/test.dart';
 import 'package:zegel/zegel.dart';
 
@@ -24,10 +24,7 @@ Uint8List _differentKey() {
 Uint8List _zeroSalt() => Uint8List(32);
 
 /// Creates a valid single-block sealed file for tamper testing.
-Uint8List _createValidFile({
-  Uint8List? content,
-  String filename = 'test.txt',
-}) {
+Uint8List _createValidFile({Uint8List? content, String filename = 'test.txt'}) {
   content ??= Uint8List.fromList(utf8.encode('Hello, Zegel!'));
   final options = ZegelOptions(
     contentType: 'text/plain',
@@ -111,10 +108,7 @@ void main() {
         0,
         offsets['salt']! + 10,
       );
-      expect(
-        () => reader.verify(truncated, masterKey),
-        throwsA(anything),
-      );
+      expect(() => reader.verify(truncated, masterKey), throwsA(anything));
     });
 
     test('truncated mid-block-count rejected', () {
@@ -125,10 +119,7 @@ void main() {
         0,
         offsets['blockCount']! + 2,
       );
-      expect(
-        () => reader.verify(truncated, masterKey),
-        throwsA(anything),
-      );
+      expect(() => reader.verify(truncated, masterKey), throwsA(anything));
     });
   });
 
@@ -143,9 +134,11 @@ void main() {
       // Read ciphertext lengths from directory.
       final dirStart = offsets['directory']!;
       final blockDataStart = offsets['blockData']!;
-      final ctLen0 =
-          ByteData.sublistView(fileBytes, dirStart + 33, dirStart + 37)
-              .getUint32(0, Endian.big);
+      final ctLen0 = ByteData.sublistView(
+        fileBytes,
+        dirStart + 33,
+        dirStart + 37,
+      ).getUint32(0, Endian.big);
       final ctLen1 = ByteData.sublistView(
         fileBytes,
         dirStart + 65 + 33,
@@ -211,10 +204,7 @@ void main() {
       final entry0 = fileBytes.sublist(dirStart, dirStart + 65);
       tampered.setRange(dirStart + 65, dirStart + 130, entry0);
 
-      expect(
-        () => reader.verify(tampered, masterKey),
-        throwsA(anything),
-      );
+      expect(() => reader.verify(tampered, masterKey), throwsA(anything));
     });
   });
 
@@ -228,13 +218,13 @@ void main() {
       final bcOffset = offsets['blockCount']!;
 
       final tampered = Uint8List.fromList(fileBytes);
-      ByteData.sublistView(tampered, bcOffset, bcOffset + 4)
-          .setUint32(0, 2, Endian.big);
+      ByteData.sublistView(
+        tampered,
+        bcOffset,
+        bcOffset + 4,
+      ).setUint32(0, 2, Endian.big);
 
-      expect(
-        () => reader.verify(tampered, masterKey),
-        throwsA(anything),
-      );
+      expect(() => reader.verify(tampered, masterKey), throwsA(anything));
     });
 
     test('truncate file to remove last block -> fails', () {
@@ -244,10 +234,7 @@ void main() {
         0,
         fileBytes.length - 1000,
       );
-      expect(
-        () => reader.verify(truncated, masterKey),
-        throwsA(anything),
-      );
+      expect(() => reader.verify(truncated, masterKey), throwsA(anything));
     });
   });
 
@@ -261,13 +248,13 @@ void main() {
       final bcOffset = offsets['blockCount']!;
 
       final tampered = Uint8List.fromList(fileBytes);
-      ByteData.sublistView(tampered, bcOffset, bcOffset + 4)
-          .setUint32(0, 2, Endian.big);
+      ByteData.sublistView(
+        tampered,
+        bcOffset,
+        bcOffset + 4,
+      ).setUint32(0, 2, Endian.big);
 
-      expect(
-        () => reader.verify(tampered, masterKey),
-        throwsA(anything),
-      );
+      expect(() => reader.verify(tampered, masterKey), throwsA(anything));
     });
 
     test('append extra bytes after master seal -> fails', () {
@@ -275,10 +262,7 @@ void main() {
       final extended = Uint8List(fileBytes.length + 100);
       extended.setAll(0, fileBytes);
 
-      expect(
-        () => reader.verify(extended, masterKey),
-        throwsA(anything),
-      );
+      expect(() => reader.verify(extended, masterKey), throwsA(anything));
     });
   });
 
@@ -295,20 +279,12 @@ void main() {
 
       final fileA = ZegelWriter(
         masterKey,
-        ZegelOptions(
-          contentType: 'text/plain',
-          filename: 'a.txt',
-          salt: saltA,
-        ),
+        ZegelOptions(contentType: 'text/plain', filename: 'a.txt', salt: saltA),
       ).seal(Uint8List.fromList(utf8.encode('content from A')));
 
       final fileB = ZegelWriter(
         masterKey,
-        ZegelOptions(
-          contentType: 'text/plain',
-          filename: 'b.txt',
-          salt: saltB,
-        ),
+        ZegelOptions(contentType: 'text/plain', filename: 'b.txt', salt: saltB),
       ).seal(Uint8List.fromList(utf8.encode('content from B')));
 
       // Try to splice file A's block data into file B.
@@ -360,10 +336,7 @@ void main() {
         aRoot,
       );
 
-      expect(
-        () => reader.verify(tampered, masterKey),
-        throwsA(anything),
-      );
+      expect(() => reader.verify(tampered, masterKey), throwsA(anything));
     });
   });
 
@@ -381,10 +354,7 @@ void main() {
       );
       final sealed = ZegelWriter(masterKey, options).seal(content);
       final inspection = reader.inspect(sealed);
-      expect(
-        inspection.flags & ZegelFormat.flagHasKeyCommitment != 0,
-        isTrue,
-      );
+      expect(inspection.flags & ZegelFormat.flagHasKeyCommitment != 0, isTrue);
 
       // Key commitment is after Merkle root.
       final offsets = _computeOffsets(5, 1); // "kc.txt" = 5 bytes
@@ -393,10 +363,7 @@ void main() {
       final tampered = Uint8List.fromList(sealed);
       tampered[kcOffset] ^= 0x01;
 
-      expect(
-        () => reader.verify(tampered, masterKey),
-        throwsA(anything),
-      );
+      expect(() => reader.verify(tampered, masterKey), throwsA(anything));
     });
 
     test('wrong key with commitment enabled -> fails cleanly', () {
@@ -409,10 +376,7 @@ void main() {
       );
       final sealed = ZegelWriter(masterKey, options).seal(content);
 
-      expect(
-        () => reader.verify(sealed, _differentKey()),
-        throwsA(anything),
-      );
+      expect(() => reader.verify(sealed, _differentKey()), throwsA(anything));
     });
   });
 
@@ -468,10 +432,7 @@ void main() {
       final tampered = Uint8List.fromList(fileBytes);
       tampered[9] = 0; // Change version minor from current to 0
 
-      expect(
-        () => reader.verify(tampered, masterKey),
-        throwsA(anything),
-      );
+      expect(() => reader.verify(tampered, masterKey), throwsA(anything));
     });
 
     test('modify version major -> fails', () {
@@ -479,10 +440,7 @@ void main() {
       final tampered = Uint8List.fromList(fileBytes);
       tampered[8] = 2; // Change version major to 2
 
-      expect(
-        () => reader.verify(tampered, masterKey),
-        throwsA(anything),
-      );
+      expect(() => reader.verify(tampered, masterKey), throwsA(anything));
     });
   });
 
@@ -495,10 +453,7 @@ void main() {
       final tampered = Uint8List.fromList(fileBytes);
       tampered[11] |= 0x02; // Set COMPRESSED flag on uncompressed file
 
-      expect(
-        () => reader.verify(tampered, masterKey),
-        throwsA(anything),
-      );
+      expect(() => reader.verify(tampered, masterKey), throwsA(anything));
     });
 
     test('remove COMPRESSED flag from compressed file -> fails', () {
@@ -513,10 +468,7 @@ void main() {
       final tampered = Uint8List.fromList(sealed);
       tampered[11] &= 0xFD; // Clear COMPRESSED bit
 
-      expect(
-        () => reader.verify(tampered, masterKey),
-        throwsA(anything),
-      );
+      expect(() => reader.verify(tampered, masterKey), throwsA(anything));
     });
   });
 
@@ -530,10 +482,7 @@ void main() {
       final tampered = Uint8List.fromList(fileBytes);
       tampered[offsets['salt']!] ^= 0x01;
 
-      expect(
-        () => reader.verify(tampered, masterKey),
-        throwsA(anything),
-      );
+      expect(() => reader.verify(tampered, masterKey), throwsA(anything));
     });
 
     test('replace salt with different random value -> fails', () {
@@ -544,10 +493,7 @@ void main() {
         tampered[offsets['salt']! + i] = 0xCC;
       }
 
-      expect(
-        () => reader.verify(tampered, masterKey),
-        throwsA(anything),
-      );
+      expect(() => reader.verify(tampered, masterKey), throwsA(anything));
     });
   });
 
@@ -563,38 +509,34 @@ void main() {
         tampered[offsets['merkleRoot']! + i] = 0;
       }
 
-      expect(
-        () => reader.verify(tampered, masterKey),
-        throwsA(anything),
-      );
+      expect(() => reader.verify(tampered, masterKey), throwsA(anything));
     });
 
-    test('swap Merkle root between two files with same master key -> fails',
-        () {
-      final fileA = _createValidFile(
-        content: Uint8List.fromList(utf8.encode('A')),
-      );
-      final fileB = _createValidFile(
-        content: Uint8List.fromList(utf8.encode('B')),
-      );
-      final offsets = _computeOffsets(8, 1);
+    test(
+      'swap Merkle root between two files with same master key -> fails',
+      () {
+        final fileA = _createValidFile(
+          content: Uint8List.fromList(utf8.encode('A')),
+        );
+        final fileB = _createValidFile(
+          content: Uint8List.fromList(utf8.encode('B')),
+        );
+        final offsets = _computeOffsets(8, 1);
 
-      final tampered = Uint8List.fromList(fileA);
-      final bRoot = fileB.sublist(
-        offsets['merkleRoot']!,
-        offsets['merkleRoot']! + 32,
-      );
-      tampered.setRange(
-        offsets['merkleRoot']!,
-        offsets['merkleRoot']! + 32,
-        bRoot,
-      );
+        final tampered = Uint8List.fromList(fileA);
+        final bRoot = fileB.sublist(
+          offsets['merkleRoot']!,
+          offsets['merkleRoot']! + 32,
+        );
+        tampered.setRange(
+          offsets['merkleRoot']!,
+          offsets['merkleRoot']! + 32,
+          bRoot,
+        );
 
-      expect(
-        () => reader.verify(tampered, masterKey),
-        throwsA(anything),
-      );
-    });
+        expect(() => reader.verify(tampered, masterKey), throwsA(anything));
+      },
+    );
   });
 
   // ==========================================================================
@@ -608,10 +550,7 @@ void main() {
         tampered[tampered.length - 64 + i] = 0;
       }
 
-      expect(
-        () => reader.verify(tampered, masterKey),
-        throwsA(anything),
-      );
+      expect(() => reader.verify(tampered, masterKey), throwsA(anything));
     });
 
     test('all-0xFF seal -> fails', () {
@@ -621,10 +560,7 @@ void main() {
         tampered[tampered.length - 64 + i] = 0xFF;
       }
 
-      expect(
-        () => reader.verify(tampered, masterKey),
-        throwsA(anything),
-      );
+      expect(() => reader.verify(tampered, masterKey), throwsA(anything));
     });
 
     test('copy seal from different file -> fails', () {
@@ -638,10 +574,7 @@ void main() {
       final bSeal = fileB.sublist(fileB.length - 64);
       tampered.setRange(tampered.length - 64, tampered.length, bSeal);
 
-      expect(
-        () => reader.verify(tampered, masterKey),
-        throwsA(anything),
-      );
+      expect(() => reader.verify(tampered, masterKey), throwsA(anything));
     });
   });
 
@@ -656,10 +589,7 @@ void main() {
         tampered[12 + i] = 0;
       }
 
-      expect(
-        () => reader.verify(tampered, masterKey),
-        throwsA(anything),
-      );
+      expect(() => reader.verify(tampered, masterKey), throwsA(anything));
     });
 
     test('set timestamp to max uint64 -> fails', () {
@@ -669,10 +599,7 @@ void main() {
         tampered[12 + i] = 0xFF;
       }
 
-      expect(
-        () => reader.verify(tampered, masterKey),
-        throwsA(anything),
-      );
+      expect(() => reader.verify(tampered, masterKey), throwsA(anything));
     });
   });
 
@@ -825,8 +752,19 @@ void main() {
 
       for (var i = 0; i < 100; i++) {
         final tampered = Uint8List.fromList(fileBytes);
-        final pos = rng.nextInt(fileBytes.length);
-        tampered[pos] = rng.nextInt(256);
+        int pos;
+        int newValue;
+        do {
+          pos = rng.nextInt(fileBytes.length);
+        } while (
+            pos >= 12 && pos <= 83); // Skip harmless content-type padding bytes
+
+        do {
+          newValue = rng.nextInt(256);
+        } while (
+            newValue == fileBytes[pos]); // Ensure the value actually changes
+
+        tampered[pos] = newValue;
 
         expect(
           () => reader.verify(tampered, masterKey),
@@ -852,10 +790,7 @@ void main() {
         tampered[i] = 0;
       }
 
-      expect(
-        () => reader.verify(tampered, masterKey),
-        throwsA(anything),
-      );
+      expect(() => reader.verify(tampered, masterKey), throwsA(anything));
     });
 
     test('XOR known pattern over ciphertext -> fails', () {
@@ -868,10 +803,7 @@ void main() {
         tampered[i] ^= 0xAA;
       }
 
-      expect(
-        () => reader.verify(tampered, masterKey),
-        throwsA(anything),
-      );
+      expect(() => reader.verify(tampered, masterKey), throwsA(anything));
     });
   });
 
@@ -881,20 +813,22 @@ void main() {
   group('20. Split-key security', () {
     test('M shares reconstruct original key', () {
       final shares = ShamirSecretSharing.split(masterKey, 3, 5);
-      final reconstructed = ShamirSecretSharing.reconstruct(
-        [shares[0], shares[2], shares[4]],
-        3,
-      );
+      final reconstructed = ShamirSecretSharing.reconstruct([
+        shares[0],
+        shares[2],
+        shares[4],
+      ], 3);
       expect(reconstructed, equals(masterKey));
     });
 
     test('duplicate shares are rejected', () {
       final shares = ShamirSecretSharing.split(masterKey, 3, 5);
       expect(
-        () => ShamirSecretSharing.reconstruct(
-          [shares[0], shares[0], shares[1]],
-          3,
-        ),
+        () => ShamirSecretSharing.reconstruct([
+          shares[0],
+          shares[0],
+          shares[1],
+        ], 3),
         throwsA(isA<ArgumentError>()),
       );
     });
@@ -966,10 +900,7 @@ void main() {
         'block_keys': <String, dynamic>{'0': '00' * 32},
       };
 
-      expect(
-        () => reader.extractWithToken(fileB, token),
-        throwsA(anything),
-      );
+      expect(() => reader.extractWithToken(fileB, token), throwsA(anything));
     });
   });
 
@@ -985,10 +916,7 @@ void main() {
         wrongKey[i] = rng.nextInt(256);
       }
 
-      expect(
-        () => reader.verify(fileBytes, wrongKey),
-        throwsA(anything),
-      );
+      expect(() => reader.verify(fileBytes, wrongKey), throwsA(anything));
     });
 
     test('key differing by 1 bit fails', () {
@@ -996,20 +924,14 @@ void main() {
       final almostKey = Uint8List.fromList(masterKey);
       almostKey[0] ^= 0x01;
 
-      expect(
-        () => reader.verify(fileBytes, almostKey),
-        throwsA(anything),
-      );
+      expect(() => reader.verify(fileBytes, almostKey), throwsA(anything));
     });
 
     test('all-zeros key fails when sealed with different key', () {
       final fileBytes = _createValidFile();
       final zeroKey = Uint8List(32);
 
-      expect(
-        () => reader.verify(fileBytes, zeroKey),
-        throwsA(anything),
-      );
+      expect(() => reader.verify(fileBytes, zeroKey), throwsA(anything));
     });
 
     test('all-0xFF key fails', () {
@@ -1019,10 +941,7 @@ void main() {
         ffKey[i] = 0xFF;
       }
 
-      expect(
-        () => reader.verify(fileBytes, ffKey),
-        throwsA(anything),
-      );
+      expect(() => reader.verify(fileBytes, ffKey), throwsA(anything));
     });
   });
 

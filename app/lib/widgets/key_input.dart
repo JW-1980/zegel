@@ -67,13 +67,16 @@ class _KeyInputState extends State<KeyInput> {
       return;
     }
     if (value.length != 64) {
-      setState(() =>
-          _errorText = 'Key must be 64 hex characters (${value.length}/64)');
+      setState(
+        () => _errorText = 'Key must be 64 hex characters (${value.length}/64)',
+      );
       return;
     }
     if (!RegExp(r'^[0-9a-fA-F]{64}$').hasMatch(value)) {
-      setState(() => _errorText =
-          'Key must contain only hexadecimal characters (0-9, a-f)');
+      setState(
+        () => _errorText =
+            'Key must contain only hexadecimal characters (0-9, a-f)',
+      );
       return;
     }
     setState(() => _errorText = null);
@@ -104,8 +107,9 @@ class _KeyInputState extends State<KeyInput> {
       // Accept raw 32 bytes as hex
       final bytes = await file.readAsBytes();
       if (bytes.length == 32) {
-        final hex =
-            bytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
+        final hex = bytes
+            .map((b) => b.toRadixString(16).padLeft(2, '0'))
+            .join();
         _controller.text = hex;
         return;
       }
@@ -154,9 +158,9 @@ class _KeyInputState extends State<KeyInput> {
           // ignore: use_build_context_synchronously
           // ignore: use_build_context_synchronously
           // ignore: use_build_context_synchronously
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('No saved keys found')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('No saved keys found')));
         }
       }
       return;
@@ -209,10 +213,7 @@ class _KeyInputState extends State<KeyInput> {
           readOnly: widget.readOnly,
           obscureText: _obscureText,
           maxLength: 64,
-          style: const TextStyle(
-            fontFamily: 'monospace',
-            fontSize: 13,
-          ),
+          style: const TextStyle(fontFamily: 'monospace', fontSize: 13),
           decoration: InputDecoration(
             hintText: l10n.keyHint,
             errorText: _errorText,

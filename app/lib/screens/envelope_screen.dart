@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:zegel/zegel.dart';
@@ -95,7 +93,7 @@ class _EnvelopeScreenState extends State<EnvelopeScreen> {
     });
   }
 
-  Future<void> _createEnvelope() async {
+  void _createEnvelope() {
     // Validate inputs.
     if (_subjectController.text.trim().isEmpty) {
       _showError('Subject is required');
@@ -115,8 +113,9 @@ class _EnvelopeScreenState extends State<EnvelopeScreen> {
 
     // Build envelope.
     final now = DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
-    final expiresAt =
-        _expirationDays != null ? now + _expirationDays! * 86400 : null;
+    final expiresAt = _expirationDays != null
+        ? now + _expirationDays! * 86400
+        : null;
 
     final envelopeRecipients = <EnvelopeRecipient>[];
     for (var i = 0; i < _recipients.length; i++) {
@@ -159,128 +158,29 @@ class _EnvelopeScreenState extends State<EnvelopeScreen> {
       EnvelopeEvent(
         timestamp: now,
         eventType: 'envelope_created',
-        description: 'Envelope created with ${envelope.recipients.length} '
+        description:
+            'Envelope created with ${envelope.recipients.length} '
             'recipient(s), routing: ${_routingMode.name}',
       ),
     );
 
-    // Save envelope to a JSON file so it persists across sessions.
-    try {
-      final encoded = envelope.encode();
-      final homeDir = Platform.environment['HOME'] ??
-          Platform.environment['USERPROFILE'] ??
-          '.';
-      final outputPath = '$homeDir/zegel-envelope-${envelope.id}.json';
-      await File(outputPath).writeAsBytes(encoded);
+    setState(() {
+      _createdEnvelope = envelope;
+    });
 
-      setState(() {
-        _createdEnvelope = envelope;
-      });
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Envelope saved to ${outputPath.split('/').last} '
-              '(${envelope.recipients.length} recipients)',
-            ),
-            backgroundColor: Colors.green,
-            duration: const Duration(seconds: 4),
-            action: SnackBarAction(
-              label: 'OK',
-              textColor: Colors.white,
-              onPressed: () {},
-            ),
-          ),
-        );
-      }
-    } catch (e) {
-      _showError('Failed to save envelope: $e');
-    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Envelope created with ${envelope.recipients.length} recipients',
+        ),
+        backgroundColor: Colors.green,
+      ),
+    );
   }
 
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message), backgroundColor: Colors.red),
-    );
-  }
-
-  void _showHelpSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.6,
-        maxChildSize: 0.9,
-        expand: false,
-        builder: (context, scrollController) => SingleChildScrollView(
-          controller: scrollController,
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  margin: const EdgeInsets.only(bottom: 16),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
-              Text(
-                'How Signing Envelopes Work',
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
-              const SizedBox(height: 16),
-              const _HelpStep(
-                number: '1',
-                title: 'Add Recipients',
-                description:
-                    'Add the people who need to sign. Set each person\'s '
-                    'role (signer, approver, witness) and authentication method.',
-              ),
-              const _HelpStep(
-                number: '2',
-                title: 'Choose Routing',
-                description:
-                    'Sequential: each person signs in order. '
-                    'Parallel: everyone signs at the same time. '
-                    'Mixed: groups sign in sequence, within groups in parallel.',
-              ),
-              const _HelpStep(
-                number: '3',
-                title: 'Send the Envelope',
-                description:
-                    'The envelope is sealed with Zegel\'s tamper-proof '
-                    'format. Any modification after sending is detected.',
-              ),
-              const _HelpStep(
-                number: '4',
-                title: 'Collect Signatures',
-                description:
-                    'Each recipient uses the Wet Signature pad or digital '
-                    'attestation to sign. An audit trail records every action.',
-              ),
-              const _HelpStep(
-                number: '5',
-                title: 'Certificate of Completion',
-                description:
-                    'Once all parties sign, a tamper-evident Certificate '
-                    'of Completion is generated with the full audit trail.',
-              ),
-              const SizedBox(height: 24),
-              const Text(
-                'All signatures and audit events are cryptographically '
-                'chained, making any tampering immediately detectable.',
-                style: TextStyle(fontStyle: FontStyle.italic),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 
@@ -290,11 +190,6 @@ class _EnvelopeScreenState extends State<EnvelopeScreen> {
       appBar: AppBar(
         title: const Text('Signing Envelope'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.help_outline),
-            tooltip: 'How envelopes work',
-            onPressed: () => _showHelpSheet(context),
-          ),
           IconButton(
             icon: const Icon(Icons.save),
             tooltip: 'Create Envelope',
@@ -426,9 +321,13 @@ class _EnvelopeScreenState extends State<EnvelopeScreen> {
                         const Text('Remind every '),
                         DropdownButton<int>(
                           value: _reminderIntervalDays,
-                          items: [1, 2, 3, 5, 7, 14]
-                              .map((d) =>
-                                  DropdownMenuItem(value: d, child: Text('$d')))
+                          items: const [1, 2, 3, 5, 7, 14]
+                              .map(
+                                (d) => DropdownMenuItem(
+                                  value: d,
+                                  child: Text('$d'),
+                                ),
+                              )
                               .toList(),
                           onChanged: (v) {
                             if (v != null) {
@@ -439,9 +338,13 @@ class _EnvelopeScreenState extends State<EnvelopeScreen> {
                         const Text(' days, up to '),
                         DropdownButton<int>(
                           value: _reminderMaxCount,
-                          items: [1, 2, 3, 5, 10]
-                              .map((c) =>
-                                  DropdownMenuItem(value: c, child: Text('$c')))
+                          items: const [1, 2, 3, 5, 10]
+                              .map(
+                                (c) => DropdownMenuItem(
+                                  value: c,
+                                  child: Text('$c'),
+                                ),
+                              )
                               .toList(),
                           onChanged: (v) {
                             if (v != null) {
@@ -459,13 +362,31 @@ class _EnvelopeScreenState extends State<EnvelopeScreen> {
                       const Text('Expires after: '),
                       DropdownButton<int?>(
                         value: _expirationDays,
-                        items: [
-                          const DropdownMenuItem(value: null, child: Text('Never')),
-                          const DropdownMenuItem(value: 7, child: Text('7 days')),
-                          const DropdownMenuItem(value: 14, child: Text('14 days')),
-                          const DropdownMenuItem(value: 30, child: Text('30 days')),
-                          const DropdownMenuItem(value: 60, child: Text('60 days')),
-                          const DropdownMenuItem(value: 90, child: Text('90 days')),
+                        items: const [
+                          DropdownMenuItem(
+                            value: null,
+                            child: Text('Never'),
+                          ),
+                          DropdownMenuItem(
+                            value: 7,
+                            child: Text('7 days'),
+                          ),
+                          DropdownMenuItem(
+                            value: 14,
+                            child: Text('14 days'),
+                          ),
+                          DropdownMenuItem(
+                            value: 30,
+                            child: Text('30 days'),
+                          ),
+                          DropdownMenuItem(
+                            value: 60,
+                            child: Text('60 days'),
+                          ),
+                          DropdownMenuItem(
+                            value: 90,
+                            child: Text('90 days'),
+                          ),
                         ],
                         onChanged: (v) => setState(() => _expirationDays = v),
                       ),
@@ -478,7 +399,8 @@ class _EnvelopeScreenState extends State<EnvelopeScreen> {
             const SizedBox(height: 16),
 
             // Created envelope preview
-            if (_createdEnvelope != null) _buildEnvelopePreview(_createdEnvelope!),
+            if (_createdEnvelope != null)
+              _buildEnvelopePreview(_createdEnvelope!),
 
             const SizedBox(height: 24),
 
@@ -538,10 +460,7 @@ class _EnvelopeScreenState extends State<EnvelopeScreen> {
           children: [
             Row(
               children: [
-                CircleAvatar(
-                  radius: 16,
-                  child: Text('${index + 1}'),
-                ),
+                CircleAvatar(radius: 16, child: Text('${index + 1}')),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
@@ -596,10 +515,10 @@ class _EnvelopeScreenState extends State<EnvelopeScreen> {
                       border: OutlineInputBorder(),
                     ),
                     items: RecipientRole.values
-                        .map((r) => DropdownMenuItem(
-                              value: r,
-                              child: Text(r.name),
-                            ))
+                        .map(
+                          (r) =>
+                              DropdownMenuItem(value: r, child: Text(r.name)),
+                        )
                         .toList(),
                     onChanged: (v) {
                       if (v != null) {
@@ -618,10 +537,10 @@ class _EnvelopeScreenState extends State<EnvelopeScreen> {
                       border: OutlineInputBorder(),
                     ),
                     items: AuthenticationMethod.values
-                        .map((a) => DropdownMenuItem(
-                              value: a,
-                              child: Text(a.name),
-                            ))
+                        .map(
+                          (a) =>
+                              DropdownMenuItem(value: a, child: Text(a.name)),
+                        )
                         .toList(),
                     onChanged: (v) {
                       if (v != null) {
@@ -641,10 +560,9 @@ class _EnvelopeScreenState extends State<EnvelopeScreen> {
                       border: OutlineInputBorder(),
                     ),
                     items: List.generate(10, (i) => i + 1)
-                        .map((o) => DropdownMenuItem(
-                              value: o,
-                              child: Text('$o'),
-                            ))
+                        .map(
+                          (o) => DropdownMenuItem(value: o, child: Text('$o')),
+                        )
                         .toList(),
                     onChanged: (v) {
                       if (v != null) {
@@ -675,10 +593,9 @@ class _EnvelopeScreenState extends State<EnvelopeScreen> {
                 const SizedBox(width: 8),
                 Text(
                   'Envelope Created',
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleMedium
-                      ?.copyWith(color: Colors.green.shade900),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: Colors.green.shade900,
+                  ),
                 ),
               ],
             ),
@@ -690,11 +607,7 @@ class _EnvelopeScreenState extends State<EnvelopeScreen> {
             Text('Recipients: ${envelope.recipients.length}'),
             if (envelope.expiresAt != null)
               Text(
-                'Expires: ${DateFormat('yyyy-MM-dd').format(
-                  DateTime.fromMillisecondsSinceEpoch(
-                    envelope.expiresAt! * 1000,
-                  ),
-                )}',
+                'Expires: ${DateFormat('yyyy-MM-dd').format(DateTime.fromMillisecondsSinceEpoch(envelope.expiresAt! * 1000))}',
               ),
             const SizedBox(height: 8),
             const Text(
@@ -727,61 +640,5 @@ class _RecipientDraft {
   void dispose() {
     nameController.dispose();
     emailController.dispose();
-  }
-}
-
-/// A numbered step in the help bottom sheet.
-class _HelpStep extends StatelessWidget {
-  final String number;
-  final String title;
-  final String description;
-
-  const _HelpStep({
-    required this.number,
-    required this.title,
-    required this.description,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CircleAvatar(
-            radius: 14,
-            backgroundColor: Theme.of(context).colorScheme.primary,
-            child: Text(
-              number,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onPrimary,
-                fontWeight: FontWeight.bold,
-                fontSize: 12,
-              ),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  description,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }

@@ -16,10 +16,7 @@ void main() {
   group('AuditTrail', () {
     group('createEntry', () {
       test('creates entry with actor and action', () {
-        final entry = AuditTrail.createEntry(
-          'admin@example.com',
-          'sealed',
-        );
+        final entry = AuditTrail.createEntry('admin@example.com', 'sealed');
 
         expect(entry['actor'], equals('admin@example.com'));
         expect(entry['action'], equals('sealed'));
@@ -40,10 +37,7 @@ void main() {
       });
 
       test('chain hash links to previous entry', () {
-        final entry1 = AuditTrail.createEntry(
-          'admin@example.com',
-          'sealed',
-        );
+        final entry1 = AuditTrail.createEntry('admin@example.com', 'sealed');
 
         final prevHash = _hexToBytes(entry1['chain_hash'] as String);
         final entry2 = AuditTrail.createEntry(
@@ -57,10 +51,7 @@ void main() {
       });
 
       test('first entry uses zero hash as previous', () {
-        final entry = AuditTrail.createEntry(
-          'admin@example.com',
-          'sealed',
-        );
+        final entry = AuditTrail.createEntry('admin@example.com', 'sealed');
 
         // The chain hash should be deterministic given same input
         expect(entry['chain_hash'], isA<String>());
@@ -73,19 +64,13 @@ void main() {
       });
 
       test('verifies single-entry chain', () {
-        final entry = AuditTrail.createEntry(
-          'admin@example.com',
-          'sealed',
-        );
+        final entry = AuditTrail.createEntry('admin@example.com', 'sealed');
 
         expect(AuditTrail.verifyChain([entry]), isTrue);
       });
 
       test('verifies multi-entry chain', () {
-        final entry1 = AuditTrail.createEntry(
-          'admin@example.com',
-          'sealed',
-        );
+        final entry1 = AuditTrail.createEntry('admin@example.com', 'sealed');
 
         final prevHash1 = _hexToBytes(entry1['chain_hash'] as String);
         final entry2 = AuditTrail.createEntry(
@@ -105,10 +90,7 @@ void main() {
       });
 
       test('detects tampered entry', () {
-        final entry1 = AuditTrail.createEntry(
-          'admin@example.com',
-          'sealed',
-        );
+        final entry1 = AuditTrail.createEntry('admin@example.com', 'sealed');
 
         final prevHash1 = _hexToBytes(entry1['chain_hash'] as String);
         final entry2 = AuditTrail.createEntry(
@@ -125,10 +107,7 @@ void main() {
       });
 
       test('detects broken chain', () {
-        final entry1 = AuditTrail.createEntry(
-          'admin@example.com',
-          'sealed',
-        );
+        final entry1 = AuditTrail.createEntry('admin@example.com', 'sealed');
 
         // Create entry2 without linking to entry1
         final entry2 = AuditTrail.createEntry(

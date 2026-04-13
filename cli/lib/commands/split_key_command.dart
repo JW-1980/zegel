@@ -9,7 +9,7 @@ import 'common.dart';
 /// Splits a master key into M-of-N shares using Shamir's Secret Sharing.
 ///
 /// Usage:
-///   zegel split-key -k <key-hex> --threshold 3 --shares 5 -o <share-dir/>
+///   zegel split-key -k &lt;key-hex&gt; --threshold 3 --shares 5 -o &lt;share-dir/&gt;
 ///
 /// Each share is written as a separate file (share_1.key, share_2.key, etc.).
 /// Any M shares can reconstruct the original key; fewer than M reveal nothing.
@@ -50,8 +50,7 @@ class SplitKeyCommand extends Command<int> {
     argParser.addOption(
       'threshold',
       abbr: 't',
-      help:
-          'Minimum number of shares required to reconstruct (M).\n'
+      help: 'Minimum number of shares required to reconstruct (M).\n'
           'Must be at least 2.',
       valueHelp: 'M',
       mandatory: true,
@@ -60,8 +59,7 @@ class SplitKeyCommand extends Command<int> {
     argParser.addOption(
       'shares',
       abbr: 'n',
-      help:
-          'Total number of shares to generate (N).\n'
+      help: 'Total number of shares to generate (N).\n'
           'Must be >= threshold and <= 255.',
       valueHelp: 'N',
       mandatory: true,
@@ -75,8 +73,7 @@ class SplitKeyCommand extends Command<int> {
 
     argParser.addOption(
       'hierarchical',
-      help:
-          'Create a hierarchical share structure with multiple levels.\n'
+      help: 'Create a hierarchical share structure with multiple levels.\n'
           'Format: "level1:M/N,level2:M/N" (e.g., "board:3/5,exec:2/3").\n'
           'Each level gets its own subdirectory with share files.',
       valueHelp: 'spec',
@@ -175,7 +172,7 @@ class SplitKeyCommand extends Command<int> {
 /// Reconstructs a master key from M-of-N shares.
 ///
 /// Usage:
-///   zegel reconstruct <share1> <share2> <share3> [-o <key-file>]
+///   zegel reconstruct &lt;share1&gt; &lt;share2&gt; &lt;share3&gt; [-o &lt;key-file&gt;]
 ///
 /// Reads share files and reconstructs the original key via
 /// Lagrange interpolation over GF(256).
@@ -184,8 +181,7 @@ class ReconstructCommand extends Command<int> {
   final String name = 'reconstruct';
 
   @override
-  String get description =>
-      'Reconstruct a master key from Shamir shares.\n'
+  String get description => 'Reconstruct a master key from Shamir shares.\n'
       '\n'
       'Reads M share files and uses Lagrange interpolation over GF(256)\n'
       'to reconstruct the original 32-byte master key.\n'
@@ -207,16 +203,14 @@ class ReconstructCommand extends Command<int> {
   ReconstructCommand() {
     addOutputOption(
       argParser,
-      help:
-          'Write reconstructed key to a file.\n'
+      help: 'Write reconstructed key to a file.\n'
           'If omitted, the key hex is written to stdout.',
     );
 
     argParser.addFlag(
       'quiet',
       abbr: 'q',
-      help:
-          'Only output the key hex (no warnings).\n'
+      help: 'Only output the key hex (no warnings).\n'
           'Useful for piping to other commands.',
       defaultsTo: false,
     );

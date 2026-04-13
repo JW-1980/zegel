@@ -1,0 +1,66 @@
+# Default values for the Zegel Helm chart.
+# Override these by passing `-f custom-values.yaml` to `helm install`.
+
+image:
+  repository: ghcr.io/zegel/zegel
+  tag: latest
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+
+service:
+  type: ClusterIP
+  port: 8080
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: zegel.example.org
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+persistence:
+  enabled: true
+  size: 10Gi
+  accessMode: ReadWriteOnce
+  storageClass: ""
+
+env:
+  ZEGEL_LOG_LEVEL: info
+  ZEGEL_TSA_URL: ""
+  ZEGEL_WEBHOOK_URL: ""
+
+secretEnv:
+  ZEGEL_WEBHOOK_SECRET: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 1000
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop: [ALL]
+
+nodeSelector: {}
+tolerations: []
+affinity: {}

@@ -230,8 +230,7 @@ void main() {
     });
 
     test('isExpired returns true when past expiration', () {
-      final past = DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000 -
-          3600;
+      final past = DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000 - 3600;
       final envelope = Envelope(
         id: 'env-exp',
         subject: 'Expired',
@@ -352,10 +351,8 @@ void main() {
       expect(envelope.recipients[1].name, equals('Jane Smith'));
       expect(envelope.fields.length, equals(2));
       // Fields should be mapped to real recipient IDs.
-      expect(envelope.fields[0].recipientId,
-          equals(envelope.recipients[0].id));
-      expect(envelope.fields[1].recipientId,
-          equals(envelope.recipients[1].id));
+      expect(envelope.fields[0].recipientId, equals(envelope.recipients[0].id));
+      expect(envelope.fields[1].recipientId, equals(envelope.recipients[1].id));
     });
 
     test('instantiation fails when a role is unmapped', () {

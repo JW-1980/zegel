@@ -94,10 +94,14 @@ class TimeLock {
     // Compute a verification hash so the solver can confirm they got the
     // right answer without needing to try decryption.
     final Uint8List verificationHash = Uint8List.fromList(
-      sha256.convert(Uint8List.fromList([
-        ...lockedKey,
-        ...utf8.encode('timelock-verify-v1'),
-      ])).bytes,
+      sha256
+          .convert(
+            Uint8List.fromList([
+              ...lockedKey,
+              ...utf8.encode('timelock-verify-v1'),
+            ]),
+          )
+          .bytes,
     );
 
     final int nowEpoch = DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
@@ -135,7 +139,10 @@ class TimeLock {
     }
 
     Uint8List current = Uint8List.fromList(startKey);
-    final int progressInterval = (puzzle.iterations / 100).ceil().clamp(1, puzzle.iterations);
+    final int progressInterval = (puzzle.iterations / 100).ceil().clamp(
+          1,
+          puzzle.iterations,
+        );
 
     for (int i = 0; i < puzzle.iterations; i++) {
       current = Uint8List.fromList(sha256.convert(current).bytes);
@@ -150,10 +157,14 @@ class TimeLock {
 
     // Verify the result.
     final Uint8List verificationHash = Uint8List.fromList(
-      sha256.convert(Uint8List.fromList([
-        ...current,
-        ...utf8.encode('timelock-verify-v1'),
-      ])).bytes,
+      sha256
+          .convert(
+            Uint8List.fromList([
+              ...current,
+              ...utf8.encode('timelock-verify-v1'),
+            ]),
+          )
+          .bytes,
     );
 
     if (!_constantTimeEquals(verificationHash, puzzle.verificationHash)) {
@@ -229,10 +240,7 @@ class TimeLock {
     final ZegelWriter writer = ZegelWriter(puzzle.lockedKey, sealOptions);
     final Uint8List sealedBytes = writer.seal(content);
 
-    return TimeLockSealResult(
-      fileBytes: sealedBytes,
-      puzzle: puzzle,
-    );
+    return TimeLockSealResult(fileBytes: sealedBytes, puzzle: puzzle);
   }
 
   /// Extracts puzzle parameters from a .zgl file's public metadata.
@@ -252,10 +260,10 @@ class TimeLock {
 
     return TimeLockPuzzle(
       iterations: pubMeta[_puzzleIterationsKey] as int,
-      hashAlgorithm:
-          (pubMeta[_puzzleHashAlgorithmKey] as String?) ?? 'SHA-256',
-      verificationHash:
-          _hexToBytes(pubMeta[_puzzleVerificationHashKey] as String),
+      hashAlgorithm: (pubMeta[_puzzleHashAlgorithmKey] as String?) ?? 'SHA-256',
+      verificationHash: _hexToBytes(
+        pubMeta[_puzzleVerificationHashKey] as String,
+      ),
       lockedKey: Uint8List(0), // Not stored in metadata for security.
       createdEpoch: (pubMeta[_puzzleCreatedKey] as int?) ?? 0,
       targetEpoch: (pubMeta[_puzzleTargetKey] as int?) ?? 0,
@@ -294,6 +302,18 @@ class TimeLock {
 
 /// Parameters and result of a time-lock puzzle.
 class TimeLockPuzzle {
+  /// Deserialises a puzzle from a JSON-compatible map.
+  factory TimeLockPuzzle.fromJson(Map<String, dynamic> json) {
+    return TimeLockPuzzle(
+      iterations: json['iterations'] as int,
+      hashAlgorithm: (json['hash_algorithm'] as String?) ?? 'SHA-256',
+      verificationHash: _hexToBytes(json['verification_hash'] as String),
+      lockedKey: Uint8List(0),
+      createdEpoch: (json['created_epoch'] as int?) ?? 0,
+      targetEpoch: (json['target_epoch'] as int?) ?? 0,
+    );
+  }
+
   /// Creates a [TimeLockPuzzle].
   const TimeLockPuzzle({
     required this.iterations,
@@ -338,18 +358,6 @@ class TimeLockPuzzle {
     };
   }
 
-  /// Deserialises a puzzle from a JSON-compatible map.
-  factory TimeLockPuzzle.fromJson(Map<String, dynamic> json) {
-    return TimeLockPuzzle(
-      iterations: json['iterations'] as int,
-      hashAlgorithm: (json['hash_algorithm'] as String?) ?? 'SHA-256',
-      verificationHash: _hexToBytes(json['verification_hash'] as String),
-      lockedKey: Uint8List(0),
-      createdEpoch: (json['created_epoch'] as int?) ?? 0,
-      targetEpoch: (json['target_epoch'] as int?) ?? 0,
-    );
-  }
-
   static String _bytesToHex(Uint8List bytes) {
     final StringBuffer buf = StringBuffer();
     for (final byte in bytes) {
@@ -371,10 +379,7 @@ class TimeLockPuzzle {
 /// Result of sealing content with a time-lock.
 class TimeLockSealResult {
   /// Creates a [TimeLockSealResult].
-  const TimeLockSealResult({
-    required this.fileBytes,
-    required this.puzzle,
-  });
+  const TimeLockSealResult({required this.fileBytes, required this.puzzle});
 
   /// The sealed .zgl file bytes.
   final Uint8List fileBytes;

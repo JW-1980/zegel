@@ -209,10 +209,7 @@ class LevelShares {
   ///
   /// [classification] must match the level name used during splitting.
   /// [shares] is the list of Shamir shares available for this level.
-  LevelShares({
-    required this.classification,
-    required this.shares,
-  });
+  LevelShares({required this.classification, required this.shares});
 
   /// The classification level name.
   final String classification;

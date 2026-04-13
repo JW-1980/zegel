@@ -19,17 +19,15 @@ class AttestationBadge extends StatelessWidget {
     final theme = Theme.of(context);
     final dateFormatter = DateFormat('yyyy-MM-dd HH:mm');
     final isVerified = attestation.isVerified;
-    final badgeColor =
-        isVerified ? const Color(0xFF2E7D32) : const Color(0xFFC62828);
+    final badgeColor = isVerified
+        ? const Color(0xFF2E7D32)
+        : const Color(0xFFC62828);
 
     return Card(
       elevation: 1,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
-        side: BorderSide(
-          color: badgeColor.withValues(alpha: 0.3),
-          width: 1,
-        ),
+        side: BorderSide(color: badgeColor.withValues(alpha: 0.3), width: 1),
       ),
       child: ExpansionTile(
         leading: CircleAvatar(

@@ -13,8 +13,8 @@ import 'common.dart';
 /// Adds a co-signature attestation to a .zgl file.
 ///
 /// Usage:
-///   zegel attest <file.zgl> --signer-key <hex> --signer-id <string>
-///       --statement "text" -k <master-key-hex> [--role <role>]
+///   zegel attest &lt;file.zgl&gt; --signer-key &lt;hex&gt; --signer-id &lt;string&gt;
+///       --statement "text" -k &lt;master-key-hex&gt; [--role &lt;role&gt;]
 ///
 /// The attestation is an HMAC-SHA256 over the Merkle root, signer ID,
 /// timestamp, and statement. Adding an attestation block changes the Merkle
@@ -24,8 +24,7 @@ class AttestCommand extends Command<int> {
   final String name = 'attest';
 
   @override
-  String get description =>
-      'Add a co-signature attestation to a .zgl file.\n'
+  String get description => 'Add a co-signature attestation to a .zgl file.\n'
       '\n'
       'Creates an HMAC-SHA256 attestation over the Merkle root, signer ID,\n'
       'timestamp, statement, and role. The attestation is stored as an\n'
@@ -65,8 +64,7 @@ class AttestCommand extends Command<int> {
 
     argParser.addOption(
       'signer-id',
-      help:
-          'Signer identifier string.\n'
+      help: 'Signer identifier string.\n'
           'Recommended format: "user:id:name@example.com" or\n'
           '"role:id:description".',
       valueHelp: 'id',
@@ -84,8 +82,7 @@ class AttestCommand extends Command<int> {
     argParser.addOption(
       'role',
       abbr: 'r',
-      help:
-          'Signer\'s role in the attestation workflow.\n'
+      help: 'Signer\'s role in the attestation workflow.\n'
           'Valid roles: owner, signer, witness, notary, auditor, reviewer.\n'
           'Roles are used by --check-attestation-policy during verification.',
       valueHelp: 'role',
@@ -94,8 +91,7 @@ class AttestCommand extends Command<int> {
     addKeyOptions(argParser);
     addOutputOption(
       argParser,
-      help:
-          'Output path for the attested .zgl file.\n'
+      help: 'Output path for the attested .zgl file.\n'
           'Defaults to overwriting the input file.',
     );
   }
@@ -267,8 +263,7 @@ class AttestCommand extends Command<int> {
         header.expirationTimestamp! * 1000,
         isUtc: true,
       );
-      expirationDateStr =
-          '${dt.year.toString().padLeft(4, '0')}-'
+      expirationDateStr = '${dt.year.toString().padLeft(4, '0')}-'
           '${dt.month.toString().padLeft(2, '0')}-'
           '${dt.day.toString().padLeft(2, '0')}';
     }

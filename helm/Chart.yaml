@@ -1,0 +1,17 @@
+# Zegel Helm chart (improvement #109).
+apiVersion: v2
+name: zegel
+description: Tamper-proof file container service
+type: application
+version: 0.1.0
+appVersion: "1.3.0"
+keywords:
+  - zegel
+  - tamper-proof
+  - cryptography
+  - file-integrity
+home: https://github.com/jw-1980/zegel
+sources:
+  - https://github.com/jw-1980/zegel
+maintainers:
+  - name: Zegel maintainers
