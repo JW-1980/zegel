@@ -10,7 +10,7 @@ import 'common.dart';
 /// Parent command for hierarchical split-key operations.
 ///
 /// Usage:
-///   zegel hierarchical-split <subcommand> [options]
+///   zegel hierarchical-split &lt;subcommand&gt; [options]
 ///
 /// Subcommands:
 ///   split        Split a key into hierarchical share groups

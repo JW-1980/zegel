@@ -18,7 +18,10 @@ void main() {
     }
 
     final stopwatch = Stopwatch()..start();
-    await service.batchVerify(files, '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef');
+    await service.batchVerify(
+      files,
+      '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef',
+    );
     stopwatch.stop();
     print('Baseline batchVerify took: ${stopwatch.elapsedMilliseconds} ms');
 

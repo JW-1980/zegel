@@ -425,7 +425,6 @@ class DeviceAttestation {
 
 /// Captured device and platform information.
 class DeviceInfo {
-
   /// Deserialises from a JSON-compatible map.
   factory DeviceInfo.fromJson(Map<String, dynamic> json) {
     return DeviceInfo(
@@ -436,6 +435,7 @@ class DeviceInfo {
       capturedAt: json['captured_at'] as int,
     );
   }
+
   /// Creates a [DeviceInfo].
   const DeviceInfo({
     required this.operatingSystem,

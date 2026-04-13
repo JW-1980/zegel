@@ -302,7 +302,6 @@ class TimeLock {
 
 /// Parameters and result of a time-lock puzzle.
 class TimeLockPuzzle {
-
   /// Deserialises a puzzle from a JSON-compatible map.
   factory TimeLockPuzzle.fromJson(Map<String, dynamic> json) {
     return TimeLockPuzzle(
@@ -314,6 +313,7 @@ class TimeLockPuzzle {
       targetEpoch: (json['target_epoch'] as int?) ?? 0,
     );
   }
+
   /// Creates a [TimeLockPuzzle].
   const TimeLockPuzzle({
     required this.iterations,

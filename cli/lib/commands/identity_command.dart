@@ -10,7 +10,7 @@ import 'common.dart';
 /// Command to sign a .zgl file with an Ed25519 key.
 ///
 /// ```
-/// zegel sign <file.zgl> --signing-key <key-file> -o <signed.zgl>
+/// zegel sign &lt;file.zgl&gt; --signing-key &lt;key-file&gt; -o &lt;signed.zgl&gt;
 /// ```
 class SignCommand extends Command<int> {
   @override
@@ -61,7 +61,10 @@ class SignCommand extends Command<int> {
     final Uint8List signingKey = readKeyFile(signingKeyPath);
 
     // Create identity and sign.
-    final ZegelSignature signatureData = ZegelIdentity.sign(fileBytes, signingKey);
+    final ZegelSignature signatureData = ZegelIdentity.sign(
+      fileBytes,
+      signingKey,
+    );
 
     final signatureJson = <String, dynamic>{
       'type': 'ed25519_signature',
@@ -95,7 +98,7 @@ class SignCommand extends Command<int> {
 /// Command to verify an Ed25519 signature on a .zgl file.
 ///
 /// ```
-/// zegel verify-signature <file.zgl> --signature <file.sig.json> --public-key <key-file>
+/// zegel verify-signature &lt;file.zgl&gt; --signature &lt;file.sig.json&gt; --public-key &lt;key-file&gt;
 /// ```
 class VerifySignatureCommand extends Command<int> {
   @override
@@ -135,10 +138,16 @@ class VerifySignatureCommand extends Command<int> {
     final Map<String, dynamic> signatureData =
         jsonDecode(sigJson) as Map<String, dynamic>;
 
-
-    final Uint8List pubKey = _hexToBytes(signatureData['public_key_hex'] as String);
+    final Uint8List pubKey = _hexToBytes(
+      signatureData['public_key_hex'] as String,
+    );
     final String sigHex = signatureData['signature'] as String;
-    final int timestamp = signatureData['timestamp'] is int ? signatureData['timestamp'] as int : DateTime.parse(signatureData['timestamp'] as String).millisecondsSinceEpoch ~/ 1000;
+    final int timestamp = signatureData['timestamp'] is int
+        ? signatureData['timestamp'] as int
+        : DateTime.parse(
+              signatureData['timestamp'] as String,
+            ).millisecondsSinceEpoch ~/
+            1000;
 
     final ZegelSignature sig = ZegelSignature(
       signature: _hexToBytes(sigHex),
@@ -147,7 +156,6 @@ class VerifySignatureCommand extends Command<int> {
     );
 
     final bool valid = ZegelIdentity.verify(fileBytes, pubKey, sig);
-
 
     if (valid) {
       stdout.writeln('VALID - Signature verification passed.');
@@ -166,9 +174,7 @@ class VerifySignatureCommand extends Command<int> {
         if (expectedHex == actualHex) {
           stdout.writeln('  Public key matches expected key.');
         } else {
-          stderr.writeln(
-            'WARNING: Public key does NOT match expected key!',
-          );
+          stderr.writeln('WARNING: Public key does NOT match expected key!');
           stderr.writeln('  Expected: $expectedHex');
           stderr.writeln('  Actual:   $actualHex');
           return 1;
@@ -190,7 +196,7 @@ class VerifySignatureCommand extends Command<int> {
 /// Command to generate an Ed25519 signing keypair.
 ///
 /// ```
-/// zegel identity-keygen -o <key-prefix>
+/// zegel identity-keygen -o &lt;key-prefix&gt;
 /// ```
 class IdentityKeygenCommand extends Command<int> {
   @override
@@ -231,13 +237,14 @@ class IdentityKeygenCommand extends Command<int> {
     stdout.writeln('  Private key: $privatePath (KEEP SECRET)');
     stdout.writeln('  Public key:  $publicPath (share freely)');
     stdout.writeln('');
-    stdout.writeln('Public key hex: '
-        '${publicKey.map((b) => b.toRadixString(16).padLeft(2, '0')).join()}');
+    stdout.writeln(
+      'Public key hex: '
+      '${publicKey.map((b) => b.toRadixString(16).padLeft(2, '0')).join()}',
+    );
 
     return 0;
   }
 }
-
 
 Uint8List _hexToBytes(String hexStr) {
   if (hexStr.length % 2 != 0) {

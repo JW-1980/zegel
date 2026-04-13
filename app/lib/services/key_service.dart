@@ -16,12 +16,12 @@ class KeyService {
   final FlutterSecureStorage _storage;
 
   KeyService()
-      : _storage = const FlutterSecureStorage(
-          aOptions: AndroidOptions(),
-          iOptions: IOSOptions(
-            accessibility: KeychainAccessibility.first_unlock_this_device,
-          ),
-        );
+    : _storage = const FlutterSecureStorage(
+        aOptions: AndroidOptions(),
+        iOptions: IOSOptions(
+          accessibility: KeychainAccessibility.first_unlock_this_device,
+        ),
+      );
 
   /// Saves a key with the given name.
   ///
@@ -33,10 +33,11 @@ class KeyService {
     if (!names.contains(name)) {
       names.add(name);
       await _storage.write(
-          key: _keyListKey, // ignore: deprecated_member_use
-          // ignore: deprecated_member_use
-          // ignore: deprecated_member_use
-          value: names.join(','));
+        key: _keyListKey, // ignore: deprecated_member_use
+        // ignore: deprecated_member_use
+        // ignore: deprecated_member_use
+        value: names.join(','),
+      );
     }
   }
 
@@ -62,10 +63,11 @@ class KeyService {
     final names = await listKeys();
     names.remove(name);
     await _storage.write(
-        key: _keyListKey, // ignore: deprecated_member_use
-        // ignore: deprecated_member_use
-        // ignore: deprecated_member_use
-        value: names.join(','));
+      key: _keyListKey, // ignore: deprecated_member_use
+      // ignore: deprecated_member_use
+      // ignore: deprecated_member_use
+      value: names.join(','),
+    );
   }
 
   /// Renames a key from [oldName] to [newName].

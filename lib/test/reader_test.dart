@@ -206,7 +206,7 @@ void main() {
         final fileBytes = _sealTestFile(content, masterKey);
 
         final inspection = const ZegelReader().inspect(fileBytes);
-        expect(inspection.version, equals('1.2'));
+        expect(inspection.version, equals('1.4'));
       });
 
       test('inspect reports correct flags', () {
