@@ -122,16 +122,16 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
           content: Text(l10n.classificationDeclassifyWarningBody),
           actions: [
             TextButton(
-              onPressed: () => // ignore: use_build_context_synchronously
-                  Navigator.of(context).pop(false),
+              onPressed:
+                  () => // ignore: use_build_context_synchronously
+                      Navigator.of(context).pop(false),
               child: Text(l10n.cancelAction),
             ),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.orange,
-              ),
-              onPressed: () => // ignore: use_build_context_synchronously
-                  Navigator.of(context).pop(true),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
+              onPressed:
+                  () => // ignore: use_build_context_synchronously
+                      Navigator.of(context).pop(true),
               child: Text(l10n.classificationDeclassifyAction),
             ),
           ],
@@ -153,8 +153,9 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
         _filePath!,
         _declassifyLevel,
         _declassifyAuthority,
-        redactBlocks:
-            _redactBlockIndices.isNotEmpty ? _redactBlockIndices : null,
+        redactBlocks: _redactBlockIndices.isNotEmpty
+            ? _redactBlockIndices
+            : null,
       );
       if (mounted) {
         setState(() {
@@ -194,9 +195,13 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
 
   List<String> _lowerClassifications(String currentLevel) {
     final rank = _classificationRank(currentLevel);
-    return ['PUBLIC', 'INTERNAL', 'CONFIDENTIAL', 'SECRET', 'TOP_SECRET']
-        .where((level) => _classificationRank(level) < rank)
-        .toList();
+    return [
+      'PUBLIC',
+      'INTERNAL',
+      'CONFIDENTIAL',
+      'SECRET',
+      'TOP_SECRET',
+    ].where((level) => _classificationRank(level) < rank).toList();
   }
 
   @override
@@ -207,9 +212,7 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.classificationTitle),
-      ),
+      appBar: AppBar(title: Text(l10n.classificationTitle)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -251,9 +254,7 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
                               ),
                             ),
                             const SizedBox(width: 8),
-                            ClassificationBadge(
-                              level: _currentClassification!,
-                            ),
+                            ClassificationBadge(level: _currentClassification!),
                           ],
                         )
                       else
@@ -308,20 +309,23 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
                         labelText: l10n.classificationLevelLabel,
                         border: const OutlineInputBorder(),
                       ),
-                      items: [
-                        'PUBLIC',
-                        'INTERNAL',
-                        'CONFIDENTIAL',
-                        'SECRET',
-                        'TOP_SECRET',
-                      ]
-                          .map((level) => DropdownMenuItem(
-                                // ignore: deprecated_member_use
-                                // ignore: deprecated_member_use
-                                value: level,
-                                child: ClassificationBadge(level: level),
-                              ))
-                          .toList(),
+                      items:
+                          [
+                                'PUBLIC',
+                                'INTERNAL',
+                                'CONFIDENTIAL',
+                                'SECRET',
+                                'TOP_SECRET',
+                              ]
+                              .map(
+                                (level) => DropdownMenuItem(
+                                  // ignore: deprecated_member_use
+                                  // ignore: deprecated_member_use
+                                  value: level,
+                                  child: ClassificationBadge(level: level),
+                                ),
+                              )
+                              .toList(),
                       onChanged: _isProcessing
                           ? null
                           : (v) {
@@ -392,12 +396,14 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
                           border: const OutlineInputBorder(),
                         ),
                         items: _lowerClassifications(_currentClassification!)
-                            .map((level) => DropdownMenuItem(
-                                  // ignore: deprecated_member_use
-                                  // ignore: deprecated_member_use
-                                  value: level,
-                                  child: ClassificationBadge(level: level),
-                                ))
+                            .map(
+                              (level) => DropdownMenuItem(
+                                // ignore: deprecated_member_use
+                                // ignore: deprecated_member_use
+                                value: level,
+                                child: ClassificationBadge(level: level),
+                              ),
+                            )
                             .toList(),
                         onChanged: _isProcessing
                             ? null

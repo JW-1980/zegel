@@ -27,8 +27,16 @@ import 'package:pointycastle/export.dart' as pc;
 // ---------------------------------------------------------------------------
 
 /// Magic bytes: ZEGEL\x00\x01\x00
-final Uint8List kMagicBytes =
-    Uint8List.fromList([0x5A, 0x45, 0x47, 0x45, 0x4C, 0x00, 0x01, 0x00]);
+final Uint8List kMagicBytes = Uint8List.fromList([
+  0x5A,
+  0x45,
+  0x47,
+  0x45,
+  0x4C,
+  0x00,
+  0x01,
+  0x00,
+]);
 
 const int kVersionMajor = 1;
 const int kVersionMinor = 2;
@@ -162,7 +170,8 @@ Uint8List deriveBlockKey(
 
   final ciphertext = Uint8List.fromList(output.sublist(0, plaintext.length));
   final tag = Uint8List.fromList(
-      output.sublist(output.length - kGcmTagSize, output.length));
+    output.sublist(output.length - kGcmTagSize, output.length),
+  );
 
   return (ciphertext: ciphertext, tag: tag);
 }
@@ -301,12 +310,7 @@ int gf256Inv(int a) {
 
 /// Split a 32-byte secret into [n] shares with threshold [m] using Shamir's
 /// Secret Sharing over GF(256). Uses [rng] for polynomial coefficients.
-List<Uint8List> shamirSplit(
-  Uint8List secret,
-  int m,
-  int n,
-  SeededRandom rng,
-) {
+List<Uint8List> shamirSplit(Uint8List secret, int m, int n, SeededRandom rng) {
   assert(secret.length == 32);
   assert(m >= 2 && m <= n && n <= 255);
 
@@ -432,20 +436,29 @@ Uint8List computeAttestationHmac(
 
 /// Write big-endian uint16 to [buffer] at [offset].
 void writeUint16BE(Uint8List buffer, int offset, int value) {
-  ByteData.sublistView(buffer, offset, offset + 2)
-      .setUint16(0, value, Endian.big);
+  ByteData.sublistView(
+    buffer,
+    offset,
+    offset + 2,
+  ).setUint16(0, value, Endian.big);
 }
 
 /// Write big-endian uint32 to [buffer] at [offset].
 void writeUint32BE(Uint8List buffer, int offset, int value) {
-  ByteData.sublistView(buffer, offset, offset + 4)
-      .setUint32(0, value, Endian.big);
+  ByteData.sublistView(
+    buffer,
+    offset,
+    offset + 4,
+  ).setUint32(0, value, Endian.big);
 }
 
 /// Write big-endian uint64 to [buffer] at [offset].
 void writeUint64BE(Uint8List buffer, int offset, int value) {
-  ByteData.sublistView(buffer, offset, offset + 8)
-      .setUint64(0, value, Endian.big);
+  ByteData.sublistView(
+    buffer,
+    offset,
+    offset + 8,
+  ).setUint64(0, value, Endian.big);
 }
 
 /// Encode a hex string to bytes.
@@ -558,13 +571,15 @@ Uint8List buildZegelFile({
     final iv = rng.nextBytes(kIvSize);
     final result = aesGcmEncrypt(blockKey, iv, processedPlaintexts[i]);
 
-    blockEntries.add(BlockEntry(
-      type: blockTypes[i],
-      plaintextHash: leafHashes[i],
-      iv: iv,
-      ciphertext: result.ciphertext,
-      tag: result.tag,
-    ));
+    blockEntries.add(
+      BlockEntry(
+        type: blockTypes[i],
+        plaintextHash: leafHashes[i],
+        iv: iv,
+        ciphertext: result.ciphertext,
+        tag: result.tag,
+      ),
+    );
   }
 
   // Step 3: Build the binary file
@@ -573,7 +588,8 @@ Uint8List buildZegelFile({
   final filenameBytes = utf8.encode(filename);
   final contentTypeBytes = utf8.encode(contentType);
 
-  var headerSize = 8 + // magic
+  var headerSize =
+      8 + // magic
       1 + // version major
       1 + // version minor
       2 + // flags
@@ -600,8 +616,7 @@ Uint8List buildZegelFile({
     totalCiphertextSize += entry.ciphertext.length;
   }
 
-  final fileSizeBeforeSeal =
-      merkleRootOffset + kHashSize + totalCiphertextSize;
+  final fileSizeBeforeSeal = merkleRootOffset + kHashSize + totalCiphertextSize;
   final totalFileSize = fileSizeBeforeSeal + kSealSize;
 
   final buffer = Uint8List(totalFileSize);
@@ -679,8 +694,9 @@ Uint8List buildZegelFile({
 
   // Master seal
   final sealKey = computeSealKey(merkleRoot, masterKey, salt);
-  final bytesBeforeSeal =
-      Uint8List.fromList(buffer.sublist(0, fileSizeBeforeSeal));
+  final bytesBeforeSeal = Uint8List.fromList(
+    buffer.sublist(0, fileSizeBeforeSeal),
+  );
   final seal = computeMasterSeal(sealKey, bytesBeforeSeal);
   buffer.setRange(fileSizeBeforeSeal, totalFileSize, seal);
 
@@ -786,10 +802,10 @@ Future<void> generateCanaryA(
   Uint8List salt,
   SeededRandom rng,
 ) async {
-  final contentBytes =
-      Uint8List.fromList(utf8.encode('Confidential document'));
+  final contentBytes = Uint8List.fromList(utf8.encode('Confidential document'));
   final recipientId = hexDecode(
-      'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
+    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+  );
 
   final fileBytes = buildZegelFile(
     masterKey: masterKey,
@@ -815,10 +831,10 @@ Future<void> generateCanaryB(
   Uint8List salt,
   SeededRandom rng,
 ) async {
-  final contentBytes =
-      Uint8List.fromList(utf8.encode('Confidential document'));
+  final contentBytes = Uint8List.fromList(utf8.encode('Confidential document'));
   final recipientId = hexDecode(
-      'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb');
+    'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+  );
 
   final fileBytes = buildZegelFile(
     masterKey: masterKey,
@@ -853,12 +869,15 @@ Future<void> generateSplitKey(
 
   // Verify reconstruction works with any 3 shares
   final reconstructed = shamirReconstruct([shares[0], shares[2], shares[4]]);
-  assert(hexEncode(reconstructed) == hexEncode(masterKey),
-      'Shamir reconstruction failed!');
+  assert(
+    hexEncode(reconstructed) == hexEncode(masterKey),
+    'Shamir reconstruction failed!',
+  );
 
   // Build the .zgl file (using split-key flag)
-  final contentBytes =
-      Uint8List.fromList(utf8.encode('Split-key protected content'));
+  final contentBytes = Uint8List.fromList(
+    utf8.encode('Split-key protected content'),
+  );
 
   final fileBytes = buildZegelFile(
     masterKey: masterKey,
@@ -884,25 +903,28 @@ Future<void> generateSplitKey(
     'total_shares': totalShares,
     'note':
         'Shares generated with SeededRandom(42) for deterministic test vectors.',
-    'shares': shares
-        .asMap()
-        .map((i, s) => MapEntry(i.toString(), {
-              'x_coordinate': s[0],
-              'y_values_hex': hexEncode(Uint8List.fromList(s.sublist(1))),
-              'full_share_hex': hexEncode(s),
-            })),
+    'shares': shares.asMap().map(
+      (i, s) => MapEntry(i.toString(), {
+        'x_coordinate': s[0],
+        'y_values_hex': hexEncode(Uint8List.fromList(s.sublist(1))),
+        'full_share_hex': hexEncode(s),
+      }),
+    ),
     'verification': {
-      'shares_1_3_5_reconstruct':
-          hexEncode(shamirReconstruct([shares[0], shares[2], shares[4]])),
-      'shares_2_4_5_reconstruct':
-          hexEncode(shamirReconstruct([shares[1], shares[3], shares[4]])),
+      'shares_1_3_5_reconstruct': hexEncode(
+        shamirReconstruct([shares[0], shares[2], shares[4]]),
+      ),
+      'shares_2_4_5_reconstruct': hexEncode(
+        shamirReconstruct([shares[1], shares[3], shares[4]]),
+      ),
       'reconstruction_matches_master_key': true,
     },
   };
 
   final encoder = JsonEncoder.withIndent('  ');
-  await File('$outputDir/split_key_shares_computed.json')
-      .writeAsString(encoder.convert(sharesJson));
+  await File(
+    '$outputDir/split_key_shares_computed.json',
+  ).writeAsString(encoder.convert(sharesJson));
   print('  split_key.zgl (${fileBytes.length} bytes)');
   print('  split_key_shares_computed.json');
 }
@@ -950,7 +972,11 @@ Future<void> generateRedacted(
 
   // Reconstruct leaf hashes from original content (all the same for 'A' blocks)
   final leafHash = sha256Hash(block);
-  final leafHashes = [leafHash, Uint8List.fromList(leafHash), Uint8List.fromList(leafHash)];
+  final leafHashes = [
+    leafHash,
+    Uint8List.fromList(leafHash),
+    Uint8List.fromList(leafHash),
+  ];
   final merkleRoot = computeMerkleRoot(leafHashes);
 
   // Derive block keys (same as original since merkle root is identical)
@@ -1002,8 +1028,17 @@ Future<void> generateRedacted(
   final contentTypeBytes = utf8.encode('application/octet-stream');
   const flags = kFlagHasRedactions;
 
-  var headerSize = 8 + 1 + 1 + 2 + 8 + kContentTypeFieldSize + 2 +
-      filenameBytes.length + kSaltSize + 4;
+  var headerSize =
+      8 +
+      1 +
+      1 +
+      2 +
+      8 +
+      kContentTypeFieldSize +
+      2 +
+      filenameBytes.length +
+      kSaltSize +
+      4;
   final directorySize = 3 * kDirectoryEntrySize;
   final merkleRootOffset = headerSize + directorySize;
 
@@ -1076,7 +1111,9 @@ Future<void> generateRedacted(
 
   // Master seal (recomputed over the modified file)
   final sealKey = computeSealKey(merkleRoot, masterKey, salt);
-  final bytesBeforeSeal = Uint8List.fromList(buffer.sublist(0, fileSizeBeforeSeal));
+  final bytesBeforeSeal = Uint8List.fromList(
+    buffer.sublist(0, fileSizeBeforeSeal),
+  );
   final seal = computeMasterSeal(sealKey, bytesBeforeSeal);
   buffer.setRange(fileSizeBeforeSeal, totalFileSize, seal);
 
@@ -1100,8 +1137,10 @@ Future<void> generateWithAudit(
     'timestamp': 1706367600,
     'details': {},
   });
-  final chainHash0 =
-      computeChainHash(Uint8List(kHashSize), entry0Json); // starts from zeros
+  final chainHash0 = computeChainHash(
+    Uint8List(kHashSize),
+    entry0Json,
+  ); // starts from zeros
 
   final auditEntry0 = jsonEncode({
     'actor': 'user:1:admin@example.com',
@@ -1153,8 +1192,9 @@ Future<void> generateWithAudit(
     'audit_entry_1_json': entry1Json,
   };
   final encoder = JsonEncoder.withIndent('  ');
-  await File('$outputDir/with_audit_computed.json')
-      .writeAsString(encoder.convert(auditComputed));
+  await File(
+    '$outputDir/with_audit_computed.json',
+  ).writeAsString(encoder.convert(auditComputed));
 
   print('  with_audit.zgl (${fileBytes.length} bytes)');
   print('  with_audit_computed.json');
@@ -1169,7 +1209,8 @@ Future<void> generateWithAttestation(
 ) async {
   final contentBytes = Uint8List.fromList(utf8.encode('Attested document'));
   final signerKey = hexDecode(
-      '0000000000000000000000000000000000000000000000000000000000000002');
+    '0000000000000000000000000000000000000000000000000000000000000002',
+  );
   const signerId = 'user:42:accountant@example.com';
   const statement = 'Reviewed and approved';
   const timestamp = 1706367600;
@@ -1220,8 +1261,7 @@ Future<void> generateWithAttestation(
   // Compute merkle root with this content
   final contentHash = sha256Hash(contentBytes);
   final attestHashPass1 = sha256Hash(attestBytesPass1);
-  final merkleRootPass1 =
-      computeMerkleRoot([contentHash, attestHashPass1]);
+  final merkleRootPass1 = computeMerkleRoot([contentHash, attestHashPass1]);
 
   // Compute actual HMAC with this merkle root
   final attestHmac = computeAttestationHmac(
@@ -1246,8 +1286,10 @@ Future<void> generateWithAttestation(
 
   // Verify: the actual attestation bytes have the same length as the dummy
   // If not, we'd need another pass. In practice, SHA-256 hex is always 64 chars.
-  assert(attestBytes.length == attestBytesPass1.length,
-      'Attestation size mismatch between passes');
+  assert(
+    attestBytes.length == attestBytesPass1.length,
+    'Attestation size mismatch between passes',
+  );
 
   // Verify merkle root is the same (same length attestation -> same hash structure)
   final attestHash = sha256Hash(attestBytes);
@@ -1305,11 +1347,12 @@ Future<void> generateWithAttestation(
     'attestation_json': finalAttestJson,
     'note':
         'The attestation HMAC is computed over the content-only merkle root, '
-            'then the attestation block is included in the full merkle tree.',
+        'then the attestation block is included in the full merkle tree.',
   };
   final encoder = JsonEncoder.withIndent('  ');
-  await File('$outputDir/with_attestation_computed.json')
-      .writeAsString(encoder.convert(attestComputed));
+  await File(
+    '$outputDir/with_attestation_computed.json',
+  ).writeAsString(encoder.convert(attestComputed));
 
   print('  with_attestation.zgl (${fileBytes.length} bytes)');
   print('  with_attestation_computed.json');
@@ -1353,8 +1396,17 @@ Future<void> generateTampered(
   // Merkle root: 32
   // Ciphertext starts at: 131 + 65 + 32 = 228
   final filenameLen = 9; // "hello.txt"
-  final headerSize = 8 + 1 + 1 + 2 + 8 + kContentTypeFieldSize + 2 +
-      filenameLen + kSaltSize + 4;
+  final headerSize =
+      8 +
+      1 +
+      1 +
+      2 +
+      8 +
+      kContentTypeFieldSize +
+      2 +
+      filenameLen +
+      kSaltSize +
+      4;
   final directorySize = 1 * kDirectoryEntrySize;
   final ciphertextStart = headerSize + directorySize + kHashSize;
 
@@ -1390,7 +1442,8 @@ void main() async {
 
   // Fixed test inputs (NEVER use these in production)
   final masterKey = hexDecode(
-      '0000000000000000000000000000000000000000000000000000000000000001');
+    '0000000000000000000000000000000000000000000000000000000000000001',
+  );
   final salt = Uint8List(kSaltSize); // all zeros
 
   print('Zegel Test Vector Generator v1.2');

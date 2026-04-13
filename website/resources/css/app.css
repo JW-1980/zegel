@@ -1,0 +1,25 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+    --font-mono: ui-monospace, 'JetBrains Mono', 'Cascadia Code', 'SFMono-Regular', Menlo, Consolas, monospace;
+    --font-serif: ui-serif, Georgia, 'Times New Roman', 'Times', serif;
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+@media print {
+    nav, footer, #zg-cookie, [data-copy-target], a[href^="http"]::after { display: none !important; }
+    body { background: white !important; color: black !important; }
+    main { padding: 0 !important; max-width: none !important; }
+    article, section { break-inside: avoid; }
+}

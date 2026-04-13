@@ -9,7 +9,7 @@ class FileService {
   ///
   /// Returns the file path, or null if the user cancelled.
   Future<String?> pickFile() async {
-    final result = await FilePicker.platform.pickFiles(
+    final result = await FilePicker.pickFiles(
       type: FileType.any,
       allowMultiple: false,
     );
@@ -23,7 +23,7 @@ class FileService {
   ///
   /// Returns the file path, or null if the user cancelled.
   Future<String?> pickZegelFile() async {
-    final result = await FilePicker.platform.pickFiles(
+    final result = await FilePicker.pickFiles(
       type: FileType.custom,
       allowMultiple: false,
     );
@@ -37,7 +37,7 @@ class FileService {
   ///
   /// Returns the saved file path, or null if the user cancelled.
   Future<String?> saveFile(Uint8List bytes, String suggestedName) async {
-    final outputPath = await FilePicker.platform.saveFile(
+    final outputPath = await FilePicker.saveFile(
       dialogTitle: 'Save file',
       fileName: suggestedName,
     );
@@ -98,16 +98,15 @@ class FileService {
   ///
   /// Returns the directory path, or null if the user cancelled.
   Future<String?> pickDirectory() async {
-    return FilePicker.platform.getDirectoryPath(
-      dialogTitle: 'Select folder',
-    );
+    return FilePicker.getDirectoryPath(dialogTitle: 'Select folder');
   }
 
   /// Lists all .zgl files in a directory.
   Future<List<String>> listZegelFiles(String directoryPath) async {
     final dir = Directory(directoryPath);
     if (!await dir.exists()) return [];
-    return dir.list()
+    return dir
+        .list()
         .where((entity) => entity is File && entity.path.endsWith('.zgl'))
         .map((entity) => entity.path)
         .toList();
@@ -117,7 +116,8 @@ class FileService {
   Future<List<String>> listAllFiles(String directoryPath) async {
     final dir = Directory(directoryPath);
     if (!await dir.exists()) return [];
-    return dir.list()
+    return dir
+        .list()
         .where((entity) => entity is File)
         .map((entity) => entity.path)
         .toList();

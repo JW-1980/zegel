@@ -86,7 +86,8 @@ class _ProvenanceScreenState extends State<ProvenanceScreen> {
       reportBuffer.writeln('=================');
       reportBuffer.writeln('File: ${fileService.getFileName(_filePath!)}');
       reportBuffer.writeln(
-          'Generated: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now())}');
+        'Generated: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now())}',
+      );
       reportBuffer.writeln('');
 
       for (final event in _events!) {
@@ -94,9 +95,11 @@ class _ProvenanceScreenState extends State<ProvenanceScreen> {
         reportBuffer.writeln('Actor: ${event.actor}');
         reportBuffer.writeln('Action: ${event.action}');
         reportBuffer.writeln(
-            'Timestamp: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(event.timestamp)}');
+          'Timestamp: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(event.timestamp)}',
+        );
         reportBuffer.writeln(
-            'Signature: ${event.isSignatureVerified ? "VERIFIED" : "UNVERIFIED"}');
+          'Signature: ${event.isSignatureVerified ? "VERIFIED" : "UNVERIFIED"}',
+        );
         reportBuffer.writeln('');
       }
 
@@ -113,9 +116,9 @@ class _ProvenanceScreenState extends State<ProvenanceScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Export error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Export error: $e')));
       }
     }
   }
@@ -207,7 +210,9 @@ class _ProvenanceScreenState extends State<ProvenanceScreen> {
                         width: 20,
                         height: 20,
                         child: CircularProgressIndicator(
-                            strokeWidth: 2, color: Colors.white),
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
                       )
                     : const Icon(Icons.timeline),
                 label: Text(
@@ -258,8 +263,10 @@ class _ProvenanceScreenState extends State<ProvenanceScreen> {
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.timeline,
-                              color: theme.colorScheme.primary),
+                          Icon(
+                            Icons.timeline,
+                            color: theme.colorScheme.primary,
+                          ),
                           const SizedBox(width: 8),
                           Text(
                             l10n.provenanceTimeline,

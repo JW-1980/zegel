@@ -1,6 +1,6 @@
 name: zegel_cli
 description: Command-line interface for the Zegel tamper-proof container format.
-version: 1.2.0
+version: 1.4.0
 publish_to: none
 
 environment:
@@ -11,7 +11,7 @@ dependencies:
     path: ../lib
   args: ^2.4.2
   crypto: ^3.0.3
-  pointycastle: ^4.0.0
+  pointycastle: ^3.9.1
   path: ^1.8.3
 
 dev_dependencies:

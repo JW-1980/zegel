@@ -17,11 +17,7 @@ class ExtractScreen extends StatefulWidget {
   /// Optional initial key value.
   final String? initialKey;
 
-  const ExtractScreen({
-    super.key,
-    this.initialFilePath,
-    this.initialKey,
-  });
+  const ExtractScreen({super.key, this.initialFilePath, this.initialKey});
 
   @override
   State<ExtractScreen> createState() => _ExtractScreenState();
@@ -135,11 +131,7 @@ class _ExtractScreenState extends State<ExtractScreen> {
       }
 
       // The actual extraction would write the file
-      await zegelService.extract(
-        _filePath!,
-        _hexKey,
-        suggestedName,
-      );
+      await zegelService.extract(_filePath!, _hexKey, suggestedName);
 
       if (mounted) {
         // ignore: unused_local_variable
@@ -176,9 +168,7 @@ class _ExtractScreenState extends State<ExtractScreen> {
     final fileService = context.read<FileService>();
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.extractAction),
-      ),
+      appBar: AppBar(title: Text(l10n.extractAction)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -356,9 +346,7 @@ class _ExtractionDetail extends StatelessWidget {
               ),
             ),
           ),
-          Expanded(
-            child: Text(value, style: theme.textTheme.bodyMedium),
-          ),
+          Expanded(child: Text(value, style: theme.textTheme.bodyMedium)),
         ],
       ),
     );

@@ -425,6 +425,17 @@ class DeviceAttestation {
 
 /// Captured device and platform information.
 class DeviceInfo {
+  /// Deserialises from a JSON-compatible map.
+  factory DeviceInfo.fromJson(Map<String, dynamic> json) {
+    return DeviceInfo(
+      operatingSystem: json['operating_system'] as String,
+      operatingSystemVersion: json['operating_system_version'] as String,
+      dartVersion: json['dart_version'] as String,
+      hostnameHash: _hexToBytes(json['hostname_hash_hex'] as String),
+      capturedAt: json['captured_at'] as int,
+    );
+  }
+
   /// Creates a [DeviceInfo].
   const DeviceInfo({
     required this.operatingSystem,
@@ -458,17 +469,6 @@ class DeviceInfo {
       'hostname_hash_hex': _bytesToHex(hostnameHash),
       'captured_at': capturedAt,
     };
-  }
-
-  /// Deserialises from a JSON-compatible map.
-  factory DeviceInfo.fromJson(Map<String, dynamic> json) {
-    return DeviceInfo(
-      operatingSystem: json['operating_system'] as String,
-      operatingSystemVersion: json['operating_system_version'] as String,
-      dartVersion: json['dart_version'] as String,
-      hostnameHash: _hexToBytes(json['hostname_hash_hex'] as String),
-      capturedAt: json['captured_at'] as int,
-    );
   }
 
   static String _bytesToHex(Uint8List bytes) {

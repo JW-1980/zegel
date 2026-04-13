@@ -1,0 +1,52 @@
+name: Website CI
+
+on:
+  push:
+    branches: [main]
+    paths: ['website/**', '.github/workflows/website.yml']
+  pull_request:
+    paths: ['website/**', '.github/workflows/website.yml']
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, pdo_mysql, pdo_sqlite, openssl, json, zlib, sodium, intl
+          tools: composer:v2
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install composer deps
+        working-directory: website
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Install npm deps
+        working-directory: website
+        run: npm install
+
+      - name: Build assets
+        working-directory: website
+        run: npm run build
+
+      - name: Run Zegel selftest
+        working-directory: website
+        run: php artisan zegel:selftest
+
+      - name: Run phpunit
+        working-directory: website
+        run: php artisan test --testsuite=Unit,Feature
+
+      - name: Run schema:export round trip
+        working-directory: website
+        run: |
+          php artisan schema:export
+          test -f storage/app/private/zegel-schema.sql

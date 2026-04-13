@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -7,8 +9,6 @@ import 'package:provider/provider.dart';
 import 'package:zegel/zegel.dart';
 
 import '../services/file_service.dart';
-import '../services/zegel_service.dart';
-import '../widgets/key_input.dart';
 
 /// Screen for capturing handwritten (wet) signatures.
 ///
@@ -29,7 +29,7 @@ class WetSignatureScreen extends StatefulWidget {
 
 class _WetSignatureScreenState extends State<WetSignatureScreen> {
   String? _filePath;
-  String _masterKeyHex = '';
+
   bool _isLoading = false;
   String? _statusMessage;
   bool _isError = false;
@@ -46,7 +46,7 @@ class _WetSignatureScreenState extends State<WetSignatureScreen> {
   bool _hasSigned = false;
 
   // Existing signatures on the file.
-  List<WetSignature> _existingSignatures = [];
+  final List<WetSignature> _existingSignatures = [];
 
   @override
   void initState() {
@@ -91,7 +91,7 @@ class _WetSignatureScreenState extends State<WetSignatureScreen> {
     // Render strokes to an image.
     final recorder = ui.PictureRecorder();
     final canvas = Canvas(recorder);
-    final size = const Size(400, 200);
+    const size = Size(400, 200);
 
     // White background.
     canvas.drawRect(
@@ -121,9 +121,7 @@ class _WetSignatureScreenState extends State<WetSignatureScreen> {
       size.width.toInt(),
       size.height.toInt(),
     );
-    final byteData = await image.toByteData(
-      format: ui.ImageByteFormat.png,
-    );
+    final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
 
     if (byteData == null) {
       throw StateError('Failed to export signature as PNG');
@@ -187,17 +185,43 @@ class _WetSignatureScreenState extends State<WetSignatureScreen> {
         signerRole: role.isNotEmpty ? role : null,
       );
 
-      // The ZegelService would add this as an attestation block to the file.
-      // For now, encode and show success.
+      // Encode the signature and save it as a sidecar file.
       final encoded = signature.encode();
 
-      setState(() {
-        _statusMessage =
-            'Signature captured successfully (${encoded.length} bytes). '
-            'Signed by $name from $city on '
-            '${DateFormat('yyyy-MM-dd HH:mm').format(DateTime.now())}.';
-        _isError = false;
-      });
+      // Save the signature data alongside the .zgl file.
+      if (_filePath != null) {
+        final sigPath = '${_filePath!}.sig-$name.json';
+        final sigJson = {
+          'type': 'wet_signature',
+          'signer_name': name,
+          'signer_city': city,
+          'signer_role': role.isNotEmpty ? role : null,
+          'signed_at': now,
+          'signature_size_bytes': signatureImage.length,
+          'encoding': 'base64_png',
+          'data_base64': base64Encode(signatureImage),
+        };
+        await File(sigPath).writeAsString(
+          const JsonEncoder.withIndent('  ').convert(sigJson),
+        );
+
+        setState(() {
+          _statusMessage =
+              'Signature saved to ${sigPath.split('/').last}\n'
+              'Signed by $name from $city on '
+              '${DateFormat('yyyy-MM-dd HH:mm').format(DateTime.now())}.\n'
+              '(${encoded.length} bytes encoded)';
+          _isError = false;
+          _existingSignatures.add(signature);
+        });
+      } else {
+        setState(() {
+          _statusMessage =
+              'Signature captured (${encoded.length} bytes). '
+              'No file selected — signature not saved to disk.';
+          _isError = false;
+        });
+      }
     } catch (e) {
       setState(() {
         _statusMessage = 'Error: $e';
@@ -308,9 +332,9 @@ class _WetSignatureScreenState extends State<WetSignatureScreen> {
                     const SizedBox(height: 8),
                     Text(
                       'Use your finger, stylus, or mouse to sign above',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Colors.grey,
-                          ),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodySmall?.copyWith(color: Colors.grey),
                     ),
                   ],
                 ),
@@ -436,9 +460,7 @@ class _WetSignatureScreenState extends State<WetSignatureScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: _isError
-                      ? Colors.red.shade50
-                      : Colors.green.shade50,
+                  color: _isError ? Colors.red.shade50 : Colors.green.shade50,
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
                     color: _isError
@@ -476,20 +498,18 @@ class _WetSignatureScreenState extends State<WetSignatureScreen> {
                 style: Theme.of(context).textTheme.titleMedium,
               ),
               const SizedBox(height: 8),
-              ..._existingSignatures.map((sig) => Card(
-                    child: ListTile(
-                      leading: const Icon(Icons.draw, color: Colors.blue),
-                      title: Text(sig.signerName),
-                      subtitle: Text(
-                        '${sig.signerCity} - ${DateFormat('dd MMM yyyy HH:mm').format(
-                          DateTime.fromMillisecondsSinceEpoch(
-                            sig.signedAt * 1000,
-                          ),
-                        )}'
-                        '${sig.signerRole != null ? ' (${sig.signerRole})' : ''}',
-                      ),
+              ..._existingSignatures.map(
+                (sig) => Card(
+                  child: ListTile(
+                    leading: const Icon(Icons.draw, color: Colors.blue),
+                    title: Text(sig.signerName),
+                    subtitle: Text(
+                      '${sig.signerCity} - ${DateFormat('dd MMM yyyy HH:mm').format(DateTime.fromMillisecondsSinceEpoch(sig.signedAt * 1000))}'
+                      '${sig.signerRole != null ? ' (${sig.signerRole})' : ''}',
                     ),
-                  )),
+                  ),
+                ),
+              ),
             ],
           ],
         ),
@@ -500,10 +520,7 @@ class _WetSignatureScreenState extends State<WetSignatureScreen> {
 
 /// Custom painter for the signature canvas.
 class _SignaturePainter extends CustomPainter {
-  _SignaturePainter({
-    required this.strokes,
-    required this.currentStroke,
-  });
+  _SignaturePainter({required this.strokes, required this.currentStroke});
 
   final List<List<Offset>> strokes;
   final List<Offset> currentStroke;
@@ -548,12 +565,7 @@ class _SignaturePainter extends CustomPainter {
           (stroke[i].dx + stroke[i + 1].dx) / 2,
           (stroke[i].dy + stroke[i + 1].dy) / 2,
         );
-        path.quadraticBezierTo(
-          stroke[i].dx,
-          stroke[i].dy,
-          mid.dx,
-          mid.dy,
-        );
+        path.quadraticBezierTo(stroke[i].dx, stroke[i].dy, mid.dx, mid.dy);
       } else {
         path.lineTo(stroke[i].dx, stroke[i].dy);
       }

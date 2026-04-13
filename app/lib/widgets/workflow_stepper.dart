@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
 
 /// Status of a single workflow step.
-enum WorkflowStepStatus {
-  pending,
-  inProgress,
-  completed,
-  failed,
-}
+enum WorkflowStepStatus { pending, inProgress, completed, failed }
 
 /// Data model for a workflow step.
 class WorkflowStep {
@@ -137,8 +132,9 @@ class WorkflowStepperWidget extends StatelessWidget {
                           margin: const EdgeInsets.symmetric(vertical: 2),
                           color: index < currentStep
                               ? const Color(0xFF2E7D32).withValues(alpha: 0.5)
-                              : theme.colorScheme.outline
-                                  .withValues(alpha: 0.2),
+                              : theme.colorScheme.outline.withValues(
+                                  alpha: 0.2,
+                                ),
                         ),
                       ),
                   ],
@@ -147,10 +143,7 @@ class WorkflowStepperWidget extends StatelessWidget {
               // Step content
               Expanded(
                 child: Padding(
-                  padding: EdgeInsets.only(
-                    bottom: isLast ? 0 : 16,
-                    left: 4,
-                  ),
+                  padding: EdgeInsets.only(bottom: isLast ? 0 : 16, left: 4),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

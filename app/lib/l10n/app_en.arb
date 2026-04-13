@@ -890,5 +890,26 @@
   "drawerToolsSection": "Tools",
   "@drawerToolsSection": {
     "description": "Drawer section header for tools"
+  },
+
+  "drawerSigningSection": "Signing",
+  "@drawerSigningSection": {
+    "description": "Drawer section header for signing workflows"
+  },
+  "wetSignatureTitle": "Wet Signature",
+  "@wetSignatureTitle": {
+    "description": "Title for the wet signature screen"
+  },
+  "envelopeTitle": "Signing Envelope",
+  "@envelopeTitle": {
+    "description": "Title for the signing envelope screen"
+  },
+  "envelopeCreate": "Create Envelope",
+  "@envelopeCreate": {
+    "description": "Button to create the envelope"
+  },
+  "envelopeCreated": "Envelope Created",
+  "@envelopeCreated": {
+    "description": "Title shown when envelope is successfully created"
   }
 }

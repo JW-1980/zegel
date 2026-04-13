@@ -9,8 +9,8 @@ import 'common.dart';
 /// Generates a cryptographically secure 32-byte master key.
 ///
 /// Usage:
-///   zegel keygen [-o <key-file>]
-///   zegel keygen --hierarchical [-o <key-dir>]
+///   zegel keygen [-o &lt;key-file&gt;]
+///   zegel keygen --hierarchical [-o &lt;key-dir&gt;]
 ///
 /// Outputs the key as a 64-character hex string to stdout,
 /// or writes it to a file if -o is specified.
@@ -50,8 +50,7 @@ class KeygenCommand extends Command<int> {
   KeygenCommand() {
     addOutputOption(
       argParser,
-      help:
-          'Write key to a file instead of stdout.\n'
+      help: 'Write key to a file instead of stdout.\n'
           'With --hierarchical, this is the output directory.',
     );
 
@@ -70,8 +69,7 @@ class KeygenCommand extends Command<int> {
 
     argParser.addFlag(
       'hierarchical',
-      help:
-          'Generate a hierarchical key set:\n'
+      help: 'Generate a hierarchical key set:\n'
           '  - root.key: Master root key\n'
           '  - seal.key: Derived key for sealing\n'
           '  - attest.key: Derived key for attestations\n'

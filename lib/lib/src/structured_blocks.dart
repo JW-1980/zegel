@@ -20,6 +20,19 @@ import 'dart:typed_data';
 
 /// A Software Bill of Materials (SBOM) entry describing a software package.
 class SbomPackage {
+  /// Deserialises from a JSON-compatible map.
+  factory SbomPackage.fromJson(Map<String, dynamic> json) {
+    return SbomPackage(
+      name: json['name'] as String,
+      version: json['version'] as String,
+      hashAlgorithm: json['hash_algorithm'] as String?,
+      hashValue: json['hash_value'] as String?,
+      license: json['license'] as String?,
+      supplier: json['supplier'] as String?,
+      purl: json['purl'] as String?,
+    );
+  }
+
   /// Creates an [SbomPackage].
   const SbomPackage({
     required this.name,
@@ -65,19 +78,6 @@ class SbomPackage {
     if (purl != null) result['purl'] = purl;
     return result;
   }
-
-  /// Deserialises from a JSON-compatible map.
-  factory SbomPackage.fromJson(Map<String, dynamic> json) {
-    return SbomPackage(
-      name: json['name'] as String,
-      version: json['version'] as String,
-      hashAlgorithm: json['hash_algorithm'] as String?,
-      hashValue: json['hash_value'] as String?,
-      license: json['license'] as String?,
-      supplier: json['supplier'] as String?,
-      purl: json['purl'] as String?,
-    );
-  }
 }
 
 /// Software Bill of Materials block (type 0x10).
@@ -86,6 +86,20 @@ class SbomPackage {
 /// license information. Useful for supply chain transparency and compliance
 /// (e.g. Executive Order 14028 on software supply chain security).
 class SbomBlock {
+  /// Deserialises from a JSON-compatible map.
+  factory SbomBlock.fromJson(Map<String, dynamic> json) {
+    final List<dynamic> packagesJson = json['packages'] as List<dynamic>;
+    return SbomBlock(
+      packages: packagesJson
+          .map((p) => SbomPackage.fromJson(p as Map<String, dynamic>))
+          .toList(),
+      sbomFormat: json['sbom_format'] as String?,
+      createdAt: json['created_at'] as int?,
+      toolName: json['tool_name'] as String?,
+      toolVersion: json['tool_version'] as String?,
+    );
+  }
+
   /// Creates an [SbomBlock].
   const SbomBlock({
     required this.packages,
@@ -134,20 +148,6 @@ class SbomBlock {
     if (toolVersion != null) result['tool_version'] = toolVersion;
     return result;
   }
-
-  /// Deserialises from a JSON-compatible map.
-  factory SbomBlock.fromJson(Map<String, dynamic> json) {
-    final List<dynamic> packagesJson = json['packages'] as List<dynamic>;
-    return SbomBlock(
-      packages: packagesJson
-          .map((p) => SbomPackage.fromJson(p as Map<String, dynamic>))
-          .toList(),
-      sbomFormat: json['sbom_format'] as String?,
-      createdAt: json['created_at'] as int?,
-      toolName: json['tool_name'] as String?,
-      toolVersion: json['tool_version'] as String?,
-    );
-  }
 }
 
 // =============================================================================
@@ -156,6 +156,17 @@ class SbomBlock {
 
 /// A single payment split recipient.
 class RoyaltyRecipient {
+  /// Deserialises from a JSON-compatible map.
+  factory RoyaltyRecipient.fromJson(Map<String, dynamic> json) {
+    return RoyaltyRecipient(
+      identifier: json['identifier'] as String,
+      percentage: (json['percentage'] as num).toDouble(),
+      name: json['name'] as String?,
+      paymentAddress: json['payment_address'] as String?,
+      role: json['role'] as String?,
+    );
+  }
+
   /// Creates a [RoyaltyRecipient].
   const RoyaltyRecipient({
     required this.identifier,
@@ -192,17 +203,6 @@ class RoyaltyRecipient {
     if (role != null) result['role'] = role;
     return result;
   }
-
-  /// Deserialises from a JSON-compatible map.
-  factory RoyaltyRecipient.fromJson(Map<String, dynamic> json) {
-    return RoyaltyRecipient(
-      identifier: json['identifier'] as String,
-      percentage: (json['percentage'] as num).toDouble(),
-      name: json['name'] as String?,
-      paymentAddress: json['payment_address'] as String?,
-      role: json['role'] as String?,
-    );
-  }
 }
 
 /// Royalty / payment split block (type 0x11).
@@ -211,6 +211,20 @@ class RoyaltyRecipient {
 /// percentages are tamper-evident: any modification to the split ratios
 /// will be detected by the Merkle tree.
 class RoyaltyBlock {
+  /// Deserialises from a JSON-compatible map.
+  factory RoyaltyBlock.fromJson(Map<String, dynamic> json) {
+    final List<dynamic> recipientsJson = json['recipients'] as List<dynamic>;
+    return RoyaltyBlock(
+      recipients: recipientsJson
+          .map((r) => RoyaltyRecipient.fromJson(r as Map<String, dynamic>))
+          .toList(),
+      currency: json['currency'] as String?,
+      effectiveDate: json['effective_date'] as int?,
+      expirationDate: json['expiration_date'] as int?,
+      contractReference: json['contract_reference'] as String?,
+    );
+  }
+
   /// Creates a [RoyaltyBlock].
   ///
   /// Throws [ArgumentError] if percentages do not sum to 100.0 (within
@@ -271,20 +285,6 @@ class RoyaltyBlock {
     }
     return result;
   }
-
-  /// Deserialises from a JSON-compatible map.
-  factory RoyaltyBlock.fromJson(Map<String, dynamic> json) {
-    final List<dynamic> recipientsJson = json['recipients'] as List<dynamic>;
-    return RoyaltyBlock(
-      recipients: recipientsJson
-          .map((r) => RoyaltyRecipient.fromJson(r as Map<String, dynamic>))
-          .toList(),
-      currency: json['currency'] as String?,
-      effectiveDate: json['effective_date'] as int?,
-      expirationDate: json['expiration_date'] as int?,
-      contractReference: json['contract_reference'] as String?,
-    );
-  }
 }
 
 // =============================================================================
@@ -293,6 +293,18 @@ class RoyaltyBlock {
 
 /// Calibration metadata for a sensor measurement.
 class CalibrationInfo {
+  /// Deserialises from a JSON-compatible map.
+  factory CalibrationInfo.fromJson(Map<String, dynamic> json) {
+    return CalibrationInfo(
+      calibratedAt: json['calibrated_at'] as int,
+      calibrationAuthority: json['calibration_authority'] as String?,
+      certificateReference: json['certificate_reference'] as String?,
+      nextCalibrationDue: json['next_calibration_due'] as int?,
+      accuracy: json['accuracy'] as String?,
+      resolution: json['resolution'] as String?,
+    );
+  }
+
   /// Creates a [CalibrationInfo].
   const CalibrationInfo({
     required this.calibratedAt,
@@ -339,18 +351,6 @@ class CalibrationInfo {
     if (resolution != null) result['resolution'] = resolution;
     return result;
   }
-
-  /// Deserialises from a JSON-compatible map.
-  factory CalibrationInfo.fromJson(Map<String, dynamic> json) {
-    return CalibrationInfo(
-      calibratedAt: json['calibrated_at'] as int,
-      calibrationAuthority: json['calibration_authority'] as String?,
-      certificateReference: json['certificate_reference'] as String?,
-      nextCalibrationDue: json['next_calibration_due'] as int?,
-      accuracy: json['accuracy'] as String?,
-      resolution: json['resolution'] as String?,
-    );
-  }
 }
 
 /// Sensor measurement block (type 0x12).
@@ -360,6 +360,25 @@ class CalibrationInfo {
 /// metadata. Useful for IoT, scientific instruments, environmental
 /// monitoring, and industrial quality control.
 class MeasurementBlock {
+  /// Deserialises from a JSON-compatible map.
+  factory MeasurementBlock.fromJson(Map<String, dynamic> json) {
+    return MeasurementBlock(
+      timestamp: json['timestamp'] as int,
+      sensorId: json['sensor_id'] as String,
+      value: (json['value'] as num).toDouble(),
+      unit: json['unit'] as String,
+      measurementType: json['measurement_type'] as String?,
+      location: json['location'] as String?,
+      calibration: json['calibration'] != null
+          ? CalibrationInfo.fromJson(
+              json['calibration'] as Map<String, dynamic>,
+            )
+          : null,
+      batchId: json['batch_id'] as String?,
+      sequenceNumber: json['sequence_number'] as int?,
+    );
+  }
+
   /// Creates a [MeasurementBlock].
   const MeasurementBlock({
     required this.timestamp,
@@ -428,25 +447,6 @@ class MeasurementBlock {
     if (sequenceNumber != null) result['sequence_number'] = sequenceNumber;
     return result;
   }
-
-  /// Deserialises from a JSON-compatible map.
-  factory MeasurementBlock.fromJson(Map<String, dynamic> json) {
-    return MeasurementBlock(
-      timestamp: json['timestamp'] as int,
-      sensorId: json['sensor_id'] as String,
-      value: (json['value'] as num).toDouble(),
-      unit: json['unit'] as String,
-      measurementType: json['measurement_type'] as String?,
-      location: json['location'] as String?,
-      calibration: json['calibration'] != null
-          ? CalibrationInfo.fromJson(
-              json['calibration'] as Map<String, dynamic>,
-            )
-          : null,
-      batchId: json['batch_id'] as String?,
-      sequenceNumber: json['sequence_number'] as int?,
-    );
-  }
 }
 
 // =============================================================================
@@ -455,6 +455,19 @@ class MeasurementBlock {
 
 /// Legal basis record for a single redaction.
 class RedactionBasis {
+  /// Deserialises from a JSON-compatible map.
+  factory RedactionBasis.fromJson(Map<String, dynamic> json) {
+    return RedactionBasis(
+      blockIndex: json['block_index'] as int,
+      legalAuthority: json['legal_authority'] as String,
+      reason: json['reason'] as String,
+      date: json['date'] as int,
+      authorisedBy: json['authorised_by'] as String?,
+      expiresAt: json['expires_at'] as int?,
+      caseReference: json['case_reference'] as String?,
+    );
+  }
+
   /// Creates a [RedactionBasis].
   const RedactionBasis({
     required this.blockIndex,
@@ -501,19 +514,6 @@ class RedactionBasis {
     if (caseReference != null) result['case_reference'] = caseReference;
     return result;
   }
-
-  /// Deserialises from a JSON-compatible map.
-  factory RedactionBasis.fromJson(Map<String, dynamic> json) {
-    return RedactionBasis(
-      blockIndex: json['block_index'] as int,
-      legalAuthority: json['legal_authority'] as String,
-      reason: json['reason'] as String,
-      date: json['date'] as int,
-      authorisedBy: json['authorised_by'] as String?,
-      expiresAt: json['expires_at'] as int?,
-      caseReference: json['case_reference'] as String?,
-    );
-  }
 }
 
 /// Privilege log block (type 0x13).
@@ -524,6 +524,19 @@ class RedactionBasis {
 /// corresponding entry in the privilege log explaining the authority and
 /// reason for redaction.
 class PrivilegeLogBlock {
+  /// Deserialises from a JSON-compatible map.
+  factory PrivilegeLogBlock.fromJson(Map<String, dynamic> json) {
+    final List<dynamic> entriesJson = json['entries'] as List<dynamic>;
+    return PrivilegeLogBlock(
+      entries: entriesJson
+          .map((e) => RedactionBasis.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      preparedBy: json['prepared_by'] as String?,
+      preparedAt: json['prepared_at'] as int?,
+      caseTitle: json['case_title'] as String?,
+    );
+  }
+
   /// Creates a [PrivilegeLogBlock].
   const PrivilegeLogBlock({
     required this.entries,
@@ -566,18 +579,5 @@ class PrivilegeLogBlock {
     if (preparedAt != null) result['prepared_at'] = preparedAt;
     if (caseTitle != null) result['case_title'] = caseTitle;
     return result;
-  }
-
-  /// Deserialises from a JSON-compatible map.
-  factory PrivilegeLogBlock.fromJson(Map<String, dynamic> json) {
-    final List<dynamic> entriesJson = json['entries'] as List<dynamic>;
-    return PrivilegeLogBlock(
-      entries: entriesJson
-          .map((e) => RedactionBasis.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      preparedBy: json['prepared_by'] as String?,
-      preparedAt: json['prepared_at'] as int?,
-      caseTitle: json['case_title'] as String?,
-    );
   }
 }

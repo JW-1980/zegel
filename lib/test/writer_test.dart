@@ -66,7 +66,7 @@ void main() {
           salt: _zeroSalt(),
         );
         final fileBytes = ZegelWriter(masterKey, options).seal(content);
-        expect(fileBytes[9], equals(2));
+        expect(fileBytes[9], equals(4));
       });
     });
 

@@ -60,9 +60,8 @@ Uint8List parseKeyFromArgs(
 /// Throws [FormatException] if the input is invalid.
 Uint8List hexDecode(String hex, {String label = 'value'}) {
   // Strip optional 0x prefix.
-  final cleaned = hex.startsWith('0x') || hex.startsWith('0X')
-      ? hex.substring(2)
-      : hex;
+  final cleaned =
+      hex.startsWith('0x') || hex.startsWith('0X') ? hex.substring(2) : hex;
 
   if (cleaned.length % 2 != 0) {
     throw FormatException(
@@ -419,10 +418,10 @@ Never exitError(String message, {int code = 1}) {
 /// Parses a human-readable duration string into a [Duration].
 ///
 /// Supported formats:
-///   - "30m" or "30min" -> 30 minutes
-///   - "24h" -> 24 hours
-///   - "7d" -> 7 days
-///   - "2w" -> 2 weeks
+///   - "30m" or "30min" -&gt; 30 minutes
+///   - "24h" -&gt; 24 hours
+///   - "7d" -&gt; 7 days
+///   - "2w" -&gt; 2 weeks
 ///
 /// Throws [FormatException] if the format is invalid.
 Duration parseDuration(String s) {

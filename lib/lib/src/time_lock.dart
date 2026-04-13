@@ -302,6 +302,18 @@ class TimeLock {
 
 /// Parameters and result of a time-lock puzzle.
 class TimeLockPuzzle {
+  /// Deserialises a puzzle from a JSON-compatible map.
+  factory TimeLockPuzzle.fromJson(Map<String, dynamic> json) {
+    return TimeLockPuzzle(
+      iterations: json['iterations'] as int,
+      hashAlgorithm: (json['hash_algorithm'] as String?) ?? 'SHA-256',
+      verificationHash: _hexToBytes(json['verification_hash'] as String),
+      lockedKey: Uint8List(0),
+      createdEpoch: (json['created_epoch'] as int?) ?? 0,
+      targetEpoch: (json['target_epoch'] as int?) ?? 0,
+    );
+  }
+
   /// Creates a [TimeLockPuzzle].
   const TimeLockPuzzle({
     required this.iterations,
@@ -344,18 +356,6 @@ class TimeLockPuzzle {
       'created_epoch': createdEpoch,
       'target_epoch': targetEpoch,
     };
-  }
-
-  /// Deserialises a puzzle from a JSON-compatible map.
-  factory TimeLockPuzzle.fromJson(Map<String, dynamic> json) {
-    return TimeLockPuzzle(
-      iterations: json['iterations'] as int,
-      hashAlgorithm: (json['hash_algorithm'] as String?) ?? 'SHA-256',
-      verificationHash: _hexToBytes(json['verification_hash'] as String),
-      lockedKey: Uint8List(0),
-      createdEpoch: (json['created_epoch'] as int?) ?? 0,
-      targetEpoch: (json['target_epoch'] as int?) ?? 0,
-    );
   }
 
   static String _bytesToHex(Uint8List bytes) {
