@@ -13,8 +13,8 @@ import 'common.dart';
 /// Adds a co-signature attestation to a .zgl file.
 ///
 /// Usage:
-///   zegel attest <file.zgl> --signer-key <hex> --signer-id <string>
-///       --statement "text" -k <master-key-hex> [--role <role>]
+///   zegel attest &lt;file.zgl&gt; --signer-key &lt;hex&gt; --signer-id &lt;string&gt;
+///       --statement "text" -k &lt;master-key-hex&gt; [--role &lt;role&gt;]
 ///
 /// The attestation is an HMAC-SHA256 over the Merkle root, signer ID,
 /// timestamp, and statement. Adding an attestation block changes the Merkle

@@ -10,7 +10,7 @@ import 'common.dart';
 /// Command to verify the integrity of a Zegel binary.
 ///
 /// ```
-/// zegel verify-binary --binary <path> --expected-hash <hex>
+/// zegel verify-binary --binary &lt;path&gt; --expected-hash &lt;hex&gt;
 /// ```
 class VerifyBinaryCommand extends Command<int> {
   @override
@@ -47,8 +47,9 @@ class VerifyBinaryCommand extends Command<int> {
 
     stdout.writeln('Verifying binary: $binaryPath');
 
-    final Uint8List actualHash =
-        await SupplyChainVerifier.computeBinaryHash(binaryPath);
+    final Uint8List actualHash = await SupplyChainVerifier.computeBinaryHash(
+      binaryPath,
+    );
     final String actualHex =
         actualHash.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
 
@@ -78,7 +79,7 @@ class VerifyBinaryCommand extends Command<int> {
 /// Command to create a build provenance attestation.
 ///
 /// ```
-/// zegel build-attest --version 1.4.0 --commit <hash> --builder <identity> --signing-key <key> -o <attestation.json>
+/// zegel build-attest --version 1.4.0 --commit &lt;hash&gt; --builder &lt;identity&gt; --signing-key &lt;key&gt; -o &lt;attestation.json&gt;
 /// ```
 class BuildAttestCommand extends Command<int> {
   @override
@@ -97,13 +98,18 @@ class BuildAttestCommand extends Command<int> {
       ..addOption('build-version', help: 'Software version.', mandatory: true)
       ..addOption('commit', help: 'Git commit hash.', mandatory: true)
       ..addOption('builder', help: 'Builder identity.', mandatory: true)
-      ..addOption('signing-key',
-          help: 'Ed25519 private key file.', mandatory: true)
+      ..addOption(
+        'signing-key',
+        help: 'Ed25519 private key file.',
+        mandatory: true,
+      )
       ..addOption('reproducible-hash', help: 'Reproducible build hash.')
-      ..addOption('output',
-          abbr: 'o',
-          help: 'Output JSON file.',
-          defaultsTo: 'build-attestation.json');
+      ..addOption(
+        'output',
+        abbr: 'o',
+        help: 'Output JSON file.',
+        defaultsTo: 'build-attestation.json',
+      );
   }
 
   @override
@@ -148,7 +154,7 @@ class BuildAttestCommand extends Command<int> {
 /// Command to verify a build attestation.
 ///
 /// ```
-/// zegel verify-build --attestation <file.json> --trusted-key <key-file>
+/// zegel verify-build --attestation &lt;file.json&gt; --trusted-key &lt;key-file&gt;
 /// ```
 class VerifyBuildCommand extends Command<int> {
   @override
@@ -160,10 +166,17 @@ class VerifyBuildCommand extends Command<int> {
 
   VerifyBuildCommand() {
     argParser
-      ..addOption('attestation',
-          abbr: 'a', help: 'Attestation JSON file.', mandatory: true)
-      ..addMultiOption('trusted-key',
-          abbr: 't', help: 'Trusted builder public key file(s).');
+      ..addOption(
+        'attestation',
+        abbr: 'a',
+        help: 'Attestation JSON file.',
+        mandatory: true,
+      )
+      ..addMultiOption(
+        'trusted-key',
+        abbr: 't',
+        help: 'Trusted builder public key file(s).',
+      );
   }
 
   @override
@@ -199,7 +212,7 @@ class VerifyBuildCommand extends Command<int> {
 /// Command to audit entropy quality in a sealed .zgl file.
 ///
 /// ```
-/// zegel audit-entropy <file.zgl>
+/// zegel audit-entropy &lt;file.zgl&gt;
 /// ```
 class AuditEntropyCommand extends Command<int> {
   @override

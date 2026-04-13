@@ -9,7 +9,7 @@ import 'common.dart';
 /// Verifies the integrity of a .zgl file.
 ///
 /// Usage:
-///   zegel verify <file.zgl> -k <key-hex>
+///   zegel verify &lt;file.zgl&gt; -k &lt;key-hex&gt;
 ///
 /// Exit codes:
 ///   0 = valid (intact)

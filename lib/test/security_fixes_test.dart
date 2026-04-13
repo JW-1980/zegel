@@ -76,8 +76,7 @@ void main() {
       final naiveCombined = Uint8List(64);
       naiveCombined.setRange(0, 32, naiveLeaf1);
       naiveCombined.setRange(32, 64, naiveLeaf2);
-      final naiveRoot =
-          Uint8List.fromList(sha256.convert(naiveCombined).bytes);
+      final naiveRoot = Uint8List.fromList(sha256.convert(naiveCombined).bytes);
 
       expect(root, isNot(equals(naiveRoot)),
           reason: 'Domain-separated root must differ from naive root');
@@ -194,7 +193,8 @@ void main() {
       badShare[0] = 0;
 
       expect(
-        () => ShamirSecretSharing.reconstruct([badShare, shares[1], shares[2]], 3),
+        () => ShamirSecretSharing.reconstruct(
+            [badShare, shares[1], shares[2]], 3),
         throwsA(isA<ArgumentError>().having(
           (e) => e.message,
           'message',
@@ -610,11 +610,13 @@ void main() {
       }
 
       final content = Uint8List.fromList(utf8.encode('Wrong key test'));
-      final sealed = ZegelWriter(key, const ZegelOptions(
-        contentType: 'text/plain',
-        filename: 'test.txt',
-        salt: null,
-      )).seal(content);
+      final sealed = ZegelWriter(
+          key,
+          const ZegelOptions(
+            contentType: 'text/plain',
+            filename: 'test.txt',
+            salt: null,
+          )).seal(content);
 
       expect(
         () => const ZegelReader().verify(sealed, wrongKey),

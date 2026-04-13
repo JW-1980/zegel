@@ -248,9 +248,8 @@ class SignatureField {
       label: json['label'] as String?,
       defaultValue: json['default_value'] as String?,
       value: json['value'] as String?,
-      options: (json['options'] as List<dynamic>?)
-          ?.map((o) => o as String)
-          .toList(),
+      options:
+          (json['options'] as List<dynamic>?)?.map((o) => o as String).toList(),
     );
   }
 }

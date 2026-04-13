@@ -10,7 +10,7 @@ import 'common.dart';
 /// Parent command for trusted timestamp operations.
 ///
 /// Usage:
-///   zegel timestamp <subcommand> [options]
+///   zegel timestamp &lt;subcommand&gt; [options]
 ///
 /// Subcommands:
 ///   create  Create a timestamp for a .zgl file

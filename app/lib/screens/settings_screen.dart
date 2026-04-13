@@ -156,9 +156,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: const Text('Cancel'),
             ),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-              ),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
               onPressed: () => Navigator.of(context).pop(true),
               child: const Text('Delete'),
             ),
@@ -226,9 +224,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final localeNotifier = context.watch<LocaleNotifier>();
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.settingsTitle),
-      ),
+      appBar: AppBar(title: Text(l10n.settingsTitle)),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -509,25 +505,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                     items: const [
                       DropdownMenuItem(
-                          // ignore: deprecated_member_use
-                          value: 'PUBLIC',
-                          child: Text('PUBLIC')),
+                        // ignore: deprecated_member_use
+                        value: 'PUBLIC',
+                        child: Text('PUBLIC'),
+                      ),
                       DropdownMenuItem(
-                          // ignore: deprecated_member_use
-                          value: 'INTERNAL',
-                          child: Text('INTERNAL')),
+                        // ignore: deprecated_member_use
+                        value: 'INTERNAL',
+                        child: Text('INTERNAL'),
+                      ),
                       DropdownMenuItem(
-                          // ignore: deprecated_member_use
-                          value: 'CONFIDENTIAL',
-                          child: Text('CONFIDENTIAL')),
+                        // ignore: deprecated_member_use
+                        value: 'CONFIDENTIAL',
+                        child: Text('CONFIDENTIAL'),
+                      ),
                       DropdownMenuItem(
-                          // ignore: deprecated_member_use
-                          value: 'SECRET',
-                          child: Text('SECRET')),
+                        // ignore: deprecated_member_use
+                        value: 'SECRET',
+                        child: Text('SECRET'),
+                      ),
                       DropdownMenuItem(
-                          // ignore: deprecated_member_use
-                          value: 'TOP_SECRET',
-                          child: Text('TOP SECRET')),
+                        // ignore: deprecated_member_use
+                        value: 'TOP_SECRET',
+                        child: Text('TOP SECRET'),
+                      ),
                     ],
                     // ignore: deprecated_member_use
                     onChanged: (value) {
@@ -631,8 +632,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.info_outline,
-                          color: theme.colorScheme.primary),
+                      Icon(
+                        Icons.info_outline,
+                        color: theme.colorScheme.primary,
+                      ),
                       const SizedBox(width: 8),
                       Text(
                         'About',
@@ -644,20 +647,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                   const Divider(),
                   const _AboutRow(
-                      label: 'Application', // ignore: deprecated_member_use
-                      value: 'Zegel'),
+                    label: 'Application', // ignore: deprecated_member_use
+                    value: 'Zegel',
+                  ),
                   const _AboutRow(
-                      label: 'Version', // ignore: deprecated_member_use
-                      value: '1.3.0'),
+                    label: 'Version', // ignore: deprecated_member_use
+                    value: '1.3.0',
+                  ),
                   const _AboutRow(
-                      label: 'Format Version', // ignore: deprecated_member_use
-                      value: '1.2'),
+                    label: 'Format Version', // ignore: deprecated_member_use
+                    value: '1.2',
+                  ),
                   const _AboutRow(
-                      label: 'File Extension', // ignore: deprecated_member_use
-                      value: '.zgl'),
+                    label: 'File Extension', // ignore: deprecated_member_use
+                    value: '.zgl',
+                  ),
                   const _AboutRow(
-                      label: 'MIME Type', // ignore: deprecated_member_use
-                      value: 'application/x-zgl'),
+                    label: 'MIME Type', // ignore: deprecated_member_use
+                    value: 'application/x-zgl',
+                  ),
                   const SizedBox(height: 8),
                   const _AboutRow(
                     label: 'Code License',

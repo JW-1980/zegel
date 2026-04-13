@@ -9,7 +9,7 @@ import 'common.dart';
 /// Extracts the original content from a verified .zgl file.
 ///
 /// Usage:
-///   zegel extract <file.zgl> -k <key-hex> -o <output-file>
+///   zegel extract &lt;file.zgl&gt; -k &lt;key-hex&gt; -o &lt;output-file&gt;
 class ExtractCommand extends Command<int> {
   @override
   final String name = 'extract';

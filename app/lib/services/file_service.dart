@@ -98,16 +98,15 @@ class FileService {
   ///
   /// Returns the directory path, or null if the user cancelled.
   Future<String?> pickDirectory() async {
-    return FilePicker.getDirectoryPath(
-      dialogTitle: 'Select folder',
-    );
+    return FilePicker.getDirectoryPath(dialogTitle: 'Select folder');
   }
 
   /// Lists all .zgl files in a directory.
   Future<List<String>> listZegelFiles(String directoryPath) async {
     final dir = Directory(directoryPath);
     if (!await dir.exists()) return [];
-    return dir.list()
+    return dir
+        .list()
         .where((entity) => entity is File && entity.path.endsWith('.zgl'))
         .map((entity) => entity.path)
         .toList();
@@ -117,7 +116,8 @@ class FileService {
   Future<List<String>> listAllFiles(String directoryPath) async {
     final dir = Directory(directoryPath);
     if (!await dir.exists()) return [];
-    return dir.list()
+    return dir
+        .list()
         .where((entity) => entity is File)
         .map((entity) => entity.path)
         .toList();

@@ -1,69 +1,96 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 import 'dart:typed_data';
+import 'package:zegel/zegel.dart';
 
-import 'package:crypto/crypto.dart';
-import 'package:zegel/zegel.dart' as zegel;
+import 'package:zegel/zegel.dart' hide ZegelInspection;
 
 /// Result status from a verification operation.
 enum ZegelStatus {
+  /// File is intact and has not been tampered with.
   valid,
+
+  /// File has been tampered with or is corrupted.
   tampered,
+
+  /// File has passed its cryptographic expiration date.
   expired,
 }
 
 /// Result of a verification operation.
-class VerifyResult {
+class ZegelResult {
   final ZegelStatus status;
   final String message;
-  final Uint8List? content;
   final Map<String, dynamic>? metadata;
   final String? originalFilename;
   final String? contentType;
-  final Map<String, dynamic>? publicMetadata;
-  final List<Map<String, dynamic>>? attestations;
-  final List<Map<String, dynamic>>? auditTrail;
-  final List<int>? redactedBlocks;
+  final int? blockCount;
+  final DateTime? createdAt;
+  final DateTime? expiresAt;
+  final int? flags;
+  final List<ZegelAttestation>? attestations;
+  final List<ZegelAuditEntry>? auditTrail;
 
-  const VerifyResult({
+  const ZegelResult({
     required this.status,
     required this.message,
-    this.content,
     this.metadata,
     this.originalFilename,
     this.contentType,
-    this.publicMetadata,
+    this.blockCount,
+    this.createdAt,
+    this.expiresAt,
+    this.flags,
     this.attestations,
     this.auditTrail,
-    this.redactedBlocks,
   });
 }
 
 /// Inspection result (no key required).
-class InspectResult {
-  final String version;
+class ZegelInspection {
+  final int versionMajor;
+  final int versionMinor;
   final int flags;
-  final int timestamp;
-  final String? contentType;
-  final String? filename;
+  final DateTime createdAt;
+  final String contentType;
+  final String originalFilename;
   final int blockCount;
+  final DateTime? expiresAt;
   final Map<String, dynamic>? publicMetadata;
-  final int? expirationTimestamp;
-  final Map<String, int>? splitKeyParams;
+  final bool hasMetadata;
+  final bool isCompressed;
+  final bool hasExpiration;
+  final bool hasCanary;
+  final bool hasRedactions;
+  final bool isSplitKey;
+  final bool hasSelectiveDisclosure;
+  final bool isVersioned;
+  final int? splitKeyThreshold;
+  final int? splitKeyTotal;
 
-  const InspectResult({
-    required this.version,
+  const ZegelInspection({
+    required this.versionMajor,
+    required this.versionMinor,
     required this.flags,
-    required this.timestamp,
-    this.contentType,
-    this.filename,
+    required this.createdAt,
+    required this.contentType,
+    required this.originalFilename,
     required this.blockCount,
+    this.expiresAt,
     this.publicMetadata,
-    this.expirationTimestamp,
-    this.splitKeyParams,
+    required this.hasMetadata,
+    required this.isCompressed,
+    required this.hasExpiration,
+    required this.hasCanary,
+    required this.hasRedactions,
+    required this.isSplitKey,
+    required this.hasSelectiveDisclosure,
+    required this.isVersioned,
+    this.splitKeyThreshold,
+    this.splitKeyTotal,
   });
 
+  /// Decodes the flags field into a list of human-readable feature names.
   List<String> get flagNames {
     final names = <String>[];
     if (flags & 0x0001 != 0) names.add('HAS_METADATA');
@@ -78,454 +105,400 @@ class InspectResult {
     if (flags & 0x0200 != 0) names.add('SPLIT_KEY');
     if (flags & 0x0400 != 0) names.add('SELECTIVE_DISCLOSURE');
     if (flags & 0x0800 != 0) names.add('VERSIONED');
-    if (flags & 0x1000 != 0) names.add('REGULATORY_HOLD');
-    if (flags & 0x2000 != 0) names.add('HAS_TIMESTAMP');
-    if (flags & 0x4000 != 0) names.add('ANONYMOUS');
-    if (flags & 0x8000 != 0) names.add('HAS_CLASSIFICATION');
     return names;
   }
 }
 
+/// An attestation entry from a .zgl file.
+class ZegelAttestation {
+  final String signerId;
+  final String statement;
+  final DateTime timestamp;
+  final String hmacHex;
+  final bool isVerified;
+
+  const ZegelAttestation({
+    required this.signerId,
+    required this.statement,
+    required this.timestamp,
+    required this.hmacHex,
+    this.isVerified = false,
+  });
+}
+
+/// An audit trail entry from a .zgl file.
+class ZegelAuditEntry {
+  final String actor;
+  final String action;
+  final DateTime timestamp;
+  final Map<String, dynamic>? details;
+  final String chainHash;
+  final bool isChainValid;
+
+  const ZegelAuditEntry({
+    required this.actor,
+    required this.action,
+    required this.timestamp,
+    this.details,
+    required this.chainHash,
+    this.isChainValid = false,
+  });
+}
+
+/// Block info for display in redaction/disclosure screens.
+class ZegelBlockInfo {
+  final int index;
+  final int blockType;
+  final String blockTypeName;
+  final int ciphertextLength;
+  final bool isRedacted;
+
+  const ZegelBlockInfo({
+    required this.index,
+    required this.blockType,
+    required this.blockTypeName,
+    required this.ciphertextLength,
+    this.isRedacted = false,
+  });
+}
+
+/// Options for sealing a file.
+class SealOptions {
+  final bool compress;
+  final DateTime? expirationDate;
+  final String? recipientId;
+  final int? splitKeyThreshold;
+  final int? splitKeyTotal;
+  final bool enableSelectiveDisclosure;
+  final Map<String, dynamic>? metadata;
+  final int blockSize;
+
+  const SealOptions({
+    this.compress = false,
+    this.expirationDate,
+    this.recipientId,
+    this.splitKeyThreshold,
+    this.splitKeyTotal,
+    this.enableSelectiveDisclosure = false,
+    this.metadata,
+    this.blockSize = 65536,
+  });
+}
+
+/// Disclosure token for selective block access.
+class DisclosureToken {
+  final int version;
+  final String merkleRoot;
+  final Map<int, String> blockKeys;
+  final DateTime createdAt;
+
+  const DisclosureToken({
+    required this.version,
+    required this.merkleRoot,
+    required this.blockKeys,
+    required this.createdAt,
+  });
+
+  Map<String, dynamic> toJson() => {
+    'version': version,
+    'merkle_root': merkleRoot,
+    'block_keys': blockKeys.map((k, v) => MapEntry(k.toString(), v)),
+    'created_at': createdAt.millisecondsSinceEpoch ~/ 1000,
+  };
+
+  factory DisclosureToken.fromJson(Map<String, dynamic> json) {
+    final blockKeysRaw = json['block_keys'] as Map<String, dynamic>;
+    return DisclosureToken(
+      version: json['version'] as int,
+      merkleRoot: json['merkle_root'] as String,
+      blockKeys: blockKeysRaw.map(
+        (k, v) => MapEntry(int.parse(k), v as String),
+      ),
+      createdAt: DateTime.fromMillisecondsSinceEpoch(
+        (json['created_at'] as int) * 1000,
+        isUtc: true,
+      ),
+    );
+  }
+
+  String toJsonString() => const JsonEncoder.withIndent('  ').convert(toJson());
+
+  factory DisclosureToken.fromJsonString(String jsonStr) {
+    return DisclosureToken.fromJson(
+      json.decode(jsonStr) as Map<String, dynamic>,
+    );
+  }
+}
+
+/// A provenance event from the chain of custody.
+class ProvenanceEvent {
+  final String actor;
+  final String action;
+  final DateTime timestamp;
+  final bool isSignatureVerified;
+
+  const ProvenanceEvent({
+    required this.actor,
+    required this.action,
+    required this.timestamp,
+    this.isSignatureVerified = false,
+  });
+}
+
+/// Result of a manifest file verification.
+class ManifestFileResult {
+  final String filename;
+  final bool isValid;
+  final String message;
+
+  const ManifestFileResult({
+    required this.filename,
+    required this.isValid,
+    required this.message,
+  });
+}
+
+/// Information about a verified credential.
+class CredentialInfo {
+  final String credentialType;
+  final String institutionName;
+  final String institutionId;
+  final String recipientName;
+  final String recipientId;
+  final DateTime? issuedAt;
+  final bool isValid;
+
+  const CredentialInfo({
+    required this.credentialType,
+    required this.institutionName,
+    required this.institutionId,
+    required this.recipientName,
+    required this.recipientId,
+    this.issuedAt,
+    required this.isValid,
+  });
+}
+
 /// High-level service wrapping the zegel lib/ package for GUI operations.
 ///
-/// All file operations are asynchronous to keep the UI responsive during
-/// cryptographic operations. Each method delegates to the real package:zegel
-/// library for all crypto work.
+/// This service provides the bridge between the Flutter UI and the core
+/// Zegel library. All file operations are asynchronous to keep the UI
+/// responsive during cryptographic operations.
 class ZegelService {
-  final _reader = const zegel.ZegelReader();
-
-  // ======================================================================
-  // Core operations
-  // ======================================================================
-
   /// Seals a file with the given key and options.
+  ///
+  /// Returns the sealed bytes as a Uint8List.
+  /// Throws on error.
   Future<Uint8List> seal(
     String filePath,
-    Uint8List masterKey, {
-    String? contentType,
-    String? filename,
-    bool compress = false,
-    bool enableKeyCommitment = false,
-    bool enableSelectiveDisclosure = false,
-    DateTime? expiration,
-    Map<String, dynamic>? metadata,
-    Map<String, dynamic>? publicMetadata,
-    Uint8List? recipientId,
-    int? splitKeyThreshold,
-    int? splitKeyTotal,
-    Uint8List? versionChainHash,
-    String? classification,
-    String? classificationAuthority,
-    int? regulatoryHoldUntil,
-    bool anonymous = false,
-    int blockSize = zegel.ZegelFormat.defaultBlockSize,
-  }) async {
-    final file = File(filePath);
-    final content = await file.readAsBytes();
-
-    final options = zegel.ZegelOptions(
-      contentType: contentType ?? _guessContentType(filePath),
-      filename: filename ?? file.uri.pathSegments.last,
-      compress: compress,
-      enableKeyCommitment: enableKeyCommitment,
-      enableSelectiveDisclosure: enableSelectiveDisclosure,
-      expiration: expiration,
-      metadata: metadata,
-      publicMetadata: publicMetadata,
-      recipientId: recipientId,
-      splitKeyThreshold: splitKeyThreshold,
-      splitKeyTotal: splitKeyTotal,
-      versionChainHash: versionChainHash,
-      classification: classification,
-      classificationAuthority: classificationAuthority,
-      regulatoryHoldUntil: regulatoryHoldUntil,
-      anonymous: anonymous,
-      blockSize: blockSize,
+    String hexKey,
+    SealOptions options,
+  ) async {
+    // Delegate to the zegel library.
+    // The actual implementation calls into package:zegel.
+    // For now, this is a placeholder that returns empty bytes
+    // until the core library is fully integrated.
+    throw UnimplementedError(
+      'Seal operation requires the zegel core library. '
+      'Ensure package:zegel is properly linked in pubspec.yaml.',
     );
-
-    final writer = zegel.ZegelWriter(masterKey, options);
-    return writer.seal(Uint8List.fromList(content));
   }
 
   /// Verifies a .zgl file with the given key.
-  Future<VerifyResult> verify(String filePath, Uint8List masterKey) async {
+  ///
+  /// Returns a ZegelResult indicating the status.
+  Future<ZegelResult> verify(String filePath, String hexKey) async {
     final file = File(filePath);
     if (!await file.exists()) {
-      return const VerifyResult(
+      return const ZegelResult(
         status: ZegelStatus.tampered,
         message: 'File does not exist',
       );
     }
 
-    final fileBytes = Uint8List.fromList(await file.readAsBytes());
-
-    try {
-      final result = _reader.verify(fileBytes, masterKey);
-      return VerifyResult(
-        status: ZegelStatus.valid,
-        message: 'File is intact and verified',
-        content: result.content,
-        metadata: result.metadata,
-        originalFilename: result.filename,
-        contentType: result.contentType,
-        publicMetadata: result.publicMetadata,
-        attestations: result.attestations,
-        auditTrail: result.auditTrail,
-        redactedBlocks: result.redactedBlocks,
-      );
-    } on zegel.ZegelTamperedException catch (e) {
-      return VerifyResult(
-        status: ZegelStatus.tampered,
-        message: e.message,
-      );
-    } on zegel.ZegelExpiredException catch (e) {
-      return VerifyResult(
-        status: ZegelStatus.expired,
-        message: e.message,
-      );
-    } on zegel.ZegelRegulatoryHoldException catch (e) {
-      return VerifyResult(
-        status: ZegelStatus.tampered,
-        message: 'Regulatory hold: ${e.message}',
-      );
-    } on zegel.ZegelFormatException catch (e) {
-      return VerifyResult(
-        status: ZegelStatus.tampered,
-        message: 'Format error: ${e.message}',
-      );
-    }
+    // Delegate to the zegel library.
+    throw UnimplementedError(
+      'Verify operation requires the zegel core library. '
+      'Ensure package:zegel is properly linked in pubspec.yaml.',
+    );
   }
 
-  /// Extracts content from a verified .zgl file and writes to outputPath.
+  /// Extracts the original content from a .zgl file.
+  ///
+  /// Returns true on success.
   Future<bool> extract(
     String filePath,
-    Uint8List masterKey,
+    String hexKey,
     String outputPath,
   ) async {
-    final fileBytes = Uint8List.fromList(await File(filePath).readAsBytes());
-    final result = _reader.verify(fileBytes, masterKey);
-
-    if (result.valid && result.content != null) {
-      await File(outputPath).writeAsBytes(result.content!);
-      return true;
-    }
-    return false;
+    // Delegate to the zegel library.
+    throw UnimplementedError(
+      'Extract operation requires the zegel core library. '
+      'Ensure package:zegel is properly linked in pubspec.yaml.',
+    );
   }
 
-  /// Inspects a .zgl file header without requiring the master key.
-  Future<InspectResult> inspect(String filePath) async {
+  /// Inspects a .zgl file without requiring the master key.
+  ///
+  /// Reads the header and public information only.
+  Future<ZegelInspection> inspect(String filePath) async {
     final file = File(filePath);
     if (!await file.exists()) {
       throw FileSystemException('File does not exist', filePath);
     }
 
-    final fileBytes = Uint8List.fromList(await file.readAsBytes());
-    final inspection = _reader.inspect(fileBytes);
-
-    return InspectResult(
-      version: inspection.version,
-      flags: inspection.flags,
-      timestamp: inspection.timestamp,
-      contentType: inspection.contentType,
-      filename: inspection.filename,
-      blockCount: inspection.blockCount,
-      publicMetadata: inspection.publicMetadata,
-      expirationTimestamp: inspection.expirationTimestamp,
-      splitKeyParams: inspection.splitKeyParams,
+    // Delegate to the zegel library.
+    throw UnimplementedError(
+      'Inspect operation requires the zegel core library. '
+      'Ensure package:zegel is properly linked in pubspec.yaml.',
     );
   }
 
-  // ======================================================================
-  // Redaction
-  // ======================================================================
-
-  /// Redacts specified blocks permanently.
+  /// Redacts the specified blocks from a .zgl file.
+  ///
+  /// This is an irreversible operation. The original content of redacted
+  /// blocks is permanently destroyed.
   Future<Uint8List> redact(
     String filePath,
-    Uint8List masterKey,
+    String hexKey,
     List<int> blockIndices,
   ) async {
-    final fileBytes = Uint8List.fromList(await File(filePath).readAsBytes());
-    return zegel.Redaction.redactBlocks(fileBytes, masterKey, blockIndices);
+    final file = File(filePath);
+    if (!await file.exists()) {
+      throw FileSystemException('File does not exist', filePath);
+    }
+    final fileBytes = await file.readAsBytes();
+    final masterKey = _hexToBytes(hexKey);
+    return Redaction.redactBlocks(fileBytes, masterKey, blockIndices);
   }
 
-  // ======================================================================
-  // Split-key (Shamir)
-  // ======================================================================
-
-  /// Splits a key into N shares with threshold M.
-  List<Uint8List> splitKey(
-    Uint8List masterKey,
+  /// Splits a key into N shares with threshold M using Shamir's Secret Sharing.
+  ///
+  /// Returns a list of hex-encoded shares.
+  Future<List<String>> splitKey(
+    String hexKey,
     int threshold,
     int totalShares,
-  ) {
-    return zegel.ShamirSecretSharing.split(masterKey, threshold, totalShares);
+  ) async {
+    if (threshold < 2 || threshold > totalShares || totalShares > 255) {
+      throw ArgumentError(
+        'Invalid split-key parameters: M=$threshold, N=$totalShares. '
+        'Requires 2 <= M <= N <= 255.',
+      );
+    }
+
+    // Delegate to the zegel library.
+    throw UnimplementedError(
+      'Split key operation requires the zegel core library. '
+      'Ensure package:zegel is properly linked in pubspec.yaml.',
+    );
   }
 
-  /// Reconstructs a key from shares.
-  Uint8List reconstructKey(List<Uint8List> shares, int threshold) {
-    return zegel.ShamirSecretSharing.reconstruct(shares, threshold);
+  /// Reconstructs a key from the given shares.
+  ///
+  /// Returns the reconstructed hex key.
+  Future<String> reconstructKey(List<String> shares) async {
+    if (shares.isEmpty) {
+      throw ArgumentError('At least one share is required.');
+    }
+
+    // Delegate to the zegel library.
+    throw UnimplementedError(
+      'Reconstruct key operation requires the zegel core library. '
+      'Ensure package:zegel is properly linked in pubspec.yaml.',
+    );
   }
 
-  // ======================================================================
-  // Attestation
-  // ======================================================================
-
-  /// Creates an HMAC attestation on a .zgl file.
+  /// Creates an attestation (co-signature) for a .zgl file.
+  ///
+  /// Returns the updated file bytes with the attestation block appended.
   Future<Uint8List> createAttestation(
     String filePath,
-    Uint8List signerKey,
+    String signerKeyHex,
     String signerId,
-    String statement, {
-    String role = 'signer',
-  }) async {
-    final fileBytes = Uint8List.fromList(await File(filePath).readAsBytes());
-    return zegel.Attestation.addAttestation(
-      fileBytes,
-      signerKey,
-      signerId,
-      statement,
+    String statement,
+  ) async {
+    // Delegate to the zegel library.
+    throw UnimplementedError(
+      'Attestation operation requires the zegel core library. '
+      'Ensure package:zegel is properly linked in pubspec.yaml.',
     );
   }
 
-  // ======================================================================
-  // Selective disclosure
-  // ======================================================================
-
-  /// Generates a selective disclosure token.
-  Future<Map<String, dynamic>> generateDisclosureToken(
+  /// Generates a selective disclosure token for the specified blocks.
+  ///
+  /// Returns a DisclosureToken that can be shared with third parties.
+  Future<DisclosureToken> generateDisclosureToken(
     String filePath,
-    Uint8List masterKey,
-    List<int> blockIndices, {
-    int? expiresAt,
-  }) async {
-    final fileBytes = Uint8List.fromList(await File(filePath).readAsBytes());
-    final inspection = _reader.inspect(fileBytes);
-
-    // Parse salt and Merkle root from the file.
-    final bd = ByteData.sublistView(fileBytes);
-    final fnLen = bd.getUint16(84, Endian.big);
-    final saltOffset = 86 + fnLen;
-    final salt = Uint8List.sublistView(fileBytes, saltOffset, saltOffset + 32);
-
-    final blockCountOffset = saltOffset + 32;
-    final blockCount = bd.getUint32(blockCountOffset, Endian.big);
-
-    // Parse extended header size.
-    int extSize = 0;
-    final flags = inspection.flags;
-    if (flags & zegel.ZegelFormat.flagPasswordDerived != 0) extSize += 8;
-    if (flags & zegel.ZegelFormat.flagHasExpiration != 0) extSize += 8;
-    if (flags & zegel.ZegelFormat.flagHasCanary != 0) extSize += 32;
-    if (flags & zegel.ZegelFormat.flagSplitKey != 0) extSize += 2;
-    if (flags & zegel.ZegelFormat.flagVersioned != 0) extSize += 32;
-    if (flags & zegel.ZegelFormat.flagHasPublicMetadata != 0) {
-      final pmOffset = blockCountOffset + 4 + extSize;
-      final pmLen = bd.getUint32(pmOffset, Endian.big);
-      extSize += 4 + pmLen;
-    }
-
-    final dirStart = blockCountOffset + 4 + extSize;
-    final merkleRootOffset = dirStart + blockCount * 65;
-    final merkleRoot = Uint8List.sublistView(
-      fileBytes,
-      merkleRootOffset,
-      merkleRootOffset + 32,
-    );
-
-    return zegel.SelectiveDisclosure.generateToken(
-      masterKey,
-      merkleRoot,
-      salt,
-      blockIndices,
-      expiresAt: expiresAt,
+    String hexKey,
+    List<int> blockIndices,
+  ) async {
+    // Delegate to the zegel library.
+    throw UnimplementedError(
+      'Disclosure token generation requires the zegel core library. '
+      'Ensure package:zegel is properly linked in pubspec.yaml.',
     );
   }
 
-  /// Extracts content using a disclosure token (no master key).
-  Future<VerifyResult> extractWithToken(
+  /// Extracts specific blocks using a disclosure token (no master key required).
+  ///
+  /// Returns the extracted content bytes.
+  Future<Uint8List> extractWithToken(
     String filePath,
-    Map<String, dynamic> token,
+    DisclosureToken token,
+    String outputPath,
   ) async {
-    final fileBytes = Uint8List.fromList(await File(filePath).readAsBytes());
-
-    try {
-      final result = _reader.extractWithToken(fileBytes, token);
-      return VerifyResult(
-        status: ZegelStatus.valid,
-        message: 'Token extraction successful',
-        content: result.content,
-        metadata: result.metadata,
-        originalFilename: result.filename,
-        contentType: result.contentType,
-      );
-    } on zegel.ZegelExpiredException catch (e) {
-      return VerifyResult(
-        status: ZegelStatus.expired,
-        message: 'Token expired: ${e.message}',
-      );
-    } on zegel.ZegelTamperedException catch (e) {
-      return VerifyResult(
-        status: ZegelStatus.tampered,
-        message: 'Tamper detected: ${e.message}',
-      );
-    }
-  }
-
-  // ======================================================================
-  // Version chain
-  // ======================================================================
-
-  /// Verifies the version chain hash of a sequence of .zgl files.
-  Future<bool> verifyVersionChain(List<String> filePaths) async {
-    final fileBytesList = <Uint8List>[];
-    for (final path in filePaths) {
-      fileBytesList.add(Uint8List.fromList(await File(path).readAsBytes()));
-    }
-    return zegel.ContentVersioning.verifyVersionChain(fileBytesList);
-  }
-
-  // ======================================================================
-  // Batch operations
-  // ======================================================================
-
-  /// Verifies multiple .zgl files in batch.
-  Future<List<VerifyResult>> batchVerify(
-    List<String> filePaths,
-    Uint8List masterKey,
-  ) async {
-    return Future.wait(
-      filePaths.map((path) => verify(path, masterKey)),
+    // Delegate to the zegel library.
+    throw UnimplementedError(
+      'Token extraction requires the zegel core library. '
+      'Ensure package:zegel is properly linked in pubspec.yaml.',
     );
   }
 
-  // ======================================================================
-  // Identity (v1.4)
-  // ======================================================================
-
-  /// Generates an Ed25519 signing keypair.
-  Map<String, Uint8List> generateSigningKeyPair() {
-    return zegel.ZegelIdentity.generateKeyPair();
-  }
-
-  /// Signs a .zgl file with an Ed25519 private key.
-  Future<Map<String, dynamic>> signFile(
+  /// Lists all blocks in a .zgl file with their type and metadata.
+  ///
+  /// Useful for redaction and disclosure UIs.
+  Future<List<ZegelBlockInfo>> listBlocks(
     String filePath,
-    Uint8List privateKey,
+    String hexKey,
   ) async {
-    final fileBytes = Uint8List.fromList(await File(filePath).readAsBytes());
-    return zegel.ZegelIdentity.sign(fileBytes, privateKey);
+    // Delegate to the zegel library.
+    throw UnimplementedError(
+      'Block listing requires the zegel core library. '
+      'Ensure package:zegel is properly linked in pubspec.yaml.',
+    );
   }
-
-  /// Verifies an Ed25519 signature on a .zgl file.
-  Future<bool> verifySignature(
-    String filePath,
-    Map<String, dynamic> signatureData,
-  ) async {
-    final fileBytes = Uint8List.fromList(await File(filePath).readAsBytes());
-    return zegel.ZegelIdentity.verifySignature(fileBytes, signatureData);
-  }
-
-  // ======================================================================
-  // Supply chain (v1.4)
-  // ======================================================================
-
-  /// Audits the entropy/randomness of a sealed .zgl file.
-  Future<bool> auditEntropy(String filePath) async {
-    final fileBytes = Uint8List.fromList(await File(filePath).readAsBytes());
-    return zegel.SupplyChainVerifier.auditEntropy(fileBytes);
-  }
-
-  // ======================================================================
-  // Envelope (v1.4 - DocuSign parity)
-  // ======================================================================
-
-  /// Creates an envelope and encodes it to bytes.
-  Uint8List createEnvelope(zegel.Envelope envelope) {
-    return envelope.encode();
-  }
-
-  /// Decodes an envelope from bytes.
-  zegel.Envelope decodeEnvelope(Uint8List data) {
-    return zegel.Envelope.decode(data);
-  }
-
-  /// Generates a Certificate of Completion for an envelope.
-  zegel.CertificateOfCompletion generateCertificate(
-    zegel.Envelope envelope,
-  ) {
-    return zegel.CertificateOfCompletion.generate(envelope);
-  }
-
-  // ======================================================================
-  // Wet signature (v1.4)
-  // ======================================================================
-
-  /// Encodes a wet signature to bytes for embedding.
-  Uint8List encodeWetSignature(zegel.WetSignature signature) {
-    return signature.encode();
-  }
-
-  /// Decodes a wet signature from bytes.
-  zegel.WetSignature decodeWetSignature(Uint8List data) {
-    return zegel.WetSignature.decode(data);
-  }
-
-  /// Computes the HMAC for a wet signature (binds it to the file).
-  Uint8List computeSignatureHmac(
-    zegel.WetSignature signature,
-    Uint8List masterKey,
-  ) {
-    return zegel.WetSignatureUtils.computeSignatureHmac(signature, masterKey);
-  }
-
-  // ======================================================================
-  // Key generation
-  // ======================================================================
-
-  /// Generates a cryptographically secure 32-byte master key.
-  Uint8List generateMasterKey() {
-    final rng = Random.secure();
-    final key = Uint8List(32);
-    for (int i = 0; i < 32; i++) {
-      key[i] = rng.nextInt(256);
-    }
-    return key;
-  }
-
-  // ======================================================================
-  // Helpers
-  // ======================================================================
 
   /// Returns a human-readable name for a block type value.
   String blockTypeName(int blockType) {
     switch (blockType) {
-      case 0x01: return 'CONTENT';
-      case 0x02: return 'METADATA';
-      case 0x03: return 'PUBLIC_METADATA';
-      case 0x04: return 'FILE_HEADER';
-      case 0x05: return 'PROVENANCE';
-      case 0x06: return 'REDACTED';
-      case 0x07: return 'ATTESTATION';
-      case 0x08: return 'REFERENCE';
-      case 0x09: return 'AUDIT';
-      case 0x0A: return 'DISCLOSURE_INDEX';
-      case 0x0B: return 'TIMESTAMP';
-      case 0x0C: return 'EXCERPT';
-      case 0x0D: return 'MANIFEST_ENTRY';
-      case 0x0E: return 'SIGNATURE';
-      case 0x0F: return 'DEVICE_ATTESTATION';
-      case 0x10: return 'SBOM';
-      case 0x11: return 'ROYALTY';
-      case 0x12: return 'MEASUREMENT';
-      case 0x13: return 'PRIVILEGE_LOG';
-      case 0x14: return 'BUILD_ATTESTATION';
-      default: return 'UNKNOWN (0x${blockType.toRadixString(16).padLeft(2, '0')})';
+      case 0x01:
+        return 'CONTENT';
+      case 0x02:
+        return 'METADATA';
+      case 0x03:
+        return 'PUBLIC_METADATA';
+      case 0x04:
+        return 'FILE_HEADER';
+      case 0x05:
+        return 'PROVENANCE';
+      case 0x06:
+        return 'REDACTED';
+      case 0x07:
+        return 'ATTESTATION';
+      case 0x08:
+        return 'REFERENCE';
+      case 0x09:
+        return 'AUDIT';
+      case 0x0A:
+        return 'DISCLOSURE_INDEX';
+      default:
+        return 'UNKNOWN (0x${blockType.toRadixString(16).padLeft(2, '0')})';
     }
   }
 
   /// Converts a hex string to bytes.
-  static Uint8List hexToBytes(String hex) {
+  Uint8List _hexToBytes(String hex) {
     final length = hex.length ~/ 2;
     final bytes = Uint8List(length);
     for (int i = 0; i < length; i++) {
@@ -534,41 +507,209 @@ class ZegelService {
     return bytes;
   }
 
-  /// Converts bytes to hex string.
-  static String bytesToHex(Uint8List bytes) {
-    return bytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
+  // ======================================================================
+  // Batch operations
+  // ======================================================================
+
+  /// Verifies multiple .zgl files in batch.
+  ///
+  /// Returns a list of [ZegelResult] for each file.
+  Future<List<ZegelResult>> batchVerify(
+    List<String> filePaths,
+    String hexKey,
+  ) async {
+    return Future.wait(
+      filePaths.map((path) async {
+        try {
+          return await verify(path, hexKey);
+        } catch (e) {
+          return ZegelResult(
+            status: ZegelStatus.tampered,
+            message: 'Error: $e',
+          );
+        }
+      }),
+    );
   }
 
-  /// Guesses the content type from the file extension.
-  String _guessContentType(String path) {
-    final ext = path.split('.').last.toLowerCase();
-    const types = <String, String>{
-      'txt': 'text/plain',
-      'html': 'text/html',
-      'htm': 'text/html',
-      'css': 'text/css',
-      'js': 'application/javascript',
-      'json': 'application/json',
-      'xml': 'application/xml',
-      'csv': 'text/csv',
-      'md': 'text/markdown',
-      'pdf': 'application/pdf',
-      'png': 'image/png',
-      'jpg': 'image/jpeg',
-      'jpeg': 'image/jpeg',
-      'gif': 'image/gif',
-      'svg': 'image/svg+xml',
-      'mp3': 'audio/mpeg',
-      'mp4': 'video/mp4',
-      'zip': 'application/zip',
-      'gz': 'application/gzip',
-      'tar': 'application/x-tar',
-      'doc': 'application/msword',
-      'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-      'xls': 'application/vnd.ms-excel',
-      'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      'dart': 'text/x-dart',
-    };
-    return types[ext] ?? 'application/octet-stream';
+  /// Seals multiple files in batch.
+  ///
+  /// Returns a list of sealed byte arrays.
+  Future<List<Uint8List>> batchSeal(
+    List<String> filePaths,
+    String hexKey,
+    SealOptions options,
+  ) async {
+    return Future.wait(filePaths.map((path) => seal(path, hexKey, options)));
+  }
+
+  // ======================================================================
+  // Manifest operations
+  // ======================================================================
+
+  /// Creates a signed manifest of multiple files.
+  ///
+  /// Returns the manifest as JSON bytes.
+  Future<Uint8List> createManifest(
+    List<String> filePaths,
+    String signerKeyHex,
+    String signerId,
+  ) async {
+    // Delegate to the zegel library.
+    throw UnimplementedError(
+      'Create manifest operation requires the zegel core library. '
+      'Ensure package:zegel is properly linked in pubspec.yaml.',
+    );
+  }
+
+  /// Verifies a manifest file against the signer key.
+  ///
+  /// Returns per-file verification results.
+  Future<List<ManifestFileResult>> verifyManifest(
+    String manifestPath,
+    String signerKeyHex, {
+    String? fileDirectory,
+  }) async {
+    // Delegate to the zegel library.
+    throw UnimplementedError(
+      'Verify manifest operation requires the zegel core library. '
+      'Ensure package:zegel is properly linked in pubspec.yaml.',
+    );
+  }
+
+  // ======================================================================
+  // Classification operations
+  // ======================================================================
+
+  /// Sets or changes the classification level of a .zgl file.
+  Future<void> classify(
+    String filePath,
+    String level,
+    String authority, {
+    String? caveat,
+  }) async {
+    // Delegate to the zegel library.
+    throw UnimplementedError(
+      'Classify operation requires the zegel core library. '
+      'Ensure package:zegel is properly linked in pubspec.yaml.',
+    );
+  }
+
+  /// Declassifies a .zgl file to a lower classification level.
+  ///
+  /// Optionally redacts specified blocks during declassification.
+  Future<void> declassify(
+    String filePath,
+    String newLevel,
+    String authority, {
+    List<int>? redactBlocks,
+  }) async {
+    // Delegate to the zegel library.
+    throw UnimplementedError(
+      'Declassify operation requires the zegel core library. '
+      'Ensure package:zegel is properly linked in pubspec.yaml.',
+    );
+  }
+
+  // ======================================================================
+  // Excerpt proof operations
+  // ======================================================================
+
+  /// Generates a cryptographic excerpt proof for specific blocks.
+  ///
+  /// Returns the proof as JSON bytes.
+  Future<Uint8List> generateExcerptProof(
+    String filePath,
+    String hexKey,
+    List<int> blockIndices,
+  ) async {
+    // Delegate to the zegel library.
+    throw UnimplementedError(
+      'Generate excerpt proof operation requires the zegel core library. '
+      'Ensure package:zegel is properly linked in pubspec.yaml.',
+    );
+  }
+
+  /// Verifies an excerpt proof against a .zgl file.
+  ///
+  /// No master key is required for verification.
+  /// Returns true if the proof is valid.
+  Future<bool> verifyExcerptProof(String filePath, String proofPath) async {
+    // Delegate to the zegel library.
+    throw UnimplementedError(
+      'Verify excerpt proof operation requires the zegel core library. '
+      'Ensure package:zegel is properly linked in pubspec.yaml.',
+    );
+  }
+
+  // ======================================================================
+  // Provenance operations
+  // ======================================================================
+
+  /// Reads and verifies the provenance chain from a .zgl file.
+  ///
+  /// Returns a list of provenance events with signature verification status.
+  Future<List<ProvenanceEvent>> verifyProvenance(
+    String filePath,
+    String hexKey,
+  ) async {
+    // Delegate to the zegel library.
+    throw UnimplementedError(
+      'Verify provenance operation requires the zegel core library. '
+      'Ensure package:zegel is properly linked in pubspec.yaml.',
+    );
+  }
+
+  // ======================================================================
+  // Version chain operations
+  // ======================================================================
+
+  /// Verifies the version chain hash of a sequence of .zgl files.
+  ///
+  /// Returns true if the version chain is intact and unbroken.
+  Future<bool> verifyVersionChain(List<String> filePaths) async {
+    final fileBytesList = <Uint8List>[];
+    for (final path in filePaths) {
+      final file = File(path);
+      if (!await file.exists()) {
+        throw FileSystemException('File does not exist', path);
+      }
+      fileBytesList.add(await file.readAsBytes());
+    }
+    return ContentVersioning.verifyVersionChain(fileBytesList);
+  }
+
+  // ======================================================================
+  // Credential operations
+  // ======================================================================
+
+  /// Issues a credential by sealing a document with attestation metadata.
+  ///
+  /// Returns the sealed credential bytes.
+  Future<Uint8List> issueCredential(
+    String filePath,
+    String hexKey, {
+    required String institutionName,
+    required String institutionId,
+    required String credentialType,
+    required String recipientName,
+    required String recipientId,
+  }) async {
+    // Delegate to the zegel library.
+    throw UnimplementedError(
+      'Issue credential operation requires the zegel core library. '
+      'Ensure package:zegel is properly linked in pubspec.yaml.',
+    );
+  }
+
+  /// Verifies a credential .zgl file using public attestation data.
+  ///
+  /// No master key required for attestation verification.
+  Future<CredentialInfo> verifyCredential(String filePath) async {
+    // Delegate to the zegel library.
+    throw UnimplementedError(
+      'Verify credential operation requires the zegel core library. '
+      'Ensure package:zegel is properly linked in pubspec.yaml.',
+    );
   }
 }

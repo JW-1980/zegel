@@ -9,7 +9,7 @@ import 'common.dart';
 /// Splits a master key into M-of-N shares using Shamir's Secret Sharing.
 ///
 /// Usage:
-///   zegel split-key -k <key-hex> --threshold 3 --shares 5 -o <share-dir/>
+///   zegel split-key -k &lt;key-hex&gt; --threshold 3 --shares 5 -o &lt;share-dir/&gt;
 ///
 /// Each share is written as a separate file (share_1.key, share_2.key, etc.).
 /// Any M shares can reconstruct the original key; fewer than M reveal nothing.
@@ -172,7 +172,7 @@ class SplitKeyCommand extends Command<int> {
 /// Reconstructs a master key from M-of-N shares.
 ///
 /// Usage:
-///   zegel reconstruct <share1> <share2> <share3> [-o <key-file>]
+///   zegel reconstruct &lt;share1&gt; &lt;share2&gt; &lt;share3&gt; [-o &lt;key-file&gt;]
 ///
 /// Reads share files and reconstructs the original key via
 /// Lagrange interpolation over GF(256).
