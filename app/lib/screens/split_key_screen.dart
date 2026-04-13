@@ -398,6 +398,7 @@ class _SplitKeyScreenState extends State<SplitKeyScreen>
                               icon: const Icon(Icons.share, size: 18),
                               tooltip: 'Share',
                               onPressed: () {
+                                // ignore: deprecated_member_use
                                 Share.share(
                                   share,
                                   subject:
