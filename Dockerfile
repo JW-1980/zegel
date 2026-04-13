@@ -1,41 +1,36 @@
-# Zegel CLI Docker image (improvement #102).
-#
-# Multi-stage build: the first stage pulls the Dart SDK, fetches
-# dependencies, and AOT-compiles `cli/bin/zegel.dart` to a single
-# self-contained binary. The second stage is a minimal runtime
-# (debian:stable-slim) so the resulting image stays under ~100 MB.
+# Zegel CLI & Library Docker image
+# Multi-stage build for minimal image size
 
 FROM dart:stable AS builder
-WORKDIR /zegel
 
-# Copy package manifests first so Docker can cache dependencies.
-COPY lib/pubspec.yaml lib/pubspec.yaml
-COPY cli/pubspec.yaml cli/pubspec.yaml
-RUN cd lib && dart pub get && cd ../cli && dart pub get
+WORKDIR /app
 
-# Copy the rest and compile.
-COPY lib lib
-COPY cli cli
-RUN cd cli && dart compile exe bin/zegel.dart -o /zegel/bin/zegel
+# Copy library package
+COPY lib/ lib/
 
-FROM debian:stable-slim AS runtime
-LABEL org.opencontainers.image.title="Zegel"
-LABEL org.opencontainers.image.description="Tamper-proof file container CLI"
-LABEL org.opencontainers.image.source="https://github.com/jw-1980/zegel"
-LABEL org.opencontainers.image.licenses="Apache-2.0"
+# Copy CLI package
+COPY cli/ cli/
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends ca-certificates curl \
-    && rm -rf /var/lib/apt/lists/*
+# Install dependencies
+RUN cd lib && dart pub get
+RUN cd cli && dart pub get
 
-# Add a non-root user so the CLI never runs as root by default.
-RUN useradd --create-home --shell /usr/sbin/nologin zegel
+# Compile CLI to native executable
+RUN cd cli && dart compile exe bin/zegel.dart -o /app/zegel
 
-COPY --from=builder /zegel/bin/zegel /usr/local/bin/zegel
-RUN chmod 0755 /usr/local/bin/zegel
+# Runtime stage - minimal image
+FROM debian:bookworm-slim
 
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
+
+COPY --from=builder /app/zegel /usr/local/bin/zegel
+
+# Non-root user for security
+RUN useradd -m -s /bin/bash zegel
 USER zegel
 WORKDIR /home/zegel
 
-ENTRYPOINT ["/usr/local/bin/zegel"]
+ENTRYPOINT ["zegel"]
 CMD ["--help"]

@@ -1,59 +1,18 @@
-version: "3.9"
-
-# Zegel self-hosting stack (improvement #101).
+# Zegel Docker Compose - One-click deployment
 #
-# Spins up the tamper-proof file verification API, an optional
-# timestamp authority proxy, and a local object store for sealed
-# files. Copy `.env.example` to `.env`, edit the secrets, then run
-# `docker compose up -d`.
+# Usage:
+#   docker compose run --rm zegel seal document.pdf --key-file /data/master.key -o /data/document.zgl
+#   docker compose run --rm zegel verify /data/document.zgl --key-file /data/master.key
+#   docker compose run --rm zegel keygen -o /data/master.key
+#
+# Mount your working directory to /data inside the container.
 
 services:
   zegel:
-    image: ghcr.io/zegel/zegel:latest
-    container_name: zegel
-    restart: unless-stopped
-    ports:
-      - "${ZEGEL_PORT:-8080}:8080"
-    environment:
-      ZEGEL_LOG_LEVEL: ${ZEGEL_LOG_LEVEL:-info}
-      ZEGEL_DATA_DIR: /var/lib/zegel
-      ZEGEL_TSA_URL: ${ZEGEL_TSA_URL:-}
-      ZEGEL_WEBHOOK_URL: ${ZEGEL_WEBHOOK_URL:-}
-      ZEGEL_WEBHOOK_SECRET: ${ZEGEL_WEBHOOK_SECRET:-}
+    build: .
+    image: zegel/zegel:latest
     volumes:
-      - zegel-data:/var/lib/zegel
-      - ./keys:/var/lib/zegel/keys:ro
-    healthcheck:
-      test: ["CMD", "curl", "-fsS", "http://localhost:8080/health"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-
-  tsa-proxy:
-    image: ghcr.io/zegel/tsa-proxy:latest
-    container_name: zegel-tsa
-    restart: unless-stopped
-    ports:
-      - "${TSA_PORT:-3318}:3318"
-    profiles:
-      - tsa
-
-  minio:
-    image: minio/minio:latest
-    container_name: zegel-minio
-    restart: unless-stopped
-    command: server /data --console-address ":9001"
-    ports:
-      - "${MINIO_API_PORT:-9000}:9000"
-      - "${MINIO_CONSOLE_PORT:-9001}:9001"
-    environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-zegel}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-changeme-in-prod}
-    volumes:
-      - minio-data:/data
-    profiles:
-      - object-store
-
-volumes:
-  zegel-data:
-  minio-data:
+      - ./data:/data
+    working_dir: /data
+    # Override entrypoint for interactive shell access:
+    #   docker compose run --rm --entrypoint /bin/bash zegel

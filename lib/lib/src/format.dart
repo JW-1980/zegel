@@ -22,7 +22,16 @@ class ZegelFormat {
   static const int versionMajor = 1;
 
   /// Format minor version.
-  static const int versionMinor = 2;
+  ///
+  /// v1.4 changes (breaking, on-wire format change):
+  /// - SEC-10: Merkle tree uses RFC 6962 domain separation
+  /// - SEC-12: AES-GCM uses AAD = block_type || block_index || salt
+  /// - Hedged nonces: IV = HKDF-derived XOR CSPRNG
+  /// - SEC-11: Password-derived files auto-enable key commitment
+  /// - SEC-13: Shamir SSS validates shares before reconstruction
+  /// - SEC-14: Argon2id minimum parameters enforced
+  /// - SEC-15: Disclosure token expiration checked in reader
+  static const int versionMinor = 4;
 
   // ---------------------------------------------------------------------------
   // Block size

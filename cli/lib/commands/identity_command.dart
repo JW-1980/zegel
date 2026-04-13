@@ -17,7 +17,8 @@ class SignCommand extends Command<int> {
   final String name = 'sign';
 
   @override
-  final String description = 'Sign a .zgl file with an Ed25519 signing key.\n'
+  final String description =
+      'Sign a .zgl file with an Ed25519 signing key.\n'
       '\n'
       'Creates a digital signature over the file\'s Merkle root, master seal,\n'
       'and timestamp using Ed25519. The signature is embedded as a SIGNATURE\n'
@@ -61,15 +62,11 @@ class SignCommand extends Command<int> {
     final Uint8List signingKey = readKeyFile(signingKeyPath);
 
     // Create identity and sign.
-    final ZegelSignature signatureData = ZegelIdentity.sign(fileBytes, signingKey);
+    final signatureData = ZegelIdentity.sign(fileBytes, signingKey);
 
     final signatureJson = <String, dynamic>{
       'type': 'ed25519_signature',
-      'signature': _bytesToHex(signatureData.signature),
-      'timestamp': signatureData.timestamp,
-      'merkle_root_hex': signatureData.merkleRootHex,
-      // we need public_key_hex here maybe? The old code expected it:
-      // stdout.writeln('  Public key: ${signatureJson['public_key_hex']}');
+      ...signatureData,
     };
     if (signerId != null) {
       signatureJson['signer_id'] = signerId;
@@ -102,7 +99,8 @@ class VerifySignatureCommand extends Command<int> {
   final String name = 'verify-signature';
 
   @override
-  final String description = 'Verify an Ed25519 signature on a .zgl file.';
+  final String description =
+      'Verify an Ed25519 signature on a .zgl file.';
 
   VerifySignatureCommand() {
     argParser
@@ -135,19 +133,7 @@ class VerifySignatureCommand extends Command<int> {
     final Map<String, dynamic> signatureData =
         jsonDecode(sigJson) as Map<String, dynamic>;
 
-
-    final Uint8List pubKey = _hexToBytes(signatureData['public_key_hex'] as String);
-    final String sigHex = signatureData['signature'] as String;
-    final int timestamp = signatureData['timestamp'] is int ? signatureData['timestamp'] as int : DateTime.parse(signatureData['timestamp'] as String).millisecondsSinceEpoch ~/ 1000;
-
-    final ZegelSignature sig = ZegelSignature(
-      signature: _hexToBytes(sigHex),
-      timestamp: timestamp,
-      merkleRootHex: signatureData['merkle_root_hex'] as String,
-    );
-
-    final bool valid = ZegelIdentity.verify(fileBytes, pubKey, sig);
-
+    final bool valid = ZegelIdentity.verifySignature(fileBytes, signatureData);
 
     if (valid) {
       stdout.writeln('VALID - Signature verification passed.');
@@ -159,8 +145,9 @@ class VerifySignatureCommand extends Command<int> {
       // Check against expected public key if provided.
       if (pubKeyPath != null) {
         final Uint8List expectedKey = readKeyFile(pubKeyPath);
-        final String expectedHex =
-            expectedKey.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
+        final String expectedHex = expectedKey
+            .map((b) => b.toRadixString(16).padLeft(2, '0'))
+            .join();
         final String actualHex = signatureData['public_key_hex'] as String;
 
         if (expectedHex == actualHex) {
@@ -218,8 +205,8 @@ class IdentityKeygenCommand extends Command<int> {
     final prefix = argResults!['output'] as String;
 
     final keypair = ZegelIdentity.generateKeyPair();
-    final Uint8List privateKey = keypair.privateKey;
-    final Uint8List publicKey = keypair.publicKey;
+    final Uint8List privateKey = keypair['private_key'] as Uint8List;
+    final Uint8List publicKey = keypair['public_key'] as Uint8List;
 
     final privatePath = '$prefix.private.key';
     final publicPath = '$prefix.public.key';
@@ -236,21 +223,4 @@ class IdentityKeygenCommand extends Command<int> {
 
     return 0;
   }
-}
-
-
-Uint8List _hexToBytes(String hexStr) {
-  if (hexStr.length % 2 != 0) {
-    throw ArgumentError('Hex string must have an even length');
-  }
-  final result = Uint8List(hexStr.length ~/ 2);
-  for (var i = 0; i < result.length; i++) {
-    final byteHex = hexStr.substring(i * 2, i * 2 + 2);
-    result[i] = int.parse(byteHex, radix: 16);
-  }
-  return result;
-}
-
-String _bytesToHex(Uint8List bytes) {
-  return bytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
 }
