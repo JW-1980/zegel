@@ -15,6 +15,12 @@ class FeedbackSubmitter {
   final String storagePath;
 
   /// Records a new feedback [entry]. Returns the entry that was stored.
+  ///
+  /// The write is fully synchronous: we use `writeAsStringSync` with
+  /// `FileMode.append` rather than `openWrite`, because the latter returns
+  /// an `IOSink.close()` that is a `Future<void>` and therefore cannot be
+  /// awaited from a synchronous call site, leading to racy reads in tests
+  /// and in downstream code that calls `list()` immediately after `submit`.
   FeedbackEntry submit({
     required FeedbackCategory category,
     required String message,
@@ -34,12 +40,11 @@ class FeedbackSubmitter {
     );
     final file = File(storagePath);
     file.parent.createSync(recursive: true);
-    final sink = file.openWrite(mode: FileMode.append);
-    try {
-      sink.writeln(jsonEncode(entry.toJson()));
-    } finally {
-      sink.close();
-    }
+    file.writeAsStringSync(
+      '${jsonEncode(entry.toJson())}\n',
+      mode: FileMode.append,
+      flush: true,
+    );
     return entry;
   }
 

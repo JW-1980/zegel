@@ -135,7 +135,6 @@ class HistoryEntry extends RetainableEvent {
   final String? message;
   final Duration? duration;
   final Map<String, dynamic> details;
-  @override
   final DateTime at;
 
   @override

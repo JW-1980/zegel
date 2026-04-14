@@ -117,8 +117,19 @@ class _PinScreenState extends State<_PinScreen> {
   String _enteredPin = '';
   bool _error = false;
   int _attempts = 0;
+  // Enforced cooldown while an attacker is brute-forcing the PIN. Doubles
+  // after every failed attempt, capped at 60 seconds. The keypad is
+  // disabled while [_cooldownUntil] is in the future.
+  DateTime? _cooldownUntil;
+
+  bool get _isLockedOut =>
+      _cooldownUntil != null && DateTime.now().isBefore(_cooldownUntil!);
+
+  Duration get _remainingLockout =>
+      _cooldownUntil == null ? Duration.zero : _cooldownUntil!.difference(DateTime.now());
 
   void _addDigit(String digit) {
+    if (_isLockedOut) return;
     if (_enteredPin.length >= 6) return;
     setState(() {
       _enteredPin += digit;
@@ -132,6 +143,7 @@ class _PinScreenState extends State<_PinScreen> {
   }
 
   void _removeDigit() {
+    if (_isLockedOut) return;
     if (_enteredPin.isEmpty) return;
     setState(() {
       _enteredPin = _enteredPin.substring(0, _enteredPin.length - 1);
@@ -149,14 +161,28 @@ class _PinScreenState extends State<_PinScreen> {
     match = match && diff == 0;
 
     if (match) {
+      _attempts = 0;
+      _cooldownUntil = null;
       widget.onUnlock();
     } else {
       _attempts++;
+      // Exponential backoff: 0, 1, 2, 4, 8, ... capped at 60 seconds.
+      final int backoffSeconds = _attempts < 3
+          ? 0
+          : (1 << (_attempts - 3)).clamp(1, 60);
+      _cooldownUntil = backoffSeconds == 0
+          ? null
+          : DateTime.now().add(Duration(seconds: backoffSeconds));
       setState(() {
         _enteredPin = '';
         _error = true;
       });
       HapticFeedback.heavyImpact();
+      if (_cooldownUntil != null) {
+        Future.delayed(Duration(seconds: backoffSeconds), () {
+          if (mounted) setState(() {});
+        });
+      }
     }
   }
 
@@ -183,11 +209,15 @@ class _PinScreenState extends State<_PinScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  _error
-                      ? 'Incorrect PIN. Try again.'
-                      : 'Enter your PIN to unlock',
+                  _isLockedOut
+                      ? 'Too many attempts. Wait ${_remainingLockout.inSeconds + 1}s.'
+                      : (_error
+                          ? 'Incorrect PIN. Try again.'
+                          : 'Enter your PIN to unlock'),
                   style: TextStyle(
-                    color: _error ? Colors.red.shade300 : Colors.white60,
+                    color: _error || _isLockedOut
+                        ? Colors.red.shade300
+                        : Colors.white60,
                     fontSize: 14,
                   ),
                 ),

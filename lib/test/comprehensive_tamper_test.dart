@@ -893,6 +893,7 @@ void main() {
       ).seal(content);
 
       // Generate a token with file A's Merkle root.
+      // ignore: unused_local_variable
       final aInspection = reader.inspect(fileA);
       final token = <String, dynamic>{
         'version': 1,

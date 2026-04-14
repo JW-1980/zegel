@@ -37,14 +37,52 @@ class TokenArchive {
 
   /// Adds a token JSON blob to the live directory. If [expiresAt] is null
   /// the token body is inspected for an `expires_at` field.
+  ///
+  /// [name] must be a filename-safe identifier: only ASCII alphanumerics,
+  /// `_`, `-`, and `.` are allowed. Path separators, `..` segments, null
+  /// bytes, and leading dots are rejected to prevent directory traversal
+  /// and shadow-file attacks on the live and archive directories.
   void addToken(String name, String tokenJson, {DateTime? expiresAt}) {
-    final file = File('${_liveDir.path}${Platform.pathSeparator}$name.json');
+    final safe = _requireSafeName(name);
+    final file = File('${_liveDir.path}${Platform.pathSeparator}$safe.json');
     file.writeAsStringSync(tokenJson);
     if (expiresAt != null) {
       File('${file.path}.meta').writeAsStringSync(
         jsonEncode({'expires_at': expiresAt.toUtc().toIso8601String()}),
       );
     }
+  }
+
+  /// Validates and returns [name] if it is a safe filename component.
+  /// Throws [ArgumentError] otherwise.
+  static String _requireSafeName(String name) {
+    if (name.isEmpty) {
+      throw ArgumentError.value(name, 'name', 'token name must not be empty');
+    }
+    if (name.length > 128) {
+      throw ArgumentError.value(
+        name,
+        'name',
+        'token name must be 128 characters or fewer',
+      );
+    }
+    // Reject anything that isn't a simple filename component. We also
+    // explicitly reject a leading dot so callers cannot hide tokens on
+    // POSIX or overwrite sidecar files like `.meta`.
+    if (name.startsWith('.') ||
+        name.contains('..') ||
+        name.contains('/') ||
+        name.contains('\\') ||
+        name.contains('\x00') ||
+        !RegExp(r'^[A-Za-z0-9._\-]+$').hasMatch(name)) {
+      throw ArgumentError.value(
+        name,
+        'name',
+        'token name must contain only [A-Za-z0-9._-] and may not traverse '
+            'directories',
+      );
+    }
+    return name;
   }
 
   /// Sweeps expired tokens into the archive directory.
