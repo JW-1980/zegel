@@ -1,4 +1,5 @@
 import 'dart:io' hide BytesBuilder;
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:args/command_runner.dart';
@@ -194,6 +195,13 @@ class SealCommand extends Command<int> {
     // Parse master key.
     final bool usePassword = argResults!['password'] as bool;
     Uint8List masterKey;
+    // Salt used for Argon2id password derivation, if applicable. When set,
+    // the writer MUST reuse this exact salt so the reader can reproduce the
+    // same derivation.
+    Uint8List? passwordSalt;
+    // Argon2id parameters; null unless --password was used.
+    int? passwordTimeCost;
+    int? passwordMemoryCost;
 
     if (usePassword) {
       // Prompt for password securely.
@@ -206,16 +214,37 @@ class SealCommand extends Command<int> {
         exitError('Passwords do not match.');
       }
 
-      if (password.length < 8) {
+      if (password.length < 12) {
         stderr.writeln(
           Ansi.warning(
-            'Warning: Password is very short. Consider using at least 12 characters.',
+            'Warning: Password is shorter than 12 characters. '
+            'Consider using a longer passphrase.',
           ),
         );
       }
 
-      // The library handles Argon2id derivation internally.
-      masterKey = Uint8List.fromList(password.codeUnits);
+      // Use OWASP 2024 recommended parameters for Argon2id. These match the
+      // CLI help text and exceed the library minimums (t=2, m=19456 KiB).
+      passwordTimeCost = 3;
+      passwordMemoryCost = 65536; // 64 MiB
+
+      // Generate the file salt ourselves so we can feed it to Argon2id AND
+      // to the writer. Writer normally picks its own random salt when
+      // options.salt is null; we override it here so reader can reproduce.
+      final Random rng = Random.secure();
+      passwordSalt = Uint8List(32);
+      for (int i = 0; i < 32; i++) {
+        passwordSalt[i] = rng.nextInt(256);
+      }
+
+      // Spec (FORMAT_SPEC.md §5.2):
+      //   master_key = Argon2id(password, salt, ops, mem_kib, lanes=1, len=32)
+      masterKey = KeyDerivation.deriveKeyFromPassword(
+        password,
+        passwordSalt,
+        iterations: passwordTimeCost,
+        memoryKib: passwordMemoryCost,
+      );
     } else {
       masterKey = parseKeyFromArgs(argResults!);
 
@@ -352,13 +381,8 @@ class SealCommand extends Command<int> {
       );
     }
 
-    // Parse Argon2 parameters (password-derived keys).
-    int? argon2TimeCost;
-    int? argon2MemoryCost;
-    if (usePassword) {
-      argon2TimeCost = 3;
-      argon2MemoryCost = 65536;
-    }
+    // Argon2 parameters for password-derived keys are set during key parsing
+    // above. We forward them to the writer so the header records them.
 
     // Build immutable options.
     final options = ZegelOptions(
@@ -366,15 +390,20 @@ class SealCommand extends Command<int> {
       filename: filename,
       metadata: metadata,
       compress: argResults!['compress'] as bool,
-      argon2TimeCost: argon2TimeCost,
-      argon2MemoryCost: argon2MemoryCost,
+      argon2TimeCost: passwordTimeCost,
+      argon2MemoryCost: passwordMemoryCost,
       expiration: expiration,
       recipientId: recipientId,
       publicMetadata: publicMetadata,
       versionChainHash: versionChainHash,
-      enableKeyCommitment: argResults!['key-commitment'] as bool,
+      // Password-derived files MUST enable key commitment per spec §5.2 v1.4.
+      enableKeyCommitment:
+          usePassword ? true : (argResults!['key-commitment'] as bool),
       enableSelectiveDisclosure: argResults!['enable-disclosure'] as bool,
       blockSize: int.parse(argResults!['block-size'] as String),
+      // Reuse the Argon2 salt as the file salt so the reader can reproduce
+      // the derivation. For non-password keys, let the writer choose.
+      salt: passwordSalt,
     );
 
     // Create the sealed container.

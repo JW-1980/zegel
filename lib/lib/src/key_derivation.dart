@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
+import 'package:pointycastle/export.dart' show Argon2BytesGenerator, Argon2Parameters;
 
 /// Cryptographic key derivation functions for the Zegel format.
 ///
@@ -9,8 +10,83 @@ import 'package:crypto/crypto.dart';
 /// never used directly for encryption; instead, per-block keys are derived by
 /// binding the key to the Merkle root and block index. This ensures that any
 /// change to any block invalidates ALL derived keys.
+///
+/// This class also exposes [deriveKeyFromPassword], which implements the
+/// Argon2id password-based key derivation step described in FORMAT_SPEC
+/// Section 5.2 (required when `FLAG_PASSWORD_DERIVED` is set).
 class KeyDerivation {
   KeyDerivation._();
+
+  /// Derives the 32-byte master key from a UTF-8 [password] using Argon2id.
+  ///
+  /// Matches `FORMAT_SPEC.md` Section 5.2:
+  /// ```
+  /// master_key = Argon2id(password, salt, iterations, memory_kib, lanes=1, len=32)
+  /// ```
+  ///
+  /// [salt] is the file's 32-byte master salt from the header.
+  /// [iterations] is the Argon2id time cost and must be >= 2.
+  /// [memoryKib] is the Argon2id memory cost in KiB and must be >= 19456 (19 MiB).
+  /// [lanes] defaults to 1 (spec-compliant default).
+  ///
+  /// The returned buffer is a fresh 32-byte `Uint8List`. Callers should
+  /// [Uint8List.fillRange] or use `SecureMemory.wipe` once the key is no
+  /// longer needed.
+  static Uint8List deriveKeyFromPassword(
+    String password,
+    Uint8List salt, {
+    required int iterations,
+    required int memoryKib,
+    int lanes = 1,
+  }) {
+    if (password.isEmpty) {
+      throw ArgumentError('Password must not be empty');
+    }
+    if (salt.length != 32) {
+      throw ArgumentError('Salt must be exactly 32 bytes');
+    }
+    if (iterations < 2) {
+      throw ArgumentError(
+        'Argon2id iterations must be >= 2 (OWASP 2024 minimum)',
+      );
+    }
+    if (memoryKib < 19456) {
+      throw ArgumentError(
+        'Argon2id memory cost must be >= 19456 KiB / 19 MiB '
+        '(OWASP 2024 minimum)',
+      );
+    }
+    if (lanes < 1) {
+      throw ArgumentError('Argon2id lanes must be >= 1');
+    }
+
+    // Encode the password as UTF-8 so Unicode passwords hash consistently
+    // across platforms. `String.codeUnits` would return UTF-16 which is not
+    // spec-compliant and collides differently across runtimes.
+    final Uint8List passwordBytes = Uint8List.fromList(utf8.encode(password));
+
+    final Argon2Parameters params = Argon2Parameters(
+      Argon2Parameters.ARGON2_id,
+      salt,
+      version: Argon2Parameters.ARGON2_VERSION_13,
+      iterations: iterations,
+      memory: memoryKib,
+      lanes: lanes,
+      desiredKeyLength: 32,
+    );
+
+    final Argon2BytesGenerator generator = Argon2BytesGenerator()..init(params);
+    final Uint8List output = Uint8List(32);
+    generator.deriveKey(passwordBytes, 0, output, 0);
+
+    // Best-effort wipe of the intermediate password-bytes buffer. The
+    // original [password] String is still owned by the caller; callers that
+    // care about memory hygiene should read passwords directly into bytes.
+    for (int i = 0; i < passwordBytes.length; i++) {
+      passwordBytes[i] = 0;
+    }
+    return output;
+  }
 
   /// Derives a per-block AES-256 encryption key.
   ///

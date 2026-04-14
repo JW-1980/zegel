@@ -193,8 +193,7 @@ class ZegelWriter {
     final bool haveMem = options.argon2MemoryCost != null;
     if (haveTime != haveMem) {
       throw ArgumentError(
-        'Argon2id time and memory cost must both be set or both be null '
-        '(got time=${options.argon2TimeCost}, memory=${options.argon2MemoryCost})',
+        'Argon2id time and memory cost must both be set or both be null',
       );
     }
     if (haveTime && haveMem) {
@@ -454,6 +453,14 @@ class ZegelWriter {
       keyCommitment = KeyDerivation.computeKeyCommitment(blockKeys);
     }
 
+    // Block keys have served their purpose (encryption + optional commitment);
+    // wipe them before the list goes out of scope.
+    for (final Uint8List k in blockKeys) {
+      for (int i = 0; i < k.length; i++) {
+        k[i] = 0;
+      }
+    }
+
     // =========================================================================
     // 12. Build the binary file
     // =========================================================================
@@ -587,6 +594,10 @@ class ZegelWriter {
       sealKey,
       preSealBytes,
     );
+    // Best-effort wipe of the seal key.
+    for (int i = 0; i < sealKey.length; i++) {
+      sealKey[i] = 0;
+    }
 
     // =========================================================================
     // 14. Assemble final file

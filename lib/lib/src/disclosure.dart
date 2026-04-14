@@ -147,9 +147,13 @@ class SelectiveDisclosure {
       input.setRange(info.ciphertext.length, input.length, info.tag);
 
       plaintext = cipher.process(input);
-    } on Exception catch (e) {
+    } on Exception {
+      // Do not interpolate the underlying exception into the message --
+      // PointyCastle errors do not expose key material today, but including
+      // `$e` creates a future path for key bytes or internal state to reach
+      // user-visible logs.
       throw ZegelTamperedException(
-        'Tamper detected in disclosed block $blockIndex: $e',
+        'Tamper detected in disclosed block $blockIndex',
       );
     }
 
@@ -180,8 +184,13 @@ class SelectiveDisclosure {
   }
 
   /// Parses the file header to extract block info at the given index.
+  ///
+  /// Applies the same DoS bounds as [ZegelReader] so a malicious file cannot
+  /// trigger unbounded allocation via an oversized block count or public
+  /// metadata length.
   static _BlockInfo? _parseBlockInfo(Uint8List fileBytes, int blockIndex) {
     if (fileBytes.length < 122) return null;
+    if (blockIndex < 0) return null;
 
     final ByteData bd = ByteData.sublistView(fileBytes);
 
@@ -192,6 +201,8 @@ class SelectiveDisclosure {
 
     final int blockCount = bd.getUint32(blockCountOffset, Endian.big);
     if (blockIndex >= blockCount) return null;
+    // DoS prevention: cap block count before using it as a multiplier.
+    if (blockCount > ZegelFormat.maxBlockCount) return null;
 
     // Parse flags to determine extended header size.
     final int flags = bd.getUint16(10, Endian.big);
@@ -211,6 +222,11 @@ class SelectiveDisclosure {
       if (flags & ZegelFormat.flagVersioned != 0) tempOffset += 32;
       if (fileBytes.length < tempOffset + 4) return null;
       final int pubMetaLen = bd.getUint32(tempOffset, Endian.big);
+      // DoS prevention: cap public metadata size.
+      if (pubMetaLen < 0 ||
+          pubMetaLen > ZegelFormat.maxPublicMetadataSize) {
+        return null;
+      }
       extHeaderSize += 4 + pubMetaLen;
     }
 

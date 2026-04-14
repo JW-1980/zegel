@@ -286,6 +286,15 @@ class ZegelReader {
         blockKeys,
       );
 
+      // Best-effort wipe of the derived block keys before we drop the list.
+      // Dart's GC may still retain copies, but zeroing the live references
+      // shrinks the window in which raw block keys sit in the heap.
+      for (final Uint8List k in blockKeys) {
+        for (int i = 0; i < k.length; i++) {
+          k[i] = 0;
+        }
+      }
+
       if (!_constantTimeEquals(computedCommitment, h.keyCommitment!)) {
         throw const ZegelTamperedException('Key commitment mismatch');
       }
@@ -355,9 +364,19 @@ class ZegelReader {
         gcmInput.setRange(ciphertext.length, gcmInput.length, entry.tag);
         plaintext = cipher.process(gcmInput);
       } on Exception {
+        // Best-effort wipe of the derived block key before surfacing the
+        // tamper error.
+        for (int b = 0; b < blockKey.length; b++) {
+          blockKey[b] = 0;
+        }
         throw const ZegelTamperedException(
           'Tamper detected: block decryption failed',
         );
+      }
+
+      // The block key is no longer needed beyond this point; wipe it.
+      for (int b = 0; b < blockKey.length; b++) {
+        blockKey[b] = 0;
       }
 
       // Verify plaintext hash BEFORE decompression.
@@ -885,7 +904,9 @@ class ZegelReader {
   /// [ZegelFormat.maxDecompressedBlockSize] to prevent zip-bomb DoS.
   ///
   /// Throws [ZegelFormatException] if the decompressed data exceeds the
-  /// limit or the input is not valid zlib-compressed data.
+  /// limit or the input is not valid zlib-compressed data. The underlying
+  /// exception is deliberately not interpolated into the message so that
+  /// future changes in the zlib backend cannot leak internal state.
   static Uint8List _safeDecompress(Uint8List compressed) {
     try {
       final List<int> decoded = const ZLibDecoder().decodeBytes(compressed);
@@ -898,8 +919,8 @@ class ZegelReader {
       return Uint8List.fromList(decoded);
     } on ZegelFormatException {
       rethrow;
-    } on Exception catch (e) {
-      throw ZegelFormatException('Failed to decompress block: $e');
+    } on Exception {
+      throw const ZegelFormatException('Failed to decompress block');
     }
   }
 

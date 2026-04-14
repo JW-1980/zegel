@@ -152,9 +152,14 @@ class HierarchicalSplitKey {
         level.threshold,
       );
 
-      // XOR the intermediate key into the master key accumulator.
+      // XOR the intermediate key into the master key accumulator, then
+      // immediately wipe the intermediate key so it does not sit in the
+      // heap after reconstruction.
       for (int j = 0; j < 32; j++) {
         masterKey[j] ^= intermediateKey[j];
+      }
+      for (int j = 0; j < intermediateKey.length; j++) {
+        intermediateKey[j] = 0;
       }
     }
 
@@ -174,11 +179,18 @@ class ShareLevel {
     required this.threshold,
     required this.totalShares,
   }) {
-    if (threshold < 1) {
-      throw ArgumentError('Threshold must be at least 1');
+    // A threshold of 1 would mean any single share reconstructs the level's
+    // intermediate key, which defeats the purpose of M-of-N secret sharing.
+    // Shamir's own split() also requires threshold >= 2, so this prevents
+    // a caller from accidentally creating a trivially-breakable level.
+    if (threshold < 2) {
+      throw ArgumentError('Threshold must be at least 2');
     }
     if (totalShares < threshold) {
       throw ArgumentError('Total shares must be >= threshold');
+    }
+    if (totalShares > 255) {
+      throw ArgumentError('Total shares must be <= 255');
     }
   }
 
