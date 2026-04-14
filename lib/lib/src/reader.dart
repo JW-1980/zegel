@@ -375,9 +375,7 @@ class ZegelReader {
       // Decompress content blocks (if COMPRESSED flag is set).
       if (h.flags & ZegelFormat.flagCompressed != 0 &&
           entry.type == ZegelFormat.blockContent) {
-        plaintext = Uint8List.fromList(
-          const ZLibDecoder().decodeBytes(plaintext),
-        );
+        plaintext = _safeDecompress(plaintext);
       }
 
       // Strip canary padding from content blocks.
@@ -391,19 +389,13 @@ class ZegelReader {
         case ZegelFormat.blockContent:
           contentParts.add(plaintext);
         case ZegelFormat.blockMetadata:
-          metadata = jsonDecode(utf8.decode(plaintext)) as Map<String, dynamic>;
+          metadata = _decodeJsonMap(plaintext, 'metadata block');
         case ZegelFormat.blockProvenance:
-          provenanceEntries.add(
-            jsonDecode(utf8.decode(plaintext)) as Map<String, dynamic>,
-          );
+          provenanceEntries.add(_decodeJsonMap(plaintext, 'provenance block'));
         case ZegelFormat.blockAttestation:
-          attestations.add(
-            jsonDecode(utf8.decode(plaintext)) as Map<String, dynamic>,
-          );
+          attestations.add(_decodeJsonMap(plaintext, 'attestation block'));
         case ZegelFormat.blockAudit:
-          auditTrail.add(
-            jsonDecode(utf8.decode(plaintext)) as Map<String, dynamic>,
-          );
+          auditTrail.add(_decodeJsonMap(plaintext, 'audit block'));
         default:
           // PUBLIC_METADATA, FILE_HEADER, REFERENCE, DISCLOSURE_INDEX:
           // silently consumed.
@@ -490,14 +482,28 @@ class ZegelReader {
 
     final _ParsedHeader h = _parseAll(fileBytes);
 
+    // SEC-17: Re-compute the Merkle root from the directory and ensure it
+    // matches the header. Without this, an attacker could mutate the header
+    // Merkle root field; the per-block GCM tag would still succeed because
+    // the AAD does not include the root, and the caller would receive
+    // decrypted content from what it believes is a trusted file.
+    final List<Uint8List> directoryLeafHashes =
+        h.directory.map((_DirEntry e) => e.hash).toList();
+    final Uint8List computedRoot = MerkleTree.buildRoot(directoryLeafHashes);
+    if (!_constantTimeEquals(computedRoot, h.merkleRoot)) {
+      throw const ZegelTamperedException(
+        'Merkle root does not match directory hashes',
+      );
+    }
+
     final Map<String, dynamic> blockKeysMap =
         token['block_keys'] as Map<String, dynamic>;
 
-    // Verify token Merkle root matches file
+    // Verify token Merkle root matches file.
     if (token.containsKey('merkle_root')) {
       final String tokenRoot = token['merkle_root'] as String;
       final String fileRoot = _bytesToHex(h.merkleRoot);
-      if (tokenRoot != fileRoot) {
+      if (!_constantTimeEqualsString(tokenRoot, fileRoot)) {
         throw const ZegelTamperedException(
           'Token Merkle root does not match file',
         );
@@ -589,9 +595,7 @@ class ZegelReader {
       // Decompress if needed.
       if (h.flags & ZegelFormat.flagCompressed != 0 &&
           entry.type == ZegelFormat.blockContent) {
-        plaintext = Uint8List.fromList(
-          const ZLibDecoder().decodeBytes(plaintext),
-        );
+        plaintext = _safeDecompress(plaintext);
       }
 
       // Strip canary padding.
@@ -604,19 +608,13 @@ class ZegelReader {
         case ZegelFormat.blockContent:
           contentParts.add(plaintext);
         case ZegelFormat.blockMetadata:
-          metadata = jsonDecode(utf8.decode(plaintext)) as Map<String, dynamic>;
+          metadata = _decodeJsonMap(plaintext, 'metadata block');
         case ZegelFormat.blockProvenance:
-          provenanceEntries.add(
-            jsonDecode(utf8.decode(plaintext)) as Map<String, dynamic>,
-          );
+          provenanceEntries.add(_decodeJsonMap(plaintext, 'provenance block'));
         case ZegelFormat.blockAttestation:
-          attestations.add(
-            jsonDecode(utf8.decode(plaintext)) as Map<String, dynamic>,
-          );
+          attestations.add(_decodeJsonMap(plaintext, 'attestation block'));
         case ZegelFormat.blockAudit:
-          auditTrail.add(
-            jsonDecode(utf8.decode(plaintext)) as Map<String, dynamic>,
-          );
+          auditTrail.add(_decodeJsonMap(plaintext, 'audit block'));
         default:
           break;
       }
@@ -851,13 +849,86 @@ class ZegelReader {
     return diff == 0;
   }
 
+  /// Constant-time string comparison (used for hex-encoded hashes).
+  static bool _constantTimeEqualsString(String a, String b) {
+    if (a.length != b.length) return false;
+    int diff = 0;
+    for (int i = 0; i < a.length; i++) {
+      diff |= a.codeUnitAt(i) ^ b.codeUnitAt(i);
+    }
+    return diff == 0;
+  }
+
   /// Converts a hex string to bytes.
   static Uint8List _hexToBytes(String hex) {
+    if (hex.length.isOdd) {
+      throw const ZegelFormatException(
+        'Invalid hex string: odd number of characters',
+      );
+    }
     final int length = hex.length ~/ 2;
     final Uint8List bytes = Uint8List(length);
     for (int i = 0; i < length; i++) {
-      bytes[i] = int.parse(hex.substring(i * 2, i * 2 + 2), radix: 16);
+      final int? parsed = int.tryParse(
+        hex.substring(i * 2, i * 2 + 2),
+        radix: 16,
+      );
+      if (parsed == null) {
+        throw const ZegelFormatException('Invalid hex string: non-hex character');
+      }
+      bytes[i] = parsed;
     }
     return bytes;
+  }
+
+  /// Decompresses [compressed] using zlib, capping output at
+  /// [ZegelFormat.maxDecompressedBlockSize] to prevent zip-bomb DoS.
+  ///
+  /// Throws [ZegelFormatException] if the decompressed data exceeds the
+  /// limit or the input is not valid zlib-compressed data.
+  static Uint8List _safeDecompress(Uint8List compressed) {
+    try {
+      final List<int> decoded = const ZLibDecoder().decodeBytes(compressed);
+      if (decoded.length > ZegelFormat.maxDecompressedBlockSize) {
+        throw ZegelFormatException(
+          'Decompressed block size ${decoded.length} exceeds maximum '
+          '${ZegelFormat.maxDecompressedBlockSize}',
+        );
+      }
+      return Uint8List.fromList(decoded);
+    } on ZegelFormatException {
+      rethrow;
+    } on Exception catch (e) {
+      throw ZegelFormatException('Failed to decompress block: $e');
+    }
+  }
+
+  /// Decodes an authenticated plaintext payload as a `Map<String, dynamic>`
+  /// JSON object. Throws [ZegelFormatException] if the payload is not valid
+  /// UTF-8, not valid JSON, or not a JSON object. Called only after AES-GCM
+  /// authentication and plaintext-hash verification have already succeeded,
+  /// so this protects against producer bugs rather than adversarial input.
+  static Map<String, dynamic> _decodeJsonMap(
+    Uint8List plaintext,
+    String context,
+  ) {
+    final String text;
+    try {
+      text = utf8.decode(plaintext);
+    } on FormatException catch (e) {
+      throw ZegelFormatException('Invalid UTF-8 in $context: $e');
+    }
+    final dynamic decoded;
+    try {
+      decoded = jsonDecode(text);
+    } on FormatException catch (e) {
+      throw ZegelFormatException('Invalid JSON in $context: $e');
+    }
+    if (decoded is! Map<String, dynamic>) {
+      throw ZegelFormatException(
+        '$context must contain a JSON object (got ${decoded.runtimeType})',
+      );
+    }
+    return decoded;
   }
 }

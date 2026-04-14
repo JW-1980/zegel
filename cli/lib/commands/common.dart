@@ -27,6 +27,12 @@ class Ansi {
 /// Parses a 32-byte key from either a hex string (-k) or a key file (--key-file).
 ///
 /// Throws [UsageException] if neither option is provided or the key is invalid.
+///
+/// Passing a key via `-k <hex>` is insecure because the command line is
+/// visible to any process that can run `ps` and persists in shell history.
+/// When the flag is used directly (i.e. the caller is a real terminal, not
+/// piping from $(cat ...) expansion), a warning is emitted. Suppress with
+/// `ZEGEL_ALLOW_KEY_ON_CLI=1` in the environment.
 Uint8List parseKeyFromArgs(
   dynamic argResults, {
   String keyFlag = 'key',
@@ -37,6 +43,14 @@ Uint8List parseKeyFromArgs(
   final String? keyFilePath = argResults[keyFileFlag] as String?;
 
   if (keyHex != null && keyHex.isNotEmpty) {
+    if (Platform.environment['ZEGEL_ALLOW_KEY_ON_CLI'] != '1') {
+      stderr.writeln(
+        Ansi.warning(
+          'warning: keys passed via -k are visible to `ps` and logged in '
+          'shell history. Prefer --key-file for long-running systems.',
+        ),
+      );
+    }
     return hexDecode(keyHex, label: 'key');
   }
 

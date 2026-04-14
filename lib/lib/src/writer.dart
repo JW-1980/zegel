@@ -185,7 +185,19 @@ class ZegelWriter {
     if (masterKey.length != 32) {
       throw ArgumentError('Master key must be exactly 32 bytes');
     }
-    if (options.argon2TimeCost != null && options.argon2MemoryCost != null) {
+
+    // Argon2id parameters must be set all-or-nothing and each parameter must
+    // meet the OWASP 2024 minimum independently. Previously, setting only one
+    // of the two would silently bypass validation.
+    final bool haveTime = options.argon2TimeCost != null;
+    final bool haveMem = options.argon2MemoryCost != null;
+    if (haveTime != haveMem) {
+      throw ArgumentError(
+        'Argon2id time and memory cost must both be set or both be null '
+        '(got time=${options.argon2TimeCost}, memory=${options.argon2MemoryCost})',
+      );
+    }
+    if (haveTime && haveMem) {
       if (options.argon2TimeCost! < minArgon2TimeCost) {
         throw ArgumentError(
           'Argon2id time cost must be >= $minArgon2TimeCost '

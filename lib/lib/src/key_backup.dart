@@ -57,18 +57,46 @@ class KeyBackupPlanner {
     }
 
     destDir.createSync(recursive: true);
+    // Restrict snapshot directory to owner access on POSIX.
+    if (!Platform.isWindows) {
+      try {
+        Process.runSync('chmod', <String>['700', destDir.path]);
+      } catch (_) {/* best effort */}
+    }
+
     for (final path in sourcePaths) {
       final file = File(path);
       final target = File(
         '${destDir.path}${Platform.pathSeparator}${_basename(path)}',
       );
-      target.writeAsBytesSync(file.readAsBytesSync());
+      // Write via openSync so we can flush, and chmod the target before
+      // the snapshot directory prune runs.
+      final bytes = file.readAsBytesSync();
+      final raf = target.openSync(mode: FileMode.write);
+      try {
+        raf.writeFromSync(bytes);
+        raf.flushSync();
+      } finally {
+        raf.closeSync();
+      }
+      if (!Platform.isWindows) {
+        try {
+          Process.runSync('chmod', <String>['600', target.path]);
+        } catch (_) {/* best effort */}
+      }
     }
-    File('${destDir.path}${Platform.pathSeparator}manifest.json')
-        .writeAsStringSync(jsonEncode({
+
+    final manifestFile =
+        File('${destDir.path}${Platform.pathSeparator}manifest.json');
+    manifestFile.writeAsStringSync(jsonEncode({
       'timestamp': timestamp.toIso8601String(),
       'files': manifest,
     }));
+    if (!Platform.isWindows) {
+      try {
+        Process.runSync('chmod', <String>['600', manifestFile.path]);
+      } catch (_) {/* best effort */}
+    }
 
     _pruneOldSnapshots();
 

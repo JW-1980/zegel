@@ -124,10 +124,31 @@ class KeyManager {
       });
 
   /// Writes the serialized state to disk.
+  ///
+  /// The write is atomic (temp file + rename) and, on POSIX platforms, the
+  /// destination is chmod'd to `0600` so the fingerprint registry cannot be
+  /// enumerated by other local users.
   void save(String filePath) {
     final file = File(filePath);
     file.parent.createSync(recursive: true);
-    file.writeAsStringSync(encode());
+
+    final tmp = File('$filePath.tmp');
+    final raf = tmp.openSync(mode: FileMode.write);
+    try {
+      raf.writeStringSync(encode());
+      raf.flushSync();
+    } finally {
+      raf.closeSync();
+    }
+    tmp.renameSync(filePath);
+
+    if (!Platform.isWindows) {
+      try {
+        Process.runSync('chmod', <String>['600', filePath]);
+      } catch (_) {
+        // Best effort.
+      }
+    }
   }
 
   String _nextId() {

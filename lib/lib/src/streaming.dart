@@ -115,7 +115,15 @@ class StreamingSealWriter {
     final Uint8List tempKey = _deriveTemporaryKey();
     final Uint8List iv = _generateRandom(_secureRandom, ZegelFormat.ivSize);
 
-    // AES-256-GCM encrypt with temporary key.
+    // AES-256-GCM encrypt with temporary key. The temporary ciphertext is
+    // discarded on [finalize]; we still bind the block type, index, and salt
+    // into the AAD so the in-memory ciphertext cannot be swapped between
+    // slots if an attacker somehow observes the _tempCiphertexts list.
+    final Uint8List tempAad = _buildBlockAad(
+      ZegelFormat.blockContent,
+      _plaintexts.length - 1,
+      _salt,
+    );
     final GCMBlockCipher cipher = GCMBlockCipher(AESEngine());
     cipher.init(
       true,
@@ -123,7 +131,7 @@ class StreamingSealWriter {
         KeyParameter(tempKey),
         ZegelFormat.tagSize * 8,
         iv,
-        Uint8List(0),
+        tempAad,
       ),
     );
     final Uint8List encrypted = cipher.process(processed);
@@ -227,8 +235,26 @@ class StreamingSealWriter {
       );
       blockKeys.add(key);
 
-      final Uint8List iv = _generateRandom(_secureRandom, ZegelFormat.ivSize);
+      // Hedged nonce: HKDF-derived XOR CSPRNG. Matches ZegelWriter so the
+      // output file is byte-compatible with the reader.
+      final Uint8List derivedNonce = KeyDerivation.deriveBlockNonce(
+        masterKey,
+        merkleRoot,
+        _salt,
+        i,
+      );
+      final Uint8List randomNonce = _generateRandom(
+        _secureRandom,
+        ZegelFormat.ivSize,
+      );
+      final Uint8List iv = Uint8List(ZegelFormat.ivSize);
+      for (int b = 0; b < ZegelFormat.ivSize; b++) {
+        iv[b] = derivedNonce[b] ^ randomNonce[b];
+      }
       ivs.add(iv);
+
+      // AAD must match ZegelWriter: blockType(1) || blockIndex(4 BE) || salt(32).
+      final Uint8List aad = _buildBlockAad(allBlockTypes[i], i, _salt);
 
       final GCMBlockCipher cipher = GCMBlockCipher(AESEngine());
       cipher.init(
@@ -237,7 +263,7 @@ class StreamingSealWriter {
           KeyParameter(key),
           ZegelFormat.tagSize * 8,
           iv,
-          Uint8List(0),
+          aad,
         ),
       );
       final Uint8List encrypted = cipher.process(allPlaintexts[i]);
@@ -417,6 +443,20 @@ class StreamingSealWriter {
     return Uint8List.fromList(
       List<int>.generate(length, (_) => random.nextInt(256)),
     );
+  }
+
+  /// Builds the AEAD associated data for a block:
+  /// `blockType(1) || blockIndex(4 BE) || salt(32)`.
+  ///
+  /// Must match [ZegelWriter] exactly so the streaming output is verifiable
+  /// by [ZegelReader].
+  static Uint8List _buildBlockAad(int blockType, int blockIndex, Uint8List salt) {
+    final Uint8List aad = Uint8List(1 + 4 + ZegelFormat.saltSize);
+    aad[0] = blockType;
+    final ByteData bd = ByteData.sublistView(aad);
+    bd.setUint32(1, blockIndex, Endian.big);
+    aad.setRange(5, 5 + ZegelFormat.saltSize, salt);
+    return aad;
   }
 
   static Uint8List _packUint16BE(int value) {

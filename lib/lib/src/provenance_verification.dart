@@ -83,10 +83,13 @@ class ProvenanceVerification {
         errors.add('Event $i is not in chronological order');
       }
 
-      // Check chain hash
+      // Check chain hash using constant-time comparison to avoid leaking
+      // which event a would-be forger is close to.
       if (i > 0) {
         final expectedPrev = event['previous_event'] as String?;
-        if (expectedPrev != previousHash) {
+        if (expectedPrev == null ||
+            previousHash == null ||
+            !_constantTimeEquals(expectedPrev, previousHash)) {
           errors.add('Event $i has invalid chain link');
         }
       }
