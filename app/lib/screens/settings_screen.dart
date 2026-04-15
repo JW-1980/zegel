@@ -459,8 +459,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                         RadioListTile<ThemeMode>(
                           title: Text('Dark'),
-                          subtitle:
-                              Text('Reduced eye strain, saves battery on OLED'),
+                          subtitle: Text(
+                            'Reduced eye strain, saves battery on OLED',
+                          ),
                           value: ThemeMode.dark,
                         ),
                       ],

@@ -14,7 +14,8 @@ class ContactService {
 
   /// Returns the path to the contacts file.
   String get _filePath {
-    final home = Platform.environment['HOME'] ??
+    final home =
+        Platform.environment['HOME'] ??
         Platform.environment['USERPROFILE'] ??
         '.';
     return '$home/$_fileName';
@@ -45,9 +46,9 @@ class ContactService {
       'version': 1,
       'contacts': contacts.map((c) => c.toJson()).toList(),
     };
-    await File(_filePath).writeAsString(
-      const JsonEncoder.withIndent('  ').convert(json),
-    );
+    await File(
+      _filePath,
+    ).writeAsString(const JsonEncoder.withIndent('  ').convert(json));
   }
 
   /// Adds a new contact. Returns the updated list.
@@ -114,10 +115,7 @@ class SignerContact {
   });
 
   Map<String, dynamic> toJson() {
-    final json = <String, dynamic>{
-      'name': name,
-      'email': email,
-    };
+    final json = <String, dynamic>{'name': name, 'email': email};
     if (company != null) json['company'] = company;
     if (title != null) json['title'] = title;
     if (phone != null) json['phone'] = phone;

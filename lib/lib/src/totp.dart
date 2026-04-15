@@ -151,7 +151,8 @@ class Totp {
     for (final ch in cleaned.codeUnits) {
       final idx = _base32Alphabet.indexOf(String.fromCharCode(ch));
       if (idx < 0) {
-        throw FormatException('Invalid base32 character: ${String.fromCharCode(ch)}');
+        throw FormatException(
+            'Invalid base32 character: ${String.fromCharCode(ch)}');
       }
       buffer = (buffer << 5) | idx;
       bits += 5;

@@ -16,14 +16,10 @@ Future<void> main() async {
   // the default locale / light theme while reading from disk.
   final prefs = await SharedPreferences.getInstance();
   final savedLocale = _parseLocale(prefs.getString(_localePrefsKey));
-  final savedThemeMode =
-      _parseThemeMode(prefs.getString(_themeModePrefsKey));
+  final savedThemeMode = _parseThemeMode(prefs.getString(_themeModePrefsKey));
 
   runApp(
-    ZegelApp(
-      initialLocale: savedLocale,
-      initialThemeMode: savedThemeMode,
-    ),
+    ZegelApp(initialLocale: savedLocale, initialThemeMode: savedThemeMode),
   );
 }
 

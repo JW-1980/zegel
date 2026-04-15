@@ -50,8 +50,7 @@ class ShortcutRegistry {
         .map((e) => ShortcutBinding(shortcut: e.key, actionId: e.value))
         .toList()
       ..sort(
-        (a, b) =>
-            a.shortcut.displayLabel.compareTo(b.shortcut.displayLabel),
+        (a, b) => a.shortcut.displayLabel.compareTo(b.shortcut.displayLabel),
       );
     return bindings;
   }
