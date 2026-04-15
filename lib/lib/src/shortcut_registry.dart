@@ -6,6 +6,36 @@
 /// help screen. Keeping the data here (rather than inside the UI) makes
 /// it testable without pulling in Flutter.
 class ShortcutRegistry {
+
+  /// Creates a registry with Zegel's default shortcuts: Ctrl+S to seal,
+  /// Ctrl+O to open/verify, Ctrl+E to extract.
+  factory ShortcutRegistry.defaults() {
+    return ShortcutRegistry()
+      ..override(
+        const Shortcut(modifiers: {ShortcutModifier.control}, key: 's'),
+        'action.seal',
+      )
+      ..override(
+        const Shortcut(modifiers: {ShortcutModifier.control}, key: 'o'),
+        'action.open',
+      )
+      ..override(
+        const Shortcut(modifiers: {ShortcutModifier.control}, key: 'e'),
+        'action.extract',
+      )
+      ..override(
+        const Shortcut(modifiers: {ShortcutModifier.control}, key: 'k'),
+        'action.keygen',
+      )
+      ..override(
+        const Shortcut(modifiers: {ShortcutModifier.control}, key: 'f'),
+        'action.find',
+      )
+      ..override(
+        const Shortcut(modifiers: {ShortcutModifier.control}, key: ','),
+        'action.settings',
+      );
+  }
   ShortcutRegistry({Map<Shortcut, String>? initial})
       : _bindings = Map<Shortcut, String>.of(
           initial ?? const <Shortcut, String>{},
@@ -50,44 +80,13 @@ class ShortcutRegistry {
         .map((e) => ShortcutBinding(shortcut: e.key, actionId: e.value))
         .toList()
       ..sort(
-        (a, b) =>
-            a.shortcut.displayLabel.compareTo(b.shortcut.displayLabel),
+        (a, b) => a.shortcut.displayLabel.compareTo(b.shortcut.displayLabel),
       );
     return bindings;
   }
 
   /// The number of registered shortcuts.
   int get length => _bindings.length;
-
-  /// Creates a registry with Zegel's default shortcuts: Ctrl+S to seal,
-  /// Ctrl+O to open/verify, Ctrl+E to extract.
-  factory ShortcutRegistry.defaults() {
-    return ShortcutRegistry()
-      ..override(
-        const Shortcut(modifiers: {ShortcutModifier.control}, key: 's'),
-        'action.seal',
-      )
-      ..override(
-        const Shortcut(modifiers: {ShortcutModifier.control}, key: 'o'),
-        'action.open',
-      )
-      ..override(
-        const Shortcut(modifiers: {ShortcutModifier.control}, key: 'e'),
-        'action.extract',
-      )
-      ..override(
-        const Shortcut(modifiers: {ShortcutModifier.control}, key: 'k'),
-        'action.keygen',
-      )
-      ..override(
-        const Shortcut(modifiers: {ShortcutModifier.control}, key: 'f'),
-        'action.find',
-      )
-      ..override(
-        const Shortcut(modifiers: {ShortcutModifier.control}, key: ','),
-        'action.settings',
-      );
-  }
 }
 
 class Shortcut {

@@ -94,14 +94,17 @@ class _CommandPaletteState extends State<CommandPalette> {
                   if (event is KeyDownEvent) {
                     if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
                       setState(() {
-                        _selectedIndex = (_selectedIndex + 1)
-                            .clamp(0, _filteredCommands.length - 1);
+                        _selectedIndex = (_selectedIndex + 1).clamp(
+                          0,
+                          _filteredCommands.length - 1,
+                        );
                       });
-                    } else if (event.logicalKey ==
-                        LogicalKeyboardKey.arrowUp) {
+                    } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
                       setState(() {
-                        _selectedIndex =
-                            (_selectedIndex - 1).clamp(0, _filteredCommands.length - 1);
+                        _selectedIndex = (_selectedIndex - 1).clamp(
+                          0,
+                          _filteredCommands.length - 1,
+                        );
                       });
                     } else if (event.logicalKey == LogicalKeyboardKey.enter) {
                       if (_filteredCommands.isNotEmpty) {
@@ -226,16 +229,13 @@ class _CommandPaletteState extends State<CommandPalette> {
           ),
           child: Text(
             key,
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.bold),
           ),
         ),
         const SizedBox(width: 4),
-        Text(
-          action,
-          style: Theme.of(context).textTheme.labelSmall,
-        ),
+        Text(action, style: Theme.of(context).textTheme.labelSmall),
       ],
     );
   }
@@ -291,10 +291,7 @@ class CommandPaletteShortcut extends StatelessWidget {
           CommandPalette.show(context, commands);
         },
       },
-      child: Focus(
-        autofocus: true,
-        child: child,
-      ),
+      child: Focus(autofocus: true, child: child),
     );
   }
 }
