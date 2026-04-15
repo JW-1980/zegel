@@ -655,8 +655,7 @@ class _DiscloseScreenState extends State<DiscloseScreen>
           SizedBox(
             height: 50,
             child: ElevatedButton.icon(
-              onPressed:
-                  _isExtracting ||
+              onPressed: _isExtracting ||
                       _extractFilePath == null ||
                       _loadedToken == null
                   ? null

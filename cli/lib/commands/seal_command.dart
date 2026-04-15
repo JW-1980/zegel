@@ -21,8 +21,7 @@ class SealCommand extends Command<int> {
   final String name = 'seal';
 
   @override
-  String get description =>
-      'Seal a file into a tamper-proof .zgl container.\n'
+  String get description => 'Seal a file into a tamper-proof .zgl container.\n'
       '\n'
       'Encrypts and integrity-protects a file using AES-256-GCM with a\n'
       'Merkle tree binding all blocks. The resulting .zgl file becomes\n'
@@ -80,8 +79,7 @@ class SealCommand extends Command<int> {
 
     argParser.addOption(
       'expires',
-      help:
-          'Cryptographic expiration date (YYYY-MM-DD). '
+      help: 'Cryptographic expiration date (YYYY-MM-DD). '
           'Content becomes undecryptable after this date.',
       valueHelp: 'YYYY-MM-DD',
     );
@@ -131,8 +129,7 @@ class SealCommand extends Command<int> {
 
     argParser.addFlag(
       'anonymous',
-      help:
-          'Omit the original filename from the .zgl header.\n'
+      help: 'Omit the original filename from the .zgl header.\n'
           'The content type is preserved but the filename field\n'
           'is set to an empty string.',
       defaultsTo: false,
@@ -140,8 +137,7 @@ class SealCommand extends Command<int> {
 
     argParser.addOption(
       'classification',
-      help:
-          'Classification level for the sealed file.\n'
+      help: 'Classification level for the sealed file.\n'
           'Stored in public metadata for inspection without a key.\n'
           'Levels: PUBLIC, INTERNAL, CONFIDENTIAL, SECRET, TOP_SECRET.',
       valueHelp: 'level',
@@ -149,16 +145,14 @@ class SealCommand extends Command<int> {
 
     argParser.addOption(
       'classification-authority',
-      help:
-          'Name of the authority who set the classification level.\n'
+      help: 'Name of the authority who set the classification level.\n'
           'Required when --classification is specified.',
       valueHelp: 'name',
     );
 
     argParser.addOption(
       'regulatory-hold-until',
-      help:
-          'Set a regulatory hold date (YYYY-MM-DD). Files under\n'
+      help: 'Set a regulatory hold date (YYYY-MM-DD). Files under\n'
           'regulatory hold can be extracted only after the hold expires.\n'
           'Stored in public metadata.',
       valueHelp: 'YYYY-MM-DD',
@@ -166,8 +160,7 @@ class SealCommand extends Command<int> {
 
     argParser.addOption(
       'tsa-url',
-      help:
-          'URL of a trusted timestamping authority (TSA) to use\n'
+      help: 'URL of a trusted timestamping authority (TSA) to use\n'
           'for an RFC 3161 timestamp. The timestamp response is\n'
           'stored as a PROVENANCE block.',
       valueHelp: 'url',
@@ -175,8 +168,7 @@ class SealCommand extends Command<int> {
 
     argParser.addFlag(
       'preserve-media-metadata',
-      help:
-          'Preserve media metadata (EXIF, ID3, etc.) from the input\n'
+      help: 'Preserve media metadata (EXIF, ID3, etc.) from the input\n'
           'file. By default, media metadata is stripped for privacy.\n'
           'When enabled, the original metadata is stored in a\n'
           'METADATA block.',
@@ -341,13 +333,11 @@ class SealCommand extends Command<int> {
       }
       // Add classification to public metadata.
       publicMetadata ??= <String, dynamic>{};
-      publicMetadata['classification'] = classificationStr
-          .toUpperCase()
-          .replaceAll('-', '_');
+      publicMetadata['classification'] =
+          classificationStr.toUpperCase().replaceAll('-', '_');
       publicMetadata['classification_authority'] = classificationAuthority;
-      publicMetadata['classification_date'] = DateTime.now()
-          .toUtc()
-          .toIso8601String();
+      publicMetadata['classification_date'] =
+          DateTime.now().toUtc().toIso8601String();
     }
 
     // Handle regulatory hold.
@@ -365,9 +355,8 @@ class SealCommand extends Command<int> {
     if (tsaUrl != null) {
       publicMetadata ??= <String, dynamic>{};
       publicMetadata['tsa_url'] = tsaUrl;
-      publicMetadata['tsa_timestamp_requested'] = DateTime.now()
-          .toUtc()
-          .toIso8601String();
+      publicMetadata['tsa_timestamp_requested'] =
+          DateTime.now().toUtc().toIso8601String();
     }
 
     // Parse content type.
@@ -408,9 +397,8 @@ class SealCommand extends Command<int> {
       publicMetadata: publicMetadata,
       versionChainHash: versionChainHash,
       // Password-derived files MUST enable key commitment per spec §5.2 v1.4.
-      enableKeyCommitment: usePassword
-          ? true
-          : (argResults!['key-commitment'] as bool),
+      enableKeyCommitment:
+          usePassword ? true : (argResults!['key-commitment'] as bool),
       enableSelectiveDisclosure: argResults!['enable-disclosure'] as bool,
       blockSize: int.parse(argResults!['block-size'] as String),
       // Reuse the Argon2 salt as the file salt so the reader can reproduce

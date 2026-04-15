@@ -23,8 +23,7 @@ class CanaryCommand extends Command<int> {
   final String name = 'canary';
 
   @override
-  String get description =>
-      'Canary trap fingerprinting operations.\n'
+  String get description => 'Canary trap fingerprinting operations.\n'
       '\n'
       'Canary traps embed invisible, recipient-specific markers in sealed\n'
       'files. If a file is leaked, the markers can identify which recipient\n'
@@ -57,8 +56,7 @@ class CanaryEmbedCommand extends Command<int> {
   final String name = 'embed';
 
   @override
-  String get description =>
-      'Embed a canary trap for a specific recipient.\n'
+  String get description => 'Embed a canary trap for a specific recipient.\n'
       '\n'
       'Creates a copy of the sealed file with invisible fingerprinting that\n'
       'is unique to the specified recipient. The canary padding is derived\n'
@@ -89,8 +87,7 @@ class CanaryEmbedCommand extends Command<int> {
     argParser.addOption(
       'recipient',
       abbr: 'r',
-      help:
-          'Recipient identifier string.\n'
+      help: 'Recipient identifier string.\n'
           'This is hashed to produce a 32-byte canary ID.',
       valueHelp: 'id',
       mandatory: true,
@@ -184,8 +181,7 @@ class CanaryEmbedCommand extends Command<int> {
         header.expirationTimestamp! * 1000,
         isUtc: true,
       );
-      expirationDateStr =
-          '${dt.year.toString().padLeft(4, '0')}-'
+      expirationDateStr = '${dt.year.toString().padLeft(4, '0')}-'
           '${dt.month.toString().padLeft(2, '0')}-'
           '${dt.day.toString().padLeft(2, '0')}';
     }
@@ -469,8 +465,7 @@ class CanaryIdentifyCommand extends Command<int> {
   final String name = 'identify';
 
   @override
-  String get description =>
-      'Identify which recipient leaked a file.\n'
+  String get description => 'Identify which recipient leaked a file.\n'
       '\n'
       'Given a potentially leaked file and a list of candidate recipients,\n'
       'this command checks the canary padding in content blocks to identify\n'
@@ -592,8 +587,7 @@ class CanaryIdentifyCommand extends Command<int> {
         rawHeader.expirationTimestamp! * 1000,
         isUtc: true,
       );
-      expirationDateStr =
-          '${dt.year.toString().padLeft(4, '0')}-'
+      expirationDateStr = '${dt.year.toString().padLeft(4, '0')}-'
           '${dt.month.toString().padLeft(2, '0')}-'
           '${dt.day.toString().padLeft(2, '0')}';
     }

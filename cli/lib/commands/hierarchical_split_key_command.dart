@@ -20,8 +20,7 @@ class HierarchicalSplitCommand extends Command<int> {
   final String name = 'hierarchical-split';
 
   @override
-  String get description =>
-      'Hierarchical split-key operations.\n'
+  String get description => 'Hierarchical split-key operations.\n'
       '\n'
       'Implements nested Shamir\'s Secret Sharing where different\n'
       'classification levels require different numbers of key shares.\n'
@@ -83,8 +82,7 @@ class HierarchicalSplitSplitCommand extends Command<int> {
     argParser.addOption(
       'levels',
       abbr: 'l',
-      help:
-          'Level specifications as "NAME:THRESHOLD:TOTAL,...".\n'
+      help: 'Level specifications as "NAME:THRESHOLD:TOTAL,...".\n'
           'Example: "CONFIDENTIAL:2:3,SECRET:2:3,TOP_SECRET:3:5"\n'
           'Order from lowest to highest classification.',
       valueHelp: 'specs',
@@ -274,8 +272,7 @@ class HierarchicalSplitReconstructCommand extends Command<int> {
     argParser.addOption(
       'levels',
       abbr: 'l',
-      help:
-          'Comma-separated level names to use (in order).\n'
+      help: 'Comma-separated level names to use (in order).\n'
           'If not specified, uses manifest.json.',
       valueHelp: 'level1,level2,...',
     );
@@ -325,10 +322,8 @@ class HierarchicalSplitReconstructCommand extends Command<int> {
     List<ShareLevel> levels = manifestLevels;
     final levelsFilter = argResults!['levels'] as String?;
     if (levelsFilter != null && levelsFilter.isNotEmpty) {
-      final filterNames = levelsFilter
-          .split(',')
-          .map((s) => s.trim().toUpperCase())
-          .toList();
+      final filterNames =
+          levelsFilter.split(',').map((s) => s.trim().toUpperCase()).toList();
       levels = manifestLevels
           .where((l) => filterNames.contains(l.classification))
           .toList();
