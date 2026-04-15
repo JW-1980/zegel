@@ -327,7 +327,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   const SizedBox(height: 12),
                   DropdownButtonFormField<String>(
                     // ignore: deprecated_member_use
-                    value: _selectedBlockSize,
+                    initialValue: _selectedBlockSize,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                     ),
@@ -494,7 +494,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   const SizedBox(height: 12),
                   DropdownButtonFormField<String>(
                     // ignore: deprecated_member_use
-                    value: _defaultClassification,
+                    initialValue: _defaultClassification,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                     ),

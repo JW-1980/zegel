@@ -1,6 +1,5 @@
-import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
+import 'dart:convert';
 
 // Import the zegel library under the `zgl` alias so that this service can
 // expose its own GUI-friendly `ZegelResult` and `ZegelInspection` types

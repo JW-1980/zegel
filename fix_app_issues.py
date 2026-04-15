@@ -24,8 +24,11 @@ def fix_allowed_extensions(content):
 
 def fix_deprecated(content):
     content = fix_with_opacity(content)
-    # Fix value -> initialValue
-    # This might be tricky with regex. Let's just fix the simplest ones manually or carefully.
+
+    def repl(m):
+        return m.group(1) + "initialValue:"
+
+    content = re.sub(r'(DropdownButtonFormField(?:<[^>]+>)?\s*\(\s*(?://[^\n]*\n\s*)*)(?:value\s*:)', repl, content)
     return content
 
 def fix_ambiguous_inspection(content):
