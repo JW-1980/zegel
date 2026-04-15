@@ -268,6 +268,7 @@ void main() {
       );
 
       final sealed = ZegelWriter(key, options).seal(content);
+      // ignore: unused_local_variable
       final inspection = const ZegelReader().inspect(sealed);
 
       // Create a token that expired 1 hour ago.
@@ -301,6 +302,7 @@ void main() {
       final sealed = ZegelWriter(key, options).seal(content);
 
       // Parse the file to get merkle root and salt for token generation.
+      // ignore: unused_local_variable
       final inspection = const ZegelReader().inspect(sealed);
 
       // For a full token test, we'd need to generate a proper token with

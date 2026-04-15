@@ -685,4 +685,19 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get drawerToolsSection => 'Hulpmiddelen';
+
+  @override
+  String get drawerSigningSection => 'Ondertekening';
+
+  @override
+  String get wetSignatureTitle => 'Handtekening';
+
+  @override
+  String get envelopeTitle => 'Ondertekeningsenvelop';
+
+  @override
+  String get envelopeCreate => 'Envelop Aanmaken';
+
+  @override
+  String get envelopeCreated => 'Envelop Aangemaakt';
 }

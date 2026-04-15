@@ -247,6 +247,14 @@ class ZegelFormat {
 
   /// Maximum size of public metadata in bytes (DoS prevention).
   static const int maxPublicMetadataSize = 10 * 1024 * 1024; // 10 MiB
+
+  /// Maximum plaintext size for a single decompressed block (DoS prevention).
+  ///
+  /// Caps zlib expansion so a maliciously crafted file cannot trigger an
+  /// unbounded memory allocation during verification. 64 MiB is 1024x the
+  /// default block size and allows legitimate high-compression payloads
+  /// while still bounding the worst case.
+  static const int maxDecompressedBlockSize = 64 * 1024 * 1024; // 64 MiB
 }
 
 // =============================================================================

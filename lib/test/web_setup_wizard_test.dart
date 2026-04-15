@@ -52,7 +52,9 @@ void main() {
 
       test('steps list is unmodifiable', () {
         final wizard = _freshWizard();
-        expect(() => (wizard.steps as List).add(null), throwsUnsupportedError);
+        // Use clear() rather than add(null): the latter throws a TypeError
+        // (null is not a SetupStep) before reaching the unmodifiable guard.
+        expect(() => wizard.steps.clear(), throwsUnsupportedError);
       });
 
       test('no answers stored initially', () {

@@ -439,37 +439,32 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ],
                   ),
                   const SizedBox(height: 12),
-                  RadioListTile<ThemeMode>(
-                    title: const Text('System default'),
-                    subtitle: const Text('Follow your device settings'),
-                    value: ThemeMode.system,
+                  RadioGroup<ThemeMode>(
                     groupValue: context.watch<ThemeNotifier>().themeMode,
                     onChanged: (value) {
                       if (value != null) {
                         context.read<ThemeNotifier>().setThemeMode(value);
                       }
                     },
-                  ),
-                  RadioListTile<ThemeMode>(
-                    title: const Text('Light'),
-                    value: ThemeMode.light,
-                    groupValue: context.watch<ThemeNotifier>().themeMode,
-                    onChanged: (value) {
-                      if (value != null) {
-                        context.read<ThemeNotifier>().setThemeMode(value);
-                      }
-                    },
-                  ),
-                  RadioListTile<ThemeMode>(
-                    title: const Text('Dark'),
-                    subtitle: const Text('Reduced eye strain, saves battery on OLED'),
-                    value: ThemeMode.dark,
-                    groupValue: context.watch<ThemeNotifier>().themeMode,
-                    onChanged: (value) {
-                      if (value != null) {
-                        context.read<ThemeNotifier>().setThemeMode(value);
-                      }
-                    },
+                    child: const Column(
+                      children: [
+                        RadioListTile<ThemeMode>(
+                          title: Text('System default'),
+                          subtitle: Text('Follow your device settings'),
+                          value: ThemeMode.system,
+                        ),
+                        RadioListTile<ThemeMode>(
+                          title: Text('Light'),
+                          value: ThemeMode.light,
+                        ),
+                        RadioListTile<ThemeMode>(
+                          title: Text('Dark'),
+                          subtitle:
+                              Text('Reduced eye strain, saves battery on OLED'),
+                          value: ThemeMode.dark,
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),

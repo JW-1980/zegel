@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:crypto/crypto.dart';
 import 'package:pointycastle/export.dart';
 
 import 'format.dart';
@@ -85,7 +86,9 @@ class SelectiveDisclosure {
   /// [blockIndex] is the zero-based index of the block to extract.
   ///
   /// Returns the decrypted block content, or `null` if the block index is not
-  /// included in the token or decryption fails.
+  /// included in the token or the block does not exist in the file. A
+  /// cryptographic failure (wrong tag, hash mismatch) is surfaced as a
+  /// [ZegelTamperedException] rather than being silently swallowed.
   static Uint8List? extractBlock(
     Uint8List fileBytes,
     Map<String, dynamic> token,
@@ -102,28 +105,29 @@ class SelectiveDisclosure {
     final Uint8List blockKey = _hexToBytes(blockKeysMap[indexStr] as String);
 
     // Parse the file to locate the block's directory entry and ciphertext.
+    final _BlockInfo? info = _parseBlockInfo(fileBytes, blockIndex);
+    if (info == null) return null;
+
+    // Build AAD: blockType(1) || blockIndex(4 BE) || salt(32).
+    // Parse the salt from the file header.
+    final ByteData bd = ByteData.sublistView(fileBytes);
+    final int fnLen = bd.getUint16(84, Endian.big);
+
+    final int saltOffset = 86 + fnLen;
+    final Uint8List fileSalt = Uint8List.sublistView(
+      fileBytes,
+      saltOffset,
+      saltOffset + ZegelFormat.saltSize,
+    );
+    final Uint8List aad = Uint8List(1 + 4 + ZegelFormat.saltSize);
+    aad[0] = info.blockType;
+    final ByteData aadBd2 = ByteData.sublistView(aad);
+    aadBd2.setUint32(1, blockIndex, Endian.big);
+    aad.setRange(5, 5 + ZegelFormat.saltSize, fileSalt);
+
+    // Decrypt with AES-256-GCM.
+    final Uint8List plaintext;
     try {
-      final _BlockInfo? info = _parseBlockInfo(fileBytes, blockIndex);
-      if (info == null) return null;
-
-      // Build AAD: blockType(1) || blockIndex(4 BE) || salt(32).
-      // Parse the salt from the file header.
-      final ByteData bd = ByteData.sublistView(fileBytes);
-      final int fnLen = bd.getUint16(84, Endian.big);
-
-      final int saltOffset = 86 + fnLen;
-      final Uint8List fileSalt = Uint8List.sublistView(
-        fileBytes,
-        saltOffset,
-        saltOffset + ZegelFormat.saltSize,
-      );
-      final Uint8List aad = Uint8List(1 + 4 + ZegelFormat.saltSize);
-      aad[0] = info.blockType;
-      final ByteData aadBd2 = ByteData.sublistView(aad);
-      aadBd2.setUint32(1, blockIndex, Endian.big);
-      aad.setRange(5, 5 + ZegelFormat.saltSize, fileSalt);
-
-      // Decrypt with AES-256-GCM.
       final GCMBlockCipher cipher = GCMBlockCipher(AESEngine());
       cipher.init(
         false,
@@ -142,15 +146,51 @@ class SelectiveDisclosure {
       input.setRange(0, info.ciphertext.length, info.ciphertext);
       input.setRange(info.ciphertext.length, input.length, info.tag);
 
-      return cipher.process(input);
+      plaintext = cipher.process(input);
     } on Exception {
-      return null;
+      // Do not interpolate the underlying exception into the message --
+      // PointyCastle errors do not expose key material today, but including
+      // `$e` creates a future path for key bytes or internal state to reach
+      // user-visible logs.
+      throw ZegelTamperedException(
+        'Tamper detected in disclosed block $blockIndex',
+      );
     }
+
+    // SEC-17: also verify the plaintext hash to bind the block to the
+    // Merkle tree leaf that the token holder believes they are reading.
+    // Without this, an attacker with write access to the directory (but not
+    // the master key) could swap two hashes and route a token holder to
+    // the wrong plaintext even though GCM auth succeeds.
+    final Uint8List computedHash = Uint8List.fromList(
+      sha256.convert(plaintext).bytes,
+    );
+    if (!_constantTimeEquals(computedHash, info.hash)) {
+      throw ZegelTamperedException(
+        'Plaintext hash mismatch for disclosed block $blockIndex',
+      );
+    }
+
+    return plaintext;
+  }
+
+  static bool _constantTimeEquals(Uint8List a, Uint8List b) {
+    if (a.length != b.length) return false;
+    int diff = 0;
+    for (int i = 0; i < a.length; i++) {
+      diff |= a[i] ^ b[i];
+    }
+    return diff == 0;
   }
 
   /// Parses the file header to extract block info at the given index.
+  ///
+  /// Applies the same DoS bounds as [ZegelReader] so a malicious file cannot
+  /// trigger unbounded allocation via an oversized block count or public
+  /// metadata length.
   static _BlockInfo? _parseBlockInfo(Uint8List fileBytes, int blockIndex) {
     if (fileBytes.length < 122) return null;
+    if (blockIndex < 0) return null;
 
     final ByteData bd = ByteData.sublistView(fileBytes);
 
@@ -161,6 +201,8 @@ class SelectiveDisclosure {
 
     final int blockCount = bd.getUint32(blockCountOffset, Endian.big);
     if (blockIndex >= blockCount) return null;
+    // DoS prevention: cap block count before using it as a multiplier.
+    if (blockCount > ZegelFormat.maxBlockCount) return null;
 
     // Parse flags to determine extended header size.
     final int flags = bd.getUint16(10, Endian.big);
@@ -180,6 +222,11 @@ class SelectiveDisclosure {
       if (flags & ZegelFormat.flagVersioned != 0) tempOffset += 32;
       if (fileBytes.length < tempOffset + 4) return null;
       final int pubMetaLen = bd.getUint32(tempOffset, Endian.big);
+      // DoS prevention: cap public metadata size.
+      if (pubMetaLen < 0 ||
+          pubMetaLen > ZegelFormat.maxPublicMetadataSize) {
+        return null;
+      }
       extHeaderSize += 4 + pubMetaLen;
     }
 

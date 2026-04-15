@@ -25,8 +25,13 @@ class OfflineIndicator {
   final Duration pollInterval;
 
   final Future<bool> Function(String) _prober;
+  // sync: true delivers events synchronously from `add()`, so callers that
+  // `await probeOnce()` are guaranteed to observe the emitted state on any
+  // listener they attached before calling it. Without this, broadcast
+  // delivery is a microtask and consumers can cancel their subscription
+  // before the event is routed.
   final StreamController<ConnectivityState> _stream =
-      StreamController<ConnectivityState>.broadcast();
+      StreamController<ConnectivityState>.broadcast(sync: true);
 
   ConnectivityState _state = ConnectivityState.unknown;
   Timer? _timer;

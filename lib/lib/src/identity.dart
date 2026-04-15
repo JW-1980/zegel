@@ -306,17 +306,37 @@ class DeviceAttestation {
   /// Captures current device/platform information.
   ///
   /// Returns a [DeviceInfo] with OS, platform, Dart runtime version, and a
-  /// SHA-256 hash of the hostname (salted with a random value for privacy).
+  /// HMAC-SHA-256 of the hostname, keyed with a freshly generated random
+  /// 32-byte salt that is stored alongside the hash.
+  ///
+  /// The previous implementation hashed `microsecondsSinceEpoch:hostname`
+  /// but discarded the salt, which:
+  ///
+  /// - prevented forensic correlation across files (same hostname yielded
+  ///   different hashes every call because the salt was never saved), and
+  /// - allowed a local attacker who knew `capturedAt` to brute-force the
+  ///   microsecond salt within that second and enumerate common hostnames.
+  ///
+  /// The new construction keeps the hostname secret from anyone without the
+  /// salt while allowing a forensic analyst in possession of both to verify
+  /// that two files came from the same device.
   static DeviceInfo captureDeviceInfo() {
     final String os = Platform.operatingSystem;
     final String osVersion = Platform.operatingSystemVersion;
     final String dartVersion = Platform.version;
 
-    // Hash the hostname for privacy.
+    // 32-byte CSPRNG salt stored with the attestation.
+    final Random rng = Random.secure();
+    final Uint8List hostnameHashSalt = Uint8List(32);
+    for (int i = 0; i < 32; i++) {
+      hostnameHashSalt[i] = rng.nextInt(256);
+    }
+
     final String hostname = Platform.localHostname;
-    final int salt = DateTime.now().microsecondsSinceEpoch;
+    final Uint8List hostnameBytes = Uint8List.fromList(utf8.encode(hostname));
+    final Hmac mac = Hmac(sha256, hostnameHashSalt);
     final Uint8List hostnameHash = Uint8List.fromList(
-      sha256.convert(utf8.encode('$salt:$hostname')).bytes,
+      mac.convert(hostnameBytes).bytes,
     );
 
     return DeviceInfo(
@@ -324,6 +344,7 @@ class DeviceAttestation {
       operatingSystemVersion: osVersion,
       dartVersion: dartVersion,
       hostnameHash: hostnameHash,
+      hostnameHashSalt: hostnameHashSalt,
       capturedAt: DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000,
     );
   }
@@ -432,6 +453,9 @@ class DeviceInfo {
       operatingSystemVersion: json['operating_system_version'] as String,
       dartVersion: json['dart_version'] as String,
       hostnameHash: _hexToBytes(json['hostname_hash_hex'] as String),
+      hostnameHashSalt: json['hostname_hash_salt_hex'] == null
+          ? Uint8List(0)
+          : _hexToBytes(json['hostname_hash_salt_hex'] as String),
       capturedAt: json['captured_at'] as int,
     );
   }
@@ -442,6 +466,7 @@ class DeviceInfo {
     required this.operatingSystemVersion,
     required this.dartVersion,
     required this.hostnameHash,
+    required this.hostnameHashSalt,
     required this.capturedAt,
   });
 
@@ -454,8 +479,14 @@ class DeviceInfo {
   /// Dart runtime version string.
   final String dartVersion;
 
-  /// SHA-256 hash of the salted hostname (for privacy).
+  /// HMAC-SHA-256 of the hostname keyed with [hostnameHashSalt].
   final Uint8List hostnameHash;
+
+  /// 32-byte CSPRNG salt used as the HMAC key for [hostnameHash]. Stored so
+  /// that a forensic analyst in possession of both the salt and the true
+  /// hostname can verify that two files originated on the same device.
+  /// Observers without the salt cannot brute-force the hostname.
+  final Uint8List hostnameHashSalt;
 
   /// Unix epoch seconds when the device info was captured.
   final int capturedAt;
@@ -467,6 +498,7 @@ class DeviceInfo {
       'operating_system_version': operatingSystemVersion,
       'dart_version': dartVersion,
       'hostname_hash_hex': _bytesToHex(hostnameHash),
+      'hostname_hash_salt_hex': _bytesToHex(hostnameHashSalt),
       'captured_at': capturedAt,
     };
   }

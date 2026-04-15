@@ -40,6 +40,15 @@ class Anonymizer {
   static final RegExp _unixPath = RegExp(r'/[\w.\-]+(?:/[\w.\-]+)+');
   static final RegExp _windowsPath = RegExp(r'[A-Za-z]:\\[\w.\-\\]+');
 
+  // Long hex strings (>=32 hex chars). Captures 64-char hex keys, 64-char
+  // SHA-256 digests, 128-char SHA-512 digests, and disclosure tokens.
+  static final RegExp _hexBlob = RegExp(r'\b[0-9a-fA-F]{32,}\b');
+
+  // Long base64 strings (>=40 b64 chars = ~30 bytes). Captures wrapped keys,
+  // signed JWT-style tokens, and embedded secrets. The leading word boundary
+  // avoids matching short identifiers.
+  static final RegExp _base64Blob = RegExp(r'\b[A-Za-z0-9+/]{40,}={0,2}');
+
   /// 16 bytes (or more) of randomness used to salt hashes.
   final List<int> salt;
 
@@ -59,8 +68,23 @@ class Anonymizer {
   /// `<category:hash>` tokens. Callers should still avoid sending entire
   /// user-generated strings into this method — it is a safety net, not a
   /// compliance tool.
+  ///
+  /// Long hex and base64 blobs are also scrubbed so that raw key material,
+  /// SHA digests, and disclosure tokens accidentally embedded in logs are
+  /// not leaked verbatim through the anonymiser.
   String scrub(String input) {
     var out = input;
+    // Order matters: hex/base64 must run before the path/email patterns
+    // because a 64-hex-char filename in a path would otherwise be emitted
+    // as the path body rather than the hex body.
+    out = out.replaceAllMapped(
+      _hexBlob,
+      (m) => '<hex:${hash(m.group(0)!)}>',
+    );
+    out = out.replaceAllMapped(
+      _base64Blob,
+      (m) => '<b64:${hash(m.group(0)!)}>',
+    );
     out = out.replaceAllMapped(
       _email,
       (m) => '<email:${hash(m.group(0)!)}>',

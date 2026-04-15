@@ -27,6 +27,12 @@ class Ansi {
 /// Parses a 32-byte key from either a hex string (-k) or a key file (--key-file).
 ///
 /// Throws [UsageException] if neither option is provided or the key is invalid.
+///
+/// Passing a key via `-k <hex>` is insecure because the command line is
+/// visible to any process that can run `ps` and persists in shell history.
+/// When the flag is used directly (i.e. the caller is a real terminal, not
+/// piping from $(cat ...) expansion), a warning is emitted. Suppress with
+/// `ZEGEL_ALLOW_KEY_ON_CLI=1` in the environment.
 Uint8List parseKeyFromArgs(
   dynamic argResults, {
   String keyFlag = 'key',
@@ -37,6 +43,14 @@ Uint8List parseKeyFromArgs(
   final String? keyFilePath = argResults[keyFileFlag] as String?;
 
   if (keyHex != null && keyHex.isNotEmpty) {
+    if (Platform.environment['ZEGEL_ALLOW_KEY_ON_CLI'] != '1') {
+      stderr.writeln(
+        Ansi.warning(
+          'warning: keys passed via -k are visible to `ps` and logged in '
+          'shell history. Prefer --key-file for long-running systems.',
+        ),
+      );
+    }
     return hexDecode(keyHex, label: 'key');
   }
 
@@ -186,14 +200,21 @@ class RawZegelHeader {
 
   /// Parses a .zgl file's raw bytes and returns a [RawZegelHeader].
   ///
-  /// Throws [FormatException] if the binary structure is invalid.
+  /// Throws [FormatException] if the binary structure is invalid or if the
+  /// header declares sizes that exceed the library's DoS limits.
   static RawZegelHeader parse(Uint8List fileBytes) {
     final h = RawZegelHeader._();
     final bd = ByteData.sublistView(fileBytes);
 
-    if (fileBytes.length < 86) {
-      throw const FormatException('File too short for Zegel header.');
+    void requireBytes(int upTo, String what) {
+      if (upTo > fileBytes.length) {
+        throw FormatException(
+          'File too short: expected at least $upTo bytes for $what',
+        );
+      }
     }
+
+    requireBytes(86, 'fixed header');
 
     h.versionMajor = fileBytes[8];
     h.versionMinor = fileBytes[9];
@@ -208,22 +229,34 @@ class RawZegelHeader {
 
     // Filename.
     final filenameLen = bd.getUint16(84, Endian.big);
+    requireBytes(86 + filenameLen, 'filename');
     h.filename = utf8.decode(fileBytes.sublist(86, 86 + filenameLen));
 
     // Salt.
     final saltOffset = 86 + filenameLen;
+    requireBytes(saltOffset + ZegelFormat.saltSize, 'master salt');
     h.salt = Uint8List.fromList(
       fileBytes.sublist(saltOffset, saltOffset + ZegelFormat.saltSize),
     );
 
     // Block count.
     final blockCountOffset = saltOffset + ZegelFormat.saltSize;
+    requireBytes(blockCountOffset + 4, 'block count');
     h.blockCount = bd.getUint32(blockCountOffset, Endian.big);
+
+    // DoS prevention: cap block count before allocating directory memory.
+    if (h.blockCount > ZegelFormat.maxBlockCount) {
+      throw FormatException(
+        'Block count ${h.blockCount} exceeds maximum '
+        '${ZegelFormat.maxBlockCount}',
+      );
+    }
 
     // Extended header.
     int cursor = blockCountOffset + 4;
 
     if (h.flags & ZegelFormat.flagPasswordDerived != 0) {
+      requireBytes(cursor + 8, 'Argon2 parameters');
       h.argon2TimeCost = bd.getUint32(cursor, Endian.big);
       cursor += 4;
       h.argon2MemoryCost = bd.getUint32(cursor, Endian.big);
@@ -231,11 +264,13 @@ class RawZegelHeader {
     }
 
     if (h.flags & ZegelFormat.flagHasExpiration != 0) {
+      requireBytes(cursor + 8, 'expiration timestamp');
       h.expirationTimestamp = bd.getUint64(cursor, Endian.big);
       cursor += 8;
     }
 
     if (h.flags & ZegelFormat.flagHasCanary != 0) {
+      requireBytes(cursor + 32, 'recipient ID');
       h.recipientId = Uint8List.fromList(
         fileBytes.sublist(cursor, cursor + 32),
       );
@@ -243,6 +278,7 @@ class RawZegelHeader {
     }
 
     if (h.flags & ZegelFormat.flagSplitKey != 0) {
+      requireBytes(cursor + 2, 'split-key parameters');
       h.splitKeyThreshold = fileBytes[cursor];
       cursor += 1;
       h.splitKeyTotal = fileBytes[cursor];
@@ -250,6 +286,7 @@ class RawZegelHeader {
     }
 
     if (h.flags & ZegelFormat.flagVersioned != 0) {
+      requireBytes(cursor + 32, 'version chain hash');
       h.versionChainHash = Uint8List.fromList(
         fileBytes.sublist(cursor, cursor + 32),
       );
@@ -257,8 +294,16 @@ class RawZegelHeader {
     }
 
     if (h.flags & ZegelFormat.flagHasPublicMetadata != 0) {
+      requireBytes(cursor + 4, 'public metadata length');
       final pubMetaLen = bd.getUint32(cursor, Endian.big);
+      if (pubMetaLen > ZegelFormat.maxPublicMetadataSize) {
+        throw FormatException(
+          'Public metadata size $pubMetaLen exceeds maximum '
+          '${ZegelFormat.maxPublicMetadataSize}',
+        );
+      }
       cursor += 4;
+      requireBytes(cursor + pubMetaLen, 'public metadata body');
       final pubMetaJson = utf8.decode(
         fileBytes.sublist(cursor, cursor + pubMetaLen),
       );
@@ -267,6 +312,9 @@ class RawZegelHeader {
     }
 
     // Block directory.
+    final int directorySize =
+        h.blockCount * ZegelFormat.blockDirectoryEntrySize;
+    requireBytes(cursor + directorySize, 'block directory');
     final directory = <RawBlockEntry>[];
     for (int i = 0; i < h.blockCount; i++) {
       final eo = cursor;
@@ -284,6 +332,7 @@ class RawZegelHeader {
     h.blockDirectory = directory;
 
     // Merkle root.
+    requireBytes(cursor + ZegelFormat.hashSize, 'Merkle root');
     h.merkleRoot = Uint8List.fromList(
       fileBytes.sublist(cursor, cursor + ZegelFormat.hashSize),
     );
@@ -291,6 +340,7 @@ class RawZegelHeader {
 
     // Key commitment (optional).
     if (h.flags & ZegelFormat.flagHasKeyCommitment != 0) {
+      requireBytes(cursor + ZegelFormat.hashSize, 'key commitment');
       h.keyCommitment = Uint8List.fromList(
         fileBytes.sublist(cursor, cursor + ZegelFormat.hashSize),
       );

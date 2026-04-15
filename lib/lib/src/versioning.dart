@@ -142,7 +142,8 @@ class ContentVersioning {
   /// .zgl file's raw bytes.
   ///
   /// Parses just enough of the header to locate these fields without
-  /// requiring the master key.
+  /// requiring the master key. Applies the same DoS bounds as [ZegelReader]
+  /// so a malicious file cannot trigger unbounded allocation.
   static _VersionInfo? _extractVersionInfo(Uint8List fileBytes) {
     if (fileBytes.length < 86) return null;
 
@@ -162,6 +163,12 @@ class ContentVersioning {
 
     final int blockCountOffset = 86 + filenameLen + ZegelFormat.saltSize;
     final int blockCount = bd.getUint32(blockCountOffset, Endian.big);
+
+    // DoS prevention: reject an unreasonable block count before using it
+    // as a multiplier for the directory skip-offset.
+    if (blockCount < 0 || blockCount > ZegelFormat.maxBlockCount) {
+      return null;
+    }
 
     // Walk through the extended header to find the version chain hash.
     int cursor = blockCountOffset + 4;
@@ -183,6 +190,11 @@ class ContentVersioning {
     if (flags & ZegelFormat.flagHasPublicMetadata != 0) {
       if (fileBytes.length < cursor + 4) return null;
       final int pubMetaLen = bd.getUint32(cursor, Endian.big);
+      // DoS prevention: cap public metadata size.
+      if (pubMetaLen < 0 ||
+          pubMetaLen > ZegelFormat.maxPublicMetadataSize) {
+        return null;
+      }
       cursor += 4 + pubMetaLen;
     }
 

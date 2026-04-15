@@ -63,7 +63,7 @@ import 'app_localizations_nl.dart';
 /// property.
 abstract class AppLocalizations {
   AppLocalizations(String locale)
-    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+      : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -86,16 +86,16 @@ abstract class AppLocalizations {
   /// of delegates is preferred or required.
   static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
       <LocalizationsDelegate<dynamic>>[
-        delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-      ];
+    delegate,
+    GlobalMaterialLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
+  ];
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('en'),
-    Locale('nl'),
+    Locale('nl')
   ];
 
   /// The application title
@@ -1381,6 +1381,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Tools'**
   String get drawerToolsSection;
+
+  /// Drawer section header for signing workflows
+  ///
+  /// In en, this message translates to:
+  /// **'Signing'**
+  String get drawerSigningSection;
+
+  /// Title for the wet signature screen
+  ///
+  /// In en, this message translates to:
+  /// **'Wet Signature'**
+  String get wetSignatureTitle;
+
+  /// Title for the signing envelope screen
+  ///
+  /// In en, this message translates to:
+  /// **'Signing Envelope'**
+  String get envelopeTitle;
+
+  /// Button to create the envelope
+  ///
+  /// In en, this message translates to:
+  /// **'Create Envelope'**
+  String get envelopeCreate;
+
+  /// Title shown when envelope is successfully created
+  ///
+  /// In en, this message translates to:
+  /// **'Envelope Created'**
+  String get envelopeCreated;
 }
 
 class _AppLocalizationsDelegate
@@ -1410,9 +1440,8 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
   }
 
   throw FlutterError(
-    'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
-    'an issue with the localizations generation tool. Please file an issue '
-    'on GitHub with a reproducible sample app and the gen-l10n configuration '
-    'that was used.',
-  );
+      'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
+      'an issue with the localizations generation tool. Please file an issue '
+      'on GitHub with a reproducible sample app and the gen-l10n configuration '
+      'that was used.');
 }

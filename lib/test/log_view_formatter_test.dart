@@ -294,8 +294,7 @@ void main() {
     // -----------------------------------------------------------------------
     group('FormattedLogLine', () {
       test('stores all four fields', () {
-        final ts = DateTime.utc(2024, 1, 1);
-        const line = FormattedLogLine(
+        final line = FormattedLogLine(
           timestamp: DateTime.utc(2024, 1, 1),
           level: LogLevel.info,
           operation: 'seal',

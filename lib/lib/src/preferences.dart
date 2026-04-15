@@ -119,6 +119,13 @@ class ZegelPreferences {
 
   /// Persists the current state to the backing file. If no file path was
   /// provided, this throws a [StateError].
+  ///
+  /// The write is performed atomically: contents are first written to a
+  /// sibling temp file, fsynced, and then renamed over the destination so a
+  /// crash mid-write cannot corrupt the existing file. On POSIX systems the
+  /// file is also chmod'd to `0600` so user preferences (which may include
+  /// key fingerprints or classification defaults) cannot be read by other
+  /// local users.
   void save() {
     final target = path;
     if (target == null) {
@@ -126,7 +133,26 @@ class ZegelPreferences {
     }
     final file = File(target);
     file.parent.createSync(recursive: true);
-    file.writeAsStringSync(encode());
+
+    final tmp = File('$target.tmp');
+    final raf = tmp.openSync(mode: FileMode.write);
+    try {
+      raf.writeStringSync(encode());
+      raf.flushSync();
+    } finally {
+      raf.closeSync();
+    }
+    // Rename is atomic on POSIX and Windows.
+    tmp.renameSync(target);
+
+    // Restrict permissions on POSIX. No-op on Windows.
+    if (!Platform.isWindows) {
+      try {
+        Process.runSync('chmod', <String>['600', target]);
+      } catch (_) {
+        // Best effort: ignore if chmod is unavailable.
+      }
+    }
   }
 
   /// Returns an unmodifiable snapshot of the raw underlying map.

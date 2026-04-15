@@ -673,4 +673,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get drawerToolsSection => 'Tools';
+
+  @override
+  String get drawerSigningSection => 'Signing';
+
+  @override
+  String get wetSignatureTitle => 'Wet Signature';
+
+  @override
+  String get envelopeTitle => 'Signing Envelope';
+
+  @override
+  String get envelopeCreate => 'Create Envelope';
+
+  @override
+  String get envelopeCreated => 'Envelope Created';
 }

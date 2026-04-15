@@ -185,7 +185,18 @@ class ZegelWriter {
     if (masterKey.length != 32) {
       throw ArgumentError('Master key must be exactly 32 bytes');
     }
-    if (options.argon2TimeCost != null && options.argon2MemoryCost != null) {
+
+    // Argon2id parameters must be set all-or-nothing and each parameter must
+    // meet the OWASP 2024 minimum independently. Previously, setting only one
+    // of the two would silently bypass validation.
+    final bool haveTime = options.argon2TimeCost != null;
+    final bool haveMem = options.argon2MemoryCost != null;
+    if (haveTime != haveMem) {
+      throw ArgumentError(
+        'Argon2id time and memory cost must both be set or both be null',
+      );
+    }
+    if (haveTime && haveMem) {
       if (options.argon2TimeCost! < minArgon2TimeCost) {
         throw ArgumentError(
           'Argon2id time cost must be >= $minArgon2TimeCost '
@@ -442,6 +453,14 @@ class ZegelWriter {
       keyCommitment = KeyDerivation.computeKeyCommitment(blockKeys);
     }
 
+    // Block keys have served their purpose (encryption + optional commitment);
+    // wipe them before the list goes out of scope.
+    for (final Uint8List k in blockKeys) {
+      for (int i = 0; i < k.length; i++) {
+        k[i] = 0;
+      }
+    }
+
     // =========================================================================
     // 12. Build the binary file
     // =========================================================================
@@ -575,6 +594,10 @@ class ZegelWriter {
       sealKey,
       preSealBytes,
     );
+    // Best-effort wipe of the seal key.
+    for (int i = 0; i < sealKey.length; i++) {
+      sealKey[i] = 0;
+    }
 
     // =========================================================================
     // 14. Assemble final file

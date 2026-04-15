@@ -75,10 +75,10 @@ void main() {
       final json = jsonDecode(utf8.decode(encoded)) as Map<String, dynamic>;
 
       // Verify JSON structure is table-friendly.
-      expect(json['packages'], isA<List>());
-      final packages = json['packages'] as List;
+      expect(json['packages'], isA<List<dynamic>>());
+      final packages = json['packages'] as List<dynamic>;
       expect(packages.length, equals(2));
-      expect(packages[0]['name'], equals('crypto'));
+      expect((packages[0] as Map<String, dynamic>)['name'], equals('crypto'));
     });
 
     test('envelope events serialize to JSON for audit table', () {

@@ -298,8 +298,13 @@ class AttestCommand extends Command<int> {
         expirationDate: expirationDateStr,
       );
 
-      // Decrypt.
-      final cipher = _createGCMCipher(false, blockKey, entry.iv);
+      // Decrypt with the AAD bound to the original block position and salt.
+      final Uint8List decryptAad = _buildBlockAad(
+        entry.type,
+        i,
+        header.salt,
+      );
+      final cipher = _createGCMCipher(false, blockKey, entry.iv, decryptAad);
       final Uint8List input = Uint8List(ciphertext.length + entry.tag.length);
       input.setRange(0, ciphertext.length, ciphertext);
       input.setRange(ciphertext.length, input.length, entry.tag);
@@ -354,10 +359,27 @@ class AttestCommand extends Command<int> {
       );
       newBlockKeys.add(key);
 
-      final Uint8List iv = _randomBytes(random, ZegelFormat.ivSize);
+      // Hedged nonce matching ZegelWriter: HKDF-derived XOR CSPRNG.
+      final Uint8List derivedNonce = KeyDerivation.deriveBlockNonce(
+        masterKey,
+        newMerkleRoot,
+        header.salt,
+        i,
+      );
+      final Uint8List randomNonce = _randomBytes(random, ZegelFormat.ivSize);
+      final Uint8List iv = Uint8List(ZegelFormat.ivSize);
+      for (int b = 0; b < ZegelFormat.ivSize; b++) {
+        iv[b] = derivedNonce[b] ^ randomNonce[b];
+      }
       newIvs.add(iv);
 
-      final cipher = _createGCMCipher(true, key, iv);
+      // AAD must match ZegelWriter: blockType(1) || blockIndex(4 BE) || salt(32).
+      final Uint8List encryptAad = _buildBlockAad(
+        blockTypes[i],
+        i,
+        header.salt,
+      );
+      final cipher = _createGCMCipher(true, key, iv, encryptAad);
       final Uint8List encrypted = cipher.process(plaintexts[i]);
 
       final int ctLen = encrypted.length - ZegelFormat.tagSize;
@@ -469,6 +491,7 @@ class AttestCommand extends Command<int> {
     bool encrypt,
     Uint8List key,
     Uint8List iv,
+    Uint8List aad,
   ) {
     final cipher = GCMBlockCipher(AESEngine());
     cipher.init(
@@ -477,10 +500,22 @@ class AttestCommand extends Command<int> {
         KeyParameter(key),
         ZegelFormat.tagSize * 8,
         iv,
-        Uint8List(0),
+        aad,
       ),
     );
     return cipher;
+  }
+
+  /// Builds the AEAD associated data:
+  /// `blockType(1) || blockIndex(4 BE) || salt(32)`.
+  /// Must match [ZegelWriter] exactly so re-sealed files remain verifiable.
+  static Uint8List _buildBlockAad(int blockType, int blockIndex, Uint8List salt) {
+    final Uint8List aad = Uint8List(1 + 4 + ZegelFormat.saltSize);
+    aad[0] = blockType;
+    final ByteData bd = ByteData.sublistView(aad);
+    bd.setUint32(1, blockIndex, Endian.big);
+    aad.setRange(5, 5 + ZegelFormat.saltSize, salt);
+    return aad;
   }
 
   static Uint8List _randomBytes(Random random, int length) {

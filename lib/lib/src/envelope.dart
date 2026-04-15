@@ -629,13 +629,25 @@ class Envelope {
   /// Verifies the audit trail's chain integrity.
   ///
   /// Returns `true` if every event's `previousHash` matches the actual hash
-  /// of the preceding event.
+  /// of the preceding event. Uses a constant-time string comparison so that
+  /// a would-be forger cannot learn how many leading bytes of their guessed
+  /// `previousHash` happen to match.
   bool verifyAuditChain() {
     for (var i = 1; i < events.length; i++) {
       final expected = events[i - 1].computeHash();
-      if (events[i].previousHash != expected) return false;
+      final actual = events[i].previousHash ?? '';
+      if (!_constantTimeEqualsString(actual, expected)) return false;
     }
     return true;
+  }
+
+  static bool _constantTimeEqualsString(String a, String b) {
+    if (a.length != b.length) return false;
+    int diff = 0;
+    for (int i = 0; i < a.length; i++) {
+      diff |= a.codeUnitAt(i) ^ b.codeUnitAt(i);
+    }
+    return diff == 0;
   }
 
   /// Checks if all required recipients have signed.
