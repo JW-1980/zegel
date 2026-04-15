@@ -207,24 +207,40 @@ class BatchSealCommand extends Command<int> {
     stdout.writeln('Sealing ${files.length} file(s)...');
     int sealed = 0;
 
-    for (final file in files) {
-      final name = file.path.split(Platform.pathSeparator).last;
-      final content = Uint8List.fromList(file.readAsBytesSync());
-      final writer = ZegelWriter(
-        key,
-        ZegelOptions(
-          contentType: contentType ?? 'application/octet-stream',
-          filename: name,
-          compress: compress,
-          enableKeyCommitment: true,
-        ),
+    // Chunking to avoid "Too many open files" when batching a massive number of files.
+    const chunkSize = 50;
+    for (var i = 0; i < files.length; i += chunkSize) {
+      final chunk = files.sublist(
+        i,
+        i + chunkSize > files.length ? files.length : i + chunkSize,
       );
-      final sealedBytes = writer.seal(content);
-      File(
-        '${outputDir.path}${Platform.pathSeparator}$name.zgl',
-      ).writeAsBytesSync(sealedBytes);
-      stdout.writeln('  ${Ansi.success("✓")} $name -> $name.zgl');
-      sealed++;
+
+      final tasks = chunk.map((file) async {
+        final name = file.path.split(Platform.pathSeparator).last;
+        final content = Uint8List.fromList(await file.readAsBytes());
+
+        final sealedBytes = await Future.microtask(() {
+          final writer = ZegelWriter(
+            key,
+            ZegelOptions(
+              contentType: contentType ?? 'application/octet-stream',
+              filename: name,
+              compress: compress,
+              enableKeyCommitment: true,
+            ),
+          );
+          return writer.seal(content);
+        });
+
+        await File(
+          '${outputDir.path}${Platform.pathSeparator}$name.zgl',
+        ).writeAsBytes(sealedBytes);
+
+        stdout.writeln('  ${Ansi.success("✓")} $name -> $name.zgl');
+      });
+
+      await Future.wait(tasks);
+      sealed += chunk.length;
     }
 
     stdout.writeln();
