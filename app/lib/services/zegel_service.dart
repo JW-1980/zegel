@@ -206,11 +206,11 @@ class DisclosureToken {
   });
 
   Map<String, dynamic> toJson() => {
-    'version': version,
-    'merkle_root': merkleRoot,
-    'block_keys': blockKeys.map((k, v) => MapEntry(k.toString(), v)),
-    'created_at': createdAt.millisecondsSinceEpoch ~/ 1000,
-  };
+        'version': version,
+        'merkle_root': merkleRoot,
+        'block_keys': blockKeys.map((k, v) => MapEntry(k.toString(), v)),
+        'created_at': createdAt.millisecondsSinceEpoch ~/ 1000,
+      };
 
   factory DisclosureToken.fromJson(Map<String, dynamic> json) {
     final blockKeysRaw = json['block_keys'] as Map<String, dynamic>;
@@ -561,8 +561,7 @@ class ZegelService {
     final tokenMap = <String, dynamic>{
       'version': token.version,
       'merkle_root': token.merkleRoot,
-      'block_keys':
-          token.blockKeys.map((k, v) => MapEntry(k.toString(), v)),
+      'block_keys': token.blockKeys.map((k, v) => MapEntry(k.toString(), v)),
       'created_at': token.createdAt.millisecondsSinceEpoch ~/ 1000,
     };
     final result = reader.extractWithToken(fileBytes, tokenMap);
@@ -703,8 +702,8 @@ class ZegelService {
     if (!await manifestFile.exists()) {
       throw FileSystemException('Manifest does not exist', manifestPath);
     }
-    final manifest = jsonDecode(await manifestFile.readAsString())
-        as Map<String, dynamic>;
+    final manifest =
+        jsonDecode(await manifestFile.readAsString()) as Map<String, dynamic>;
     final signerKey = _hexToBytes(signerKeyHex);
 
     if (!zgl.ZegelManifest.verify(manifest, signerKey)) {
@@ -719,8 +718,7 @@ class ZegelService {
 
     final files = manifest['files'] as List<dynamic>;
     final results = <ManifestFileResult>[];
-    final baseDir =
-        fileDirectory ?? manifestFile.parent.path;
+    final baseDir = fileDirectory ?? manifestFile.parent.path;
     for (final entry in files) {
       final m = entry as Map<String, dynamic>;
       final filename = m['filename'] as String;
@@ -1218,10 +1216,10 @@ class ZegelService {
     }
 
     final directoryStart = cursor;
-    final directorySize =
-        blockCount * zgl.ZegelFormat.blockDirectoryEntrySize;
+    final directorySize = blockCount * zgl.ZegelFormat.blockDirectoryEntrySize;
     if (fileBytes.length < directoryStart + directorySize) {
-      throw const zgl.ZegelFormatException('File too short for block directory');
+      throw const zgl.ZegelFormatException(
+          'File too short for block directory');
     }
 
     final entries = <ZegelBlockInfo>[];
@@ -1284,8 +1282,8 @@ class ZegelService {
       cursor += 4 + pubLen;
     }
     final directoryStart = cursor;
-    final directoryEnd = directoryStart +
-        blockCount * zgl.ZegelFormat.blockDirectoryEntrySize;
+    final directoryEnd =
+        directoryStart + blockCount * zgl.ZegelFormat.blockDirectoryEntrySize;
     if (fileBytes.length < directoryEnd + zgl.ZegelFormat.hashSize) {
       throw const zgl.ZegelFormatException('File too short for Merkle root');
     }
