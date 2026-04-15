@@ -5,8 +5,8 @@
 /// minutes" number. The baseline is an average per-file cost captured from
 /// historical observations or a user-supplied constant.
 class TimeSavedTracker {
-
   TimeSavedTracker({this.baselinePerFile = const Duration(seconds: 12)});
+
   /// Baseline cost of processing a single file manually (start UI, pick
   /// file, enter options, save). Defaults to 12 seconds — a conservative
   /// estimate calibrated against user studies. Configurable per-instance.

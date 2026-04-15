@@ -157,7 +157,6 @@ enum FieldType {
 
 /// A field on a document that a recipient must fill.
 class SignatureField {
-
   /// Deserializes from JSON.
   factory SignatureField.fromJson(Map<String, dynamic> json) {
     return SignatureField(
@@ -177,6 +176,7 @@ class SignatureField {
           (json['options'] as List<dynamic>?)?.map((o) => o as String).toList(),
     );
   }
+
   /// Creates a [SignatureField].
   const SignatureField({
     required this.id,
@@ -260,7 +260,6 @@ class SignatureField {
 
 /// A recipient in an envelope signing workflow.
 class EnvelopeRecipient {
-
   /// Deserializes from JSON.
   factory EnvelopeRecipient.fromJson(Map<String, dynamic> json) {
     return EnvelopeRecipient(
@@ -285,6 +284,7 @@ class EnvelopeRecipient {
       signatureHash: json['signature_hash'] as String?,
     );
   }
+
   /// Creates an [EnvelopeRecipient].
   const EnvelopeRecipient({
     required this.id,
@@ -412,7 +412,6 @@ enum RecipientStatus {
 
 /// A single event in the envelope audit log.
 class EnvelopeEvent {
-
   /// Deserializes from JSON.
   factory EnvelopeEvent.fromJson(Map<String, dynamic> json) {
     return EnvelopeEvent(
@@ -425,6 +424,7 @@ class EnvelopeEvent {
       previousHash: json['previous_hash'] as String?,
     );
   }
+
   /// Creates an [EnvelopeEvent].
   const EnvelopeEvent({
     required this.timestamp,
@@ -497,7 +497,6 @@ class EnvelopeEvent {
 /// sidecar file. It references one or more documents by their Merkle root
 /// and defines the signing workflow.
 class Envelope {
-
   /// Decodes an envelope from JSON bytes.
   factory Envelope.decode(Uint8List data) {
     return Envelope.fromJson(
@@ -541,6 +540,7 @@ class Envelope {
       reminderMaxCount: json['reminder_max_count'] as int? ?? 3,
     );
   }
+
   /// Creates a new [Envelope].
   Envelope({
     required this.id,
