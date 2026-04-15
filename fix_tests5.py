@@ -13,13 +13,14 @@ with open('lib/test/provenance_verification_test.dart', 'w') as f:
 
 
 with open('lib/test/timestamp_test.dart', 'r') as f:
-    content = f.read()
-# Let's fix line 161
-content = content.replace("const variables must be initialized with a constant value", "")
-# Wait I don't know the exact string.
-content = content.replace("const ", "final ")
+    lines = f.readlines()
+
+# Replace const with final on line 161 to fix constant value initialization error.
+if len(lines) >= 161:
+    lines[160] = lines[160].replace("const ", "final ")
+
 with open('lib/test/timestamp_test.dart', 'w') as f:
-    f.write(content)
+    f.writelines(lines)
 
 
 with open('lib/test/writer_test.dart', 'r') as f:
