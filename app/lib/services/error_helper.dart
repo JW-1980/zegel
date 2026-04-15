@@ -31,21 +31,20 @@ class ErrorHelper {
         description:
             'This file has been modified since it was sealed. The content '
             'is cryptographically irrecoverable.',
-        suggestion:
-            'Obtain a fresh copy of the file from the original source. '
+        suggestion: 'Obtain a fresh copy of the file from the original source. '
             'If you suspect unauthorized modification, check the audit trail '
             'and contact the file owner.',
       );
     }
 
     // Wrong key.
-    if (msg.contains('decryption failed') || msg.contains('Merkle root mismatch')) {
+    if (msg.contains('decryption failed') ||
+        msg.contains('Merkle root mismatch')) {
       return const ErrorMessage(
         title: 'Wrong Master Key',
         description:
             'The provided key does not match the key used to seal this file.',
-        suggestion:
-            'Double-check that you are using the correct key file. '
+        suggestion: 'Double-check that you are using the correct key file. '
             'If the key was split using Shamir shares, ensure you have '
             'the minimum threshold of shares to reconstruct it.',
       );
@@ -55,11 +54,9 @@ class ErrorHelper {
     if (msg.contains('expired') || msg.contains('Expired')) {
       return const ErrorMessage(
         title: 'File Has Expired',
-        description:
-            'This file has passed its cryptographic expiration date. '
+        description: 'This file has passed its cryptographic expiration date. '
             'The content is permanently inaccessible by design.',
-        suggestion:
-            'Contact the file creator to issue a new sealed file with '
+        suggestion: 'Contact the file creator to issue a new sealed file with '
             'an updated expiration date, or request a non-expiring version.',
       );
     }
@@ -78,7 +75,8 @@ class ErrorHelper {
     }
 
     // Format errors.
-    if (msg.contains('Invalid magic bytes') || msg.contains('FormatException')) {
+    if (msg.contains('Invalid magic bytes') ||
+        msg.contains('FormatException')) {
       return const ErrorMessage(
         title: 'Not a Valid Zegel File',
         description:
@@ -95,8 +93,7 @@ class ErrorHelper {
     if (msg.contains('too short')) {
       return const ErrorMessage(
         title: 'File Is Truncated',
-        description:
-            'The file appears to be incomplete or truncated.',
+        description: 'The file appears to be incomplete or truncated.',
         suggestion:
             'The file may have been partially downloaded or the disk ran '
             'out of space during creation. Obtain a complete copy from '
@@ -112,20 +109,20 @@ class ErrorHelper {
             'The file claims to contain an unreasonably large number of '
             'blocks, which may indicate a malicious file designed to '
             'exhaust system memory.',
-        suggestion:
-            'Do not trust this file. Obtain it from a verified source.',
+        suggestion: 'Do not trust this file. Obtain it from a verified source.',
       );
     }
 
     // Argon2id parameter errors.
-    if (msg.contains('Argon2id') || msg.contains('time cost') || msg.contains('memory cost')) {
+    if (msg.contains('Argon2id') ||
+        msg.contains('time cost') ||
+        msg.contains('memory cost')) {
       return const ErrorMessage(
         title: 'Weak Password Parameters',
         description:
             'The Argon2id password derivation parameters are below the '
             'minimum security thresholds recommended by OWASP.',
-        suggestion:
-            'Use time cost >= 2 and memory cost >= 19456 KiB (19 MiB). '
+        suggestion: 'Use time cost >= 2 and memory cost >= 19456 KiB (19 MiB). '
             'These minimums protect against GPU-based brute-force attacks.',
       );
     }
@@ -144,8 +141,7 @@ class ErrorHelper {
     if (msg.contains('Need at least') && msg.contains('shares')) {
       return const ErrorMessage(
         title: 'Not Enough Key Shares',
-        description:
-            'You need more key shares to reconstruct the master key.',
+        description: 'You need more key shares to reconstruct the master key.',
         suggestion:
             'Collect additional shares from other key holders until you '
             'have at least the threshold number.',
@@ -158,8 +154,7 @@ class ErrorHelper {
         title: 'Disclosure Token Expired',
         description:
             'The selective disclosure token has passed its expiration time.',
-        suggestion:
-            'Request a new disclosure token from the file owner. '
+        suggestion: 'Request a new disclosure token from the file owner. '
             'Tokens have a limited lifetime for security reasons.',
       );
     }
@@ -169,8 +164,7 @@ class ErrorHelper {
       return const ErrorMessage(
         title: 'File Not Found',
         description: 'The specified file could not be found on disk.',
-        suggestion:
-            'Verify the file path is correct and the file has not been '
+        suggestion: 'Verify the file path is correct and the file has not been '
             'moved, renamed, or deleted.',
       );
     }
@@ -179,8 +173,7 @@ class ErrorHelper {
     return ErrorMessage(
       title: 'Operation Failed',
       description: msg.length > 200 ? '${msg.substring(0, 200)}...' : msg,
-      suggestion:
-          'Try the operation again. If the problem persists, check the '
+      suggestion: 'Try the operation again. If the problem persists, check the '
           'file integrity and key validity.',
     );
   }
