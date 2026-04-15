@@ -1,8 +1,23 @@
+import 'dart:io';
+
 import 'package:test/test.dart';
 import 'package:zegel/zegel.dart';
 
 void main() {
   group('RevealInOs', () {
+    group('commandFor – security', () {
+      test('rejects paths containing URI schemes', () {
+        expect(
+          () => RevealInOs.commandFor('file:///tmp/secret.zgl'),
+          throwsA(isA<ArgumentError>()),
+        );
+        expect(
+          () => RevealInOs.commandFor('http://example.com/file'),
+          throwsA(isA<ArgumentError>()),
+        );
+      });
+    });
+
     group('commandFor – windows', () {
       test('uses explorer executable', () {
         final cmd = RevealInOs.commandFor(
@@ -12,16 +27,18 @@ void main() {
         expect(cmd.executable, 'explorer');
       });
 
-      test('passes /select,<path> as single argument', () {
+      test('passes /select,"<absolute-path>" as single argument', () {
         const path = r'C:\Users\alice\secret.zgl';
         final cmd = RevealInOs.commandFor(path, overrideOs: 'windows');
-        expect(cmd.arguments, ['/select,$path']);
+        final expectedPath = File(path).absolute.path;
+        expect(cmd.arguments, ['/select,"$expectedPath"']);
       });
 
-      test('works for paths with spaces', () {
+      test('works for paths with spaces and quotes them', () {
         const path = r'C:\My Documents\report.zgl';
         final cmd = RevealInOs.commandFor(path, overrideOs: 'windows');
-        expect(cmd.arguments.first, '/select,$path');
+        final expectedPath = File(path).absolute.path;
+        expect(cmd.arguments.first, '/select,"$expectedPath"');
       });
     });
 
@@ -34,18 +51,19 @@ void main() {
         expect(cmd.executable, 'open');
       });
 
-      test('passes -R flag followed by the path', () {
+      test('passes -R flag, -- separator, and absolute path', () {
         const path = '/Users/alice/Documents/secret.zgl';
         final cmd = RevealInOs.commandFor(path, overrideOs: 'macos');
-        expect(cmd.arguments, ['-R', path]);
+        final expectedPath = File(path).absolute.path;
+        expect(cmd.arguments, ['-R', '--', expectedPath]);
       });
 
-      test('arguments list has exactly two elements', () {
+      test('arguments list has exactly three elements', () {
         final cmd = RevealInOs.commandFor(
           '/tmp/foo.zgl',
           overrideOs: 'macos',
         );
-        expect(cmd.arguments.length, 2);
+        expect(cmd.arguments.length, 3);
       });
     });
 
@@ -58,12 +76,16 @@ void main() {
         expect(cmd.executable, 'xdg-open');
       });
 
-      test('passes the parent directory, not the file itself', () {
-        final cmd = RevealInOs.commandFor(
-          '/home/alice/docs/secret.zgl',
-          overrideOs: 'linux',
-        );
-        expect(cmd.arguments, ['/home/alice/docs']);
+      test('passes -- separator and parent directory, not the file itself', () {
+        const path = '/home/alice/docs/secret.zgl';
+        final cmd = RevealInOs.commandFor(path, overrideOs: 'linux');
+        final expectedPath = File(path).absolute.path;
+        // Find parent of expectedPath
+        final sep = Platform.pathSeparator;
+        final idx = expectedPath.lastIndexOf(sep);
+        final parent = idx <= 0 ? expectedPath : expectedPath.substring(0, idx);
+
+        expect(cmd.arguments, ['--', parent]);
       });
 
       test('handles file in root directory gracefully', () {
@@ -73,16 +95,16 @@ void main() {
         );
         // The file is at the root; the parent resolution falls back to
         // the path itself when idx <= 0.
-        expect(cmd.arguments.length, 1);
-        expect(cmd.arguments.first, isNotEmpty);
+        expect(cmd.arguments.length, 2);
+        expect(cmd.arguments.last, isNotEmpty);
       });
 
-      test('arguments list has exactly one element', () {
+      test('arguments list has exactly two elements', () {
         final cmd = RevealInOs.commandFor(
           '/var/data/report.zgl',
           overrideOs: 'linux',
         );
-        expect(cmd.arguments.length, 1);
+        expect(cmd.arguments.length, 2);
       });
     });
 
