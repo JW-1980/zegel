@@ -122,8 +122,9 @@ class _ContractScreenState extends State<ContractScreen> {
       // Build metadata with party information
       final metadata = <String, dynamic>{
         'document_type': 'contract',
-        'parties':
-            _parties.map((p) => {'name': p.name, 'role': p.role}).toList(),
+        'parties': _parties
+            .map((p) => {'name': p.name, 'role': p.role})
+            .toList(),
       };
 
       final options = SealOptions(
@@ -207,8 +208,9 @@ class _ContractScreenState extends State<ContractScreen> {
 
       if (result.attestations != null && result.attestations!.isNotEmpty) {
         // Check if all required roles have attested
-        final attestedRoles =
-            result.attestations!.map((a) => a.signerId).toSet();
+        final attestedRoles = result.attestations!
+            .map((a) => a.signerId)
+            .toSet();
         final requiredRoles = _parties.map((p) => p.name).toSet();
         final allAttested = requiredRoles.every(attestedRoles.contains);
 
@@ -489,7 +491,8 @@ class _ContractScreenState extends State<ContractScreen> {
                   child: SizedBox(
                     height: 50,
                     child: ElevatedButton.icon(
-                      onPressed: _isProcessing ||
+                      onPressed:
+                          _isProcessing ||
                               _filePath == null ||
                               _ownerKeyHex.length != 64
                           ? null

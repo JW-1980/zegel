@@ -57,11 +57,14 @@ class _InactivityLockState extends State<InactivityLock> {
     _timer?.cancel();
     if (!widget.enabled || widget.pin == null || widget.pin!.isEmpty) return;
 
-    _timer = Timer(Duration(minutes: widget.timeoutMinutes), () {
-      if (mounted && widget.enabled) {
-        setState(() => _isLocked = true);
-      }
-    });
+    _timer = Timer(
+      Duration(minutes: widget.timeoutMinutes),
+      () {
+        if (mounted && widget.enabled) {
+          setState(() => _isLocked = true);
+        }
+      },
+    );
   }
 
   void _onUserActivity() {
@@ -78,7 +81,10 @@ class _InactivityLockState extends State<InactivityLock> {
   @override
   Widget build(BuildContext context) {
     if (_isLocked) {
-      return _PinScreen(onUnlock: _unlock, expectedPin: widget.pin!);
+      return _PinScreen(
+        onUnlock: _unlock,
+        expectedPin: widget.pin!,
+      );
     }
 
     return Listener(
@@ -98,7 +104,10 @@ class _PinScreen extends StatefulWidget {
   final VoidCallback onUnlock;
   final String expectedPin;
 
-  const _PinScreen({required this.onUnlock, required this.expectedPin});
+  const _PinScreen({
+    required this.onUnlock,
+    required this.expectedPin,
+  });
 
   @override
   State<_PinScreen> createState() => _PinScreenState();
@@ -116,9 +125,8 @@ class _PinScreenState extends State<_PinScreen> {
   bool get _isLockedOut =>
       _cooldownUntil != null && DateTime.now().isBefore(_cooldownUntil!);
 
-  Duration get _remainingLockout => _cooldownUntil == null
-      ? Duration.zero
-      : _cooldownUntil!.difference(DateTime.now());
+  Duration get _remainingLockout =>
+      _cooldownUntil == null ? Duration.zero : _cooldownUntil!.difference(DateTime.now());
 
   void _addDigit(String digit) {
     if (_isLockedOut) return;
@@ -147,9 +155,7 @@ class _PinScreenState extends State<_PinScreen> {
     // Constant-time comparison to prevent timing attacks.
     bool match = _enteredPin.length == widget.expectedPin.length;
     int diff = 0;
-    for (int i = 0;
-        i < _enteredPin.length && i < widget.expectedPin.length;
-        i++) {
+    for (int i = 0; i < _enteredPin.length && i < widget.expectedPin.length; i++) {
       diff |= _enteredPin.codeUnitAt(i) ^ widget.expectedPin.codeUnitAt(i);
     }
     match = match && diff == 0;
@@ -161,8 +167,9 @@ class _PinScreenState extends State<_PinScreen> {
     } else {
       _attempts++;
       // Exponential backoff: 0, 1, 2, 4, 8, ... capped at 60 seconds.
-      final int backoffSeconds =
-          _attempts < 3 ? 0 : (1 << (_attempts - 3)).clamp(1, 60);
+      final int backoffSeconds = _attempts < 3
+          ? 0
+          : (1 << (_attempts - 3)).clamp(1, 60);
       _cooldownUntil = backoffSeconds == 0
           ? null
           : DateTime.now().add(Duration(seconds: backoffSeconds));
@@ -281,11 +288,8 @@ class _PinScreenState extends State<_PinScreen> {
                     ),
                   ),
                   child: key == 'del'
-                      ? const Icon(
-                          Icons.backspace_outlined,
-                          color: Colors.white70,
-                          size: 22,
-                        )
+                      ? const Icon(Icons.backspace_outlined,
+                          color: Colors.white70, size: 22)
                       : Text(
                           key,
                           style: const TextStyle(

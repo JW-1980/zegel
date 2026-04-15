@@ -151,14 +151,16 @@ class _RedactScreenState extends State<RedactScreen> {
           ),
           actions: [
             TextButton(
-              onPressed: () => // ignore: use_build_context_synchronously
-                  Navigator.of(context).pop(false),
+              onPressed:
+                  () => // ignore: use_build_context_synchronously
+                      Navigator.of(context).pop(false),
               child: const Text('Cancel'),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-              onPressed: () => // ignore: use_build_context_synchronously
-                  Navigator.of(context).pop(true),
+              onPressed:
+                  () => // ignore: use_build_context_synchronously
+                      Navigator.of(context).pop(true),
               child: const Text('Redact Permanently'),
             ),
           ],

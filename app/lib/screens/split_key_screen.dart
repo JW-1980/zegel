@@ -400,13 +400,11 @@ class _SplitKeyScreenState extends State<SplitKeyScreen>
                               icon: const Icon(Icons.share, size: 18),
                               tooltip: 'Share',
                               onPressed: () {
-                                SharePlus.instance.share(
-                                  ShareParams(
-                                    text: share,
-                                    subject:
-                                        'Zegel Key Share ${index + 1} of $_totalShares',
-                                  ),
-                                );
+                                SharePlus.instance.share(ShareParams(text:
+                                  share,
+                                  subject:
+                                      'Zegel Key Share ${index + 1} of $_totalShares',
+                                ));
                               },
                             ),
                           ],
