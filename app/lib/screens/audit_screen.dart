@@ -1,3 +1,4 @@
+import 'package:zegel_app/utils/hex_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
@@ -181,7 +182,7 @@ class _AuditScreenState extends State<AuditScreen> {
       Uint8List? previousChainHash;
       if (_auditEntries != null && _auditEntries!.isNotEmpty) {
         final lastHash = _auditEntries!.last.chainHash;
-        previousChainHash = _hexToBytes(lastHash);
+        previousChainHash = HexUtils.hexToBytes(lastHash);
       }
 
       // Create the new audit entry
@@ -219,15 +220,6 @@ class _AuditScreenState extends State<AuditScreen> {
         setState(() => _isAddingEntry = false);
       }
     }
-  }
-
-  Uint8List _hexToBytes(String hex) {
-    final length = hex.length ~/ 2;
-    final bytes = Uint8List(length);
-    for (int i = 0; i < length; i++) {
-      bytes[i] = int.parse(hex.substring(i * 2, i * 2 + 2), radix: 16);
-    }
-    return bytes;
   }
 
   @override
