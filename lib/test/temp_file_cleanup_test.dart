@@ -31,7 +31,7 @@ void main() {
       final oldPath = cleanup.createTempFile('old.bin');
 
       // Wait to ensure the maxAge is reached.
-      await Future.delayed(const Duration(milliseconds: 100));
+      await Future<void>.delayed(const Duration(milliseconds: 100));
 
       final freshPath = cleanup.createTempFile('fresh.bin');
 
