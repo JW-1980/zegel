@@ -29,15 +29,17 @@ void main() {
         secureWipe: false,
       );
       final oldPath = cleanup.createTempFile('old.bin');
-      await File(oldPath).setLastModified(
-        DateTime.now().subtract(const Duration(minutes: 10)),
-      );
-      cleanup.createTempFile('fresh.bin');
+
+      // Wait to ensure the maxAge is reached.
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      final freshPath = cleanup.createTempFile('fresh.bin');
 
       final deleted = cleanup.sweep();
       expect(deleted, [oldPath]);
       expect(cleanup.trackedCount, 1);
       expect(File(oldPath).existsSync(), isFalse);
+      expect(File(freshPath).existsSync(), isTrue);
     });
 
     test('clearAll removes every tracked file', () {
