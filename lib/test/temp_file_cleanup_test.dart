@@ -34,7 +34,8 @@ void main() {
       );
 
       final freshPath = cleanup.createTempFile('fresh.bin');
-      await File(freshPath).setLastModified(DateTime.now().add(const Duration(minutes: 10)));
+      await File(freshPath)
+          .setLastModified(DateTime.now().add(const Duration(minutes: 10)));
 
       final deleted = cleanup.sweep();
       expect(deleted, equals([oldPath]));
