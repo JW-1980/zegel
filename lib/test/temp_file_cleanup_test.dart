@@ -35,7 +35,8 @@ void main() {
       cleanup.createTempFile('fresh.bin');
 
       final deleted = cleanup.sweep();
-      expect(deleted, [oldPath]);
+      expect(deleted, contains(oldPath));
+      expect(deleted.length, 1);
       expect(cleanup.trackedCount, 1);
       expect(File(oldPath).existsSync(), isFalse);
     });
