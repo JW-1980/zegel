@@ -32,7 +32,10 @@ void main() {
       await File(oldPath).setLastModified(
         DateTime.now().subtract(const Duration(minutes: 10)),
       );
-      cleanup.createTempFile('fresh.bin');
+      final freshPath = cleanup.createTempFile('fresh.bin');
+      // Explicitly set the last modified time of the new file to NOW
+      // to ensure no filesystem lag causes it to look old
+      await File(freshPath).setLastModified(DateTime.now());
 
       final deleted = cleanup.sweep();
       expect(deleted, [oldPath]);
