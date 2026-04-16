@@ -25,17 +25,19 @@ void main() {
     test('sweep deletes expired tracked files only', () async {
       final cleanup = TempFileCleanup(
         directory: tmp.path,
-        maxAge: const Duration(milliseconds: 50),
+        maxAge: const Duration(seconds: 1),
         secureWipe: false,
       );
       final oldPath = cleanup.createTempFile('old.bin');
       await File(oldPath).setLastModified(
         DateTime.now().subtract(const Duration(minutes: 10)),
       );
-      cleanup.createTempFile('fresh.bin');
+
+      final freshPath = cleanup.createTempFile('fresh.bin');
+      await File(freshPath).setLastModified(DateTime.now().add(const Duration(minutes: 10)));
 
       final deleted = cleanup.sweep();
-      expect(deleted, [oldPath]);
+      expect(deleted, equals([oldPath]));
       expect(cleanup.trackedCount, 1);
       expect(File(oldPath).existsSync(), isFalse);
     });
