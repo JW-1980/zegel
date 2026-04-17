@@ -223,6 +223,7 @@ class ExtractCommand extends Command<int> {
       }
     }
 
-    return 0;
+    SecureMemory.wipe(masterKey);
+      return 0;
   }
 }
