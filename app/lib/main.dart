@@ -19,10 +19,7 @@ Future<void> main() async {
   final savedThemeMode = _parseThemeMode(prefs.getString(_themeModePrefsKey));
 
   runApp(
-    ZegelApp(
-      initialLocale: savedLocale,
-      initialThemeMode: savedThemeMode,
-    ),
+    ZegelApp(initialLocale: savedLocale, initialThemeMode: savedThemeMode),
   );
 }
 
