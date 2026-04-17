@@ -157,6 +157,26 @@ enum FieldType {
 
 /// A field on a document that a recipient must fill.
 class SignatureField {
+  /// Deserializes from JSON.
+  factory SignatureField.fromJson(Map<String, dynamic> json) {
+    return SignatureField(
+      id: json['id'] as String,
+      type: FieldType.values.firstWhere((t) => t.name == json['type']),
+      recipientId: json['recipient_id'] as String,
+      page: json['page'] as int,
+      x: (json['x'] as num).toDouble(),
+      y: (json['y'] as num).toDouble(),
+      width: (json['width'] as num?)?.toDouble() ?? 120,
+      height: (json['height'] as num?)?.toDouble() ?? 40,
+      required: json['required'] as bool? ?? true,
+      label: json['label'] as String?,
+      defaultValue: json['default_value'] as String?,
+      value: json['value'] as String?,
+      options:
+          (json['options'] as List<dynamic>?)?.map((o) => o as String).toList(),
+    );
+  }
+
   /// Creates a [SignatureField].
   const SignatureField({
     required this.id,
@@ -232,26 +252,6 @@ class SignatureField {
     if (options != null) json['options'] = options;
     return json;
   }
-
-  /// Deserializes from JSON.
-  factory SignatureField.fromJson(Map<String, dynamic> json) {
-    return SignatureField(
-      id: json['id'] as String,
-      type: FieldType.values.firstWhere((t) => t.name == json['type']),
-      recipientId: json['recipient_id'] as String,
-      page: json['page'] as int,
-      x: (json['x'] as num).toDouble(),
-      y: (json['y'] as num).toDouble(),
-      width: (json['width'] as num?)?.toDouble() ?? 120,
-      height: (json['height'] as num?)?.toDouble() ?? 40,
-      required: json['required'] as bool? ?? true,
-      label: json['label'] as String?,
-      defaultValue: json['default_value'] as String?,
-      value: json['value'] as String?,
-      options:
-          (json['options'] as List<dynamic>?)?.map((o) => o as String).toList(),
-    );
-  }
 }
 
 // =============================================================================
@@ -260,6 +260,31 @@ class SignatureField {
 
 /// A recipient in an envelope signing workflow.
 class EnvelopeRecipient {
+  /// Deserializes from JSON.
+  factory EnvelopeRecipient.fromJson(Map<String, dynamic> json) {
+    return EnvelopeRecipient(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      email: json['email'] as String,
+      role: RecipientRole.values.firstWhere((r) => r.name == json['role']),
+      routingOrder: json['routing_order'] as int? ?? 1,
+      authentication: AuthenticationMethod.values
+          .firstWhere((a) => a.name == (json['authentication'] ?? 'none')),
+      accessCode: json['access_code'] as String?,
+      phoneNumber: json['phone_number'] as String?,
+      company: json['company'] as String?,
+      title: json['title'] as String?,
+      note: json['note'] as String?,
+      status: RecipientStatus.values
+          .firstWhere((s) => s.name == (json['status'] ?? 'created')),
+      signedAt: json['signed_at'] as int?,
+      declinedAt: json['declined_at'] as int?,
+      declineReason: json['decline_reason'] as String?,
+      ipAddress: json['ip_address'] as String?,
+      signatureHash: json['signature_hash'] as String?,
+    );
+  }
+
   /// Creates an [EnvelopeRecipient].
   const EnvelopeRecipient({
     required this.id,
@@ -355,31 +380,6 @@ class EnvelopeRecipient {
     if (signatureHash != null) json['signature_hash'] = signatureHash;
     return json;
   }
-
-  /// Deserializes from JSON.
-  factory EnvelopeRecipient.fromJson(Map<String, dynamic> json) {
-    return EnvelopeRecipient(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      email: json['email'] as String,
-      role: RecipientRole.values.firstWhere((r) => r.name == json['role']),
-      routingOrder: json['routing_order'] as int? ?? 1,
-      authentication: AuthenticationMethod.values
-          .firstWhere((a) => a.name == (json['authentication'] ?? 'none')),
-      accessCode: json['access_code'] as String?,
-      phoneNumber: json['phone_number'] as String?,
-      company: json['company'] as String?,
-      title: json['title'] as String?,
-      note: json['note'] as String?,
-      status: RecipientStatus.values
-          .firstWhere((s) => s.name == (json['status'] ?? 'created')),
-      signedAt: json['signed_at'] as int?,
-      declinedAt: json['declined_at'] as int?,
-      declineReason: json['decline_reason'] as String?,
-      ipAddress: json['ip_address'] as String?,
-      signatureHash: json['signature_hash'] as String?,
-    );
-  }
 }
 
 /// Status of a single recipient in the signing workflow.
@@ -412,6 +412,19 @@ enum RecipientStatus {
 
 /// A single event in the envelope audit log.
 class EnvelopeEvent {
+  /// Deserializes from JSON.
+  factory EnvelopeEvent.fromJson(Map<String, dynamic> json) {
+    return EnvelopeEvent(
+      timestamp: json['timestamp'] as int,
+      eventType: json['event_type'] as String,
+      description: json['description'] as String,
+      recipientId: json['recipient_id'] as String?,
+      ipAddress: json['ip_address'] as String?,
+      userAgent: json['user_agent'] as String?,
+      previousHash: json['previous_hash'] as String?,
+    );
+  }
+
   /// Creates an [EnvelopeEvent].
   const EnvelopeEvent({
     required this.timestamp,
@@ -472,19 +485,6 @@ class EnvelopeEvent {
     if (previousHash != null) json['previous_hash'] = previousHash;
     return json;
   }
-
-  /// Deserializes from JSON.
-  factory EnvelopeEvent.fromJson(Map<String, dynamic> json) {
-    return EnvelopeEvent(
-      timestamp: json['timestamp'] as int,
-      eventType: json['event_type'] as String,
-      description: json['description'] as String,
-      recipientId: json['recipient_id'] as String?,
-      ipAddress: json['ip_address'] as String?,
-      userAgent: json['user_agent'] as String?,
-      previousHash: json['previous_hash'] as String?,
-    );
-  }
 }
 
 // =============================================================================
@@ -497,6 +497,50 @@ class EnvelopeEvent {
 /// sidecar file. It references one or more documents by their Merkle root
 /// and defines the signing workflow.
 class Envelope {
+  /// Decodes an envelope from JSON bytes.
+  factory Envelope.decode(Uint8List data) {
+    return Envelope.fromJson(
+      jsonDecode(utf8.decode(data)) as Map<String, dynamic>,
+    );
+  }
+
+  /// Deserializes from JSON.
+  factory Envelope.fromJson(Map<String, dynamic> json) {
+    return Envelope(
+      id: json['id'] as String,
+      subject: json['subject'] as String,
+      message: json['message'] as String?,
+      routingMode: RoutingMode.values
+          .firstWhere((r) => r.name == (json['routing_mode'] ?? 'sequential')),
+      status: EnvelopeStatus.values
+          .firstWhere((s) => s.name == (json['status'] ?? 'draft')),
+      documentMerkleRoots: (json['document_merkle_roots'] as List<dynamic>?)
+              ?.map((d) => d as String)
+              .toList() ??
+          <String>[],
+      recipients: (json['recipients'] as List<dynamic>)
+          .map((r) => EnvelopeRecipient.fromJson(r as Map<String, dynamic>))
+          .toList(),
+      fields: (json['fields'] as List<dynamic>?)
+              ?.map((f) => SignatureField.fromJson(f as Map<String, dynamic>))
+              .toList() ??
+          <SignatureField>[],
+      events: (json['events'] as List<dynamic>?)
+              ?.map((e) => EnvelopeEvent.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          <EnvelopeEvent>[],
+      createdAt: json['created_at'] as int?,
+      sentAt: json['sent_at'] as int?,
+      completedAt: json['completed_at'] as int?,
+      expiresAt: json['expires_at'] as int?,
+      senderName: json['sender_name'] as String?,
+      senderEmail: json['sender_email'] as String?,
+      remindersEnabled: json['reminders_enabled'] as bool? ?? false,
+      reminderIntervalDays: json['reminder_interval_days'] as int? ?? 3,
+      reminderMaxCount: json['reminder_max_count'] as int? ?? 3,
+    );
+  }
+
   /// Creates a new [Envelope].
   Envelope({
     required this.id,
@@ -677,13 +721,6 @@ class Envelope {
     return Uint8List.fromList(utf8.encode(jsonEncode(toJson())));
   }
 
-  /// Decodes an envelope from JSON bytes.
-  factory Envelope.decode(Uint8List data) {
-    return Envelope.fromJson(
-      jsonDecode(utf8.decode(data)) as Map<String, dynamic>,
-    );
-  }
-
   /// Serializes to JSON.
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> json = <String, dynamic>{
@@ -708,42 +745,5 @@ class Envelope {
     if (senderName != null) json['sender_name'] = senderName;
     if (senderEmail != null) json['sender_email'] = senderEmail;
     return json;
-  }
-
-  /// Deserializes from JSON.
-  factory Envelope.fromJson(Map<String, dynamic> json) {
-    return Envelope(
-      id: json['id'] as String,
-      subject: json['subject'] as String,
-      message: json['message'] as String?,
-      routingMode: RoutingMode.values
-          .firstWhere((r) => r.name == (json['routing_mode'] ?? 'sequential')),
-      status: EnvelopeStatus.values
-          .firstWhere((s) => s.name == (json['status'] ?? 'draft')),
-      documentMerkleRoots: (json['document_merkle_roots'] as List<dynamic>?)
-              ?.map((d) => d as String)
-              .toList() ??
-          <String>[],
-      recipients: (json['recipients'] as List<dynamic>)
-          .map((r) => EnvelopeRecipient.fromJson(r as Map<String, dynamic>))
-          .toList(),
-      fields: (json['fields'] as List<dynamic>?)
-              ?.map((f) => SignatureField.fromJson(f as Map<String, dynamic>))
-              .toList() ??
-          <SignatureField>[],
-      events: (json['events'] as List<dynamic>?)
-              ?.map((e) => EnvelopeEvent.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          <EnvelopeEvent>[],
-      createdAt: json['created_at'] as int?,
-      sentAt: json['sent_at'] as int?,
-      completedAt: json['completed_at'] as int?,
-      expiresAt: json['expires_at'] as int?,
-      senderName: json['sender_name'] as String?,
-      senderEmail: json['sender_email'] as String?,
-      remindersEnabled: json['reminders_enabled'] as bool? ?? false,
-      reminderIntervalDays: json['reminder_interval_days'] as int? ?? 3,
-      reminderMaxCount: json['reminder_max_count'] as int? ?? 3,
-    );
   }
 }

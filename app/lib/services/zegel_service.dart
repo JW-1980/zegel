@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:isolate';
 import 'dart:typed_data';
 
 // Import the zegel library under the `zgl` alias so that this service can
@@ -637,18 +638,93 @@ class ZegelService {
     List<String> filePaths,
     String hexKey,
   ) async {
-    return Future.wait(
-      filePaths.map((path) async {
+    final results = <ZegelResult>[];
+    const chunkSize = 10;
+    final masterKey = _hexToBytes(hexKey);
+
+    for (var i = 0; i < filePaths.length; i += chunkSize) {
+      final chunk = filePaths.skip(i).take(chunkSize);
+      final chunkFutures = chunk.map((path) async {
         try {
-          return await verify(path, hexKey);
+          final file = File(path);
+          if (!await file.exists()) {
+            return const ZegelResult(
+              status: ZegelStatus.tampered,
+              message: 'File does not exist',
+            );
+          }
+          final fileBytes = await file.readAsBytes();
+
+          final rawResult = await Isolate.run(() {
+            try {
+              const reader = zgl.ZegelReader();
+              final libResult = reader.verify(fileBytes, masterKey);
+              final libInspection = reader.inspect(fileBytes);
+
+              return {
+                'status': 'valid',
+                'metadata': libResult.metadata,
+                'originalFilename': libResult.filename,
+                'contentType': libResult.contentType,
+                'blockCount': libInspection.blockCount,
+                'timestamp': libInspection.timestamp,
+                'expirationTimestamp': libInspection.expirationTimestamp,
+                'message': 'Integrity verified',
+              };
+            } on zgl.ZegelExpiredException catch (e) {
+              return {
+                'status': 'expired',
+                'message': 'Error: $e',
+              };
+            } catch (e) {
+              return {
+                'status': 'tampered',
+                'message': 'Error: $e',
+              };
+            }
+          });
+
+          final statusStr = rawResult['status'] as String;
+          if (statusStr == 'valid') {
+            return ZegelResult(
+              status: ZegelStatus.valid,
+              message: rawResult['message'] as String,
+              metadata: rawResult['metadata'] as Map<String, dynamic>?,
+              originalFilename: rawResult['originalFilename'] as String?,
+              contentType: rawResult['contentType'] as String?,
+              blockCount: rawResult['blockCount'] as int,
+              createdAt: DateTime.fromMillisecondsSinceEpoch(
+                (rawResult['timestamp'] as int) * 1000,
+                isUtc: true,
+              ),
+              expiresAt: rawResult['expirationTimestamp'] == null
+                  ? null
+                  : DateTime.fromMillisecondsSinceEpoch(
+                      (rawResult['expirationTimestamp'] as int) * 1000,
+                      isUtc: true,
+                    ),
+            );
+          } else if (statusStr == 'expired') {
+            return ZegelResult(
+              status: ZegelStatus.expired,
+              message: rawResult['message'] as String,
+            );
+          } else {
+            return ZegelResult(
+              status: ZegelStatus.tampered,
+              message: rawResult['message'] as String,
+            );
+          }
         } catch (e) {
           return ZegelResult(
             status: ZegelStatus.tampered,
             message: 'Error: $e',
           );
         }
-      }),
-    );
+      });
+      results.addAll(await Future.wait(chunkFutures));
+    }
+    return results;
   }
 
   /// Seals multiple files in batch.
@@ -659,7 +735,30 @@ class ZegelService {
     String hexKey,
     SealOptions options,
   ) async {
-    return Future.wait(filePaths.map((path) => seal(path, hexKey, options)));
+    final masterKey = _hexToBytes(hexKey);
+    final results = <Uint8List>[];
+    const chunkSize = 10;
+
+    for (var i = 0; i < filePaths.length; i += chunkSize) {
+      final chunk = filePaths.skip(i).take(chunkSize);
+      final chunkFutures = chunk.map((path) async {
+        final file = File(path);
+        if (!await file.exists()) {
+          throw FileSystemException('File does not exist', path);
+        }
+        final content = await file.readAsBytes();
+        final libOptions = _toLibOptions(path, options);
+
+        return await Isolate.run(() {
+          final writer = zgl.ZegelWriter(masterKey, libOptions);
+          return writer.seal(content);
+        });
+      });
+
+      results.addAll(await Future.wait(chunkFutures));
+    }
+
+    return results;
   }
 
   // ======================================================================

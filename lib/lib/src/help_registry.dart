@@ -5,6 +5,55 @@
 /// The registry is populated at startup and consulted by both the GUI
 /// help panels and a CLI `zegel explain <topic>` command.
 class HelpRegistry {
+  /// Populates the registry with the default Zegel help entries.
+  factory HelpRegistry.defaults() {
+    final registry = HelpRegistry()
+      ..registerAll(<HelpEntry>[
+        const HelpEntry(
+          topic: 'seal',
+          title: 'Sealing a file',
+          summary: 'Turn any file into a tamper-proof .zgl container.',
+          body:
+              'Sealing wraps the file in a Merkle-tree-keyed envelope. Modifying '
+              'a single byte of the sealed file makes it unreadable, because the '
+              'derived keys depend on the integrity of every other byte.',
+          related: <String>['verify', 'extract', 'key'],
+        ),
+        const HelpEntry(
+          topic: 'verify',
+          title: 'Verifying a sealed file',
+          summary: 'Check that a .zgl file has not been tampered with.',
+          body:
+              'Verification re-derives the Merkle tree and decrypts the content '
+              'blocks. A valid result guarantees both integrity (no byte modified) '
+              'and authenticity (signed with the expected master key).',
+          related: <String>['seal', 'attest'],
+        ),
+        const HelpEntry(
+          topic: 'split-key',
+          title: 'Shamir Secret Sharing',
+          summary: 'Split a master key into N shares, any M of which can '
+              'reconstruct it.',
+          body:
+              'Split-key support lets you hand out different shares to different '
+              'people so that no single person can unseal a file alone. '
+              'Reconstruction requires collecting the threshold number of shares.',
+          related: <String>['key', 'reconstruct'],
+        ),
+        const HelpEntry(
+          topic: 'merkle-root',
+          title: 'Merkle root',
+          summary: 'The single hash that commits to every block in the file.',
+          body:
+              'Each content block is hashed, and the hashes are combined pairwise '
+              'into a binary tree. The root of the tree is the "Merkle root". '
+              'Any change to any block changes the root, which in turn changes '
+              'every derived key.',
+          related: <String>['seal', 'verify'],
+        ),
+      ]);
+    return registry;
+  }
   HelpRegistry();
 
   final Map<String, HelpEntry> _entries = <String, HelpEntry>{};
@@ -57,56 +106,6 @@ class HelpRegistry {
   }
 
   int get length => _entries.length;
-
-  /// Populates the registry with the default Zegel help entries.
-  factory HelpRegistry.defaults() {
-    final registry = HelpRegistry()
-      ..registerAll(<HelpEntry>[
-        const HelpEntry(
-          topic: 'seal',
-          title: 'Sealing a file',
-          summary: 'Turn any file into a tamper-proof .zgl container.',
-          body:
-              'Sealing wraps the file in a Merkle-tree-keyed envelope. Modifying '
-              'a single byte of the sealed file makes it unreadable, because the '
-              'derived keys depend on the integrity of every other byte.',
-          related: <String>['verify', 'extract', 'key'],
-        ),
-        const HelpEntry(
-          topic: 'verify',
-          title: 'Verifying a sealed file',
-          summary: 'Check that a .zgl file has not been tampered with.',
-          body:
-              'Verification re-derives the Merkle tree and decrypts the content '
-              'blocks. A valid result guarantees both integrity (no byte modified) '
-              'and authenticity (signed with the expected master key).',
-          related: <String>['seal', 'attest'],
-        ),
-        const HelpEntry(
-          topic: 'split-key',
-          title: 'Shamir Secret Sharing',
-          summary: 'Split a master key into N shares, any M of which can '
-              'reconstruct it.',
-          body:
-              'Split-key support lets you hand out different shares to different '
-              'people so that no single person can unseal a file alone. '
-              'Reconstruction requires collecting the threshold number of shares.',
-          related: <String>['key', 'reconstruct'],
-        ),
-        const HelpEntry(
-          topic: 'merkle-root',
-          title: 'Merkle root',
-          summary: 'The single hash that commits to every block in the file.',
-          body:
-              'Each content block is hashed, and the hashes are combined pairwise '
-              'into a binary tree. The root of the tree is the "Merkle root". '
-              'Any change to any block changes the root, which in turn changes '
-              'every derived key.',
-          related: <String>['seal', 'verify'],
-        ),
-      ]);
-    return registry;
-  }
 }
 
 class HelpEntry {
