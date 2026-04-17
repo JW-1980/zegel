@@ -256,6 +256,7 @@ class RedactCommand extends Command<int> {
       ),
     );
 
+    SecureMemory.wipe(masterKey);
     return 0;
   }
 }

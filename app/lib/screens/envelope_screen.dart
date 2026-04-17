@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:zegel/zegel.dart';
 
 /// Screen for creating and managing signing envelopes (DocuSign-style).
@@ -361,30 +360,12 @@ class _EnvelopeScreenState extends State<EnvelopeScreen> {
                       DropdownButton<int?>(
                         value: _expirationDays,
                         items: const [
-                          DropdownMenuItem(
-                            value: null,
-                            child: Text('Never'),
-                          ),
-                          DropdownMenuItem(
-                            value: 7,
-                            child: Text('7 days'),
-                          ),
-                          DropdownMenuItem(
-                            value: 14,
-                            child: Text('14 days'),
-                          ),
-                          DropdownMenuItem(
-                            value: 30,
-                            child: Text('30 days'),
-                          ),
-                          DropdownMenuItem(
-                            value: 60,
-                            child: Text('60 days'),
-                          ),
-                          DropdownMenuItem(
-                            value: 90,
-                            child: Text('90 days'),
-                          ),
+                          DropdownMenuItem(value: null, child: Text('Never')),
+                          DropdownMenuItem(value: 7, child: Text('7 days')),
+                          DropdownMenuItem(value: 14, child: Text('14 days')),
+                          DropdownMenuItem(value: 30, child: Text('30 days')),
+                          DropdownMenuItem(value: 60, child: Text('60 days')),
+                          DropdownMenuItem(value: 90, child: Text('90 days')),
                         ],
                         onChanged: (v) => setState(() => _expirationDays = v),
                       ),

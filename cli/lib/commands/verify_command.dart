@@ -165,6 +165,7 @@ class VerifyCommand extends Command<int> {
         stdout.writeln();
         _printFileInfo(reader, result, fileBytes, filePath, verbose);
       }
+      SecureMemory.wipe(masterKey);
       return 0;
     } on ZegelTamperedException catch (e) {
       if (quiet) {
@@ -176,6 +177,8 @@ class VerifyCommand extends Command<int> {
         stdout.writeln();
         stderr.writeln('  Reason: ${e.message}');
       }
+      SecureMemory.wipe(masterKey);
+      SecureMemory.wipe(masterKey);
       return 1;
     } on ZegelExpiredException catch (e) {
       if (quiet) {
@@ -209,6 +212,7 @@ class VerifyCommand extends Command<int> {
         stderr.writeln('${Ansi.error('ERROR')} - Invalid file format.');
         stderr.writeln('  Reason: ${e.message}');
       }
+      SecureMemory.wipe(masterKey);
       return 1;
     }
   }

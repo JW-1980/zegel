@@ -327,7 +327,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   const SizedBox(height: 12),
                   DropdownButtonFormField<String>(
                     // ignore: deprecated_member_use
-                    value: _selectedBlockSize,
+                    initialValue: _selectedBlockSize,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                     ),
@@ -459,8 +459,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                         RadioListTile<ThemeMode>(
                           title: Text('Dark'),
-                          subtitle:
-                              Text('Reduced eye strain, saves battery on OLED'),
+                          subtitle: Text(
+                            'Reduced eye strain, saves battery on OLED',
+                          ),
                           value: ThemeMode.dark,
                         ),
                       ],
@@ -494,7 +495,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   const SizedBox(height: 12),
                   DropdownButtonFormField<String>(
                     // ignore: deprecated_member_use
-                    value: _defaultClassification,
+                    initialValue: _defaultClassification,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                     ),
