@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 /// A generic, reusable data table component with sorting, filtering,
 /// and JSON export capabilities.
@@ -67,8 +66,9 @@ class _ZegelDataTableState extends State<ZegelDataTable> {
     if (_searchQuery.isNotEmpty) {
       final query = _searchQuery.toLowerCase();
       rows = rows.where((row) {
-        return row.values
-            .any((v) => v.toString().toLowerCase().contains(query));
+        return row.values.any(
+          (v) => v.toString().toLowerCase().contains(query),
+        );
       }).toList();
     }
 

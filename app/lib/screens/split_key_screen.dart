@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -400,11 +399,13 @@ class _SplitKeyScreenState extends State<SplitKeyScreen>
                               icon: const Icon(Icons.share, size: 18),
                               tooltip: 'Share',
                               onPressed: () {
-                                SharePlus.instance.share(ShareParams(
-                                  text: share,
-                                  subject:
-                                      'Zegel Key Share ${index + 1} of $_totalShares',
-                                ));
+                                SharePlus.instance.share(
+                                  ShareParams(
+                                    text: share,
+                                    subject:
+                                        'Zegel Key Share ${index + 1} of $_totalShares',
+                                  ),
+                                );
                               },
                             ),
                           ],

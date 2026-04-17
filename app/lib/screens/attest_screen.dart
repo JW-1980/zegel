@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:zegel/zegel.dart';
 
@@ -348,7 +347,7 @@ class _AttestScreenState extends State<AttestScreen> {
                     const SizedBox(height: 16),
                     DropdownButtonFormField<String>(
                       // ignore: deprecated_member_use
-                      value: _selectedRole,
+                      initialValue: _selectedRole,
                       decoration: const InputDecoration(
                         labelText: 'Role',
                         prefixIcon: Icon(Icons.badge),
