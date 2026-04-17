@@ -42,10 +42,10 @@ class StatisticsDashboard {
       totalFailures: totalFailures,
       successRate: successRate,
       timeSaved: timeSaved?.timeSaved ?? Duration.zero,
-      topCommands:
-          analytics?.topCommands(limit: 5) ?? const <MapEntry<String, int>>[],
-      topAlgorithms:
-          analytics?.topAlgorithms(limit: 5) ?? const <MapEntry<String, int>>[],
+      topCommands: analytics?.topCommands(limit: 5) ??
+          const <MapEntry<String, int>>[],
+      topAlgorithms: analytics?.topAlgorithms(limit: 5) ??
+          const <MapEntry<String, int>>[],
     );
   }
 }
