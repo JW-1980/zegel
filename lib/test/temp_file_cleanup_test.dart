@@ -28,6 +28,7 @@ void main() {
         maxAge: const Duration(seconds: 2), // Use larger maxAge to avoid precision issues
         secureWipe: false,
       );
+
       final oldPath = cleanup.createTempFile('old.bin');
       await File(oldPath).setLastModified(
         DateTime.now().subtract(const Duration(minutes: 10)),
