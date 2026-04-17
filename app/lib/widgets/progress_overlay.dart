@@ -159,11 +159,7 @@ class SkeletonTextBlock extends StatelessWidget {
   /// Spacing between lines.
   final double spacing;
 
-  const SkeletonTextBlock({
-    super.key,
-    this.lines = 3,
-    this.spacing = 8,
-  });
+  const SkeletonTextBlock({super.key, this.lines = 3, this.spacing = 8});
 
   @override
   Widget build(BuildContext context) {

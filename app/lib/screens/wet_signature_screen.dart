@@ -199,9 +199,9 @@ class _WetSignatureScreenState extends State<WetSignatureScreen> {
           'encoding': 'base64_png',
           'data_base64': base64Encode(signatureImage),
         };
-        await File(sigPath).writeAsString(
-          const JsonEncoder.withIndent('  ').convert(sigJson),
-        );
+        await File(
+          sigPath,
+        ).writeAsString(const JsonEncoder.withIndent('  ').convert(sigJson));
 
         setState(() {
           _statusMessage =
