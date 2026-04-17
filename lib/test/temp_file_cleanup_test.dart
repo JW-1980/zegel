@@ -32,6 +32,7 @@ void main() {
       await File(oldPath).setLastModified(
         DateTime.now().subtract(const Duration(minutes: 10)),
       );
+      await Future<void>.delayed(const Duration(milliseconds: 100));
       cleanup.createTempFile('fresh.bin');
 
       final deleted = cleanup.sweep();
