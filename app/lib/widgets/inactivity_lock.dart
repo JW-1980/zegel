@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 /// Widget that locks the app after a period of inactivity, requiring
 /// a PIN to unlock.

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:zegel/zegel.dart';
 
 /// Screen for creating and managing signing envelopes (DocuSign-style).
