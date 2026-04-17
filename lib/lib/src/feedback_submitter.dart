@@ -101,8 +101,7 @@ class FeedbackEntry {
         screen: json['screen'] as String?,
         context: json['context'] == null
             ? const <String, dynamic>{}
-            : Map<String, dynamic>.from(
-                json['context'] as Map<String, dynamic>),
+            : Map<String, dynamic>.from(json['context'] as Map<String, dynamic>),
       );
 
   final String id;

@@ -66,8 +66,8 @@ class _ZegelDataTableState extends State<ZegelDataTable> {
     if (_searchQuery.isNotEmpty) {
       final query = _searchQuery.toLowerCase();
       rows = rows.where((row) {
-        return row.values
-            .any((v) => v.toString().toLowerCase().contains(query));
+        return row.values.any((v) =>
+            v.toString().toLowerCase().contains(query));
       }).toList();
     }
 
@@ -185,7 +185,8 @@ class _ZegelDataTableState extends State<ZegelDataTable> {
             scrollDirection: Axis.horizontal,
             child: DataTable(
               sortColumnIndex: _sortColumn != null
-                  ? widget.columns.indexWhere((c) => c.key == _sortColumn)
+                  ? widget.columns
+                      .indexWhere((c) => c.key == _sortColumn)
                   : null,
               sortAscending: _sortAscending,
               columns: widget.columns.map((col) {

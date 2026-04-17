@@ -509,8 +509,7 @@ class AttestCommand extends Command<int> {
   /// Builds the AEAD associated data:
   /// `blockType(1) || blockIndex(4 BE) || salt(32)`.
   /// Must match [ZegelWriter] exactly so re-sealed files remain verifiable.
-  static Uint8List _buildBlockAad(
-      int blockType, int blockIndex, Uint8List salt) {
+  static Uint8List _buildBlockAad(int blockType, int blockIndex, Uint8List salt) {
     final Uint8List aad = Uint8List(1 + 4 + ZegelFormat.saltSize);
     aad[0] = blockType;
     final ByteData bd = ByteData.sublistView(aad);

@@ -40,7 +40,8 @@ class FeatureRatings {
       );
 
   /// Total rating count across all features.
-  int get totalRatings => _ratings.values.fold<int>(0, (a, b) => a + b.length);
+  int get totalRatings =>
+      _ratings.values.fold<int>(0, (a, b) => a + b.length);
 
   /// Average star rating for [feature]. Returns `null` if there are none.
   double? averageFor(String feature) {

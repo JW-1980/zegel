@@ -98,7 +98,8 @@ class _AuditScreenState extends State<AuditScreen> {
 
       // Verify chain integrity using the AuditTrail class
       final entries = result.auditTrail ?? [];
-      final chainValid = entries.isEmpty ||
+      final chainValid =
+          entries.isEmpty ||
           AuditTrail.verifyChain(
             entries
                 .map(
@@ -188,8 +189,9 @@ class _AuditScreenState extends State<AuditScreen> {
       final newEntry = AuditTrail.createEntry(
         _actor.trim(),
         _action,
-        details:
-            _details.isNotEmpty ? Map<String, dynamic>.from(_details) : null,
+        details: _details.isNotEmpty
+            ? Map<String, dynamic>.from(_details)
+            : null,
         previousChainHash: previousChainHash,
       );
 
@@ -386,8 +388,9 @@ class _AuditScreenState extends State<AuditScreen> {
                                   : 'Chain Integrity Broken',
                               style: theme.textTheme.titleSmall?.copyWith(
                                 fontWeight: FontWeight.bold,
-                                color:
-                                    _isChainValid ? Colors.green : Colors.red,
+                                color: _isChainValid
+                                    ? Colors.green
+                                    : Colors.red,
                               ),
                             ),
                             Text(

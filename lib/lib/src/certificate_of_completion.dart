@@ -26,39 +26,6 @@ import 'envelope.dart';
 
 /// A Certificate of Completion for a signing envelope.
 class CertificateOfCompletion {
-  /// Decodes a certificate from JSON bytes.
-  factory CertificateOfCompletion.decode(Uint8List data) {
-    return CertificateOfCompletion.fromJson(
-      jsonDecode(utf8.decode(data)) as Map<String, dynamic>,
-    );
-  }
-
-  /// Deserializes from JSON.
-  factory CertificateOfCompletion.fromJson(Map<String, dynamic> json) {
-    return CertificateOfCompletion(
-      envelopeId: json['envelope_id'] as String,
-      envelopeSubject: json['envelope_subject'] as String,
-      envelopeStatus: EnvelopeStatus.values
-          .firstWhere((s) => s.name == json['envelope_status']),
-      senderName: json['sender_name'] as String?,
-      senderEmail: json['sender_email'] as String?,
-      recipients: (json['recipients'] as List<dynamic>)
-          .map((r) => EnvelopeRecipient.fromJson(r as Map<String, dynamic>))
-          .toList(),
-      events: (json['events'] as List<dynamic>)
-          .map((e) => EnvelopeEvent.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      documentMerkleRoots: (json['document_merkle_roots'] as List<dynamic>)
-          .map((d) => d as String)
-          .toList(),
-      createdAt: json['created_at'] as int?,
-      sentAt: json['sent_at'] as int?,
-      completedAt: json['completed_at'] as int?,
-      generatedAt: json['generated_at'] as int,
-      certificateHash: json['certificate_hash'] as String?,
-    );
-  }
-
   /// Creates a [CertificateOfCompletion] from a completed [Envelope].
   CertificateOfCompletion({
     required this.envelopeId,
@@ -288,6 +255,13 @@ class CertificateOfCompletion {
     return Uint8List.fromList(utf8.encode(jsonEncode(toJson())));
   }
 
+  /// Decodes a certificate from JSON bytes.
+  factory CertificateOfCompletion.decode(Uint8List data) {
+    return CertificateOfCompletion.fromJson(
+      jsonDecode(utf8.decode(data)) as Map<String, dynamic>,
+    );
+  }
+
   /// Serializes to JSON.
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> json = <String, dynamic>{
@@ -315,6 +289,32 @@ class CertificateOfCompletion {
     if (sentAt != null) json['sent_at'] = sentAt;
     if (completedAt != null) json['completed_at'] = completedAt;
     return json;
+  }
+
+  /// Deserializes from JSON.
+  factory CertificateOfCompletion.fromJson(Map<String, dynamic> json) {
+    return CertificateOfCompletion(
+      envelopeId: json['envelope_id'] as String,
+      envelopeSubject: json['envelope_subject'] as String,
+      envelopeStatus: EnvelopeStatus.values
+          .firstWhere((s) => s.name == json['envelope_status']),
+      senderName: json['sender_name'] as String?,
+      senderEmail: json['sender_email'] as String?,
+      recipients: (json['recipients'] as List<dynamic>)
+          .map((r) => EnvelopeRecipient.fromJson(r as Map<String, dynamic>))
+          .toList(),
+      events: (json['events'] as List<dynamic>)
+          .map((e) => EnvelopeEvent.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      documentMerkleRoots: (json['document_merkle_roots'] as List<dynamic>)
+          .map((d) => d as String)
+          .toList(),
+      createdAt: json['created_at'] as int?,
+      sentAt: json['sent_at'] as int?,
+      completedAt: json['completed_at'] as int?,
+      generatedAt: json['generated_at'] as int,
+      certificateHash: json['certificate_hash'] as String?,
+    );
   }
 
   /// Formats a Unix epoch timestamp as an ISO 8601 UTC date string.
