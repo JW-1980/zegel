@@ -81,15 +81,8 @@ class BatchVerifyCommand extends Command<int> {
     stdout.writeln('Verifying ${files.length} file(s)...');
     stdout.writeln();
 
-    final entries = files
-        .map(
-          (f) => MapEntry(
-            f.path.split(Platform.pathSeparator).last,
-            Uint8List.fromList(f.readAsBytesSync()),
-          ),
-        )
-        .toList();
-
+    final entries = await Future.wait(files.map((f) async => MapEntry(
+        f.path.split(Platform.pathSeparator).last, await f.readAsBytes())));
     final results = BatchOperations.batchVerify(
       entries,
       key,
