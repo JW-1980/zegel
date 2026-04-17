@@ -355,15 +355,9 @@ class ZegelService {
         auditTrail: _mapAuditTrail(libResult.auditTrail),
       );
     } on zgl.ZegelExpiredException catch (e) {
-      return ZegelResult(
-        status: ZegelStatus.expired,
-        message: e.message,
-      );
+      return ZegelResult(status: ZegelStatus.expired, message: e.message);
     } on zgl.ZegelTamperedException catch (e) {
-      return ZegelResult(
-        status: ZegelStatus.tampered,
-        message: e.message,
-      );
+      return ZegelResult(status: ZegelStatus.tampered, message: e.message);
     } on zgl.ZegelFormatException catch (e) {
       return ZegelResult(
         status: ZegelStatus.tampered,
@@ -441,8 +435,11 @@ class ZegelService {
       );
     }
     final masterKey = _hexToBytes(hexKey);
-    final shares =
-        zgl.ShamirSecretSharing.split(masterKey, threshold, totalShares);
+    final shares = zgl.ShamirSecretSharing.split(
+      masterKey,
+      threshold,
+      totalShares,
+    );
     return shares.map(_bytesToHex).toList();
   }
 
@@ -457,8 +454,10 @@ class ZegelService {
     // The library requires the threshold up-front; we pass `shares.length`
     // because the caller has already selected the exact set they believe
     // meets the threshold.
-    final reconstructed =
-        zgl.ShamirSecretSharing.reconstruct(byteShares, shares.length);
+    final reconstructed = zgl.ShamirSecretSharing.reconstruct(
+      byteShares,
+      shares.length,
+    );
     return _bytesToHex(reconstructed);
   }
 
@@ -825,28 +824,34 @@ class ZegelService {
       final path = '$baseDir${Platform.pathSeparator}$filename';
       final file = File(path);
       if (!await file.exists()) {
-        results.add(ManifestFileResult(
-          filename: filename,
-          isValid: false,
-          message: 'File missing',
-        ));
+        results.add(
+          ManifestFileResult(
+            filename: filename,
+            isValid: false,
+            message: 'File missing',
+          ),
+        );
         continue;
       }
       try {
         final bytes = await file.readAsBytes();
         final actualRoot = _bytesToHex(_readMerkleRootUnverified(bytes));
         final match = _constantTimeStringEquals(actualRoot, expectedRoot);
-        results.add(ManifestFileResult(
-          filename: filename,
-          isValid: match,
-          message: match ? 'OK' : 'Merkle root mismatch',
-        ));
+        results.add(
+          ManifestFileResult(
+            filename: filename,
+            isValid: match,
+            message: match ? 'OK' : 'Merkle root mismatch',
+          ),
+        );
       } on Exception catch (e) {
-        results.add(ManifestFileResult(
-          filename: filename,
-          isValid: false,
-          message: 'Parse error: $e',
-        ));
+        results.add(
+          ManifestFileResult(
+            filename: filename,
+            isValid: false,
+            message: 'Parse error: $e',
+          ),
+        );
       }
     }
     return results;
@@ -921,8 +926,11 @@ class ZegelService {
       }
       final masterKey = _hexToBytes(masterKeyHex);
       final bytes = await file.readAsBytes();
-      final newBytes =
-          zgl.Redaction.redactBlocks(bytes, masterKey, redactBlocks);
+      final newBytes = zgl.Redaction.redactBlocks(
+        bytes,
+        masterKey,
+        redactBlocks,
+      );
       await file.writeAsBytes(newBytes, flush: true);
     }
     await classify(filePath, newLevel, authority);
@@ -1043,12 +1051,14 @@ class ZegelService {
       } else {
         ts = DateTime.fromMillisecondsSinceEpoch(0, isUtc: true);
       }
-      events.add(ProvenanceEvent(
-        actor: actor,
-        action: action,
-        timestamp: ts,
-        isSignatureVerified: chainOk,
-      ));
+      events.add(
+        ProvenanceEvent(
+          actor: actor,
+          action: action,
+          timestamp: ts,
+          isSignatureVerified: chainOk,
+        ),
+      );
     }
     return events;
   }
@@ -1318,7 +1328,8 @@ class ZegelService {
     final directorySize = blockCount * zgl.ZegelFormat.blockDirectoryEntrySize;
     if (fileBytes.length < directoryStart + directorySize) {
       throw const zgl.ZegelFormatException(
-          'File too short for block directory');
+        'File too short for block directory',
+      );
     }
 
     final entries = <ZegelBlockInfo>[];
@@ -1326,13 +1337,15 @@ class ZegelService {
       final eo = directoryStart + i * zgl.ZegelFormat.blockDirectoryEntrySize;
       final blockType = fileBytes[eo];
       final ctLen = bd.getUint32(eo + 33, Endian.big);
-      entries.add(ZegelBlockInfo(
-        index: i,
-        blockType: blockType,
-        blockTypeName: blockTypeName(blockType),
-        ciphertextLength: ctLen,
-        isRedacted: blockType == 0x06,
-      ));
+      entries.add(
+        ZegelBlockInfo(
+          index: i,
+          blockType: blockType,
+          blockTypeName: blockTypeName(blockType),
+          ciphertextLength: ctLen,
+          isRedacted: blockType == 0x06,
+        ),
+      );
     }
     return entries;
   }
@@ -1423,9 +1436,7 @@ class ZegelService {
 
     for (int i = 0; i < blockCount; i++) {
       final eo = cursor + i * zgl.ZegelFormat.blockDirectoryEntrySize;
-      entries.add(
-        Uint8List.fromList(fileBytes.sublist(eo + 1, eo + 33)),
-      );
+      entries.add(Uint8List.fromList(fileBytes.sublist(eo + 1, eo + 33)));
     }
     return entries;
   }
