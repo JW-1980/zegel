@@ -459,7 +459,7 @@ class SealCommand extends Command<int> {
     }
 
     SecureMemory.wipe(masterKey);
-      return 0;
+    return 0;
   }
 
   /// Reads a password from stdin without echoing characters.

@@ -178,6 +178,7 @@ class VerifyCommand extends Command<int> {
         stderr.writeln('  Reason: ${e.message}');
       }
       SecureMemory.wipe(masterKey);
+      SecureMemory.wipe(masterKey);
       return 1;
     } on ZegelExpiredException catch (e) {
       if (quiet) {
