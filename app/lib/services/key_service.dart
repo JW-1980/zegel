@@ -16,12 +16,12 @@ class KeyService {
   final FlutterSecureStorage _storage;
 
   KeyService()
-    : _storage = const FlutterSecureStorage(
-        aOptions: AndroidOptions(),
-        iOptions: IOSOptions(
-          accessibility: KeychainAccessibility.first_unlock_this_device,
-        ),
-      );
+      : _storage = const FlutterSecureStorage(
+          aOptions: AndroidOptions(),
+          iOptions: IOSOptions(
+            accessibility: KeychainAccessibility.first_unlock_this_device,
+          ),
+        );
 
   /// Saves a key with the given name.
   ///

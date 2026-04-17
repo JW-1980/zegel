@@ -96,11 +96,10 @@ class _CommandPaletteState extends State<CommandPalette> {
                         _selectedIndex = (_selectedIndex + 1)
                             .clamp(0, _filteredCommands.length - 1);
                       });
-                    } else if (event.logicalKey ==
-                        LogicalKeyboardKey.arrowUp) {
+                    } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
                       setState(() {
-                        _selectedIndex =
-                            (_selectedIndex - 1).clamp(0, _filteredCommands.length - 1);
+                        _selectedIndex = (_selectedIndex - 1)
+                            .clamp(0, _filteredCommands.length - 1);
                       });
                     } else if (event.logicalKey == LogicalKeyboardKey.enter) {
                       if (_filteredCommands.isNotEmpty) {

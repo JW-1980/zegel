@@ -223,8 +223,7 @@ class SelectiveDisclosure {
       if (fileBytes.length < tempOffset + 4) return null;
       final int pubMetaLen = bd.getUint32(tempOffset, Endian.big);
       // DoS prevention: cap public metadata size.
-      if (pubMetaLen < 0 ||
-          pubMetaLen > ZegelFormat.maxPublicMetadataSize) {
+      if (pubMetaLen < 0 || pubMetaLen > ZegelFormat.maxPublicMetadataSize) {
         return null;
       }
       extHeaderSize += 4 + pubMetaLen;

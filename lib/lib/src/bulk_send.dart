@@ -28,6 +28,22 @@ import 'template.dart';
 
 /// A single recipient in a bulk send list.
 class BulkRecipient {
+  /// Deserializes from JSON.
+  factory BulkRecipient.fromJson(Map<String, dynamic> json) {
+    return BulkRecipient(
+      name: json['name'] as String,
+      email: json['email'] as String,
+      customFields: (json['custom_fields'] as Map<String, dynamic>?)?.map(
+            (k, v) => MapEntry(k, v as String),
+          ) ??
+          <String, String>{},
+      accessCode: json['access_code'] as String?,
+      phoneNumber: json['phone_number'] as String?,
+      company: json['company'] as String?,
+      title: json['title'] as String?,
+    );
+  }
+
   /// Creates a [BulkRecipient].
   const BulkRecipient({
     required this.name,
@@ -176,22 +192,6 @@ class BulkRecipient {
     if (title != null) json['title'] = title;
     return json;
   }
-
-  /// Deserializes from JSON.
-  factory BulkRecipient.fromJson(Map<String, dynamic> json) {
-    return BulkRecipient(
-      name: json['name'] as String,
-      email: json['email'] as String,
-      customFields: (json['custom_fields'] as Map<String, dynamic>?)?.map(
-            (k, v) => MapEntry(k, v as String),
-          ) ??
-          <String, String>{},
-      accessCode: json['access_code'] as String?,
-      phoneNumber: json['phone_number'] as String?,
-      company: json['company'] as String?,
-      title: json['title'] as String?,
-    );
-  }
 }
 
 // =============================================================================
@@ -218,6 +218,35 @@ enum BulkSendStatus {
 
 /// A bulk send job containing many envelopes generated from one template.
 class BulkSendJob {
+  /// Decodes from JSON bytes.
+  factory BulkSendJob.decode(Uint8List data) {
+    return BulkSendJob.fromJson(
+      jsonDecode(utf8.decode(data)) as Map<String, dynamic>,
+    );
+  }
+
+  /// Deserializes from JSON.
+  factory BulkSendJob.fromJson(Map<String, dynamic> json) {
+    return BulkSendJob(
+      id: json['id'] as String,
+      templateId: json['template_id'] as String,
+      recipients: (json['recipients'] as List<dynamic>)
+          .map((r) => BulkRecipient.fromJson(r as Map<String, dynamic>))
+          .toList(),
+      envelopeIds: (json['envelope_ids'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList(),
+      status: BulkSendStatus.values
+          .firstWhere((s) => s.name == (json['status'] ?? 'draft')),
+      createdAt: json['created_at'] as int?,
+      dispatchedAt: json['dispatched_at'] as int?,
+      completedAt: json['completed_at'] as int?,
+      senderName: json['sender_name'] as String?,
+      senderEmail: json['sender_email'] as String?,
+      name: json['name'] as String?,
+    );
+  }
+
   /// Creates a [BulkSendJob].
   BulkSendJob({
     required this.id,
@@ -352,13 +381,6 @@ class BulkSendJob {
     return Uint8List.fromList(utf8.encode(jsonEncode(toJson())));
   }
 
-  /// Decodes from JSON bytes.
-  factory BulkSendJob.decode(Uint8List data) {
-    return BulkSendJob.fromJson(
-      jsonDecode(utf8.decode(data)) as Map<String, dynamic>,
-    );
-  }
-
   /// Serializes to JSON.
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> json = <String, dynamic>{
@@ -376,27 +398,5 @@ class BulkSendJob {
     if (senderEmail != null) json['sender_email'] = senderEmail;
     if (name != null) json['name'] = name;
     return json;
-  }
-
-  /// Deserializes from JSON.
-  factory BulkSendJob.fromJson(Map<String, dynamic> json) {
-    return BulkSendJob(
-      id: json['id'] as String,
-      templateId: json['template_id'] as String,
-      recipients: (json['recipients'] as List<dynamic>)
-          .map((r) => BulkRecipient.fromJson(r as Map<String, dynamic>))
-          .toList(),
-      envelopeIds: (json['envelope_ids'] as List<dynamic>)
-          .map((e) => e as String)
-          .toList(),
-      status: BulkSendStatus.values
-          .firstWhere((s) => s.name == (json['status'] ?? 'draft')),
-      createdAt: json['created_at'] as int?,
-      dispatchedAt: json['dispatched_at'] as int?,
-      completedAt: json['completed_at'] as int?,
-      senderName: json['sender_name'] as String?,
-      senderEmail: json['sender_email'] as String?,
-      name: json['name'] as String?,
-    );
   }
 }

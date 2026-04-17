@@ -204,8 +204,7 @@ class _WetSignatureScreenState extends State<WetSignatureScreen> {
         );
 
         setState(() {
-          _statusMessage =
-              'Signature saved to ${sigPath.split('/').last}\n'
+          _statusMessage = 'Signature saved to ${sigPath.split('/').last}\n'
               'Signed by $name from $city on '
               '${DateFormat('yyyy-MM-dd HH:mm').format(DateTime.now())}.\n'
               '(${encoded.length} bytes encoded)';
@@ -214,8 +213,7 @@ class _WetSignatureScreenState extends State<WetSignatureScreen> {
         });
       } else {
         setState(() {
-          _statusMessage =
-              'Signature captured (${encoded.length} bytes). '
+          _statusMessage = 'Signature captured (${encoded.length} bytes). '
               'No file selected — signature not saved to disk.';
           _isError = false;
         });
@@ -461,9 +459,8 @@ class _WetSignatureScreenState extends State<WetSignatureScreen> {
                   color: _isError ? Colors.red.shade50 : Colors.green.shade50,
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                    color: _isError
-                        ? Colors.red.shade200
-                        : Colors.green.shade200,
+                    color:
+                        _isError ? Colors.red.shade200 : Colors.green.shade200,
                   ),
                 ),
                 child: Row(
