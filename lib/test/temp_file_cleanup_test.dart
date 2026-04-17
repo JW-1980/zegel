@@ -25,7 +25,7 @@ void main() {
     test('sweep deletes expired tracked files only', () async {
       final cleanup = TempFileCleanup(
         directory: tmp.path,
-        maxAge: const Duration(milliseconds: 50),
+        maxAge: const Duration(seconds: 1),
         secureWipe: false,
       );
       final oldPath = cleanup.createTempFile('old.bin');
