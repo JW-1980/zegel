@@ -1,3 +1,4 @@
+import 'package:zegel_app/utils/hex_utils.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:isolate';
@@ -309,7 +310,7 @@ class ZegelService {
       throw FileSystemException('File does not exist', filePath);
     }
     final content = await file.readAsBytes();
-    final masterKey = _hexToBytes(hexKey);
+    final masterKey = HexUtils.hexToBytes(hexKey);
     final writer = zgl.ZegelWriter(masterKey, _toLibOptions(filePath, options));
     return writer.seal(content);
   }
@@ -327,7 +328,7 @@ class ZegelService {
     }
 
     final fileBytes = await file.readAsBytes();
-    final masterKey = _hexToBytes(hexKey);
+    final masterKey = HexUtils.hexToBytes(hexKey);
     try {
       const reader = zgl.ZegelReader();
       final libResult = reader.verify(fileBytes, masterKey);
@@ -379,7 +380,7 @@ class ZegelService {
       throw FileSystemException('File does not exist', filePath);
     }
     final fileBytes = await file.readAsBytes();
-    final masterKey = _hexToBytes(hexKey);
+    final masterKey = HexUtils.hexToBytes(hexKey);
     const reader = zgl.ZegelReader();
     final result = reader.verify(fileBytes, masterKey);
     if (!result.valid || result.content == null) return false;
@@ -415,7 +416,7 @@ class ZegelService {
       throw FileSystemException('File does not exist', filePath);
     }
     final fileBytes = await file.readAsBytes();
-    final masterKey = _hexToBytes(hexKey);
+    final masterKey = HexUtils.hexToBytes(hexKey);
     return zgl.Redaction.redactBlocks(fileBytes, masterKey, blockIndices);
   }
 
@@ -434,7 +435,7 @@ class ZegelService {
         'Requires 2 <= M <= N <= 255.',
       );
     }
-    final masterKey = _hexToBytes(hexKey);
+    final masterKey = HexUtils.hexToBytes(hexKey);
     final shares = zgl.ShamirSecretSharing.split(
       masterKey,
       threshold,
@@ -450,7 +451,7 @@ class ZegelService {
     if (shares.isEmpty) {
       throw ArgumentError('At least one share is required.');
     }
-    final byteShares = shares.map(_hexToBytes).toList();
+    final byteShares = shares.map(HexUtils.hexToBytes).toList();
     // The library requires the threshold up-front; we pass `shares.length`
     // because the caller has already selected the exact set they believe
     // meets the threshold.
@@ -486,7 +487,7 @@ class ZegelService {
     // parser: the inspection deliberately omits it for separation of
     // concerns, so we re-parse with a helper that only reads public data.
     final merkleRoot = _readMerkleRoot(fileBytes, inspection);
-    final signerKey = _hexToBytes(signerKeyHex);
+    final signerKey = HexUtils.hexToBytes(signerKeyHex);
     final attestation = zgl.Attestation.createAttestation(
       merkleRoot,
       signerId,
@@ -509,7 +510,7 @@ class ZegelService {
       throw FileSystemException('File does not exist', filePath);
     }
     final fileBytes = await file.readAsBytes();
-    final masterKey = _hexToBytes(hexKey);
+    final masterKey = HexUtils.hexToBytes(hexKey);
     const reader = zgl.ZegelReader();
     final inspection = reader.inspect(fileBytes);
     final merkleRoot = _readMerkleRoot(fileBytes, inspection);
@@ -617,14 +618,6 @@ class ZegelService {
   }
 
   /// Converts a hex string to bytes.
-  Uint8List _hexToBytes(String hex) {
-    final length = hex.length ~/ 2;
-    final bytes = Uint8List(length);
-    for (int i = 0; i < length; i++) {
-      bytes[i] = int.parse(hex.substring(i * 2, i * 2 + 2), radix: 16);
-    }
-    return bytes;
-  }
 
   // ======================================================================
   // Batch operations
@@ -639,7 +632,7 @@ class ZegelService {
   ) async {
     final results = <ZegelResult>[];
     const chunkSize = 10;
-    final masterKey = _hexToBytes(hexKey);
+    final masterKey = HexUtils.hexToBytes(hexKey);
 
     for (var i = 0; i < filePaths.length; i += chunkSize) {
       final chunk = filePaths.skip(i).take(chunkSize);
@@ -734,7 +727,7 @@ class ZegelService {
     String hexKey,
     SealOptions options,
   ) async {
-    final masterKey = _hexToBytes(hexKey);
+    final masterKey = HexUtils.hexToBytes(hexKey);
     final results = <Uint8List>[];
     const chunkSize = 10;
 
@@ -781,7 +774,7 @@ class ZegelService {
       final bytes = await file.readAsBytes();
       entries[_basename(p)] = _readMerkleRootUnverified(bytes);
     }
-    final signerKey = _hexToBytes(signerKeyHex);
+    final signerKey = HexUtils.hexToBytes(signerKeyHex);
     final manifest = zgl.ZegelManifest.create(entries, signerKey, signerId);
     return Uint8List.fromList(
       utf8.encode(const JsonEncoder.withIndent('  ').convert(manifest)),
@@ -802,7 +795,7 @@ class ZegelService {
     }
     final manifest =
         jsonDecode(await manifestFile.readAsString()) as Map<String, dynamic>;
-    final signerKey = _hexToBytes(signerKeyHex);
+    final signerKey = HexUtils.hexToBytes(signerKeyHex);
 
     if (!zgl.ZegelManifest.verify(manifest, signerKey)) {
       return const [
@@ -924,7 +917,7 @@ class ZegelService {
           'A master key is required to redact blocks during declassification',
         );
       }
-      final masterKey = _hexToBytes(masterKeyHex);
+      final masterKey = HexUtils.hexToBytes(masterKeyHex);
       final bytes = await file.readAsBytes();
       final newBytes = zgl.Redaction.redactBlocks(
         bytes,
@@ -956,7 +949,7 @@ class ZegelService {
       throw FileSystemException('File does not exist', filePath);
     }
     final fileBytes = await file.readAsBytes();
-    final masterKey = _hexToBytes(hexKey);
+    final masterKey = HexUtils.hexToBytes(hexKey);
     const reader = zgl.ZegelReader();
     final result = reader.verify(fileBytes, masterKey);
     if (!result.valid) {
@@ -1028,7 +1021,7 @@ class ZegelService {
       throw FileSystemException('File does not exist', filePath);
     }
     final fileBytes = await file.readAsBytes();
-    final masterKey = _hexToBytes(hexKey);
+    final masterKey = HexUtils.hexToBytes(hexKey);
     const reader = zgl.ZegelReader();
     final result = reader.verify(fileBytes, masterKey);
     final events = <ProvenanceEvent>[];
@@ -1037,7 +1030,7 @@ class ZegelService {
     if (signerKeyHex != null && signerKeyHex.isNotEmpty) {
       chainCheck = zgl.ProvenanceVerification.verifyChain(
         provenance,
-        _hexToBytes(signerKeyHex),
+        HexUtils.hexToBytes(signerKeyHex),
       );
     }
     final chainOk = chainCheck?['valid'] as bool? ?? false;
@@ -1105,7 +1098,7 @@ class ZegelService {
       throw FileSystemException('File does not exist', filePath);
     }
     final content = await file.readAsBytes();
-    final masterKey = _hexToBytes(hexKey);
+    final masterKey = HexUtils.hexToBytes(hexKey);
     final issuedAt = DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
     final credentialMetadata = <String, dynamic>{
       'credential_type': credentialType,
@@ -1189,7 +1182,7 @@ class ZegelService {
     final fn = _basename(filePath);
     Uint8List? recipientBytes;
     if (options.recipientId != null && options.recipientId!.isNotEmpty) {
-      recipientBytes = _hexToBytes(options.recipientId!);
+      recipientBytes = HexUtils.hexToBytes(options.recipientId!);
     }
     return zgl.ZegelOptions(
       contentType: 'application/octet-stream',

@@ -48,6 +48,7 @@ void main() {
       expect(deleted.length, 1);
       expect(cleanup.trackedCount, 1);
       expect(File(oldPath).existsSync(), isFalse);
+      expect(File(freshPath).existsSync(), isTrue);
     });
 
     test('clearAll removes every tracked file', () {

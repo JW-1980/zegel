@@ -1,4 +1,7 @@
+import 'dart:io';
 import 'dart:typed_data';
+
+import 'package:zegel_app/utils/hex_utils.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -89,7 +92,7 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
       final inspection = await zegelService.inspect(_filePath!);
 
       // Verify and extract content
-      final masterKey = _hexToBytes(_hexKey);
+      final masterKey = HexUtils.hexToBytes(_hexKey);
       final result = reader.verify(
         bytes,
         masterKey,
@@ -134,15 +137,6 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
         });
       }
     }
-  }
-
-  static Uint8List _hexToBytes(String hex) {
-    final length = hex.length ~/ 2;
-    final bytes = Uint8List(length);
-    for (int i = 0; i < length; i++) {
-      bytes[i] = int.parse(hex.substring(i * 2, i * 2 + 2), radix: 16);
-    }
-    return bytes;
   }
 
   @override

@@ -1,3 +1,4 @@
+import 'package:zegel_app/utils/hex_utils.dart';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -106,7 +107,7 @@ class _TimestampScreenState extends State<TimestampScreen>
       final merkleRoot = _extractMerkleRoot(bytes);
 
       // Create a local timestamp token using the signer key
-      final signerKey = _hexToBytes(_hexKey);
+      final signerKey = HexUtils.hexToBytes(_hexKey);
       final token = TrustedTimestamp.createLocalToken(
         merkleRoot,
         masterSeal,
@@ -168,7 +169,7 @@ class _TimestampScreenState extends State<TimestampScreen>
         bytes.sublist(bytes.length - ZegelFormat.sealSize),
       );
       final merkleRoot = _extractMerkleRoot(bytes);
-      final signerKey = _hexToBytes(_hexKey);
+      final signerKey = HexUtils.hexToBytes(_hexKey);
 
       // Verify the timestamp token
       final isValid = TrustedTimestamp.verifyLocalToken(
@@ -232,15 +233,6 @@ class _TimestampScreenState extends State<TimestampScreen>
     return Uint8List.fromList(
       bytes.sublist(cursor, cursor + ZegelFormat.hashSize),
     );
-  }
-
-  static Uint8List _hexToBytes(String hex) {
-    final length = hex.length ~/ 2;
-    final bytes = Uint8List(length);
-    for (int i = 0; i < length; i++) {
-      bytes[i] = int.parse(hex.substring(i * 2, i * 2 + 2), radix: 16);
-    }
-    return bytes;
   }
 
   String _formatTimestamp(int epochSeconds) {
