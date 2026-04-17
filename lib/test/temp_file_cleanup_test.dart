@@ -34,14 +34,18 @@ void main() {
         DateTime.now().subtract(const Duration(minutes: 10)),
       );
       final freshPath = cleanup.createTempFile('fresh.bin');
-      // Explicitly set the timestamp to the future to avoid any precision/creation
-      // race condition where 'fresh.bin' creation time falls slightly behind
-      // the 'now' evaluated in the sweep.
-      await File(freshPath)
-          .setLastModified(DateTime.now().add(const Duration(seconds: 1)));
+      final now = DateTime.now();
+      // Ensure 'fresh.bin' has a timestamp explicitly set to 'now' so it is NOT expired
+      await File(freshPath).setLastModified(now);
 
-      final deleted = cleanup.sweep();
-      expect(deleted, [oldPath]);
+      // Reload the actual lastModified from disk to use as 'now' reference for sweeping,
+      // as the filesystem may truncate precision leading to age > 0 if we use the original 'now' object.
+      final actualFreshTime = File(freshPath).lastModifiedSync();
+
+      final deleted = cleanup.sweep(now: actualFreshTime);
+
+      expect(deleted, contains(oldPath));
+      expect(deleted.length, 1);
       expect(cleanup.trackedCount, 1);
       expect(File(oldPath).existsSync(), isFalse);
     });
