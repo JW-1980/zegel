@@ -458,6 +458,7 @@ class SealCommand extends Command<int> {
       stdout.writeln('  TSA URL: $tsaUrl');
     }
 
+    SecureMemory.wipe(masterKey);
     return 0;
   }
 

@@ -9,6 +9,9 @@ on:
         default: 'false'
         type: boolean
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   auto-merge:
     name: Merge all branches into main
@@ -19,7 +22,7 @@ jobs:
 
     steps:
       - name: Checkout main
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
         with:
           ref: main
           fetch-depth: 0

@@ -165,6 +165,7 @@ class SplitKeyCommand extends Command<int> {
       '  Fewer than $threshold shares reveal ZERO information about the key.',
     );
 
+    SecureMemory.wipe(masterKey);
     return 0;
   }
 }
