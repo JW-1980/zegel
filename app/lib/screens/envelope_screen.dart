@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
 import 'package:zegel/zegel.dart';
 
 /// Screen for creating and managing signing envelopes (DocuSign-style).
@@ -112,9 +114,8 @@ class _EnvelopeScreenState extends State<EnvelopeScreen> {
 
     // Build envelope.
     final now = DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
-    final expiresAt = _expirationDays != null
-        ? now + _expirationDays! * 86400
-        : null;
+    final expiresAt =
+        _expirationDays != null ? now + _expirationDays! * 86400 : null;
 
     final envelopeRecipients = <EnvelopeRecipient>[];
     for (var i = 0; i < _recipients.length; i++) {
@@ -157,8 +158,7 @@ class _EnvelopeScreenState extends State<EnvelopeScreen> {
       EnvelopeEvent(
         timestamp: now,
         eventType: 'envelope_created',
-        description:
-            'Envelope created with ${envelope.recipients.length} '
+        description: 'Envelope created with ${envelope.recipients.length} '
             'recipient(s), routing: ${_routingMode.name}',
       ),
     );
@@ -575,8 +575,8 @@ class _EnvelopeScreenState extends State<EnvelopeScreen> {
                 Text(
                   'Envelope Created',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: Colors.green.shade900,
-                  ),
+                        color: Colors.green.shade900,
+                      ),
                 ),
               ],
             ),

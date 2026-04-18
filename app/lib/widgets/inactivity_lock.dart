@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 /// Widget that locks the app after a period of inactivity, requiring
 /// a PIN to unlock.
@@ -115,8 +116,9 @@ class _PinScreenState extends State<_PinScreen> {
   bool get _isLockedOut =>
       _cooldownUntil != null && DateTime.now().isBefore(_cooldownUntil!);
 
-  Duration get _remainingLockout =>
-      _cooldownUntil == null ? Duration.zero : _cooldownUntil!.difference(DateTime.now());
+  Duration get _remainingLockout => _cooldownUntil == null
+      ? Duration.zero
+      : _cooldownUntil!.difference(DateTime.now());
 
   void _addDigit(String digit) {
     if (_isLockedOut) return;
@@ -145,7 +147,9 @@ class _PinScreenState extends State<_PinScreen> {
     // Constant-time comparison to prevent timing attacks.
     bool match = _enteredPin.length == widget.expectedPin.length;
     int diff = 0;
-    for (int i = 0; i < _enteredPin.length && i < widget.expectedPin.length; i++) {
+    for (int i = 0;
+        i < _enteredPin.length && i < widget.expectedPin.length;
+        i++) {
       diff |= _enteredPin.codeUnitAt(i) ^ widget.expectedPin.codeUnitAt(i);
     }
     match = match && diff == 0;
@@ -157,9 +161,8 @@ class _PinScreenState extends State<_PinScreen> {
     } else {
       _attempts++;
       // Exponential backoff: 0, 1, 2, 4, 8, ... capped at 60 seconds.
-      final int backoffSeconds = _attempts < 3
-          ? 0
-          : (1 << (_attempts - 3)).clamp(1, 60);
+      final int backoffSeconds =
+          _attempts < 3 ? 0 : (1 << (_attempts - 3)).clamp(1, 60);
       _cooldownUntil = backoffSeconds == 0
           ? null
           : DateTime.now().add(Duration(seconds: backoffSeconds));

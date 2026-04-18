@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:flutter/services.dart';
+
 
 import 'package:flutter/material.dart';
 
@@ -186,8 +188,7 @@ class _ZegelDataTableState extends State<ZegelDataTable> {
             scrollDirection: Axis.horizontal,
             child: DataTable(
               sortColumnIndex: _sortColumn != null
-                  ? widget.columns
-                      .indexWhere((c) => c.key == _sortColumn)
+                  ? widget.columns.indexWhere((c) => c.key == _sortColumn)
                   : null,
               sortAscending: _sortAscending,
               columns: widget.columns.map((col) {

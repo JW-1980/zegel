@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
 
 import '../services/zegel_service.dart';
