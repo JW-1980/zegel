@@ -1,5 +1,4 @@
-import 'package:flutter/services.dart';
-
+import 'dart:typed_data';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -465,8 +464,9 @@ class _KeygenScreenState extends State<KeygenScreen> {
                                 ),
                                 const SizedBox(width: 8),
                                 ElevatedButton(
-                                  onPressed:
-                                      _isSaving ? null : _saveToSecureStorage,
+                                  onPressed: _isSaving
+                                      ? null
+                                      : _saveToSecureStorage,
                                   child: const Text('Save'),
                                 ),
                               ],

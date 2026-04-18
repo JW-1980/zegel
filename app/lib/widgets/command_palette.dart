@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 /// A command palette (Ctrl+K / Cmd+K) for quick navigation and actions.
 ///
@@ -99,7 +98,8 @@ class _CommandPaletteState extends State<CommandPalette> {
                           _filteredCommands.length - 1,
                         );
                       });
-                    } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+                    } else if (event.logicalKey ==
+                        LogicalKeyboardKey.arrowUp) {
                       setState(() {
                         _selectedIndex = (_selectedIndex - 1).clamp(
                           0,

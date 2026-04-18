@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 /// A text field that masks sensitive content by default with a show/hide toggle.
 ///
@@ -72,7 +71,8 @@ class _SensitiveFieldState extends State<SensitiveField> {
       decoration: InputDecoration(
         labelText: widget.labelText,
         hintText: widget.hintText,
-        prefixIcon: widget.prefixIcon != null ? Icon(widget.prefixIcon) : null,
+        prefixIcon:
+            widget.prefixIcon != null ? Icon(widget.prefixIcon) : null,
         suffixIcon: Row(
           mainAxisSize: MainAxisSize.min,
           children: [

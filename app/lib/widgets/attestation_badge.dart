@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 import '../services/zegel_service.dart';
 
@@ -19,8 +18,9 @@ class AttestationBadge extends StatelessWidget {
     final theme = Theme.of(context);
     final dateFormatter = DateFormat('yyyy-MM-dd HH:mm');
     final isVerified = attestation.isVerified;
-    final badgeColor =
-        isVerified ? const Color(0xFF2E7D32) : const Color(0xFFC62828);
+    final badgeColor = isVerified
+        ? const Color(0xFF2E7D32)
+        : const Color(0xFFC62828);
 
     return Card(
       elevation: 1,

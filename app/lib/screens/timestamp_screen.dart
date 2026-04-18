@@ -1,6 +1,4 @@
 import 'package:zegel_app/utils/hex_utils.dart';
-import 'dart:io';
-
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';

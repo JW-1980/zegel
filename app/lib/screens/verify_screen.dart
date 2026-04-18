@@ -384,9 +384,10 @@ class _VerifyScreenState extends State<VerifyScreen> {
                               _result!.attestations!.every((a) => a.isVerified)
                                   ? Icons.check_circle
                                   : Icons.warning,
-                              color: _result!.attestations!.every(
-                                (a) => a.isVerified,
-                              )
+                              color:
+                                  _result!.attestations!.every(
+                                    (a) => a.isVerified,
+                                  )
                                   ? Colors.green
                                   : Colors.orange,
                             ),
@@ -397,9 +398,10 @@ class _VerifyScreenState extends State<VerifyScreen> {
                                   : l10n.verifySomeAttestationsInvalid,
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                color: _result!.attestations!.every(
-                                  (a) => a.isVerified,
-                                )
+                                color:
+                                    _result!.attestations!.every(
+                                      (a) => a.isVerified,
+                                    )
                                     ? Colors.green
                                     : Colors.orange,
                               ),

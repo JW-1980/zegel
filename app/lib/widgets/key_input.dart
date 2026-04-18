@@ -1,8 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-
-import 'dart:io';
-
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
@@ -109,8 +105,9 @@ class _KeyInputState extends State<KeyInput> {
       // Accept raw 32 bytes as hex
       final bytes = await file.readAsBytes();
       if (bytes.length == 32) {
-        final hex =
-            bytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
+        final hex = bytes
+            .map((b) => b.toRadixString(16).padLeft(2, '0'))
+            .join();
         _controller.text = hex;
         return;
       }
