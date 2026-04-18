@@ -450,7 +450,8 @@ class StreamingSealWriter {
   ///
   /// Must match [ZegelWriter] exactly so the streaming output is verifiable
   /// by [ZegelReader].
-  static Uint8List _buildBlockAad(int blockType, int blockIndex, Uint8List salt) {
+  static Uint8List _buildBlockAad(
+      int blockType, int blockIndex, Uint8List salt) {
     final Uint8List aad = Uint8List(1 + 4 + ZegelFormat.saltSize);
     aad[0] = blockType;
     final ByteData bd = ByteData.sublistView(aad);

@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/services.dart';
 
-
 import 'package:flutter/material.dart';
 
 /// A generic, reusable data table component with sorting, filtering,

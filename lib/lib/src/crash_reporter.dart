@@ -74,8 +74,7 @@ class CrashReporter {
   static CrashReporter decodeJson(String raw) {
     final m = jsonDecode(raw) as Map<String, dynamic>;
     final reporter = CrashReporter(enabled: m['enabled'] as bool? ?? false);
-    for (final entry
-        in (m['reports'] as List<dynamic>? ?? const <dynamic>[])) {
+    for (final entry in (m['reports'] as List<dynamic>? ?? const <dynamic>[])) {
       reporter._reports.add(
         CrashReport.fromJson(entry as Map<String, dynamic>),
       );
@@ -113,7 +112,8 @@ class CrashReport {
         context: json['context'] as String?,
         hardware: json['hardware'] == null
             ? const <String, dynamic>{}
-            : Map<String, dynamic>.from(json['hardware'] as Map<String, dynamic>),
+            : Map<String, dynamic>.from(
+                json['hardware'] as Map<String, dynamic>),
         extra: json['extra'] == null
             ? const <String, dynamic>{}
             : Map<String, dynamic>.from(json['extra'] as Map<String, dynamic>),

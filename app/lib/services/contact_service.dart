@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-
 /// Service for managing a local contact book of frequent signers.
 ///
 /// Stores contacts as a JSON file in the user's home directory.

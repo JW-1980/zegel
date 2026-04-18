@@ -283,7 +283,8 @@ void main() {
         expect(live.first.name, 'active');
       });
 
-      test('entry with future expiry is included when includeExpired = false', () {
+      test('entry with future expiry is included when includeExpired = false',
+          () {
         final km = KeyManager.empty();
         km.create(
           name: 'future',

@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:zegel_app/utils/hex_utils.dart';
 
 import 'package:flutter/material.dart';
-import 'package:zegel_app/services/zegel_service.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -12,7 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:zegel/zegel.dart' as core;
 
 import '../services/file_service.dart';
-
+import '../services/zegel_service.dart';
 import '../widgets/key_input.dart';
 
 /// Screen for viewing media metadata from sealed image/video files.

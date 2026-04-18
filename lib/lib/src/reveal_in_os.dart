@@ -23,7 +23,8 @@ class RevealInOs {
     String? overrideOs,
   }) {
     if (path.contains('://')) {
-      throw ArgumentError('Paths containing URL schemes (://) are not allowed.');
+      throw ArgumentError(
+          'Paths containing URL schemes (://) are not allowed.');
     }
 
     final absolutePath = File(path).absolute.path;

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-
 import '../services/zegel_service.dart';
 
 /// Displays an attestation (co-signature) as a badge.

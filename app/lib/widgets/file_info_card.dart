@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-
 import '../services/zegel_service.dart';
 import 'classification_badge.dart';
 
