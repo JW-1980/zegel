@@ -427,12 +427,10 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
                                   child: FloatingActionButton.small(
                                     heroTag: 'mapFallback',
                                     onPressed: () async {
-                                      final lat =
-                                          _metadata!['gps_latitude']
+                                      final lat = _metadata!['gps_latitude']
                                               ?.toString() ??
                                           '0';
-                                      final lng =
-                                          _metadata!['gps_longitude']
+                                      final lng = _metadata!['gps_longitude']
                                               ?.toString() ??
                                           '0';
                                       final url = Uri.parse(

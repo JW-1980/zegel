@@ -126,9 +126,8 @@ class _BatchVerifyTabState extends State<_BatchVerifyTab> {
 
       const chunkSize = 20;
       for (int i = 0; i < files.length; i += chunkSize) {
-        final end = (i + chunkSize < files.length)
-            ? i + chunkSize
-            : files.length;
+        final end =
+            (i + chunkSize < files.length) ? i + chunkSize : files.length;
         final chunk = files.sublist(i, end);
 
         final futures = chunk.map((filePath) async {
@@ -278,8 +277,8 @@ class _BatchVerifyTabState extends State<_BatchVerifyTab> {
             child: ElevatedButton.icon(
               onPressed:
                   _isProcessing || _folderPath == null || _hexKey.length != 64
-                  ? null
-                  : _startBatchVerify,
+                      ? null
+                      : _startBatchVerify,
               icon: _isProcessing
                   ? const SizedBox(
                       width: 20,
@@ -423,9 +422,8 @@ class _BatchSealTabState extends State<_BatchSealTab> {
       const chunkSize = 20;
 
       for (int i = 0; i < files.length; i += chunkSize) {
-        final end = (i + chunkSize < files.length)
-            ? i + chunkSize
-            : files.length;
+        final end =
+            (i + chunkSize < files.length) ? i + chunkSize : files.length;
         final chunk = files.sublist(i, end);
 
         final futures = chunk.map((filePath) async {
@@ -659,8 +657,7 @@ class _BatchSealTabState extends State<_BatchSealTab> {
           SizedBox(
             height: 50,
             child: ElevatedButton.icon(
-              onPressed:
-                  _isProcessing ||
+              onPressed: _isProcessing ||
                       _inputFolder == null ||
                       _outputFolder == null ||
                       _hexKey.length != 64
