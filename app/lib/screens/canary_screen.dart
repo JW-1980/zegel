@@ -1,4 +1,5 @@
-import 'dart:typed_data';
+import 'package:flutter/services.dart';
+
 import 'package:flutter/material.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
@@ -470,8 +471,7 @@ class _CanaryScreenState extends State<CanaryScreen>
           SizedBox(
             height: 50,
             child: ElevatedButton.icon(
-              onPressed:
-                  _isEmbedding ||
+              onPressed: _isEmbedding ||
                       _embedFilePath == null ||
                       _masterKey.length != 64 ||
                       _recipients.isEmpty

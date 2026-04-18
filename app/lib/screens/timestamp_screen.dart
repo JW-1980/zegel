@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:zegel_app/utils/hex_utils.dart';
 import 'dart:typed_data';
 

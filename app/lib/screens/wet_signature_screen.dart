@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+import 'dart:io';
 import 'dart:typed_data';
 import 'dart:convert';
 import 'dart:ui' as ui;
@@ -204,8 +206,7 @@ class _WetSignatureScreenState extends State<WetSignatureScreen> {
         ).writeAsString(const JsonEncoder.withIndent('  ').convert(sigJson));
 
         setState(() {
-          _statusMessage =
-              'Signature saved to ${sigPath.split('/').last}\n'
+          _statusMessage = 'Signature saved to ${sigPath.split('/').last}\n'
               'Signed by $name from $city on '
               '${DateFormat('yyyy-MM-dd HH:mm').format(DateTime.now())}.\n'
               '(${encoded.length} bytes encoded)';
@@ -214,8 +215,7 @@ class _WetSignatureScreenState extends State<WetSignatureScreen> {
         });
       } else {
         setState(() {
-          _statusMessage =
-              'Signature captured (${encoded.length} bytes). '
+          _statusMessage = 'Signature captured (${encoded.length} bytes). '
               'No file selected — signature not saved to disk.';
           _isError = false;
         });
@@ -461,9 +461,8 @@ class _WetSignatureScreenState extends State<WetSignatureScreen> {
                   color: _isError ? Colors.red.shade50 : Colors.green.shade50,
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                    color: _isError
-                        ? Colors.red.shade200
-                        : Colors.green.shade200,
+                    color:
+                        _isError ? Colors.red.shade200 : Colors.green.shade200,
                   ),
                 ),
                 child: Row(

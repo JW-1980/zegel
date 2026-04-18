@@ -1,4 +1,6 @@
-import 'dart:typed_data';
+import 'package:flutter/services.dart';
+import 'dart:io';
+
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -654,8 +656,7 @@ class _DiscloseScreenState extends State<DiscloseScreen>
           SizedBox(
             height: 50,
             child: ElevatedButton.icon(
-              onPressed:
-                  _isExtracting ||
+              onPressed: _isExtracting ||
                       _extractFilePath == null ||
                       _loadedToken == null
                   ? null

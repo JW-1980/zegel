@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -118,9 +119,8 @@ class _VersionChainScreenState extends State<VersionChainScreen> {
         Map<String, dynamic>? versionInfo;
         if (inspection.publicMetadata != null &&
             inspection.publicMetadata!.containsKey('version_info')) {
-          versionInfo =
-              inspection.publicMetadata!['version_info']
-                  as Map<String, dynamic>?;
+          versionInfo = inspection.publicMetadata!['version_info']
+              as Map<String, dynamic>?;
         }
 
         versions.add(
@@ -535,8 +535,8 @@ class _VersionChainScreenState extends State<VersionChainScreen> {
                         color: isFirst
                             ? theme.colorScheme.primary
                             : (version.isChainValid
-                                  ? Colors.green
-                                  : Colors.red),
+                                ? Colors.green
+                                : Colors.red),
                       ),
                       child: Center(
                         child: Text(

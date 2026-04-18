@@ -5,8 +5,7 @@ void main() {
   group('DashboardCatalog', () {
     test('default catalog exposes the shipped widgets', () {
       final catalog = DashboardCatalog();
-      expect(catalog.allSpecs().length,
-          DashboardCatalog.defaultSpecs.length);
+      expect(catalog.allSpecs().length, DashboardCatalog.defaultSpecs.length);
       expect(catalog.lookup('key_health'), isNotNull);
     });
 
