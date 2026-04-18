@@ -54,7 +54,7 @@ void main() {
         final wizard = _freshWizard();
         // Use clear() rather than add(null): the latter throws a TypeError
         // (null is not a SetupStep) before reaching the unmodifiable guard.
-        expect(() => wizard.steps.clear(), throwsUnsupportedError);
+        expect(wizard.steps.clear, throwsUnsupportedError);
       });
 
       test('no answers stored initially', () {

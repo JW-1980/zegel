@@ -235,7 +235,7 @@ void main() {
         final file = _writeFile('close_twice.bin', [1, 2, 3]);
         final reader = MmapReader.open(file.path);
         reader.close();
-        expect(() => reader.close(), returnsNormally);
+        expect(reader.close, returnsNormally);
       });
 
       test('read throws StateError after close', () {

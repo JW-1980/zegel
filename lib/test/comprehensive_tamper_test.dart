@@ -687,7 +687,7 @@ void main() {
     });
 
     test('unicode filename (emoji) roundtrips', () {
-      final unicodeName = 'report_2026_financial.txt';
+      const unicodeName = 'report_2026_financial.txt';
       final sealed = ZegelWriter(
         masterKey,
         ZegelOptions(contentType: 'text/plain', filename: unicodeName),

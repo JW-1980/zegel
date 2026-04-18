@@ -261,7 +261,7 @@ void main() {
           prober: _alwaysOnline,
         );
         indicator.start();
-        expect(() => indicator.stop(), returnsNormally);
+        expect(indicator.stop, returnsNormally);
         await indicator.close();
       });
 
@@ -270,7 +270,7 @@ void main() {
           endpoints: ['host'],
           prober: _alwaysOnline,
         );
-        expect(() => indicator.stop(), returnsNormally);
+        expect(indicator.stop, returnsNormally);
         await indicator.close();
       });
     });

@@ -313,8 +313,8 @@ void main() {
       // Parse directory to get ciphertext length.
       // Header + filename(6) + salt(32) + count(4) = 128 bytes.
       // Then directory entry: type(1) + hash(32) + ctLen(4) + iv(12) + tag(16).
-      final dirStart = 122 + 6; // 128
-      final ctLenOffset = dirStart + 1 + 32; // type + hash = 33 bytes in
+      const dirStart = 122 + 6; // 128
+      const ctLenOffset = dirStart + 1 + 32; // type + hash = 33 bytes in
       final ctLen = ByteData.sublistView(
         sealed,
         ctLenOffset,

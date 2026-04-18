@@ -566,7 +566,7 @@ void main() {
 
   group('Bulk send', () {
     test('parses CSV recipient list', () {
-      final csv = '''name,email,company,employee_id
+      const csv = '''name,email,company,employee_id
 Alice,alice@test.com,Acme,E001
 Bob,bob@test.com,Acme,E002
 Carol,carol@test.com,Acme,E003
