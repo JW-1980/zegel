@@ -186,9 +186,7 @@ void main() {
     // -----------------------------------------------------------------------
     group('duplicate', () {
       test('creates a new template under the new name', () {
-        manager.upsert(
-          _template('original', description: 'desc'),
-        );
+        manager.upsert(_template('original', description: 'desc'));
         final copy = manager.duplicate('original', 'copy');
         expect(copy, isNotNull);
         expect(copy!.name, 'copy');
@@ -244,10 +242,7 @@ void main() {
       });
 
       test('setDefault throws StateError for an unknown template', () {
-        expect(
-          () => manager.setDefault('missing'),
-          throwsA(isA<StateError>()),
-        );
+        expect(() => manager.setDefault('missing'), throwsA(isA<StateError>()));
       });
 
       test('defaultTemplate returns null after the default is deleted', () {
@@ -257,13 +252,16 @@ void main() {
         expect(manager.defaultTemplate(), isNull);
       });
 
-      test('setDefault references the live store — changes reflected immediately', () {
-        manager.upsert(_template('live', description: 'v1'));
-        manager.setDefault('live');
-        // Update the template after setting default.
-        manager.update('live', description: 'v2');
-        expect(manager.defaultTemplate()!.description, 'v2');
-      });
+      test(
+        'setDefault references the live store — changes reflected immediately',
+        () {
+          manager.upsert(_template('live', description: 'v1'));
+          manager.setDefault('live');
+          // Update the template after setting default.
+          manager.update('live', description: 'v2');
+          expect(manager.defaultTemplate()!.description, 'v2');
+        },
+      );
     });
   });
 }

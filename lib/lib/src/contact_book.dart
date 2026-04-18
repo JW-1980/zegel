@@ -43,9 +43,10 @@ class ContactBook {
   /// Returns all contacts, sorted by display name (case-insensitive).
   List<Contact> list() {
     final all = _byId.values.toList()
-      ..sort((a, b) => a.displayName.toLowerCase().compareTo(
-            b.displayName.toLowerCase(),
-          ));
+      ..sort(
+        (a, b) =>
+            a.displayName.toLowerCase().compareTo(b.displayName.toLowerCase()),
+      );
     return all;
   }
 
@@ -66,15 +67,16 @@ class ContactBook {
   int get length => _byId.length;
 
   Map<String, dynamic> toJson() => {
-        'contacts': _byId.values.map((c) => c.toJson()).toList(),
-      };
+    'contacts': _byId.values.map((c) => c.toJson()).toList(),
+  };
 
   String encode() => jsonEncode(toJson());
 
   static ContactBook decodeJson(String raw) {
     final m = jsonDecode(raw) as Map<String, dynamic>;
     final book = ContactBook();
-    for (final entry in (m['contacts'] as List<dynamic>? ?? const <dynamic>[])) {
+    for (final entry
+        in (m['contacts'] as List<dynamic>? ?? const <dynamic>[])) {
       final contact = Contact.fromJson(entry as Map<String, dynamic>);
       book._byId[contact.id] = contact;
     }
@@ -107,15 +109,15 @@ class Contact {
   });
 
   static Contact fromJson(Map<String, dynamic> json) => Contact(
-        id: json['id'] as String,
-        displayName: json['display_name'] as String,
-        addedAt: DateTime.parse(json['added_at'] as String).toUtc(),
-        email: json['email'] as String?,
-        organization: json['organization'] as String?,
-        publicKeyFingerprint: json['public_key_fingerprint'] as String?,
-        trusted: json['trusted'] as bool? ?? false,
-        notes: json['notes'] as String?,
-      );
+    id: json['id'] as String,
+    displayName: json['display_name'] as String,
+    addedAt: DateTime.parse(json['added_at'] as String).toUtc(),
+    email: json['email'] as String?,
+    organization: json['organization'] as String?,
+    publicKeyFingerprint: json['public_key_fingerprint'] as String?,
+    trusted: json['trusted'] as bool? ?? false,
+    notes: json['notes'] as String?,
+  );
 
   final String id;
   final String displayName;
@@ -147,14 +149,14 @@ class Contact {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'display_name': displayName,
-        if (email != null) 'email': email,
-        if (organization != null) 'organization': organization,
-        if (publicKeyFingerprint != null)
-          'public_key_fingerprint': publicKeyFingerprint,
-        'trusted': trusted,
-        if (notes != null) 'notes': notes,
-        'added_at': addedAt.toUtc().toIso8601String(),
-      };
+    'id': id,
+    'display_name': displayName,
+    if (email != null) 'email': email,
+    if (organization != null) 'organization': organization,
+    if (publicKeyFingerprint != null)
+      'public_key_fingerprint': publicKeyFingerprint,
+    'trusted': trusted,
+    if (notes != null) 'notes': notes,
+    'added_at': addedAt.toUtc().toIso8601String(),
+  };
 }

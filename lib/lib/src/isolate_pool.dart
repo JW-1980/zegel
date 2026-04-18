@@ -18,11 +18,7 @@ import 'dart:collection';
 class IsolatePool {
   IsolatePool({this.maxWorkers = 4}) {
     if (maxWorkers < 1) {
-      throw ArgumentError.value(
-        maxWorkers,
-        'maxWorkers',
-        'must be at least 1',
-      );
+      throw ArgumentError.value(maxWorkers, 'maxWorkers', 'must be at least 1');
     }
   }
 

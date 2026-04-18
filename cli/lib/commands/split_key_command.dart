@@ -50,7 +50,8 @@ class SplitKeyCommand extends Command<int> {
     argParser.addOption(
       'threshold',
       abbr: 't',
-      help: 'Minimum number of shares required to reconstruct (M).\n'
+      help:
+          'Minimum number of shares required to reconstruct (M).\n'
           'Must be at least 2.',
       valueHelp: 'M',
       mandatory: true,
@@ -59,7 +60,8 @@ class SplitKeyCommand extends Command<int> {
     argParser.addOption(
       'shares',
       abbr: 'n',
-      help: 'Total number of shares to generate (N).\n'
+      help:
+          'Total number of shares to generate (N).\n'
           'Must be >= threshold and <= 255.',
       valueHelp: 'N',
       mandatory: true,
@@ -73,7 +75,8 @@ class SplitKeyCommand extends Command<int> {
 
     argParser.addOption(
       'hierarchical',
-      help: 'Create a hierarchical share structure with multiple levels.\n'
+      help:
+          'Create a hierarchical share structure with multiple levels.\n'
           'Format: "level1:M/N,level2:M/N" (e.g., "board:3/5,exec:2/3").\n'
           'Each level gets its own subdirectory with share files.',
       valueHelp: 'spec',
@@ -182,7 +185,8 @@ class ReconstructCommand extends Command<int> {
   final String name = 'reconstruct';
 
   @override
-  String get description => 'Reconstruct a master key from Shamir shares.\n'
+  String get description =>
+      'Reconstruct a master key from Shamir shares.\n'
       '\n'
       'Reads M share files and uses Lagrange interpolation over GF(256)\n'
       'to reconstruct the original 32-byte master key.\n'
@@ -204,14 +208,16 @@ class ReconstructCommand extends Command<int> {
   ReconstructCommand() {
     addOutputOption(
       argParser,
-      help: 'Write reconstructed key to a file.\n'
+      help:
+          'Write reconstructed key to a file.\n'
           'If omitted, the key hex is written to stdout.',
     );
 
     argParser.addFlag(
       'quiet',
       abbr: 'q',
-      help: 'Only output the key hex (no warnings).\n'
+      help:
+          'Only output the key hex (no warnings).\n'
           'Useful for piping to other commands.',
       defaultsTo: false,
     );

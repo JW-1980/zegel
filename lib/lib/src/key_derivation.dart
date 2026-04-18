@@ -2,7 +2,8 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
-import 'package:pointycastle/export.dart' show Argon2BytesGenerator, Argon2Parameters;
+import 'package:pointycastle/export.dart'
+    show Argon2BytesGenerator, Argon2Parameters;
 
 /// Cryptographic key derivation functions for the Zegel format.
 ///
@@ -214,8 +215,9 @@ class KeyDerivation {
     expandInput[infoBytes.length] = 0x01;
 
     final hmacExpand = Hmac(sha256, prk);
-    final Uint8List expanded =
-        Uint8List.fromList(hmacExpand.convert(expandInput).bytes);
+    final Uint8List expanded = Uint8List.fromList(
+      hmacExpand.convert(expandInput).bytes,
+    );
 
     // Return the first 12 bytes as the nonce.
     return Uint8List.fromList(expanded.sublist(0, 12));

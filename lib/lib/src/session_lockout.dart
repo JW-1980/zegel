@@ -52,10 +52,12 @@ class SessionLockout {
     if (_locked) return;
     _locked = true;
     if (!_events.isClosed) {
-      _events.add(SessionLockoutEvent(
-        type: SessionLockoutEventType.locked,
-        at: (at ?? DateTime.now().toUtc()).toUtc(),
-      ));
+      _events.add(
+        SessionLockoutEvent(
+          type: SessionLockoutEventType.locked,
+          at: (at ?? DateTime.now().toUtc()).toUtc(),
+        ),
+      );
     }
   }
 
@@ -66,10 +68,9 @@ class SessionLockout {
     final now = (at ?? DateTime.now().toUtc()).toUtc();
     _lastActivity = now;
     if (!_events.isClosed) {
-      _events.add(SessionLockoutEvent(
-        type: SessionLockoutEventType.unlocked,
-        at: now,
-      ));
+      _events.add(
+        SessionLockoutEvent(type: SessionLockoutEventType.unlocked, at: now),
+      );
     }
   }
 

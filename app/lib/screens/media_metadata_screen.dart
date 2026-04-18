@@ -349,8 +349,9 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
                             height: 250,
                             decoration: BoxDecoration(
                               border: Border.all(
-                                color: theme.colorScheme.outline
-                                    .withValues(alpha: 0.3),
+                                color: theme.colorScheme.outline.withValues(
+                                  alpha: 0.3,
+                                ),
                               ),
                               borderRadius: BorderRadius.circular(8),
                             ),
@@ -359,14 +360,17 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
                                 FlutterMap(
                                   options: MapOptions(
                                     initialCenter: LatLng(
-                                      double.tryParse(_metadata!['gps_latitude']
-                                                  ?.toString() ??
-                                              '0') ??
+                                      double.tryParse(
+                                            _metadata!['gps_latitude']
+                                                    ?.toString() ??
+                                                '0',
+                                          ) ??
                                           0,
                                       double.tryParse(
-                                              _metadata!['gps_longitude']
-                                                      ?.toString() ??
-                                                  '0') ??
+                                            _metadata!['gps_longitude']
+                                                    ?.toString() ??
+                                                '0',
+                                          ) ??
                                           0,
                                     ),
                                     initialZoom: 14.0,
@@ -381,8 +385,11 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
                                       attributions: [
                                         TextSourceAttribution(
                                           'OpenStreetMap contributors',
-                                          onTap: () => launchUrl(Uri.parse(
-                                              'https://openstreetmap.org/copyright')),
+                                          onTap: () => launchUrl(
+                                            Uri.parse(
+                                              'https://openstreetmap.org/copyright',
+                                            ),
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -391,14 +398,16 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
                                         Marker(
                                           point: LatLng(
                                             double.tryParse(
-                                                    _metadata!['gps_latitude']
-                                                            ?.toString() ??
-                                                        '0') ??
+                                                  _metadata!['gps_latitude']
+                                                          ?.toString() ??
+                                                      '0',
+                                                ) ??
                                                 0,
                                             double.tryParse(
-                                                    _metadata!['gps_longitude']
-                                                            ?.toString() ??
-                                                        '0') ??
+                                                  _metadata!['gps_longitude']
+                                                          ?.toString() ??
+                                                      '0',
+                                                ) ??
                                                 0,
                                           ),
                                           width: 40,
@@ -419,14 +428,17 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
                                   child: FloatingActionButton.small(
                                     heroTag: 'mapFallback',
                                     onPressed: () async {
-                                      final lat = _metadata!['gps_latitude']
+                                      final lat =
+                                          _metadata!['gps_latitude']
                                               ?.toString() ??
                                           '0';
-                                      final lng = _metadata!['gps_longitude']
+                                      final lng =
+                                          _metadata!['gps_longitude']
                                               ?.toString() ??
                                           '0';
                                       final url = Uri.parse(
-                                          'https://www.openstreetmap.org/?mlat=$lat&mlon=$lng#map=15/$lat/$lng');
+                                        'https://www.openstreetmap.org/?mlat=$lat&mlon=$lng#map=15/$lat/$lng',
+                                      );
                                       if (await canLaunchUrl(url)) {
                                         await launchUrl(url);
                                       }

@@ -182,7 +182,8 @@ class BulkRecipient {
     return BulkRecipient(
       name: json['name'] as String,
       email: json['email'] as String,
-      customFields: (json['custom_fields'] as Map<String, dynamic>?)?.map(
+      customFields:
+          (json['custom_fields'] as Map<String, dynamic>?)?.map(
             (k, v) => MapEntry(k, v as String),
           ) ??
           <String, String>{},
@@ -282,9 +283,7 @@ class BulkSendJob {
   }) {
     // Validate signer role exists.
     if (!template.roles.any((r) => r.roleId == signerRoleId)) {
-      throw ArgumentError(
-        'Template does not contain role "$signerRoleId"',
-      );
+      throw ArgumentError('Template does not contain role "$signerRoleId"');
     }
 
     final now = DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
@@ -389,8 +388,9 @@ class BulkSendJob {
       envelopeIds: (json['envelope_ids'] as List<dynamic>)
           .map((e) => e as String)
           .toList(),
-      status: BulkSendStatus.values
-          .firstWhere((s) => s.name == (json['status'] ?? 'draft')),
+      status: BulkSendStatus.values.firstWhere(
+        (s) => s.name == (json['status'] ?? 'draft'),
+      ),
       createdAt: json['created_at'] as int?,
       dispatchedAt: json['dispatched_at'] as int?,
       completedAt: json['completed_at'] as int?,

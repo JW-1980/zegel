@@ -22,10 +22,12 @@ class LatencyTracker {
     if (latencyMs < 0) {
       throw ArgumentError.value(latencyMs, 'latencyMs', 'must be non-negative');
     }
-    _samples.add(LatencySample(
-      latencyMs: latencyMs,
-      at: (at ?? DateTime.now().toUtc()).toUtc(),
-    ));
+    _samples.add(
+      LatencySample(
+        latencyMs: latencyMs,
+        at: (at ?? DateTime.now().toUtc()).toUtc(),
+      ),
+    );
     while (_samples.length > maxSamples) {
       _samples.removeAt(0);
     }
@@ -55,7 +57,11 @@ class LatencyTracker {
   int? percentileMs(double percentile) {
     if (_samples.isEmpty) return null;
     if (percentile < 0 || percentile > 100) {
-      throw ArgumentError.value(percentile, 'percentile', 'must be in [0, 100]');
+      throw ArgumentError.value(
+        percentile,
+        'percentile',
+        'must be in [0, 100]',
+      );
     }
     final sorted = _samples.map((s) => s.latencyMs).toList()..sort();
     final rank = (percentile / 100 * sorted.length).ceil();
@@ -67,21 +73,21 @@ class LatencyTracker {
   void reset() => _samples.clear();
 
   Map<String, dynamic> summary() => {
-        'endpoint': endpoint,
-        'count': count,
-        'min_ms': minMs,
-        'max_ms': maxMs,
-        'average_ms': averageMs,
-        'p50_ms': percentileMs(50),
-        'p95_ms': percentileMs(95),
-        'p99_ms': percentileMs(99),
-      };
+    'endpoint': endpoint,
+    'count': count,
+    'min_ms': minMs,
+    'max_ms': maxMs,
+    'average_ms': averageMs,
+    'p50_ms': percentileMs(50),
+    'p95_ms': percentileMs(95),
+    'p99_ms': percentileMs(99),
+  };
 
   String encode() => jsonEncode({
-        'endpoint': endpoint,
-        'max_samples': maxSamples,
-        'samples': _samples.map((s) => s.toJson()).toList(),
-      });
+    'endpoint': endpoint,
+    'max_samples': maxSamples,
+    'samples': _samples.map((s) => s.toJson()).toList(),
+  });
 
   static LatencyTracker decodeJson(String raw) {
     final m = jsonDecode(raw) as Map<String, dynamic>;
@@ -90,7 +96,9 @@ class LatencyTracker {
       maxSamples: (m['max_samples'] as num?)?.toInt() ?? 200,
     );
     for (final entry in (m['samples'] as List<dynamic>? ?? const <dynamic>[])) {
-      tracker._samples.add(LatencySample.fromJson(entry as Map<String, dynamic>));
+      tracker._samples.add(
+        LatencySample.fromJson(entry as Map<String, dynamic>),
+      );
     }
     return tracker;
   }
@@ -100,15 +108,15 @@ class LatencySample {
   const LatencySample({required this.latencyMs, required this.at});
 
   static LatencySample fromJson(Map<String, dynamic> json) => LatencySample(
-        latencyMs: (json['latency_ms'] as num).toInt(),
-        at: DateTime.parse(json['at'] as String).toUtc(),
-      );
+    latencyMs: (json['latency_ms'] as num).toInt(),
+    at: DateTime.parse(json['at'] as String).toUtc(),
+  );
 
   final int latencyMs;
   final DateTime at;
 
   Map<String, dynamic> toJson() => {
-        'latency_ms': latencyMs,
-        'at': at.toUtc().toIso8601String(),
-      };
+    'latency_ms': latencyMs,
+    'at': at.toUtc().toIso8601String(),
+  };
 }

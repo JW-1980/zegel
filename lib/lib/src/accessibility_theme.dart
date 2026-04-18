@@ -48,7 +48,9 @@ class AccessibilityTheme {
   static double relativeLuminance(int argb) {
     double channel(int c) {
       final v = c / 255.0;
-      return v <= 0.03928 ? v / 12.92 : math.pow((v + 0.055) / 1.055, 2.4).toDouble();
+      return v <= 0.03928
+          ? v / 12.92
+          : math.pow((v + 0.055) / 1.055, 2.4).toDouble();
     }
 
     final r = channel((argb >> 16) & 0xFF);

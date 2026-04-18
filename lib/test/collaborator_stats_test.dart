@@ -22,12 +22,14 @@ void main() {
 
     test('resolves display names from the contact book', () {
       final book = ContactBook()
-        ..upsert(Contact(
-          id: 'alice',
-          displayName: 'Alice Adams',
-          trusted: true,
-          addedAt: DateTime.utc(2026, 1, 1),
-        ));
+        ..upsert(
+          Contact(
+            id: 'alice',
+            displayName: 'Alice Adams',
+            trusted: true,
+            addedAt: DateTime.utc(2026, 1, 1),
+          ),
+        );
       final stats = CollaboratorStats(contactBook: book)..record('alice');
       final ranked = stats.topCollaborators();
       expect(ranked.first.displayName, 'Alice Adams');

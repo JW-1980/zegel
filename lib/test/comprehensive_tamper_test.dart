@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 
-
 import 'package:test/test.dart';
 import 'package:zegel/zegel.dart';
 
@@ -756,13 +755,13 @@ void main() {
         int newValue;
         do {
           pos = rng.nextInt(fileBytes.length);
-        } while (
-            pos >= 12 && pos <= 83); // Skip harmless content-type padding bytes
+        } while (pos >= 12 &&
+            pos <= 83); // Skip harmless content-type padding bytes
 
         do {
           newValue = rng.nextInt(256);
-        } while (
-            newValue == fileBytes[pos]); // Ensure the value actually changes
+        } while (newValue ==
+            fileBytes[pos]); // Ensure the value actually changes
 
         tampered[pos] = newValue;
 

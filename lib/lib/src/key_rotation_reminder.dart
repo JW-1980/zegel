@@ -13,8 +13,8 @@ class KeyRotationReminder {
     this.rotationWindow = const Duration(days: 90),
     Map<String, KeyRotationRecord>? initial,
   }) : _records = Map<String, KeyRotationRecord>.of(
-          initial ?? const <String, KeyRotationRecord>{},
-        );
+         initial ?? const <String, KeyRotationRecord>{},
+       );
 
   /// Default rotation window (90 days).
   static const Duration defaultRotationWindow = Duration(days: 90);
@@ -63,11 +63,13 @@ class KeyRotationReminder {
   List<KeyRotationSummary> summarize({DateTime? now}) {
     final cutoff = (now ?? DateTime.now().toUtc()).toUtc();
     return _records.values
-        .map((r) => KeyRotationSummary(
-              record: r,
-              ageAtEvaluation: cutoff.difference(r.lastRotatedAt),
-              status: statusOf(r.name, now: cutoff),
-            ))
+        .map(
+          (r) => KeyRotationSummary(
+            record: r,
+            ageAtEvaluation: cutoff.difference(r.lastRotatedAt),
+            status: statusOf(r.name, now: cutoff),
+          ),
+        )
         .toList()
       ..sort((a, b) => b.ageAtEvaluation.compareTo(a.ageAtEvaluation));
   }
@@ -76,18 +78,19 @@ class KeyRotationReminder {
 
   /// Serializes the tracker to JSON.
   String encode() => jsonEncode({
-        'rotation_window_days': rotationWindow.inDays,
-        'records': _records.values.map((r) => r.toJson()).toList(),
-      });
+    'rotation_window_days': rotationWindow.inDays,
+    'records': _records.values.map((r) => r.toJson()).toList(),
+  });
 
   /// Decodes a tracker previously serialized by [encode].
   static KeyRotationReminder decodeJson(String raw) {
     final m = jsonDecode(raw) as Map<String, dynamic>;
-    final window = Duration(days: (m['rotation_window_days'] as num?)?.toInt() ?? 90);
+    final window = Duration(
+      days: (m['rotation_window_days'] as num?)?.toInt() ?? 90,
+    );
     final records = <String, KeyRotationRecord>{};
     for (final entry in (m['records'] as List<dynamic>? ?? const <dynamic>[])) {
-      final record =
-          KeyRotationRecord.fromJson(entry as Map<String, dynamic>);
+      final record = KeyRotationRecord.fromJson(entry as Map<String, dynamic>);
       records[record.name] = record;
     }
     return KeyRotationReminder(rotationWindow: window, initial: records);
@@ -95,8 +98,10 @@ class KeyRotationReminder {
 
   /// Convenience: load a tracker from a file. Returns an empty tracker if
   /// the file does not yet exist.
-  static KeyRotationReminder loadFile(String path,
-      {Duration rotationWindow = defaultRotationWindow}) {
+  static KeyRotationReminder loadFile(
+    String path, {
+    Duration rotationWindow = defaultRotationWindow,
+  }) {
     final file = File(path);
     if (!file.existsSync()) {
       return KeyRotationReminder(rotationWindow: rotationWindow);
@@ -123,8 +128,9 @@ class KeyRotationRecord {
       KeyRotationRecord(
         name: json['name'] as String,
         createdAt: DateTime.parse(json['created_at'] as String).toUtc(),
-        lastRotatedAt:
-            DateTime.parse(json['last_rotated_at'] as String).toUtc(),
+        lastRotatedAt: DateTime.parse(
+          json['last_rotated_at'] as String,
+        ).toUtc(),
       );
 
   final String name;
@@ -132,10 +138,10 @@ class KeyRotationRecord {
   final DateTime lastRotatedAt;
 
   Map<String, dynamic> toJson() => {
-        'name': name,
-        'created_at': createdAt.toUtc().toIso8601String(),
-        'last_rotated_at': lastRotatedAt.toUtc().toIso8601String(),
-      };
+    'name': name,
+    'created_at': createdAt.toUtc().toIso8601String(),
+    'last_rotated_at': lastRotatedAt.toUtc().toIso8601String(),
+  };
 }
 
 enum RotationStatus { unknown, ok, due, overdue }

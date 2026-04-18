@@ -7,9 +7,9 @@
 /// it testable without pulling in Flutter.
 class ShortcutRegistry {
   ShortcutRegistry({Map<Shortcut, String>? initial})
-      : _bindings = Map<Shortcut, String>.of(
-          initial ?? const <Shortcut, String>{},
-        );
+    : _bindings = Map<Shortcut, String>.of(
+        initial ?? const <Shortcut, String>{},
+      );
 
   final Map<Shortcut, String> _bindings;
 
@@ -46,13 +46,14 @@ class ShortcutRegistry {
 
   /// Returns all bound shortcuts sorted by display label.
   List<ShortcutBinding> list() {
-    final bindings = _bindings.entries
-        .map((e) => ShortcutBinding(shortcut: e.key, actionId: e.value))
-        .toList()
-      ..sort(
-        (a, b) =>
-            a.shortcut.displayLabel.compareTo(b.shortcut.displayLabel),
-      );
+    final bindings =
+        _bindings.entries
+            .map((e) => ShortcutBinding(shortcut: e.key, actionId: e.value))
+            .toList()
+          ..sort(
+            (a, b) =>
+                a.shortcut.displayLabel.compareTo(b.shortcut.displayLabel),
+          );
     return bindings;
   }
 

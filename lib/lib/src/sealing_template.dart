@@ -92,19 +92,19 @@ class SealingTemplate {
   }
 
   Map<String, dynamic> toJson() => {
-        'name': name,
-        if (description != null) 'description': description,
-        if (contentType != null) 'content_type': contentType,
-        if (classification != null) 'classification': classification,
-        'compress': compress,
-        'password_derived': passwordDerived,
-        if (expirationFromNow != null)
-          'expiration_from_now_seconds': expirationFromNow!.inSeconds,
-        if (blockSize != null) 'block_size': blockSize,
-        'public_metadata': publicMetadata,
-        'metadata': metadata,
-        'created_at': createdAt.toUtc().toIso8601String(),
-      };
+    'name': name,
+    if (description != null) 'description': description,
+    if (contentType != null) 'content_type': contentType,
+    if (classification != null) 'classification': classification,
+    'compress': compress,
+    'password_derived': passwordDerived,
+    if (expirationFromNow != null)
+      'expiration_from_now_seconds': expirationFromNow!.inSeconds,
+    if (blockSize != null) 'block_size': blockSize,
+    'public_metadata': publicMetadata,
+    'metadata': metadata,
+    'created_at': createdAt.toUtc().toIso8601String(),
+  };
 
   static SealingTemplate fromJson(Map<String, dynamic> json) {
     return SealingTemplate(
@@ -116,11 +116,15 @@ class SealingTemplate {
       passwordDerived: json['password_derived'] as bool? ?? false,
       expirationFromNow: json['expiration_from_now_seconds'] == null
           ? null
-          : Duration(seconds: (json['expiration_from_now_seconds'] as num).toInt()),
+          : Duration(
+              seconds: (json['expiration_from_now_seconds'] as num).toInt(),
+            ),
       blockSize: (json['block_size'] as num?)?.toInt(),
       publicMetadata: json['public_metadata'] == null
           ? const <String, dynamic>{}
-          : Map<String, dynamic>.from(json['public_metadata'] as Map<String, dynamic>),
+          : Map<String, dynamic>.from(
+              json['public_metadata'] as Map<String, dynamic>,
+            ),
       metadata: json['metadata'] == null
           ? const <String, dynamic>{}
           : Map<String, dynamic>.from(json['metadata'] as Map<String, dynamic>),
@@ -181,7 +185,9 @@ class SealingTemplateStore {
         .listSync()
         .whereType<File>()
         .where((f) => f.path.endsWith('.json'))
-        .map((f) => f.uri.pathSegments.last.replaceFirst(RegExp(r'\.json$'), ''))
+        .map(
+          (f) => f.uri.pathSegments.last.replaceFirst(RegExp(r'\.json$'), ''),
+        )
         .toList()
       ..sort();
   }

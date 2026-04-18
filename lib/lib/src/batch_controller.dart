@@ -88,9 +88,4 @@ class BatchController {
   }
 }
 
-enum BatchState {
-  running,
-  paused,
-  cancelled,
-  completed,
-}
+enum BatchState { running, paused, cancelled, completed }

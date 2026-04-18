@@ -251,7 +251,8 @@ class ZegelWriter {
     // Key commitment is always enabled when using password-derived keys to
     // defend against partitioning oracle attacks. It can also be explicitly
     // requested for any file.
-    final bool requireKeyCommitment = options.enableKeyCommitment ||
+    final bool requireKeyCommitment =
+        options.enableKeyCommitment ||
         (options.argon2TimeCost != null && options.argon2MemoryCost != null);
     if (requireKeyCommitment) {
       flags |= ZegelFormat.flagHasKeyCommitment;
@@ -373,7 +374,8 @@ class ZegelWriter {
     String? expirationDate;
     if (options.expiration != null) {
       final DateTime dt = options.expiration!.toUtc();
-      expirationDate = '${dt.year.toString().padLeft(4, '0')}-'
+      expirationDate =
+          '${dt.year.toString().padLeft(4, '0')}-'
           '${dt.month.toString().padLeft(2, '0')}-'
           '${dt.day.toString().padLeft(2, '0')}';
     }

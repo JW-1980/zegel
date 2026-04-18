@@ -14,8 +14,10 @@ void main() {
   group('ShortcutRegistry', () {
     test('register and lookup round trip', () {
       final reg = ShortcutRegistry();
-      const shortcut =
-          Shortcut(modifiers: {ShortcutModifier.control}, key: 's');
+      const shortcut = Shortcut(
+        modifiers: {ShortcutModifier.control},
+        key: 's',
+      );
       reg.register(shortcut, 'action.seal');
       expect(reg.actionFor(shortcut), 'action.seal');
       expect(reg.shortcutFor('action.seal'), shortcut);
@@ -23,19 +25,20 @@ void main() {
 
     test('register throws on conflict', () {
       final reg = ShortcutRegistry();
-      const shortcut =
-          Shortcut(modifiers: {ShortcutModifier.control}, key: 's');
-      reg.register(shortcut, 'action.seal');
-      expect(
-        () => reg.register(shortcut, 'action.other'),
-        throwsArgumentError,
+      const shortcut = Shortcut(
+        modifiers: {ShortcutModifier.control},
+        key: 's',
       );
+      reg.register(shortcut, 'action.seal');
+      expect(() => reg.register(shortcut, 'action.other'), throwsArgumentError);
     });
 
     test('override replaces existing bindings silently', () {
       final reg = ShortcutRegistry();
-      const shortcut =
-          Shortcut(modifiers: {ShortcutModifier.control}, key: 's');
+      const shortcut = Shortcut(
+        modifiers: {ShortcutModifier.control},
+        key: 's',
+      );
       reg.register(shortcut, 'action.seal');
       reg.override(shortcut, 'action.newer');
       expect(reg.actionFor(shortcut), 'action.newer');

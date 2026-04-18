@@ -63,8 +63,11 @@ void main() {
       test('contains all known terms', () {
         final allTerms = CryptoGlossary.all().map((t) => t.term).toSet();
         for (final key in knownKeys) {
-          expect(allTerms, contains(key),
-              reason: 'Expected all() to contain "$key"');
+          expect(
+            allTerms,
+            contains(key),
+            reason: 'Expected all() to contain "$key"',
+          );
         }
       });
 
@@ -74,7 +77,8 @@ void main() {
           expect(
             terms[i].term.compareTo(terms[i + 1].term),
             lessThanOrEqualTo(0),
-            reason: '"${terms[i].term}" should sort before "${terms[i + 1].term}"',
+            reason:
+                '"${terms[i].term}" should sort before "${terms[i + 1].term}"',
           );
         }
       });
@@ -101,8 +105,10 @@ void main() {
       });
 
       test('is case-insensitive (forwarded from lookup)', () {
-        expect(CryptoGlossary.tooltipFor('NONCE'),
-            CryptoGlossary.tooltipFor('nonce'));
+        expect(
+          CryptoGlossary.tooltipFor('NONCE'),
+          CryptoGlossary.tooltipFor('nonce'),
+        );
       });
 
       test('aes-256-gcm tooltip mentions encryption', () {
@@ -111,8 +117,9 @@ void main() {
       });
 
       test('shamir-secret-sharing tooltip mentions shares', () {
-        final tooltip =
-            CryptoGlossary.tooltipFor('shamir-secret-sharing').toLowerCase();
+        final tooltip = CryptoGlossary.tooltipFor(
+          'shamir-secret-sharing',
+        ).toLowerCase();
         expect(tooltip, contains('share'));
       });
     });
@@ -155,8 +162,12 @@ void main() {
       });
 
       test('search is case-insensitive', () {
-        final lower = CryptoGlossary.search('shamir').map((t) => t.term).toSet();
-        final upper = CryptoGlossary.search('SHAMIR').map((t) => t.term).toSet();
+        final lower = CryptoGlossary.search(
+          'shamir',
+        ).map((t) => t.term).toSet();
+        final upper = CryptoGlossary.search(
+          'SHAMIR',
+        ).map((t) => t.term).toSet();
         expect(lower, equals(upper));
       });
 
@@ -181,8 +192,11 @@ void main() {
 
       test('all built-in terms have non-empty description', () {
         for (final term in CryptoGlossary.all()) {
-          expect(term.description, isNotEmpty,
-              reason: '${term.term} description should not be empty');
+          expect(
+            term.description,
+            isNotEmpty,
+            reason: '${term.term} description should not be empty',
+          );
         }
       });
     });

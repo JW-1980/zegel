@@ -6,13 +6,10 @@
 /// `(total - processed) * elapsed / processed`, the EMA keeps the ETA
 /// stable when batch performance fluctuates.
 class EtaCalculator {
-  EtaCalculator({
-    required this.total,
-    this.alpha = 0.3,
-    DateTime? startedAt,
-  })  : _startedAt = startedAt ?? DateTime.now().toUtc(),
-        _lastSample = null,
-        _emaPerItem = null {
+  EtaCalculator({required this.total, this.alpha = 0.3, DateTime? startedAt})
+    : _startedAt = startedAt ?? DateTime.now().toUtc(),
+      _lastSample = null,
+      _emaPerItem = null {
     if (total < 0) {
       throw ArgumentError.value(total, 'total', 'must be non-negative');
     }

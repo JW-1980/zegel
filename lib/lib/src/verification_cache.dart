@@ -85,10 +85,10 @@ class VerificationCache {
   }
 
   String encode() => jsonEncode({
-        'max_entries': maxEntries,
-        'ttl_seconds': ttl?.inSeconds,
-        'entries': _entries.values.map((e) => e.toJson()).toList(),
-      });
+    'max_entries': maxEntries,
+    'ttl_seconds': ttl?.inSeconds,
+    'entries': _entries.values.map((e) => e.toJson()).toList(),
+  });
 
   static VerificationCache decodeJson(String raw) {
     final m = jsonDecode(raw) as Map<String, dynamic>;
@@ -99,9 +99,7 @@ class VerificationCache {
           : Duration(seconds: (m['ttl_seconds'] as num).toInt()),
     );
     for (final entry in (m['entries'] as List<dynamic>? ?? const <dynamic>[])) {
-      final obj = CachedVerification.fromJson(
-        entry as Map<String, dynamic>,
-      );
+      final obj = CachedVerification.fromJson(entry as Map<String, dynamic>);
       cache._entries[obj.key] = obj;
     }
     return cache;
@@ -124,7 +122,9 @@ class CachedVerification {
         failureReason: json['failure_reason'] as String?,
         metadata: json['metadata'] == null
             ? const <String, dynamic>{}
-            : Map<String, dynamic>.from(json['metadata'] as Map<String, dynamic>),
+            : Map<String, dynamic>.from(
+                json['metadata'] as Map<String, dynamic>,
+              ),
         cachedAt: DateTime.parse(json['cached_at'] as String).toUtc(),
       );
 
@@ -135,10 +135,10 @@ class CachedVerification {
   final DateTime cachedAt;
 
   Map<String, dynamic> toJson() => {
-        'key': key,
-        'valid': valid,
-        if (failureReason != null) 'failure_reason': failureReason,
-        'metadata': metadata,
-        'cached_at': cachedAt.toUtc().toIso8601String(),
-      };
+    'key': key,
+    'valid': valid,
+    if (failureReason != null) 'failure_reason': failureReason,
+    'metadata': metadata,
+    'cached_at': cachedAt.toUtc().toIso8601String(),
+  };
 }

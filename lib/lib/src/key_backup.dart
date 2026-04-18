@@ -61,7 +61,9 @@ class KeyBackupPlanner {
     if (!Platform.isWindows) {
       try {
         Process.runSync('chmod', <String>['700', destDir.path]);
-      } catch (_) {/* best effort */}
+      } catch (_) {
+        /* best effort */
+      }
     }
 
     for (final path in sourcePaths) {
@@ -82,20 +84,24 @@ class KeyBackupPlanner {
       if (!Platform.isWindows) {
         try {
           Process.runSync('chmod', <String>['600', target.path]);
-        } catch (_) {/* best effort */}
+        } catch (_) {
+          /* best effort */
+        }
       }
     }
 
-    final manifestFile =
-        File('${destDir.path}${Platform.pathSeparator}manifest.json');
-    manifestFile.writeAsStringSync(jsonEncode({
-      'timestamp': timestamp.toIso8601String(),
-      'files': manifest,
-    }));
+    final manifestFile = File(
+      '${destDir.path}${Platform.pathSeparator}manifest.json',
+    );
+    manifestFile.writeAsStringSync(
+      jsonEncode({'timestamp': timestamp.toIso8601String(), 'files': manifest}),
+    );
     if (!Platform.isWindows) {
       try {
         Process.runSync('chmod', <String>['600', manifestFile.path]);
-      } catch (_) {/* best effort */}
+      } catch (_) {
+        /* best effort */
+      }
     }
 
     _pruneOldSnapshots();
@@ -120,15 +126,18 @@ class KeyBackupPlanner {
       );
       if (!manifestFile.existsSync()) continue;
       try {
-        final data = jsonDecode(manifestFile.readAsStringSync())
-            as Map<String, dynamic>;
-        snapshots.add(KeyBackupResult(
-          snapshotDirectory: entity.path,
-          timestamp: DateTime.parse(data['timestamp'] as String).toUtc(),
-          manifest: Map<String, String>.from(
-              data['files'] as Map<String, dynamic>),
-          skipped: false,
-        ));
+        final data =
+            jsonDecode(manifestFile.readAsStringSync()) as Map<String, dynamic>;
+        snapshots.add(
+          KeyBackupResult(
+            snapshotDirectory: entity.path,
+            timestamp: DateTime.parse(data['timestamp'] as String).toUtc(),
+            manifest: Map<String, String>.from(
+              data['files'] as Map<String, dynamic>,
+            ),
+            skipped: false,
+          ),
+        );
       } catch (_) {
         continue;
       }
@@ -193,9 +202,9 @@ class KeyBackupResult {
   final bool skipped;
 
   KeyBackupResult copyWithSkipped() => KeyBackupResult(
-        snapshotDirectory: snapshotDirectory,
-        timestamp: timestamp,
-        manifest: manifest,
-        skipped: true,
-      );
+    snapshotDirectory: snapshotDirectory,
+    timestamp: timestamp,
+    manifest: manifest,
+    skipped: true,
+  );
 }

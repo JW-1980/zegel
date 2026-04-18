@@ -18,18 +18,12 @@ void main() {
     test('detects Luhn-valid credit card numbers', () {
       // Standard Visa test number 4111111111111111 passes the Luhn check.
       final matches = PiiDetector.scan('Card: 4111111111111111');
-      expect(
-        matches.any((m) => m.category == PiiCategory.creditCard),
-        isTrue,
-      );
+      expect(matches.any((m) => m.category == PiiCategory.creditCard), isTrue);
     });
 
     test('rejects non-Luhn credit card numbers', () {
       final matches = PiiDetector.scan('Card: 1234567890123456');
-      expect(
-        matches.any((m) => m.category == PiiCategory.creditCard),
-        isFalse,
-      );
+      expect(matches.any((m) => m.category == PiiCategory.creditCard), isFalse);
     });
 
     test('detects IPv4 addresses', () {

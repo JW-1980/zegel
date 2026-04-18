@@ -40,8 +40,7 @@ class FeatureRatings {
       );
 
   /// Total rating count across all features.
-  int get totalRatings =>
-      _ratings.values.fold<int>(0, (a, b) => a + b.length);
+  int get totalRatings => _ratings.values.fold<int>(0, (a, b) => a + b.length);
 
   /// Average star rating for [feature]. Returns `null` if there are none.
   double? averageFor(String feature) {
@@ -58,11 +57,13 @@ class FeatureRatings {
     for (final entry in _ratings.entries) {
       if (entry.value.isEmpty) continue;
       final avg = averageFor(entry.key)!;
-      out.add(FeatureRatingSummary(
-        feature: entry.key,
-        averageStars: avg,
-        sampleSize: entry.value.length,
-      ));
+      out.add(
+        FeatureRatingSummary(
+          feature: entry.key,
+          averageStars: avg,
+          sampleSize: entry.value.length,
+        ),
+      );
     }
     out.sort((a, b) {
       final cmp = b.averageStars.compareTo(a.averageStars);
@@ -73,9 +74,9 @@ class FeatureRatings {
   }
 
   Map<String, dynamic> toJson() => {
-        for (final e in _ratings.entries)
-          e.key: e.value.map((r) => r.toJson()).toList(),
-      };
+    for (final e in _ratings.entries)
+      e.key: e.value.map((r) => r.toJson()).toList(),
+  };
 
   String encode() => jsonEncode(toJson());
 
@@ -108,20 +109,20 @@ class FeatureRating {
   const FeatureRating({required this.stars, this.comment, required this.at});
 
   static FeatureRating fromJson(Map<String, dynamic> json) => FeatureRating(
-        stars: (json['stars'] as num).toInt(),
-        comment: json['comment'] as String?,
-        at: DateTime.parse(json['at'] as String).toUtc(),
-      );
+    stars: (json['stars'] as num).toInt(),
+    comment: json['comment'] as String?,
+    at: DateTime.parse(json['at'] as String).toUtc(),
+  );
 
   final int stars;
   final String? comment;
   final DateTime at;
 
   Map<String, dynamic> toJson() => {
-        'stars': stars,
-        if (comment != null) 'comment': comment,
-        'at': at.toUtc().toIso8601String(),
-      };
+    'stars': stars,
+    if (comment != null) 'comment': comment,
+    'at': at.toUtc().toIso8601String(),
+  };
 }
 
 class FeatureRatingSummary {

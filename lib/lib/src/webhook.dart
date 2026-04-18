@@ -31,7 +31,11 @@ class ZegelWebhook {
     this.allowPrivateHosts = false,
     this.allowHttp = false,
   }) {
-    _validateUrl(url, allowPrivateHosts: allowPrivateHosts, allowHttp: allowHttp);
+    _validateUrl(
+      url,
+      allowPrivateHosts: allowPrivateHosts,
+      allowHttp: allowHttp,
+    );
   }
 
   /// The destination URL.
@@ -78,7 +82,11 @@ class ZegelWebhook {
     }
     final host = url.host;
     if (host.isEmpty) {
-      throw ArgumentError.value(url.toString(), 'url', 'Webhook URL has no host');
+      throw ArgumentError.value(
+        url.toString(),
+        'url',
+        'Webhook URL has no host',
+      );
     }
     if (allowPrivateHosts) return;
 

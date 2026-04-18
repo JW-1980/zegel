@@ -61,7 +61,9 @@ class MmapReader {
     }
     var offset = 0;
     while (offset < length) {
-      final count = (length - offset) < blockSize ? (length - offset) : blockSize;
+      final count = (length - offset) < blockSize
+          ? (length - offset)
+          : blockSize;
       yield read(offset, count);
       offset += count;
     }

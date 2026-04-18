@@ -31,8 +31,7 @@ class KeyManager {
     if (raw.trim().isEmpty) return KeyManager.empty();
     final json = jsonDecode(raw) as Map<String, dynamic>;
     final entries = <String, KeyEntry>{};
-    for (final entry
-        in (json['keys'] as List<dynamic>? ?? const <dynamic>[])) {
+    for (final entry in (json['keys'] as List<dynamic>? ?? const <dynamic>[])) {
       final e = KeyEntry.fromJson(entry as Map<String, dynamic>);
       entries[e.id] = e;
     }
@@ -120,8 +119,8 @@ class KeyManager {
 
   /// Serializes the manager to JSON.
   String encode() => jsonEncode(<String, dynamic>{
-        'keys': _entries.values.map((e) => e.toJson()).toList(),
-      });
+    'keys': _entries.values.map((e) => e.toJson()).toList(),
+  });
 
   /// Writes the serialized state to disk.
   ///
@@ -168,15 +167,15 @@ class KeyEntry {
   });
 
   static KeyEntry fromJson(Map<String, dynamic> json) => KeyEntry(
-        id: json['id'] as String,
-        name: json['name'] as String,
-        fingerprint: json['fingerprint'] as String,
-        createdAt: DateTime.parse(json['created_at'] as String).toUtc(),
-        expiresAt: json['expires_at'] == null
-            ? null
-            : DateTime.parse(json['expires_at'] as String).toUtc(),
-        description: json['description'] as String?,
-      );
+    id: json['id'] as String,
+    name: json['name'] as String,
+    fingerprint: json['fingerprint'] as String,
+    createdAt: DateTime.parse(json['created_at'] as String).toUtc(),
+    expiresAt: json['expires_at'] == null
+        ? null
+        : DateTime.parse(json['expires_at'] as String).toUtc(),
+    description: json['description'] as String?,
+  );
 
   final String id;
   final String name;
@@ -185,11 +184,7 @@ class KeyEntry {
   final DateTime? expiresAt;
   final String? description;
 
-  KeyEntry copyWith({
-    String? name,
-    DateTime? expiresAt,
-    String? description,
-  }) {
+  KeyEntry copyWith({String? name, DateTime? expiresAt, String? description}) {
     return KeyEntry(
       id: id,
       name: name ?? this.name,
@@ -201,12 +196,11 @@ class KeyEntry {
   }
 
   Map<String, dynamic> toJson() => <String, dynamic>{
-        'id': id,
-        'name': name,
-        'fingerprint': fingerprint,
-        'created_at': createdAt.toUtc().toIso8601String(),
-        if (expiresAt != null)
-          'expires_at': expiresAt!.toUtc().toIso8601String(),
-        if (description != null) 'description': description,
-      };
+    'id': id,
+    'name': name,
+    'fingerprint': fingerprint,
+    'created_at': createdAt.toUtc().toIso8601String(),
+    if (expiresAt != null) 'expires_at': expiresAt!.toUtc().toIso8601String(),
+    if (description != null) 'description': description,
+  };
 }

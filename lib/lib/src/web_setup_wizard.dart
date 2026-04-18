@@ -8,16 +8,17 @@
 /// to show, so the UI only has to render a single step at a time.
 class WebSetupWizard {
   WebSetupWizard({List<SetupStep>? steps})
-      : _steps = List<SetupStep>.unmodifiable(steps ?? defaultSteps),
-        _completed = <String>{},
-        _answers = <String, Object?>{};
+    : _steps = List<SetupStep>.unmodifiable(steps ?? defaultSteps),
+      _completed = <String>{},
+      _answers = <String, Object?>{};
 
   /// Default set of steps shipped with Zegel.
   static const List<SetupStep> defaultSteps = <SetupStep>[
     SetupStep(
       id: 'welcome',
       title: 'Welcome to Zegel',
-      description: 'A one-time setup configures the server. Takes about a '
+      description:
+          'A one-time setup configures the server. Takes about a '
           'minute.',
       requiredAnswer: null,
     ),
@@ -67,7 +68,8 @@ class WebSetupWizard {
   bool get isComplete => _completed.length == _steps.length;
 
   /// Percentage complete in [0.0, 1.0].
-  double get progress => _steps.isEmpty ? 1.0 : _completed.length / _steps.length;
+  double get progress =>
+      _steps.isEmpty ? 1.0 : _completed.length / _steps.length;
 
   /// Records an answer for a step. Only validates that the step
   /// exists. A separate call to [complete] is required to advance.
