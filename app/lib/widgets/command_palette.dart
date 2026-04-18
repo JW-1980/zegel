@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 
 /// A command palette (Ctrl+K / Cmd+K) for quick navigation and actions.

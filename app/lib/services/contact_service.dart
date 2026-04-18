@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:convert';
 
 /// Service for managing a local contact book of frequent signers.
