@@ -50,7 +50,7 @@ void main() {
       });
 
       test('accepts a custom autoClear duration', () {
-        const custom = Duration(seconds: 10);
+        final custom = const Duration(seconds: 10);
         final item = ClipboardHelper.secret('key', autoClear: custom);
         expect(item.autoClear, custom);
       });
