@@ -434,8 +434,9 @@ class _ExcerptVerifyTabState extends State<_ExcerptVerifyTab> {
       if (mounted) {
         setState(() {
           _isValid = valid;
-          _statusMessage =
-              valid ? 'Excerpt proof is VALID' : 'Excerpt proof is INVALID';
+          _statusMessage = valid
+              ? 'Excerpt proof is VALID'
+              : 'Excerpt proof is INVALID';
         });
       }
     } catch (e) {

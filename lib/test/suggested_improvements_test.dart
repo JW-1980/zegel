@@ -65,7 +65,7 @@ void main() {
 
   group('Item 92: Data table serialization', () {
     test('structured blocks serialize to JSON for table display', () {
-      const sbom = SbomBlock(
+      final sbom = SbomBlock(
         packages: [
           SbomPackage(name: 'crypto', version: '3.0.3'),
           SbomPackage(name: 'pointycastle', version: '3.7.3'),
@@ -83,7 +83,7 @@ void main() {
     });
 
     test('envelope events serialize to JSON for audit table', () {
-      const event = EnvelopeEvent(
+      final event = EnvelopeEvent(
         timestamp: 1700000000,
         eventType: 'envelope_created',
         description: 'Test event',
@@ -101,7 +101,7 @@ void main() {
         id: 'env-json-test',
         subject: 'JSON export test',
         recipients: [
-          const EnvelopeRecipient(
+          EnvelopeRecipient(
             id: 'r1',
             name: 'Alice',
             email: 'alice@test.com',
@@ -120,7 +120,7 @@ void main() {
     });
 
     test('measurement block serializes to JSON', () {
-      const measurement = MeasurementBlock(
+      final measurement = MeasurementBlock(
         timestamp: 1700000000,
         sensorId: 'temp-01',
         value: 22.5,

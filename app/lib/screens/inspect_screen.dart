@@ -1,3 +1,4 @@
+
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
@@ -382,8 +383,9 @@ class _InspectScreenState extends State<InspectScreen> {
               // Expiration (if present)
               if (_inspection!.expirationTimestamp != null) ...[
                 Card(
-                  color:
-                      _isExpired() ? Colors.red.shade50 : Colors.orange.shade50,
+                  color: _isExpired()
+                      ? Colors.red.shade50
+                      : Colors.orange.shade50,
                   child: Padding(
                     padding: const EdgeInsets.all(16),
                     child: Column(

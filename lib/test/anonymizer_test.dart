@@ -5,7 +5,7 @@ void main() {
   group('Anonymizer', () {
     test('scrub replaces emails, IPs, and paths', () {
       final anon = Anonymizer.fromHex('deadbeefdeadbeef');
-      const input =
+      final input =
           'Contact alice@example.com from 192.168.1.42 (/home/alice/secrets.txt)';
       final scrubbed = anon.scrub(input);
       expect(scrubbed, isNot(contains('alice@example.com')));
