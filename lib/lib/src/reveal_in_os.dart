@@ -22,22 +22,28 @@ class RevealInOs {
     String path, {
     String? overrideOs,
   }) {
+    if (path.contains('://')) {
+      throw ArgumentError('URI schemes are not allowed');
+    }
+
+    final absolutePath = File(path).absolute.path;
+
     final os = overrideOs ?? Platform.operatingSystem;
     switch (os) {
       case 'windows':
         return RevealCommand(
           executable: 'explorer',
-          arguments: <String>['/select,$path'],
+          arguments: <String>['/select,"$absolutePath"'],
         );
       case 'macos':
         return RevealCommand(
           executable: 'open',
-          arguments: <String>['-R', path],
+          arguments: <String>['-R', '--', absolutePath],
         );
       case 'linux':
         return RevealCommand(
           executable: 'xdg-open',
-          arguments: <String>[_parentOf(path)],
+          arguments: <String>['--', _parentOf(absolutePath)],
         );
       default:
         throw UnsupportedError('Reveal-in-OS is not supported on $os');

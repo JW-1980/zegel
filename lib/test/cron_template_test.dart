@@ -51,7 +51,8 @@ void main() {
       );
 
       expect(units.service, contains('[Service]'));
-      expect(units.service, contains('ExecStart=/usr/local/bin/zegel verify /data'));
+      expect(units.service,
+          contains('ExecStart=/usr/local/bin/zegel verify /data'));
       expect(units.service, contains('WorkingDirectory=/data'));
 
       expect(units.timer, contains('[Timer]'));
