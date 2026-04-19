@@ -9,6 +9,7 @@ import 'canary.dart';
 import 'format.dart';
 import 'key_derivation.dart';
 import 'merkle_tree.dart';
+import 'timestamp.dart';
 
 // =============================================================================
 // Result types
@@ -29,6 +30,7 @@ class ZegelResult {
     this.provenance,
     this.redactedBlocks,
     this.disclosedBlocks,
+    this.verifiedCreationTime,
   });
 
   /// Whether all cryptographic checks passed.
@@ -63,6 +65,13 @@ class ZegelResult {
 
   /// Zero-based indices of blocks successfully disclosed (only for selective disclosure).
   final List<int>? disclosedBlocks;
+
+  /// Verified creation time from the TIMESTAMP appendix.
+  ///
+  /// When null, no timestamp verification was performed.
+  /// When [VerifiedCreationTime.selfAsserted] is true, the creation time
+  /// in the header is from the sealer's local clock with no external proof.
+  final VerifiedCreationTime? verifiedCreationTime;
 }
 
 /// Header-only inspection result (no master key required).
@@ -78,6 +87,7 @@ class ZegelInspection {
     this.publicMetadata,
     this.splitKeyParams,
     this.expirationTimestamp,
+    this.verifiedCreationTime,
   });
 
   /// Format version string (e.g. `"1.2"`).
@@ -106,6 +116,9 @@ class ZegelInspection {
 
   /// Expiration timestamp as Unix epoch seconds.
   final int? expirationTimestamp;
+
+  /// Whether the file has a trusted timestamp flag set.
+  final VerifiedCreationTime? verifiedCreationTime;
 }
 
 // =============================================================================
@@ -217,14 +230,21 @@ class ZegelReader {
     // =========================================================================
     // 6. Verify master seal (HMAC-SHA512)
     // =========================================================================
+    // Compute the seal position from the file structure rather than
+    // assuming the seal is the last 64 bytes (TIMESTAMP appendix may follow).
+    int sealStart = h.dataStart;
+    for (final entry in h.directory) {
+      sealStart += entry.ciphertextLen;
+    }
     final Uint8List preSealBytes = Uint8List.sublistView(
       fileBytes,
       0,
-      fileBytes.length - ZegelFormat.sealSize,
+      sealStart,
     );
     final Uint8List storedSeal = Uint8List.sublistView(
       fileBytes,
-      fileBytes.length - ZegelFormat.sealSize,
+      sealStart,
+      sealStart + ZegelFormat.sealSize,
     );
 
     final Uint8List sealKey = KeyDerivation.computeSealKey(
@@ -412,7 +432,59 @@ class ZegelReader {
     }
 
     // =========================================================================
-    // 11. Build result
+    // 11. Parse TIMESTAMP appendix (after master seal)
+    // =========================================================================
+    VerifiedCreationTime? verifiedCreationTime;
+    final int timestampStart = sealStart + ZegelFormat.sealSize;
+
+    if (h.flags & ZegelFormat.flagHasTimestamp != 0) {
+      if (timestampStart < fileBytes.length) {
+        final tsAppendix = Uint8List.sublistView(fileBytes, timestampStart);
+        final messageImprint = TrustedTimestamp.computeMessageImprint(
+          h.merkleRoot,
+          storedSeal,
+        );
+        try {
+          final tsData = TimestampBlockData.fromBytes(tsAppendix, messageImprint);
+          verifiedCreationTime = tsData.verifiedTime;
+        } on FormatException {
+          verifiedCreationTime = const VerifiedCreationTime(
+            selfAsserted: true,
+            anchorSource: 'TIMESTAMP appendix corrupt',
+          );
+        }
+      } else {
+        verifiedCreationTime = const VerifiedCreationTime(
+          selfAsserted: true,
+          anchorSource: 'FLAG_HAS_TIMESTAMP set but no appendix found',
+        );
+      }
+    } else {
+      verifiedCreationTime = const VerifiedCreationTime(selfAsserted: true);
+    }
+
+    // =========================================================================
+    // 11b. Clock-rollback defense for expiration
+    // =========================================================================
+    if (h.expirationTimestamp != null &&
+        verifiedCreationTime != null &&
+        !verifiedCreationTime.selfAsserted &&
+        verifiedCreationTime.notAfter != null) {
+      final int anchorEpoch =
+          verifiedCreationTime.notAfter!.millisecondsSinceEpoch ~/ 1000;
+      final int nowEpoch =
+          DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
+      final int effectiveNow = anchorEpoch > nowEpoch ? anchorEpoch : nowEpoch;
+      if (effectiveNow >= h.expirationTimestamp!) {
+        throw ZegelExpiredException(
+          'File expired at epoch ${h.expirationTimestamp} '
+          '(verified against trusted anchor)',
+        );
+      }
+    }
+
+    // =========================================================================
+    // 12. Build result
     // =========================================================================
     return ZegelResult(
       valid: true,
@@ -425,6 +497,7 @@ class ZegelReader {
       auditTrail: auditTrail.isNotEmpty ? auditTrail : null,
       provenance: provenanceEntries.isNotEmpty ? provenanceEntries : null,
       redactedBlocks: redactedBlocks.isNotEmpty ? redactedBlocks : null,
+      verifiedCreationTime: verifiedCreationTime,
     );
   }
 
@@ -446,6 +519,15 @@ class ZegelReader {
       };
     }
 
+    final bool hasTimestampFlag =
+        h.flags & ZegelFormat.flagHasTimestamp != 0;
+    final VerifiedCreationTime inspectTime = hasTimestampFlag
+        ? const VerifiedCreationTime(
+            selfAsserted: false,
+            anchorSource: 'FLAG_HAS_TIMESTAMP set (verify with key to confirm)',
+          )
+        : const VerifiedCreationTime(selfAsserted: true);
+
     return ZegelInspection(
       version: '${h.versionMajor}.${h.versionMinor}',
       flags: h.flags,
@@ -456,6 +538,7 @@ class ZegelReader {
       publicMetadata: h.publicMetadata,
       splitKeyParams: splitKeyParams,
       expirationTimestamp: h.expirationTimestamp,
+      verifiedCreationTime: inspectTime,
     );
   }
 

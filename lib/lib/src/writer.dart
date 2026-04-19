@@ -11,6 +11,7 @@ import 'format.dart';
 import 'key_derivation.dart';
 import 'merkle_tree.dart';
 import 'shamir.dart';
+import 'timestamp.dart';
 
 // =============================================================================
 // ZegelOptions
@@ -45,6 +46,7 @@ class ZegelOptions {
     this.regulatoryHoldUntil,
     this.tsaUrl,
     this.preserveMediaMetadata = false,
+    this.timestampConfig,
   });
 
   /// MIME type of the original content (e.g. `"text/plain"`).
@@ -141,11 +143,18 @@ class ZegelOptions {
 
   /// RFC 3161 Time Stamp Authority URL (v1.3).
   ///
-  /// When non-null, the `FLAG_HAS_TIMESTAMP` flag is set. The writer should
-  /// obtain a trusted timestamp from this TSA and embed it as a timestamp
-  /// block. Note: the actual TSA request is performed externally; this URL
-  /// is recorded for reference.
+  /// Deprecated: use [timestampConfig] instead. When non-null and
+  /// [timestampConfig] is null, this URL is stored in public metadata
+  /// for informational purposes only.
+  @Deprecated('Use timestampConfig instead')
   final String? tsaUrl;
+
+  /// Timestamp anchoring configuration (v1.3).
+  ///
+  /// Controls how the creation time is proven. When non-null and not
+  /// [TimestampConfig.offline], the `FLAG_HAS_TIMESTAMP` flag is set and
+  /// a TIMESTAMP appendix is added after the master seal.
+  final TimestampConfig? timestampConfig;
 
   /// Whether to extract and preserve media metadata (EXIF, GPS) (v1.3).
   ///
@@ -262,6 +271,11 @@ class ZegelWriter {
     }
     if (options.versionChainHash != null) {
       flags |= ZegelFormat.flagVersioned;
+    }
+    final bool hasTimestamp = options.timestampConfig != null &&
+        !options.timestampConfig!.offline;
+    if (hasTimestamp) {
+      flags |= ZegelFormat.flagHasTimestamp;
     }
 
     // =========================================================================
@@ -577,15 +591,94 @@ class ZegelWriter {
     );
 
     // =========================================================================
-    // 14. Assemble final file
+    // 14. Append timestamp (if pre-obtained token provided)
     // =========================================================================
-    final Uint8List finalFile = Uint8List(
-      preSealBytes.length + masterSeal.length,
-    );
-    finalFile.setRange(0, preSealBytes.length, preSealBytes);
-    finalFile.setRange(preSealBytes.length, finalFile.length, masterSeal);
+    Uint8List? timestampAppendix;
+    if (hasTimestamp && options.timestampConfig!.preObtainedToken != null) {
+      final tsData = TrustedTimestamp.loadRfc3161Token(
+        options.timestampConfig!.preObtainedToken!,
+      );
+      timestampAppendix = tsData.toBytes();
+    }
+
+    // =========================================================================
+    // 15. Assemble final file
+    // =========================================================================
+    final int totalLen = preSealBytes.length +
+        masterSeal.length +
+        (timestampAppendix?.length ?? 0);
+    final Uint8List finalFile = Uint8List(totalLen);
+    var assemblyOffset = 0;
+    finalFile.setRange(assemblyOffset, assemblyOffset + preSealBytes.length,
+        preSealBytes);
+    assemblyOffset += preSealBytes.length;
+    finalFile.setRange(assemblyOffset, assemblyOffset + masterSeal.length,
+        masterSeal);
+    assemblyOffset += masterSeal.length;
+    if (timestampAppendix != null) {
+      finalFile.setRange(assemblyOffset, assemblyOffset +
+          timestampAppendix.length, timestampAppendix);
+    }
 
     return finalFile;
+  }
+
+  /// Seals [content] with an online timestamp anchor (Roughtime or RFC 3161).
+  ///
+  /// This is the async variant of [seal] that handles network I/O for
+  /// fetching the timestamp token. The returned bytes include the timestamp
+  /// appendix after the master seal.
+  ///
+  /// Throws on network failure or signature verification failure.
+  Future<Uint8List> sealAsync(Uint8List content) async {
+    final config = options.timestampConfig;
+    if (config == null || config.offline || config.preObtainedToken != null) {
+      return seal(content);
+    }
+
+    // First seal without the timestamp appendix to get merkleRoot + masterSeal.
+    // The flag is already set in the header.
+    final baseFile = seal(content);
+
+    // Extract merkle root and master seal from the sealed file.
+    final masterSeal = Uint8List.sublistView(
+      baseFile,
+      baseFile.length - ZegelFormat.sealSize,
+    );
+
+    // Find the merkle root: it's at a computed position in the file.
+    // Re-parse to locate it reliably.
+    final reader = _LocatingReader();
+    final merkleRoot = reader.extractMerkleRoot(baseFile);
+
+    final messageImprint = TrustedTimestamp.computeMessageImprint(
+      merkleRoot,
+      masterSeal,
+    );
+
+    TimestampBlockData tsData;
+    if (config.protocol == TimestampProtocol.roughtime) {
+      tsData = await TrustedTimestamp.fetchRoughtime(
+        messageImprint,
+        servers: config.roughtimeServers,
+      );
+    } else if (config.protocol == TimestampProtocol.rfc3161) {
+      if (config.rfc3161TsaUrl == null) {
+        throw ArgumentError('RFC 3161 TSA URL required');
+      }
+      tsData = await TrustedTimestamp.fetchRfc3161(
+        config.rfc3161TsaUrl!,
+        messageImprint,
+      );
+    } else {
+      return baseFile;
+    }
+
+    final appendix = tsData.toBytes();
+    final result = Uint8List(baseFile.length + appendix.length);
+    result.setRange(0, baseFile.length, baseFile);
+    result.setRange(baseFile.length, result.length, appendix);
+    return result;
   }
 
   /// Splits the master key using Shamir's Secret Sharing over GF(256).
@@ -646,5 +739,43 @@ class ZegelWriter {
     final ByteData bd = ByteData(8);
     bd.setUint64(0, value, Endian.big);
     return bd.buffer.asUint8List();
+  }
+}
+
+/// Minimal header parser used by [ZegelWriter.sealAsync] to extract the
+/// Merkle root from a sealed file without pulling in the full reader.
+class _LocatingReader {
+  Uint8List extractMerkleRoot(Uint8List fileBytes) {
+    final bd = ByteData.sublistView(fileBytes);
+    // Skip magic(8) + version(2) + flags(2) + timestamp(8) = 20.
+    var offset = 20;
+    // Content-Type: 64 bytes.
+    offset += ZegelFormat.contentTypeSize;
+    // Filename length (uint16 BE) + filename bytes.
+    final fnLen = bd.getUint16(offset, Endian.big);
+    offset += 2 + fnLen;
+    // Salt: 32 bytes.
+    offset += ZegelFormat.saltSize;
+    // Block count: uint32 BE.
+    final blockCount = bd.getUint32(offset, Endian.big);
+    offset += 4;
+
+    // Parse flags to skip extended header fields.
+    final flags = bd.getUint16(10, Endian.big);
+    if (flags & ZegelFormat.flagPasswordDerived != 0) offset += 8;
+    if (flags & ZegelFormat.flagHasExpiration != 0) offset += 8;
+    if (flags & ZegelFormat.flagHasCanary != 0) offset += 32;
+    if (flags & ZegelFormat.flagSplitKey != 0) offset += 2;
+    if (flags & ZegelFormat.flagVersioned != 0) offset += 32;
+    if (flags & ZegelFormat.flagHasPublicMetadata != 0) {
+      final pubMetaLen = bd.getUint32(offset, Endian.big);
+      offset += 4 + pubMetaLen;
+    }
+
+    // Skip block directory entries.
+    offset += blockCount * ZegelFormat.blockDirectoryEntrySize;
+
+    // Merkle root: 32 bytes at current offset.
+    return Uint8List.sublistView(fileBytes, offset, offset + ZegelFormat.hashSize);
   }
 }

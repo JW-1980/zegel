@@ -151,39 +151,65 @@ class TimestampCreateCommand extends Command<int> {
     Map<String, dynamic> timestampToken;
 
     if (tsaUrl != null && tsaUrl.isNotEmpty) {
-      // Create TSA request (for external TSA).
-      final request = TrustedTimestamp.createRequest(
+      // Fetch RFC 3161 timestamp from TSA.
+      final messageImprint = TrustedTimestamp.computeMessageImprint(
         rawHeader.merkleRoot,
         masterSeal,
       );
 
-      // Note: Actual TSA communication would require HTTP client.
-      // For now, we create a local timestamp and note the TSA URL.
-      stdout.writeln(
-        Ansi.warning('Note: External TSA communication not implemented.'),
-      );
-      stdout.writeln('Creating local timestamp instead.');
-      stdout.writeln('TSA URL would be: $tsaUrl');
-      stdout.writeln();
+      try {
+        final tsData = await TrustedTimestamp.fetchRfc3161(
+          Uri.parse(tsaUrl),
+          messageImprint,
+        );
 
-      // Parse signer key.
-      Uint8List signerKey = masterKey;
-      final signerKeyHex = argResults!['signer-key'] as String?;
-      final signerKeyFilePath = argResults!['signer-key-file'] as String?;
+        timestampToken = {
+          'type': 'rfc3161',
+          'tsa_url': tsaUrl,
+          'timestamp': tsData.verifiedTime.notBefore != null
+              ? tsData.verifiedTime.notBefore!.millisecondsSinceEpoch ~/ 1000
+              : DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000,
+          'anchor_source': tsData.verifiedTime.anchorSource,
+          'self_asserted': tsData.verifiedTime.selfAsserted,
+          'payload_length': tsData.payload.length,
+        };
 
-      if (signerKeyHex != null && signerKeyHex.isNotEmpty) {
-        signerKey = hexDecode(signerKeyHex, label: 'signer-key');
-      } else if (signerKeyFilePath != null && signerKeyFilePath.isNotEmpty) {
-        signerKey = readKeyFile(signerKeyFilePath);
+        if (outputPath != null && outputPath.isNotEmpty) {
+          // Also write the raw DER token for use with --tsa-token.
+          final derPath = '$outputPath.der';
+          File(derPath).writeAsBytesSync(tsData.payload);
+          stdout.writeln(
+            Ansi.success('RFC 3161 token saved to $derPath'),
+          );
+          stdout.writeln(
+            '  Use with: zegel seal --tsa-token $derPath',
+          );
+        }
+      } on Exception catch (e) {
+        stdout.writeln(
+          Ansi.warning('TSA communication failed: $e'),
+        );
+        stdout.writeln('Falling back to local timestamp.');
+
+        Uint8List signerKey = masterKey;
+        final signerKeyHex = argResults!['signer-key'] as String?;
+        final signerKeyFilePath = argResults!['signer-key-file'] as String?;
+
+        if (signerKeyHex != null && signerKeyHex.isNotEmpty) {
+          signerKey = hexDecode(signerKeyHex, label: 'signer-key');
+        } else if (signerKeyFilePath != null && signerKeyFilePath.isNotEmpty) {
+          signerKey = readKeyFile(signerKeyFilePath);
+        }
+
+        // ignore: deprecated_member_use
+        timestampToken = TrustedTimestamp.createLocalToken(
+          rawHeader.merkleRoot,
+          masterSeal,
+          signerKey,
+        );
+        timestampToken['tsa_url'] = tsaUrl;
+        timestampToken['tsa_fallback'] = 'local';
       }
-
-      timestampToken = TrustedTimestamp.createLocalToken(
-        rawHeader.merkleRoot,
-        masterSeal,
-        signerKey,
-      );
-      timestampToken['tsa_url'] = tsaUrl;
-      timestampToken['tsa_request'] = request;
     } else {
       // Create local timestamp.
       Uint8List signerKey = masterKey;
@@ -203,6 +229,7 @@ class TimestampCreateCommand extends Command<int> {
         );
       }
 
+      // ignore: deprecated_member_use
       timestampToken = TrustedTimestamp.createLocalToken(
         rawHeader.merkleRoot,
         masterSeal,

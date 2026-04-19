@@ -231,6 +231,33 @@ class VerifyCommand extends Command<int> {
     stdout.writeln('  File:       $filePath');
     stdout.writeln('  Version:    ${inspection.version}');
     stdout.writeln('  Created:    ${formatTimestamp(createdAt)}');
+
+    // Show verified creation time from TIMESTAMP appendix.
+    final vct = result.verifiedCreationTime;
+    if (vct != null) {
+      if (vct.selfAsserted) {
+        stdout.writeln(
+          Ansi.warning('  Time proof: SELF-ASSERTED (no external anchor)'),
+        );
+        if (vct.anchorSource != null) {
+          stdout.writeln('              ${vct.anchorSource}');
+        }
+      } else {
+        stdout.writeln(
+          Ansi.success('  Time proof: ANCHORED (externally verified)'),
+        );
+        if (vct.anchorSource != null) {
+          stdout.writeln('    Anchor:   ${vct.anchorSource}');
+        }
+        if (vct.notBefore != null) {
+          stdout.writeln('    Not before: ${formatTimestamp(vct.notBefore!)}');
+        }
+        if (vct.notAfter != null) {
+          stdout.writeln('    Not after:  ${formatTimestamp(vct.notAfter!)}');
+        }
+      }
+    }
+
     if (inspection.filename != null) {
       stdout.writeln('  Filename:   ${inspection.filename}');
     }

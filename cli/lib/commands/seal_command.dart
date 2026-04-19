@@ -161,8 +161,31 @@ class SealCommand extends Command<int> {
       'tsa-url',
       help: 'URL of a trusted timestamping authority (TSA) to use\n'
           'for an RFC 3161 timestamp. The timestamp response is\n'
-          'stored as a PROVENANCE block.',
+          'embedded as a TIMESTAMP appendix.',
       valueHelp: 'url',
+    );
+
+    argParser.addFlag(
+      'roughtime',
+      help: 'Fetch a Roughtime timestamp from public servers\n'
+          '(Cloudflare, Google) at seal time. Provides\n'
+          'cryptographic proof of creation time.',
+      defaultsTo: false,
+    );
+
+    argParser.addOption(
+      'tsa-token',
+      help: 'Path to a pre-obtained RFC 3161 timestamp token\n'
+          '(DER-encoded). Use for air-gapped workflows where\n'
+          'the token was fetched on a separate machine.',
+      valueHelp: 'path',
+    );
+
+    argParser.addFlag(
+      'offline',
+      help: 'Seal without any timestamp anchor. The creation\n'
+          'time in the header will be self-asserted only.',
+      defaultsTo: false,
     );
 
     argParser.addFlag(
@@ -321,13 +344,32 @@ class SealCommand extends Command<int> {
       publicMetadata['regulatory_hold_date_str'] = regulatoryHoldStr;
     }
 
-    // Handle TSA URL (store as metadata for reference).
+    // Determine timestamp configuration.
     final tsaUrl = argResults!['tsa-url'] as String?;
+    final useRoughtime = argResults!['roughtime'] as bool;
+    final tsaTokenPath = argResults!['tsa-token'] as String?;
+    final forceOffline = argResults!['offline'] as bool;
+
+    TimestampConfig? timestampConfig;
+    if (forceOffline) {
+      timestampConfig = const TimestampConfig.offline();
+    } else if (tsaTokenPath != null) {
+      final tokenFile = File(tsaTokenPath);
+      if (!tokenFile.existsSync()) {
+        exitError('TSA token file not found: $tsaTokenPath');
+      }
+      timestampConfig = TimestampConfig.preObtainedToken(
+        token: Uint8List.fromList(tokenFile.readAsBytesSync()),
+      );
+    } else if (useRoughtime) {
+      timestampConfig = const TimestampConfig.roughtime();
+    } else if (tsaUrl != null) {
+      timestampConfig = TimestampConfig.rfc3161(tsaUrl: Uri.parse(tsaUrl));
+    }
+
     if (tsaUrl != null) {
       publicMetadata ??= <String, dynamic>{};
       publicMetadata['tsa_url'] = tsaUrl;
-      publicMetadata['tsa_timestamp_requested'] =
-          DateTime.now().toUtc().toIso8601String();
     }
 
     // Parse content type.
@@ -375,11 +417,21 @@ class SealCommand extends Command<int> {
       enableKeyCommitment: argResults!['key-commitment'] as bool,
       enableSelectiveDisclosure: argResults!['enable-disclosure'] as bool,
       blockSize: int.parse(argResults!['block-size'] as String),
+      timestampConfig: timestampConfig,
     );
 
     // Create the sealed container.
     final writer = ZegelWriter(masterKey, options);
-    final sealedBytes = writer.seal(Uint8List.fromList(content));
+    final bool needsAsync = timestampConfig != null &&
+        !timestampConfig.offline &&
+        timestampConfig.preObtainedToken == null &&
+        timestampConfig.protocol != null;
+    final Uint8List sealedBytes;
+    if (needsAsync) {
+      sealedBytes = await writer.sealAsync(Uint8List.fromList(content));
+    } else {
+      sealedBytes = writer.seal(Uint8List.fromList(content));
+    }
 
     // Write output file.
     final outputFile = File(outputPath);
@@ -427,6 +479,17 @@ class SealCommand extends Command<int> {
     }
     if (tsaUrl != null) {
       stdout.writeln('  TSA URL: $tsaUrl');
+    }
+    if (timestampConfig != null && !timestampConfig.offline) {
+      if (useRoughtime) {
+        stdout.writeln('  Timestamp: Roughtime (externally anchored)');
+      } else if (tsaTokenPath != null) {
+        stdout.writeln('  Timestamp: RFC 3161 pre-obtained token');
+      } else if (tsaUrl != null) {
+        stdout.writeln('  Timestamp: RFC 3161 from $tsaUrl');
+      }
+    } else if (forceOffline) {
+      stdout.writeln('  Timestamp: self-asserted (offline mode)');
     }
 
     return 0;
