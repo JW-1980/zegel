@@ -71,8 +71,10 @@ void main() {
       });
 
       test('identical colors have ratio 1.0', () {
-        expect(AccessibilityTheme.contrastRatio(white, white), closeTo(1.0, 1e-6));
-        expect(AccessibilityTheme.contrastRatio(black, black), closeTo(1.0, 1e-6));
+        expect(
+            AccessibilityTheme.contrastRatio(white, white), closeTo(1.0, 1e-6));
+        expect(
+            AccessibilityTheme.contrastRatio(black, black), closeTo(1.0, 1e-6));
       });
 
       test('ratio is always >= 1.0', () {
@@ -132,11 +134,12 @@ void main() {
     // derive
     // -------------------------------------------------------------------------
     group('derive', () {
-      final source = ThemeBrand.zegelDefault;
+      const source = ThemeBrand.zegelDefault;
 
       test('derived light theme has white background', () {
         final theme = AccessibilityTheme.derive(source, dark: false);
-        expect(theme.backgroundColor, AccessibilityTheme.blackOnWhiteBackground);
+        expect(
+            theme.backgroundColor, AccessibilityTheme.blackOnWhiteBackground);
       });
 
       test('derived light theme has black foreground (primaryColor)', () {
@@ -146,7 +149,8 @@ void main() {
 
       test('derived dark theme has black background', () {
         final theme = AccessibilityTheme.derive(source, dark: true);
-        expect(theme.backgroundColor, AccessibilityTheme.whiteOnBlackBackground);
+        expect(
+            theme.backgroundColor, AccessibilityTheme.whiteOnBlackBackground);
       });
 
       test('derived dark theme has white foreground (primaryColor)', () {
@@ -166,7 +170,7 @@ void main() {
       });
 
       test('derived theme preserves font family from source', () {
-        final custom = ThemeBrand(
+        const custom = ThemeBrand(
           name: 'Custom',
           primaryColor: 0xFF111111,
           secondaryColor: 0xFF222222,
@@ -190,7 +194,8 @@ void main() {
       test('derived light theme foreground/background passes AAA', () {
         final theme = AccessibilityTheme.derive(source, dark: false);
         expect(
-          AccessibilityTheme.passesAAA(theme.primaryColor, theme.backgroundColor),
+          AccessibilityTheme.passesAAA(
+              theme.primaryColor, theme.backgroundColor),
           isTrue,
         );
       });
@@ -198,7 +203,8 @@ void main() {
       test('derived dark theme foreground/background passes AAA', () {
         final theme = AccessibilityTheme.derive(source, dark: true);
         expect(
-          AccessibilityTheme.passesAAA(theme.primaryColor, theme.backgroundColor),
+          AccessibilityTheme.passesAAA(
+              theme.primaryColor, theme.backgroundColor),
           isTrue,
         );
       });
