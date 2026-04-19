@@ -74,8 +74,9 @@ Uint8List parseKeyFromArgs(
 /// Throws [FormatException] if the input is invalid.
 Uint8List hexDecode(String hex, {String label = 'value'}) {
   // Strip optional 0x prefix.
-  final cleaned =
-      hex.startsWith('0x') || hex.startsWith('0X') ? hex.substring(2) : hex;
+  final cleaned = hex.startsWith('0x') || hex.startsWith('0X')
+      ? hex.substring(2)
+      : hex;
 
   if (cleaned.length % 2 != 0) {
     throw FormatException(
