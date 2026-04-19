@@ -63,8 +63,7 @@ void main() {
           .where(
             (r) => q.matches<_Record>(
               record: r,
-              searchable: (r) =>
-                  <String>[r.name, r.status, ...r.tags],
+              searchable: (r) => <String>[r.name, r.status, ...r.tags],
               fieldExtractor: (r, field) {
                 switch (field) {
                   case 'status':
