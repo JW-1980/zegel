@@ -31,8 +31,7 @@ class CollaboratorStats {
   int get uniqueCollaborators => _counts.length;
 
   /// Total collaborations recorded.
-  int get totalCollaborations =>
-      _counts.values.fold<int>(0, (a, b) => a + b);
+  int get totalCollaborations => _counts.values.fold<int>(0, (a, b) => a + b);
 
   /// Ranked list of collaborators, highest count first. Limit to the
   /// top [limit] entries.

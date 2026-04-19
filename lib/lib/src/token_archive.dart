@@ -104,8 +104,7 @@ class TokenArchive {
       if (expiry == null) continue;
       if (expiry.isBefore(cutoff)) {
         final name = entity.uri.pathSegments.last;
-        final dest =
-            File('${_archiveDir.path}${Platform.pathSeparator}$name');
+        final dest = File('${_archiveDir.path}${Platform.pathSeparator}$name');
         dest.parent.createSync(recursive: true);
         entity.renameSync(dest.path);
         final meta = File('${entity.path}.meta');
@@ -126,7 +125,8 @@ class TokenArchive {
         .listSync()
         .whereType<File>()
         .where((f) => f.path.endsWith('.json'))
-        .map((f) => f.uri.pathSegments.last.replaceFirst(RegExp(r'\.json$'), ''))
+        .map(
+            (f) => f.uri.pathSegments.last.replaceFirst(RegExp(r'\.json$'), ''))
         .toList()
       ..sort();
   }
@@ -139,7 +139,8 @@ class TokenArchive {
         .listSync()
         .whereType<File>()
         .where((f) => f.path.endsWith('.json'))
-        .map((f) => f.uri.pathSegments.last.replaceFirst(RegExp(r'\.json$'), ''))
+        .map(
+            (f) => f.uri.pathSegments.last.replaceFirst(RegExp(r'\.json$'), ''))
         .toList()
       ..sort();
   }
@@ -148,7 +149,8 @@ class TokenArchive {
     final metaFile = File('${tokenFile.path}.meta');
     if (metaFile.existsSync()) {
       try {
-        final m = jsonDecode(metaFile.readAsStringSync()) as Map<String, dynamic>;
+        final m =
+            jsonDecode(metaFile.readAsStringSync()) as Map<String, dynamic>;
         final v = m['expires_at'];
         if (v is String) return DateTime.parse(v).toUtc();
       } catch (_) {
@@ -157,8 +159,7 @@ class TokenArchive {
     }
     try {
       final decoded = jsonDecode(tokenFile.readAsStringSync());
-      if (decoded is Map<String, dynamic> &&
-          decoded['expires_at'] is String) {
+      if (decoded is Map<String, dynamic> && decoded['expires_at'] is String) {
         return DateTime.parse(decoded['expires_at'] as String).toUtc();
       }
     } catch (_) {

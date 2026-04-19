@@ -9,8 +9,7 @@ void main() {
       );
       tracker.recordBatch(files: 10, duration: const Duration(seconds: 20));
       // baseline = 100s, actual = 20s, saved = 80s
-      expect(tracker.estimatedManualDuration,
-          const Duration(seconds: 100));
+      expect(tracker.estimatedManualDuration, const Duration(seconds: 100));
       expect(tracker.timeSaved, const Duration(seconds: 80));
       expect(tracker.timeSavedRatio, closeTo(0.8, 0.001));
     });

@@ -10,7 +10,10 @@ void main() {
       final bytes = Uint8List.fromList([1, 2, 3, 4]);
       expect(cache.lookup(bytes), isNull);
 
-      cache.put(fileBytes: bytes, valid: true, metadata: {'contentType': 'text/plain'});
+      cache.put(
+          fileBytes: bytes,
+          valid: true,
+          metadata: {'contentType': 'text/plain'});
       final entry = cache.lookup(bytes);
       expect(entry, isNotNull);
       expect(entry!.valid, isTrue);
@@ -64,7 +67,10 @@ void main() {
     test('encode/decodeJson round trip', () {
       final cache = VerificationCache(maxEntries: 8);
       cache.put(fileBytes: Uint8List.fromList([1, 2]), valid: true);
-      cache.put(fileBytes: Uint8List.fromList([3, 4]), valid: false, failureReason: 'Merkle');
+      cache.put(
+          fileBytes: Uint8List.fromList([3, 4]),
+          valid: false,
+          failureReason: 'Merkle');
       final restored = VerificationCache.decodeJson(cache.encode());
       expect(restored.length, 2);
     });
