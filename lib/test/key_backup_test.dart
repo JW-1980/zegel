@@ -75,7 +75,7 @@ void main() {
         sourcePaths: ['${tmp.path}/nonexistent.key'],
         destinationDirectory: destDir.path,
       );
-      expect(() => planner.backupNow(), throwsA(isA<FileSystemException>()));
+      expect(planner.backupNow, throwsA(isA<FileSystemException>()));
     });
   });
 }

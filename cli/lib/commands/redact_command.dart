@@ -55,7 +55,8 @@ class RedactCommand extends Command<int> {
     argParser.addOption(
       'blocks',
       abbr: 'b',
-      help: 'Comma-separated list of block indices to redact.\n'
+      help:
+          'Comma-separated list of block indices to redact.\n'
           'Use "zegel inspect --blocks" to see available indices.',
       valueHelp: '1,3,5',
       mandatory: true,
@@ -63,21 +64,24 @@ class RedactCommand extends Command<int> {
 
     argParser.addFlag(
       'confirm',
-      help: 'Skip confirmation prompt (dangerous).\n'
+      help:
+          'Skip confirmation prompt (dangerous).\n'
           'Use in scripts where interactive prompts are not possible.',
       defaultsTo: false,
     );
 
     argParser.addFlag(
       'declassify',
-      help: 'Lower the classification level after redaction.\n'
+      help:
+          'Lower the classification level after redaction.\n'
           'Must be used with --new-classification.',
       defaultsTo: false,
     );
 
     argParser.addOption(
       'new-classification',
-      help: 'New classification level after declassification.\n'
+      help:
+          'New classification level after declassification.\n'
           'Must be lower than the current level.\n'
           'Levels: PUBLIC, INTERNAL, CONFIDENTIAL, SECRET, TOP_SECRET.',
       valueHelp: 'level',

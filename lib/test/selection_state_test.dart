@@ -117,7 +117,7 @@ void main() {
 
       test('is a no-op when item set is empty', () {
         final s = SelectionState<String>();
-        expect(() => s.selectAll(), returnsNormally);
+        expect(s.selectAll, returnsNormally);
         expect(s.selectedCount, 0);
       });
 
@@ -153,7 +153,7 @@ void main() {
 
       test('clear on empty selection is a no-op', () {
         final s = makeState();
-        expect(() => s.clear(), returnsNormally);
+        expect(s.clear, returnsNormally);
         expect(s.selectedCount, 0);
       });
     });
@@ -196,7 +196,7 @@ void main() {
 
       test('invert on empty item set is a no-op', () {
         final s = SelectionState<String>();
-        expect(() => s.invert(), returnsNormally);
+        expect(s.invert, returnsNormally);
         expect(s.selectedCount, 0);
       });
     });

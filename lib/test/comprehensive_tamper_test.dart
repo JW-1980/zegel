@@ -68,7 +68,7 @@ Map<String, int> _computeOffsets(int filenameByteLen, int blockCount) {
 
 void main() {
   final masterKey = _testKey();
-  final reader = const ZegelReader();
+  const reader = ZegelReader();
 
   // ==========================================================================
   // 1. HEADER TRUNCATION TESTS
@@ -402,7 +402,7 @@ void main() {
       final allIvs = <String>{};
 
       for (var seal = 0; seal < 10; seal++) {
-        final options = ZegelOptions(
+        const options = ZegelOptions(
           contentType: 'text/plain',
           filename: 't.txt',
         );
@@ -613,7 +613,7 @@ void main() {
       }
       final sealed = ZegelWriter(
         masterKey,
-        ZegelOptions(
+        const ZegelOptions(
           contentType: 'application/octet-stream',
           filename: '1m.bin',
         ),
@@ -630,7 +630,7 @@ void main() {
       }
       final sealed = ZegelWriter(
         masterKey,
-        ZegelOptions(contentType: 'application/octet-stream'),
+        const ZegelOptions(contentType: 'application/octet-stream'),
       ).seal(content);
       final result = reader.verify(sealed, masterKey);
       expect(result.content, equals(content));
@@ -643,7 +643,7 @@ void main() {
       }
       final sealed = ZegelWriter(
         masterKey,
-        ZegelOptions(contentType: 'application/octet-stream'),
+        const ZegelOptions(contentType: 'application/octet-stream'),
       ).seal(content);
       final inspection = reader.inspect(sealed);
       expect(inspection.blockCount, equals(2));
@@ -660,7 +660,7 @@ void main() {
       final content = Uint8List(0);
       final sealed = ZegelWriter(
         masterKey,
-        ZegelOptions(contentType: 'text/plain'),
+        const ZegelOptions(contentType: 'text/plain'),
       ).seal(content);
       final result = reader.verify(sealed, masterKey);
       expect(result.content, equals(content));
@@ -670,7 +670,7 @@ void main() {
       final content = Uint8List.fromList([0x42]);
       final sealed = ZegelWriter(
         masterKey,
-        ZegelOptions(contentType: 'application/octet-stream'),
+        const ZegelOptions(contentType: 'application/octet-stream'),
       ).seal(content);
       final result = reader.verify(sealed, masterKey);
       expect(result.content, equals(content));
@@ -687,10 +687,10 @@ void main() {
     });
 
     test('unicode filename (emoji) roundtrips', () {
-      final unicodeName = 'report_2026_financial.txt';
+      const unicodeName = 'report_2026_financial.txt';
       final sealed = ZegelWriter(
         masterKey,
-        ZegelOptions(contentType: 'text/plain', filename: unicodeName),
+        const ZegelOptions(contentType: 'text/plain', filename: unicodeName),
       ).seal(Uint8List.fromList(utf8.encode('test')));
       final result = reader.verify(sealed, masterKey);
       expect(result.filename, equals(unicodeName));
@@ -875,7 +875,7 @@ void main() {
       final content = Uint8List.fromList(utf8.encode('disclosure test'));
       final fileA = ZegelWriter(
         masterKey,
-        ZegelOptions(
+        const ZegelOptions(
           contentType: 'text/plain',
           filename: 'a.txt',
           enableSelectiveDisclosure: true,
@@ -884,7 +884,7 @@ void main() {
 
       final fileB = ZegelWriter(
         masterKey,
-        ZegelOptions(
+        const ZegelOptions(
           contentType: 'text/plain',
           filename: 'b.txt',
           enableSelectiveDisclosure: true,
