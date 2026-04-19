@@ -2,8 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
-import 'package:pointycastle/export.dart'
-    show Argon2BytesGenerator, Argon2Parameters;
+import 'package:pointycastle/export.dart' show Argon2BytesGenerator, Argon2Parameters;
 
 /// Cryptographic key derivation functions for the Zegel format.
 ///

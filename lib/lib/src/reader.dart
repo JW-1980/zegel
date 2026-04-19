@@ -893,8 +893,7 @@ class ZegelReader {
         radix: 16,
       );
       if (parsed == null) {
-        throw const ZegelFormatException(
-            'Invalid hex string: non-hex character');
+        throw const ZegelFormatException('Invalid hex string: non-hex character');
       }
       bytes[i] = parsed;
     }

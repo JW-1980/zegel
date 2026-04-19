@@ -50,7 +50,7 @@ void main() {
       });
 
       test('accepts a custom autoClear duration', () {
-        final custom = const Duration(seconds: 10);
+        const custom = Duration(seconds: 10);
         final item = ClipboardHelper.secret('key', autoClear: custom);
         expect(item.autoClear, custom);
       });
@@ -113,9 +113,7 @@ void main() {
         expect(preview, '••••');
       });
 
-      test(
-          'value longer than 4 chars shows 2-char prefix then ellipsis then dots',
-          () {
+      test('value longer than 4 chars shows 2-char prefix then ellipsis then dots', () {
         final item = ClipboardHelper.secret('supersecret');
         final preview = ClipboardHelper.previewFor(item);
         // Pattern: first 2 chars + '…' + '••••'
@@ -124,8 +122,7 @@ void main() {
         expect(preview, endsWith('••••'));
       });
 
-      test('sensitive preview for value of 5 chars follows masking pattern',
-          () {
+      test('sensitive preview for value of 5 chars follows masking pattern', () {
         final item = ClipboardHelper.secret('hello');
         final preview = ClipboardHelper.previewFor(item);
         expect(preview, 'he…••••');
@@ -161,8 +158,7 @@ void main() {
         expect(item.sensitive, isFalse);
       });
 
-      test('sensitive item constructed correctly via ClipboardItem directly',
-          () {
+      test('sensitive item constructed correctly via ClipboardItem directly', () {
         const item = ClipboardItem(
           value: 'secret',
           label: 'Key',

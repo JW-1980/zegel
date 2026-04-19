@@ -96,7 +96,7 @@ class SearchQuery {
       }
       // Plain token.
       var j = i;
-      while (j < trimmed.length && !trimmed[j].trim().isEmpty) {
+      while (j < trimmed.length && trimmed[j].trim().isNotEmpty) {
         j++;
       }
       tokens.add(trimmed.substring(i, j));

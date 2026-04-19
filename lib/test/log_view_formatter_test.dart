@@ -6,7 +6,7 @@ void main() {
     // -----------------------------------------------------------------------
     // Helpers
     // -----------------------------------------------------------------------
-    HistoryLog _buildLog() {
+    HistoryLog buildLog() {
       final log = HistoryLog();
       final base = DateTime.utc(2024, 3, 15, 10, 0, 0);
 
@@ -40,47 +40,47 @@ void main() {
     // -----------------------------------------------------------------------
     group('format', () {
       test('returns one FormattedLogLine per entry (default limit)', () {
-        final log = _buildLog();
+        final log = buildLog();
         final lines = LogViewFormatter.format(log);
         expect(lines.length, 3);
       });
 
       test('respects the limit parameter', () {
-        final log = _buildLog();
+        final log = buildLog();
         final lines = LogViewFormatter.format(log, limit: 2);
         expect(lines.length, 2);
       });
 
       test('newest entry appears first', () {
-        final log = _buildLog();
+        final log = buildLog();
         final lines = LogViewFormatter.format(log);
         // tail() returns newest-first, so the first line is the extract op.
         expect(lines.first.operation, 'extract');
       });
 
       test('assigns LogLevel.info for successful entries', () {
-        final log = _buildLog();
+        final log = buildLog();
         final lines = LogViewFormatter.format(log);
         final sealLine = lines.firstWhere((l) => l.operation == 'seal');
         expect(sealLine.level, LogLevel.info);
       });
 
       test('assigns LogLevel.error for failed entries', () {
-        final log = _buildLog();
+        final log = buildLog();
         final lines = LogViewFormatter.format(log);
         final verifyLine = lines.firstWhere((l) => l.operation == 'verify');
         expect(verifyLine.level, LogLevel.error);
       });
 
       test('each line has a non-null timestamp', () {
-        final log = _buildLog();
+        final log = buildLog();
         for (final line in LogViewFormatter.format(log)) {
           expect(line.timestamp, isNotNull);
         }
       });
 
       test('text contains the operation name', () {
-        final log = _buildLog();
+        final log = buildLog();
         final lines = LogViewFormatter.format(log);
         for (final line in lines) {
           expect(line.text, contains(line.operation));
@@ -88,28 +88,28 @@ void main() {
       });
 
       test('text contains OK for successful entries', () {
-        final log = _buildLog();
+        final log = buildLog();
         final lines = LogViewFormatter.format(log);
         final sealLine = lines.firstWhere((l) => l.operation == 'seal');
         expect(sealLine.text, contains('OK'));
       });
 
       test('text contains FAIL for failed entries', () {
-        final log = _buildLog();
+        final log = buildLog();
         final lines = LogViewFormatter.format(log);
         final verifyLine = lines.firstWhere((l) => l.operation == 'verify');
         expect(verifyLine.text, contains('FAIL'));
       });
 
       test('duration is included in text when includeDuration = true', () {
-        final log = _buildLog();
+        final log = buildLog();
         final lines = LogViewFormatter.format(log, includeDuration: true);
         final sealLine = lines.firstWhere((l) => l.operation == 'seal');
         expect(sealLine.text, contains('42ms'));
       });
 
       test('duration is omitted when includeDuration = false', () {
-        final log = _buildLog();
+        final log = buildLog();
         final lines = LogViewFormatter.format(log, includeDuration: false);
         final sealLine = lines.firstWhere((l) => l.operation == 'seal');
         expect(sealLine.text, isNot(contains('ms')));
@@ -126,38 +126,38 @@ void main() {
     // -----------------------------------------------------------------------
     group('formatEntry', () {
       test('returns a non-empty string', () {
-        final log = _buildLog();
+        final log = buildLog();
         final entry = log.entries.first;
         final text = LogViewFormatter.formatEntry(entry);
         expect(text, isNotEmpty);
       });
 
       test('contains operation name', () {
-        final log = _buildLog();
+        final log = buildLog();
         final entry = log.entries.first; // seal
         expect(LogViewFormatter.formatEntry(entry), contains('seal'));
       });
 
       test('contains OK for success', () {
-        final log = _buildLog();
+        final log = buildLog();
         final seal = log.byOperation('seal').first;
         expect(LogViewFormatter.formatEntry(seal), contains('OK'));
       });
 
       test('contains FAIL for failure', () {
-        final log = _buildLog();
+        final log = buildLog();
         final verify = log.byOperation('verify').first;
         expect(LogViewFormatter.formatEntry(verify), contains('FAIL'));
       });
 
       test('contains filename when present', () {
-        final log = _buildLog();
+        final log = buildLog();
         final seal = log.byOperation('seal').first;
         expect(LogViewFormatter.formatEntry(seal), contains('report.pdf'));
       });
 
       test('contains message when present', () {
-        final log = _buildLog();
+        final log = buildLog();
         final verify = log.byOperation('verify').first;
         expect(
           LogViewFormatter.formatEntry(verify),
@@ -166,7 +166,7 @@ void main() {
       });
 
       test('contains duration in ms when includeDuration = true', () {
-        final log = _buildLog();
+        final log = buildLog();
         final seal = log.byOperation('seal').first;
         expect(
           LogViewFormatter.formatEntry(seal, includeDuration: true),
@@ -175,7 +175,7 @@ void main() {
       });
 
       test('omits duration when includeDuration = false', () {
-        final log = _buildLog();
+        final log = buildLog();
         final seal = log.byOperation('seal').first;
         expect(
           LogViewFormatter.formatEntry(seal, includeDuration: false),
@@ -184,7 +184,7 @@ void main() {
       });
 
       test('handles entry with no filename or message gracefully', () {
-        final log = _buildLog();
+        final log = buildLog();
         final extract = log.byOperation('extract').first;
         // extract has filename but no message — should not throw.
         expect(() => LogViewFormatter.formatEntry(extract), returnsNormally);
@@ -196,12 +196,12 @@ void main() {
     // -----------------------------------------------------------------------
     group('dump', () {
       test('returns a non-empty string for a non-empty log', () {
-        final log = _buildLog();
+        final log = buildLog();
         expect(LogViewFormatter.dump(log), isNotEmpty);
       });
 
       test('contains one line per entry', () {
-        final log = _buildLog();
+        final log = buildLog();
         final lines = LogViewFormatter.dump(log)
             .split('\n')
             .where((l) => l.isNotEmpty)
@@ -210,7 +210,7 @@ void main() {
       });
 
       test('each line contains the operation name', () {
-        final log = _buildLog();
+        final log = buildLog();
         final dumped = LogViewFormatter.dump(log);
         expect(dumped, contains('seal'));
         expect(dumped, contains('verify'));
@@ -218,7 +218,7 @@ void main() {
       });
 
       test('each line contains OK or FAIL', () {
-        final log = _buildLog();
+        final log = buildLog();
         final lines = LogViewFormatter.dump(log)
             .split('\n')
             .where((l) => l.isNotEmpty)
@@ -229,7 +229,7 @@ void main() {
       });
 
       test('each line starts with an ISO-8601 timestamp', () {
-        final log = _buildLog();
+        final log = buildLog();
         final lines = LogViewFormatter.dump(log)
             .split('\n')
             .where((l) => l.isNotEmpty)
@@ -254,23 +254,21 @@ void main() {
     // -----------------------------------------------------------------------
     group('filterByLevel', () {
       test('LogLevel.info returns only successful entries', () {
-        final log = _buildLog();
+        final log = buildLog();
         final infos = LogViewFormatter.filterByLevel(log, level: LogLevel.info);
         expect(infos.every((e) => e.success), isTrue);
       });
 
       test('LogLevel.error returns only failed entries', () {
-        final log = _buildLog();
-        final errors =
-            LogViewFormatter.filterByLevel(log, level: LogLevel.error);
+        final log = buildLog();
+        final errors = LogViewFormatter.filterByLevel(log, level: LogLevel.error);
         expect(errors.every((e) => !e.success), isTrue);
       });
 
       test('info count + error count equals total entry count', () {
-        final log = _buildLog();
+        final log = buildLog();
         final infos = LogViewFormatter.filterByLevel(log, level: LogLevel.info);
-        final errors =
-            LogViewFormatter.filterByLevel(log, level: LogLevel.error);
+        final errors = LogViewFormatter.filterByLevel(log, level: LogLevel.error);
         expect(infos.length + errors.length, log.entries.length);
       });
 
@@ -278,13 +276,12 @@ void main() {
         final log = HistoryLog();
         log.record(operation: 'seal', success: true);
         // No failures, so error filter should be empty.
-        final errors =
-            LogViewFormatter.filterByLevel(log, level: LogLevel.error);
+        final errors = LogViewFormatter.filterByLevel(log, level: LogLevel.error);
         expect(errors, isEmpty);
       });
 
       test('filtered entries belong to the original log', () {
-        final log = _buildLog();
+        final log = buildLog();
         final infos = LogViewFormatter.filterByLevel(log, level: LogLevel.info);
         for (final entry in infos) {
           expect(log.entries, contains(entry));

@@ -40,10 +40,10 @@ class LogViewFormatter {
     for (final entry in log.entries) {
       buf.writeln(
         '${entry.at.toUtc().toIso8601String()} '
-                '[${entry.operation}] '
-                '${entry.success ? "OK" : "FAIL"} '
-                '${entry.filename ?? ""} '
-                '${entry.message ?? ""}'
+        '[${entry.operation}] '
+        '${entry.success ? "OK" : "FAIL"} '
+        '${entry.filename ?? ""} '
+        '${entry.message ?? ""}'
             .trim(),
       );
     }
@@ -69,11 +69,7 @@ class LogViewFormatter {
     required bool includeDuration,
   }) {
     final parts = <String>[
-      entry.at
-          .toUtc()
-          .toIso8601String()
-          .replaceFirst('T', ' ')
-          .substring(0, 19),
+      entry.at.toUtc().toIso8601String().replaceFirst('T', ' ').substring(0, 19),
       '[${entry.operation}]',
       entry.success ? 'OK' : 'FAIL',
     ];

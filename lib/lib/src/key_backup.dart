@@ -120,13 +120,13 @@ class KeyBackupPlanner {
       );
       if (!manifestFile.existsSync()) continue;
       try {
-        final data =
-            jsonDecode(manifestFile.readAsStringSync()) as Map<String, dynamic>;
+        final data = jsonDecode(manifestFile.readAsStringSync())
+            as Map<String, dynamic>;
         snapshots.add(KeyBackupResult(
           snapshotDirectory: entity.path,
           timestamp: DateTime.parse(data['timestamp'] as String).toUtc(),
-          manifest:
-              Map<String, String>.from(data['files'] as Map<String, dynamic>),
+          manifest: Map<String, String>.from(
+              data['files'] as Map<String, dynamic>),
           skipped: false,
         ));
       } catch (_) {
