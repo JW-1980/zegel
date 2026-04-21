@@ -4,7 +4,7 @@ import 'package:zegel/zegel.dart';
 void main() {
   group('ThemeScheduler', () {
     group('alwaysLight mode', () {
-      final scheduler = ThemeScheduler(mode: ThemeScheduleMode.alwaysLight);
+      const scheduler = ThemeScheduler(mode: ThemeScheduleMode.alwaysLight);
 
       test('returns light regardless of time', () {
         expect(
@@ -28,12 +28,13 @@ void main() {
       });
 
       test('nextTransitionAfter returns null', () {
-        expect(scheduler.nextTransitionAfter(DateTime(2026, 1, 1, 12, 0)), isNull);
+        expect(
+            scheduler.nextTransitionAfter(DateTime(2026, 1, 1, 12, 0)), isNull);
       });
     });
 
     group('alwaysDark mode', () {
-      final scheduler = ThemeScheduler(mode: ThemeScheduleMode.alwaysDark);
+      const scheduler = ThemeScheduler(mode: ThemeScheduleMode.alwaysDark);
 
       test('returns dark regardless of time', () {
         expect(
@@ -57,12 +58,13 @@ void main() {
       });
 
       test('nextTransitionAfter returns null', () {
-        expect(scheduler.nextTransitionAfter(DateTime(2026, 1, 1, 12, 0)), isNull);
+        expect(
+            scheduler.nextTransitionAfter(DateTime(2026, 1, 1, 12, 0)), isNull);
       });
     });
 
     group('system mode', () {
-      final scheduler = ThemeScheduler(mode: ThemeScheduleMode.system);
+      const scheduler = ThemeScheduler(mode: ThemeScheduleMode.system);
 
       test('forwards systemBrightness.light', () {
         expect(
@@ -92,7 +94,8 @@ void main() {
       });
 
       test('nextTransitionAfter returns null', () {
-        expect(scheduler.nextTransitionAfter(DateTime(2026, 1, 1, 12, 0)), isNull);
+        expect(
+            scheduler.nextTransitionAfter(DateTime(2026, 1, 1, 12, 0)), isNull);
       });
     });
 
@@ -173,7 +176,8 @@ void main() {
         expect(next.day, ref.day);
       });
 
-      test('returns darkStart when reference is between light and dark starts', () {
+      test('returns darkStart when reference is between light and dark starts',
+          () {
         final ref = DateTime(2026, 6, 1, 12, 0); // 12:00
         final next = scheduler.nextTransitionAfter(ref);
         expect(next, isNotNull);
