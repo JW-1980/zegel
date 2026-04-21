@@ -52,11 +52,13 @@ void main() {
       ];
       final kept = policy.apply(events, now: now);
       expect(kept.length, 1);
-      expect(kept.first.timestamp, now.subtract(const Duration(days: 10)));
+      expect(kept.first.timestamp,
+          now.subtract(const Duration(days: 10)));
     });
 
     test('partition returns kept and expired lists', () {
-      final policy = RetentionPolicy(defaultRetention: const Duration(days: 7));
+      final policy =
+          RetentionPolicy(defaultRetention: const Duration(days: 7));
       final events = [
         _Event(now.subtract(const Duration(days: 1)), 'verify'),
         _Event(now.subtract(const Duration(days: 14)), 'verify'),

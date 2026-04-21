@@ -11,8 +11,7 @@
 class PiiDetector {
   PiiDetector._();
 
-  static final RegExp _ssnUs =
-      RegExp(r'\b(?!000|666|9\d\d)\d{3}[- ]?\d{2}[- ]?\d{4}\b');
+  static final RegExp _ssnUs = RegExp(r'\b(?!000|666|9\d\d)\d{3}[- ]?\d{2}[- ]?\d{4}\b');
   static final RegExp _email = RegExp(
     r'[\w.+\-]+@[\w\-]+(?:\.[\w\-]+)+',
     caseSensitive: false,
@@ -33,8 +32,7 @@ class PiiDetector {
   static List<PiiMatch> scan(String text) {
     final matches = <PiiMatch>[];
 
-    void collect(
-        RegExp re, PiiCategory category, bool Function(String)? extra) {
+    void collect(RegExp re, PiiCategory category, bool Function(String)? extra) {
       for (final m in re.allMatches(text)) {
         final value = m.group(0) ?? '';
         if (extra != null && !extra(value)) continue;

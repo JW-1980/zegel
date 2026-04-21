@@ -31,7 +31,8 @@ class KeyManager {
     if (raw.trim().isEmpty) return KeyManager.empty();
     final json = jsonDecode(raw) as Map<String, dynamic>;
     final entries = <String, KeyEntry>{};
-    for (final entry in (json['keys'] as List<dynamic>? ?? const <dynamic>[])) {
+    for (final entry
+        in (json['keys'] as List<dynamic>? ?? const <dynamic>[])) {
       final e = KeyEntry.fromJson(entry as Map<String, dynamic>);
       entries[e.id] = e;
     }
