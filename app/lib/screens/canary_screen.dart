@@ -470,8 +470,7 @@ class _CanaryScreenState extends State<CanaryScreen>
           SizedBox(
             height: 50,
             child: ElevatedButton.icon(
-              onPressed:
-                  _isEmbedding ||
+              onPressed: _isEmbedding ||
                       _embedFilePath == null ||
                       _masterKey.length != 64 ||
                       _recipients.isEmpty

@@ -399,9 +399,8 @@ class _SealScreenState extends State<SealScreen> {
                                   ),
                                 IconButton(
                                   icon: const Icon(Icons.calendar_today),
-                                  onPressed: _isSealing
-                                      ? null
-                                      : _pickExpirationDate,
+                                  onPressed:
+                                      _isSealing ? null : _pickExpirationDate,
                                 ),
                               ],
                             ),
@@ -454,8 +453,8 @@ class _SealScreenState extends State<SealScreen> {
                             onChanged: _isSealing
                                 ? null
                                 : (v) => setState(
-                                    () => _enableSelectiveDisclosure = v,
-                                  ),
+                                      () => _enableSelectiveDisclosure = v,
+                                    ),
                           ),
                           const Divider(),
                           SwitchListTile(
@@ -500,8 +499,8 @@ class _SealScreenState extends State<SealScreen> {
                             onChanged: _isSealing
                                 ? null
                                 : (v) => setState(
-                                    () => _classificationLevel = v ?? '',
-                                  ),
+                                      () => _classificationLevel = v ?? '',
+                                    ),
                           ),
                           if (_classificationLevel.isNotEmpty) ...[
                             const SizedBox(height: 12),
@@ -538,8 +537,7 @@ class _SealScreenState extends State<SealScreen> {
                                           final now = DateTime.now();
                                           final picked = await showDatePicker(
                                             context: context,
-                                            initialDate:
-                                                _regulatoryHoldDate ??
+                                            initialDate: _regulatoryHoldDate ??
                                                 now.add(
                                                   const Duration(days: 365 * 7),
                                                 ),
@@ -574,8 +572,8 @@ class _SealScreenState extends State<SealScreen> {
                             onChanged: _isSealing
                                 ? null
                                 : (v) => setState(
-                                    () => _preserveMediaMetadata = v,
-                                  ),
+                                      () => _preserveMediaMetadata = v,
+                                    ),
                           ),
                         ],
                       ),
