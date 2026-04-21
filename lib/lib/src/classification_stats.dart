@@ -39,7 +39,8 @@ class ClassificationStats {
   Map<String, double> distribution() {
     if (total == 0) return const <String, double>{};
     return <String, double>{
-      for (final entry in _counts.entries) entry.key: entry.value / total,
+      for (final entry in _counts.entries)
+        entry.key: entry.value / total,
     };
   }
 

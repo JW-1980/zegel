@@ -191,7 +191,8 @@ class ContentVersioning {
       if (fileBytes.length < cursor + 4) return null;
       final int pubMetaLen = bd.getUint32(cursor, Endian.big);
       // DoS prevention: cap public metadata size.
-      if (pubMetaLen < 0 || pubMetaLen > ZegelFormat.maxPublicMetadataSize) {
+      if (pubMetaLen < 0 ||
+          pubMetaLen > ZegelFormat.maxPublicMetadataSize) {
         return null;
       }
       cursor += 4 + pubMetaLen;

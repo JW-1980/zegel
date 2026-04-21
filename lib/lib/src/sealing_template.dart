@@ -116,13 +116,11 @@ class SealingTemplate {
       passwordDerived: json['password_derived'] as bool? ?? false,
       expirationFromNow: json['expiration_from_now_seconds'] == null
           ? null
-          : Duration(
-              seconds: (json['expiration_from_now_seconds'] as num).toInt()),
+          : Duration(seconds: (json['expiration_from_now_seconds'] as num).toInt()),
       blockSize: (json['block_size'] as num?)?.toInt(),
       publicMetadata: json['public_metadata'] == null
           ? const <String, dynamic>{}
-          : Map<String, dynamic>.from(
-              json['public_metadata'] as Map<String, dynamic>),
+          : Map<String, dynamic>.from(json['public_metadata'] as Map<String, dynamic>),
       metadata: json['metadata'] == null
           ? const <String, dynamic>{}
           : Map<String, dynamic>.from(json['metadata'] as Map<String, dynamic>),
@@ -183,8 +181,7 @@ class SealingTemplateStore {
         .listSync()
         .whereType<File>()
         .where((f) => f.path.endsWith('.json'))
-        .map(
-            (f) => f.uri.pathSegments.last.replaceFirst(RegExp(r'\.json$'), ''))
+        .map((f) => f.uri.pathSegments.last.replaceFirst(RegExp(r'\.json$'), ''))
         .toList()
       ..sort();
   }

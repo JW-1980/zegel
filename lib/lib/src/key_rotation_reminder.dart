@@ -83,11 +83,11 @@ class KeyRotationReminder {
   /// Decodes a tracker previously serialized by [encode].
   static KeyRotationReminder decodeJson(String raw) {
     final m = jsonDecode(raw) as Map<String, dynamic>;
-    final window =
-        Duration(days: (m['rotation_window_days'] as num?)?.toInt() ?? 90);
+    final window = Duration(days: (m['rotation_window_days'] as num?)?.toInt() ?? 90);
     final records = <String, KeyRotationRecord>{};
     for (final entry in (m['records'] as List<dynamic>? ?? const <dynamic>[])) {
-      final record = KeyRotationRecord.fromJson(entry as Map<String, dynamic>);
+      final record =
+          KeyRotationRecord.fromJson(entry as Map<String, dynamic>);
       records[record.name] = record;
     }
     return KeyRotationReminder(rotationWindow: window, initial: records);

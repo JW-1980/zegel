@@ -754,7 +754,7 @@ void main() {
         unit: 'celsius',
         measurementType: 'temperature',
         location: 'lat:52.3676,lon:4.9041',
-        calibration: CalibrationInfo(
+        calibration: const CalibrationInfo(
           calibratedAt: 1690000000,
           calibrationAuthority: 'NIST',
           accuracy: '+/- 0.1',

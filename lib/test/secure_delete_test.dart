@@ -31,7 +31,8 @@ void main() {
     });
 
     test('shredFile rejects passes < 1', () {
-      final file = File('${tmp.path}/x.bin')..writeAsBytesSync(<int>[1, 2, 3]);
+      final file = File('${tmp.path}/x.bin')
+        ..writeAsBytesSync(<int>[1, 2, 3]);
       expect(
         () => SecureDelete.shredFile(file, passes: 0),
         throwsArgumentError,
