@@ -33,7 +33,9 @@ class FailureStats {
   /// Heuristic that maps a raw failure message to a category.
   static FailureCategory classify(String message) {
     final m = message.toLowerCase();
-    if (m.contains('magic') || m.contains('header') || m.contains('not a zegel')) {
+    if (m.contains('magic') ||
+        m.contains('header') ||
+        m.contains('not a zegel')) {
       return FailureCategory.badMagic;
     }
     if (m.contains('merkle')) return FailureCategory.merkleMismatch;
@@ -68,8 +70,7 @@ class FailureStats {
   List<FailureSample> get samples => List<FailureSample>.unmodifiable(_samples);
 
   /// Total number of recorded failures.
-  int get totalFailures =>
-      _counts.values.fold<int>(0, (a, b) => a + b);
+  int get totalFailures => _counts.values.fold<int>(0, (a, b) => a + b);
 
   /// Returns the most frequent failure category, or null if none recorded.
   FailureCategory? topCategory() {
@@ -91,7 +92,8 @@ class FailureStats {
     final m = jsonDecode(raw) as Map<String, dynamic>;
     final stats =
         FailureStats(maxSamples: (m['max_samples'] as num?)?.toInt() ?? 50);
-    final countsMap = (m['counts'] as Map<String, dynamic>?) ?? const <String, dynamic>{};
+    final countsMap =
+        (m['counts'] as Map<String, dynamic>?) ?? const <String, dynamic>{};
     countsMap.forEach((k, v) {
       final cat = FailureCategory.values.firstWhere(
         (c) => c.name == k,
@@ -101,8 +103,7 @@ class FailureStats {
     });
     final samples = (m['samples'] as List<dynamic>?) ?? const <dynamic>[];
     for (final s in samples) {
-      stats._samples
-          .add(FailureSample.fromJson(s as Map<String, dynamic>));
+      stats._samples.add(FailureSample.fromJson(s as Map<String, dynamic>));
     }
     return stats;
   }
