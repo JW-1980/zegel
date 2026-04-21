@@ -14,7 +14,7 @@ void main() {
     });
 
     test('recommendedBatchConcurrency leaves a core free on >1 core hosts', () {
-      final info = HardwareInfo(
+      const info = HardwareInfo(
         processorCount: 4,
         operatingSystem: 'linux',
         operatingSystemVersion: '0',
@@ -27,7 +27,7 @@ void main() {
     });
 
     test('recommendedBatchConcurrency returns 1 on single-core hosts', () {
-      final info = HardwareInfo(
+      const info = HardwareInfo(
         processorCount: 1,
         operatingSystem: 'linux',
         operatingSystemVersion: '0',

@@ -59,7 +59,7 @@ void main() {
 
     test('in-memory save() throws', () {
       final prefs = ZegelPreferences.empty();
-      expect(() => prefs.save(), throwsStateError);
+      expect(prefs.save, throwsStateError);
     });
 
     test('remove and clear work', () {
