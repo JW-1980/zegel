@@ -76,8 +76,7 @@ class HistoryLog {
   }
 
   /// Serializes the log as newline-delimited JSON.
-  String encode() =>
-      _entries.map((e) => jsonEncode(e.toJson())).join('\n');
+  String encode() => _entries.map((e) => jsonEncode(e.toJson())).join('\n');
 
   /// Loads a previously saved log from a newline-delimited JSON string.
   static HistoryLog decode(String raw) {
@@ -125,7 +124,8 @@ class HistoryEntry extends RetainableEvent {
             : Duration(milliseconds: (json['duration_ms'] as num).toInt()),
         details: json['details'] == null
             ? const <String, dynamic>{}
-            : Map<String, dynamic>.from(json['details'] as Map<String, dynamic>),
+            : Map<String, dynamic>.from(
+                json['details'] as Map<String, dynamic>),
         at: DateTime.parse(json['at'] as String).toUtc(),
       );
 

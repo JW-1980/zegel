@@ -74,7 +74,8 @@ void main() {
           expect(
             terms[i].term.compareTo(terms[i + 1].term),
             lessThanOrEqualTo(0),
-            reason: '"${terms[i].term}" should sort before "${terms[i + 1].term}"',
+            reason:
+                '"${terms[i].term}" should sort before "${terms[i + 1].term}"',
           );
         }
       });
@@ -155,8 +156,10 @@ void main() {
       });
 
       test('search is case-insensitive', () {
-        final lower = CryptoGlossary.search('shamir').map((t) => t.term).toSet();
-        final upper = CryptoGlossary.search('SHAMIR').map((t) => t.term).toSet();
+        final lower =
+            CryptoGlossary.search('shamir').map((t) => t.term).toSet();
+        final upper =
+            CryptoGlossary.search('SHAMIR').map((t) => t.term).toSet();
         expect(lower, equals(upper));
       });
 

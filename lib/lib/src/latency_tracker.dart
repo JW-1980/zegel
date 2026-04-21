@@ -55,7 +55,8 @@ class LatencyTracker {
   int? percentileMs(double percentile) {
     if (_samples.isEmpty) return null;
     if (percentile < 0 || percentile > 100) {
-      throw ArgumentError.value(percentile, 'percentile', 'must be in [0, 100]');
+      throw ArgumentError.value(
+          percentile, 'percentile', 'must be in [0, 100]');
     }
     final sorted = _samples.map((s) => s.latencyMs).toList()..sort();
     final rank = (percentile / 100 * sorted.length).ceil();
@@ -90,7 +91,8 @@ class LatencyTracker {
       maxSamples: (m['max_samples'] as num?)?.toInt() ?? 200,
     );
     for (final entry in (m['samples'] as List<dynamic>? ?? const <dynamic>[])) {
-      tracker._samples.add(LatencySample.fromJson(entry as Map<String, dynamic>));
+      tracker._samples
+          .add(LatencySample.fromJson(entry as Map<String, dynamic>));
     }
     return tracker;
   }

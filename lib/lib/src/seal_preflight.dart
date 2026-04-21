@@ -110,7 +110,8 @@ class PreflightResult {
 
   final List<PreflightWarning> warnings;
 
-  bool get hasErrors => warnings.any((w) => w.severity == PreflightSeverity.error);
+  bool get hasErrors =>
+      warnings.any((w) => w.severity == PreflightSeverity.error);
   bool get hasWarnings =>
       warnings.any((w) => w.severity == PreflightSeverity.warning);
   bool get safeToProceed => !hasErrors;
