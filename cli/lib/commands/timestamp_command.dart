@@ -157,33 +157,24 @@ class TimestampCreateCommand extends Command<int> {
         masterSeal,
       );
 
-      // Note: Actual TSA communication would require HTTP client.
-      // For now, we create a local timestamp and note the TSA URL.
-      stdout.writeln(
-        Ansi.warning('Note: External TSA communication not implemented.'),
-      );
-      stdout.writeln('Creating local timestamp instead.');
-      stdout.writeln('TSA URL would be: $tsaUrl');
-      stdout.writeln();
+      stdout.writeln('Sending timestamp request to: $tsaUrl');
+      try {
+        final client = HttpClient();
+        final req = await client.postUrl(Uri.parse(tsaUrl));
+        req.headers.set('Content-Type', 'application/json');
+        req.add(utf8.encode(jsonEncode(request)));
+        final response = await req.close();
 
-      // Parse signer key.
-      Uint8List signerKey = masterKey;
-      final signerKeyHex = argResults!['signer-key'] as String?;
-      final signerKeyFilePath = argResults!['signer-key-file'] as String?;
+        if (response.statusCode != 200) {
+          exitError('TSA returned error status: ${response.statusCode}');
+        }
 
-      if (signerKeyHex != null && signerKeyHex.isNotEmpty) {
-        signerKey = hexDecode(signerKeyHex, label: 'signer-key');
-      } else if (signerKeyFilePath != null && signerKeyFilePath.isNotEmpty) {
-        signerKey = readKeyFile(signerKeyFilePath);
+        final responseBody = await response.transform(utf8.decoder).join();
+        timestampToken = jsonDecode(responseBody) as Map<String, dynamic>;
+        client.close();
+      } catch (e) {
+        exitError('TSA communication failed: $e');
       }
-
-      timestampToken = TrustedTimestamp.createLocalToken(
-        rawHeader.merkleRoot,
-        masterSeal,
-        signerKey,
-      );
-      timestampToken['tsa_url'] = tsaUrl;
-      timestampToken['tsa_request'] = request;
     } else {
       // Create local timestamp.
       Uint8List signerKey = masterKey;

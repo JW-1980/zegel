@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:zegel_app/utils/hex_utils.dart';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
@@ -90,22 +89,12 @@ class _TimestampScreenState extends State<TimestampScreen>
       }
 
       final bytes = await file.readAsBytes();
-      const reader = ZegelReader();
-      // ignore: unused_local_variable
-      // ignore: unused_local_variable
-      // ignore: unused_local_variable
-      final inspection = reader.inspect(bytes);
+      final inspection = const ZegelReader().inspect(bytes);
 
       // Extract Merkle root and master seal from file
-      // The Merkle root is at a known position after the block directory
-      // The master seal is the last 64 bytes
-      final masterSeal = Uint8List.fromList(
-        bytes.sublist(bytes.length - ZegelFormat.sealSize),
-      );
-
-      // Parse enough to get the Merkle root (simplified)
-      // In a real implementation, this would be extracted from the reader
-      final merkleRoot = _extractMerkleRoot(bytes);
+      // ZegelReader().inspect() from package:zegel/zegel.dart returns a core.ZegelInspection.
+      final masterSeal = inspection.masterSeal;
+      final merkleRoot = inspection.merkleRoot;
 
       // Create a local timestamp token using the signer key
       final signerKey = HexUtils.hexToBytes(_hexKey);
@@ -166,10 +155,11 @@ class _TimestampScreenState extends State<TimestampScreen>
       final bytes = await file.readAsBytes();
 
       // Extract Merkle root and master seal
-      final masterSeal = Uint8List.fromList(
-        bytes.sublist(bytes.length - ZegelFormat.sealSize),
-      );
-      final merkleRoot = _extractMerkleRoot(bytes);
+      final inspection = const ZegelReader().inspect(bytes);
+
+      // Extract Merkle root and master seal
+      final masterSeal = inspection.masterSeal;
+      final merkleRoot = inspection.merkleRoot;
       final signerKey = HexUtils.hexToBytes(_hexKey);
 
       // Verify the timestamp token
@@ -201,39 +191,6 @@ class _TimestampScreenState extends State<TimestampScreen>
         });
       }
     }
-  }
-
-  Uint8List _extractMerkleRoot(Uint8List bytes) {
-    // Simplified Merkle root extraction
-    // In practice, this should use the ZegelReader's parsing
-    final bd = ByteData.sublistView(bytes);
-
-    // Skip magic (8) + version (2) + flags (2) + timestamp (8) + content-type (64)
-    final filenameLen = bd.getUint16(84, Endian.big);
-    final saltOffset = 86 + filenameLen;
-    final blockCountOffset = saltOffset + ZegelFormat.saltSize;
-    final blockCount = bd.getUint32(blockCountOffset, Endian.big);
-    final flags = bd.getUint16(10, Endian.big);
-
-    // Calculate directory start after extended header
-    int cursor = blockCountOffset + 4;
-    if (flags & ZegelFormat.flagPasswordDerived != 0) cursor += 8;
-    if (flags & ZegelFormat.flagHasExpiration != 0) cursor += 8;
-    if (flags & ZegelFormat.flagHasCanary != 0) cursor += 32;
-    if (flags & ZegelFormat.flagSplitKey != 0) cursor += 2;
-    if (flags & ZegelFormat.flagVersioned != 0) cursor += 32;
-    if (flags & ZegelFormat.flagHasPublicMetadata != 0) {
-      final pubMetaLen = bd.getUint32(cursor, Endian.big);
-      cursor += 4 + pubMetaLen;
-    }
-
-    // Skip block directory
-    cursor += blockCount * ZegelFormat.blockDirectoryEntrySize;
-
-    // Merkle root is here (32 bytes)
-    return Uint8List.fromList(
-      bytes.sublist(cursor, cursor + ZegelFormat.hashSize),
-    );
   }
 
   String _formatTimestamp(int epochSeconds) {
