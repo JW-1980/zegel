@@ -7,6 +7,7 @@ import 'package:pointycastle/export.dart';
 
 import 'canary.dart';
 import 'format.dart';
+import 'secure_memory.dart';
 import 'key_derivation.dart';
 import 'merkle_tree.dart';
 
@@ -289,11 +290,7 @@ class ZegelReader {
       // Best-effort wipe of the derived block keys before we drop the list.
       // Dart's GC may still retain copies, but zeroing the live references
       // shrinks the window in which raw block keys sit in the heap.
-      for (final Uint8List k in blockKeys) {
-        for (int i = 0; i < k.length; i++) {
-          k[i] = 0;
-        }
-      }
+      SecureMemory.wipeAll(blockKeys);
 
       if (!_constantTimeEquals(computedCommitment, h.keyCommitment!)) {
         throw const ZegelTamperedException('Key commitment mismatch');
@@ -366,18 +363,14 @@ class ZegelReader {
       } on Exception {
         // Best-effort wipe of the derived block key before surfacing the
         // tamper error.
-        for (int b = 0; b < blockKey.length; b++) {
-          blockKey[b] = 0;
-        }
+        SecureMemory.wipe(blockKey);
         throw const ZegelTamperedException(
           'Tamper detected: block decryption failed',
         );
       }
 
       // The block key is no longer needed beyond this point; wipe it.
-      for (int b = 0; b < blockKey.length; b++) {
-        blockKey[b] = 0;
-      }
+      SecureMemory.wipe(blockKey);
 
       // Verify plaintext hash BEFORE decompression.
       // Per spec: "The plaintext hash in the directory is computed from the
@@ -893,7 +886,9 @@ class ZegelReader {
         radix: 16,
       );
       if (parsed == null) {
-        throw const ZegelFormatException('Invalid hex string: non-hex character');
+        throw const ZegelFormatException(
+          'Invalid hex string: non-hex character',
+        );
       }
       bytes[i] = parsed;
     }

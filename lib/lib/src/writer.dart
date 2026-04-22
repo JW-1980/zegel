@@ -8,6 +8,7 @@ import 'package:pointycastle/export.dart';
 
 import 'canary.dart';
 import 'format.dart';
+import 'secure_memory.dart';
 import 'key_derivation.dart';
 import 'merkle_tree.dart';
 import 'shamir.dart';
@@ -455,11 +456,7 @@ class ZegelWriter {
 
     // Block keys have served their purpose (encryption + optional commitment);
     // wipe them before the list goes out of scope.
-    for (final Uint8List k in blockKeys) {
-      for (int i = 0; i < k.length; i++) {
-        k[i] = 0;
-      }
-    }
+    SecureMemory.wipeAll(blockKeys);
 
     // =========================================================================
     // 12. Build the binary file
@@ -595,9 +592,7 @@ class ZegelWriter {
       preSealBytes,
     );
     // Best-effort wipe of the seal key.
-    for (int i = 0; i < sealKey.length; i++) {
-      sealKey[i] = 0;
-    }
+    SecureMemory.wipe(sealKey);
 
     // =========================================================================
     // 14. Assemble final file

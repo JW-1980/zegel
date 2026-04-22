@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
+import 'secure_memory.dart';
 
 /// RFC 6238 TOTP (Time-based One-Time Passwords) implementation
 /// (improvement #56).
@@ -92,11 +93,15 @@ class Totp {
     }
     final hmac = Hmac(sha1, secret);
     final digest = hmac.convert(counterBytes).bytes;
+
+    SecureMemory.wipe(counterBytes);
+
     final offset = digest.last & 0x0F;
     final binary = ((digest[offset] & 0x7F) << 24) |
         ((digest[offset + 1] & 0xFF) << 16) |
         ((digest[offset + 2] & 0xFF) << 8) |
         (digest[offset + 3] & 0xFF);
+
     final modulus = _pow10(digits);
     return (binary % modulus).toString().padLeft(digits, '0');
   }
@@ -151,7 +156,8 @@ class Totp {
     for (final ch in cleaned.codeUnits) {
       final idx = _base32Alphabet.indexOf(String.fromCharCode(ch));
       if (idx < 0) {
-        throw FormatException('Invalid base32 character: ${String.fromCharCode(ch)}');
+        throw FormatException(
+            'Invalid base32 character: ${String.fromCharCode(ch)}');
       }
       buffer = (buffer << 5) | idx;
       bits += 5;

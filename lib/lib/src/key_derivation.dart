@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
-import 'package:pointycastle/export.dart' show Argon2BytesGenerator, Argon2Parameters;
+import 'secure_memory.dart';
+import 'package:pointycastle/export.dart'
+    show Argon2BytesGenerator, Argon2Parameters;
 
 /// Cryptographic key derivation functions for the Zegel format.
 ///
@@ -79,12 +81,7 @@ class KeyDerivation {
     final Uint8List output = Uint8List(32);
     generator.deriveKey(passwordBytes, 0, output, 0);
 
-    // Best-effort wipe of the intermediate password-bytes buffer. The
-    // original [password] String is still owned by the caller; callers that
-    // care about memory hygiene should read passwords directly into bytes.
-    for (int i = 0; i < passwordBytes.length; i++) {
-      passwordBytes[i] = 0;
-    }
+    SecureMemory.wipe(passwordBytes);
     return output;
   }
 
@@ -112,6 +109,8 @@ class KeyDerivation {
     // HKDF-Extract: PRK = HMAC-SHA256(salt, IKM)
     final hmacExtract = Hmac(sha256, salt);
     final prk = Uint8List.fromList(hmacExtract.convert(ikm).bytes);
+    SecureMemory.wipe(ikm);
+    SecureMemory.wipe(ikm);
 
     // Build info string
     final StringBuffer infoBuf = StringBuffer('zegel-block-key-v1:');
@@ -132,7 +131,9 @@ class KeyDerivation {
     expandInput[infoBytes.length] = 0x01;
 
     final hmacExpand = Hmac(sha256, prk);
-    return Uint8List.fromList(hmacExpand.convert(expandInput).bytes);
+    final result = Uint8List.fromList(hmacExpand.convert(expandInput).bytes);
+    SecureMemory.wipe(prk);
+    return result;
   }
 
   /// Computes the seal key used to produce the master seal.
@@ -203,6 +204,7 @@ class KeyDerivation {
     // HKDF-Extract: PRK = HMAC-SHA256(salt, IKM)
     final hmacExtract = Hmac(sha256, salt);
     final prk = Uint8List.fromList(hmacExtract.convert(ikm).bytes);
+    SecureMemory.wipe(ikm);
 
     // Info string uses a DIFFERENT domain than block keys.
     final String info = 'zegel-block-nonce-v1:$blockIndex';
@@ -216,6 +218,7 @@ class KeyDerivation {
     final hmacExpand = Hmac(sha256, prk);
     final Uint8List expanded =
         Uint8List.fromList(hmacExpand.convert(expandInput).bytes);
+    SecureMemory.wipe(prk);
 
     // Return the first 12 bytes as the nonce.
     return Uint8List.fromList(expanded.sublist(0, 12));

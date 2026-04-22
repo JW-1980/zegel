@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'shamir.dart';
+import 'secure_memory.dart';
 
 /// Hierarchical split-key for multi-level access control.
 ///
@@ -158,9 +159,7 @@ class HierarchicalSplitKey {
       for (int j = 0; j < 32; j++) {
         masterKey[j] ^= intermediateKey[j];
       }
-      for (int j = 0; j < intermediateKey.length; j++) {
-        intermediateKey[j] = 0;
-      }
+      SecureMemory.wipe(intermediateKey);
     }
 
     return masterKey;
