@@ -104,7 +104,7 @@ void main() {
   group('Output size assertions (anti-kleptographic)', () {
     test('empty content produces expected size', () {
       final content = Uint8List(0);
-      final options = ZegelOptions(
+      const options = ZegelOptions(
         contentType: 'text/plain',
         filename: 'empty.txt',
       );
@@ -122,7 +122,7 @@ void main() {
 
     test('13-byte content "Hello, Zegel!" produces expected size', () {
       final content = Uint8List.fromList(utf8.encode('Hello, Zegel!'));
-      final options = ZegelOptions(
+      const options = ZegelOptions(
         contentType: 'text/plain',
         filename: 'test.txt',
       );
@@ -142,7 +142,7 @@ void main() {
       for (var i = 0; i < content.length; i++) {
         content[i] = i & 0xFF;
       }
-      final options = ZegelOptions(
+      const options = ZegelOptions(
         contentType: 'application/octet-stream',
         filename: 'boundary.bin',
       );
@@ -162,7 +162,7 @@ void main() {
       for (var i = 0; i < content.length; i++) {
         content[i] = i & 0xFF;
       }
-      final options = ZegelOptions(
+      const options = ZegelOptions(
         contentType: 'application/octet-stream',
         filename: 'over.bin',
       );
@@ -182,7 +182,7 @@ void main() {
       for (var i = 0; i < content.length; i++) {
         content[i] = i & 0xFF;
       }
-      final options = ZegelOptions(
+      const options = ZegelOptions(
         contentType: 'application/octet-stream',
         filename: '1mb.bin',
       );
@@ -199,11 +199,11 @@ void main() {
 
     test('file with key commitment adds exactly 32 bytes', () {
       final content = Uint8List.fromList(utf8.encode('kc test'));
-      final optionsBase = ZegelOptions(
+      const optionsBase = ZegelOptions(
         contentType: 'text/plain',
         filename: 'kc.txt',
       );
-      final optionsKc = ZegelOptions(
+      const optionsKc = ZegelOptions(
         contentType: 'text/plain',
         filename: 'kc.txt',
         enableKeyCommitment: true,
@@ -220,11 +220,11 @@ void main() {
       // This protects against steganographic channels where different
       // runs might use different amounts of "random padding".
       final content = Uint8List.fromList(utf8.encode('deterministic size'));
-      final options1 = ZegelOptions(
+      const options1 = ZegelOptions(
         contentType: 'text/plain',
         filename: 'same.txt',
       );
-      final options2 = ZegelOptions(
+      const options2 = ZegelOptions(
         contentType: 'text/plain',
         filename: 'same.txt',
       );
@@ -240,7 +240,7 @@ void main() {
       // Verify the master seal is exactly the last 64 bytes, not followed
       // by any trailer (which could be a subliminal channel).
       final content = Uint8List.fromList(utf8.encode('trailer check'));
-      final options = ZegelOptions(
+      const options = ZegelOptions(
         contentType: 'text/plain',
         filename: 'trailer.txt',
       );
@@ -277,7 +277,7 @@ void main() {
     test('roundtrip of size-asserted file works', () {
       // Ensure our size calculation doesn't compromise verifiability.
       final content = Uint8List.fromList(utf8.encode('roundtrip check'));
-      final options = ZegelOptions(
+      const options = ZegelOptions(
         contentType: 'text/plain',
         filename: 'rt.txt',
       );
@@ -295,7 +295,7 @@ void main() {
       for (var i = 0; i < 1000; i++) {
         content[i] = i & 0xFF;
       }
-      final options = ZegelOptions(
+      const options = ZegelOptions(
         contentType: 'application/octet-stream',
         filename: 'ct.bin',
       );
@@ -304,8 +304,8 @@ void main() {
       // Parse directory to get ciphertext length.
       // Header + filename(6) + salt(32) + count(4) = 128 bytes.
       // Then directory entry: type(1) + hash(32) + ctLen(4) + iv(12) + tag(16).
-      final dirStart = 122 + 6; // 128
-      final ctLenOffset = dirStart + 1 + 32; // type + hash = 33 bytes in
+      const dirStart = 122 + 6; // 128
+      const ctLenOffset = dirStart + 1 + 32; // type + hash = 33 bytes in
       final ctLen = ByteData.sublistView(sealed, ctLenOffset, ctLenOffset + 4)
           .getUint32(0, Endian.big);
 
