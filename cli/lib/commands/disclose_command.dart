@@ -259,6 +259,7 @@ class DiscloseCommand extends Command<int> {
       '  The token holder cannot access any blocks not listed in the token.',
     );
 
+    SecureMemory.wipe(masterKey);
     return 0;
   }
 }

@@ -238,6 +238,7 @@ class TimestampCreateCommand extends Command<int> {
       stdout.writeln(tokenJson);
     }
 
+    SecureMemory.wipe(masterKey);
     return 0;
   }
 }
@@ -401,6 +402,7 @@ class TimestampVerifyCommand extends Command<int> {
       stdout.writeln('  Timestamp:   ${formatTimestamp(dt)}');
       stdout.writeln('  Type:        ${token['type']}');
       stdout.writeln('  Merkle root: matches');
+      SecureMemory.wipe(masterKey);
       return 0;
     } else {
       stdout.writeln(Ansi.error('Timestamp is INVALID.'));
@@ -420,6 +422,7 @@ class TimestampVerifyCommand extends Command<int> {
       stdout.writeln(
         'The timestamp does not match the file or has been tampered with.',
       );
+      SecureMemory.wipe(masterKey);
       return 1;
     }
   }

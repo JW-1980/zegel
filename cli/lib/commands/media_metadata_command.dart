@@ -286,6 +286,7 @@ class MediaMetadataViewCommand extends Command<int> {
       }
     }
 
+    SecureMemory.wipe(masterKey);
     return 0;
   }
 }
