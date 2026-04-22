@@ -78,6 +78,8 @@ class ZegelInspection {
     this.publicMetadata,
     this.splitKeyParams,
     this.expirationTimestamp,
+    required this.merkleRoot,
+    required this.masterSeal,
   });
 
   /// Format version string (e.g. `"1.2"`).
@@ -106,6 +108,12 @@ class ZegelInspection {
 
   /// Expiration timestamp as Unix epoch seconds.
   final int? expirationTimestamp;
+
+  /// The 32-byte Merkle root extracted from the file.
+  final Uint8List merkleRoot;
+
+  /// The 64-byte master seal extracted from the end of the file.
+  final Uint8List masterSeal;
 }
 
 // =============================================================================
@@ -457,6 +465,10 @@ class ZegelReader {
       };
     }
 
+    final Uint8List masterSeal = Uint8List.fromList(
+      fileBytes.sublist(fileBytes.length - ZegelFormat.sealSize),
+    );
+
     return ZegelInspection(
       version: '${h.versionMajor}.${h.versionMinor}',
       flags: h.flags,
@@ -467,6 +479,8 @@ class ZegelReader {
       publicMetadata: h.publicMetadata,
       splitKeyParams: splitKeyParams,
       expirationTimestamp: h.expirationTimestamp,
+      merkleRoot: h.merkleRoot,
+      masterSeal: masterSeal,
     );
   }
 
