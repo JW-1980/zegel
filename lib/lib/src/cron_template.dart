@@ -134,7 +134,8 @@ class CronTemplate {
   static void _validateCronExpression(String expr) {
     final fields = expr.trim().split(RegExp(r'\s+'));
     if (fields.length != 5) {
-      throw ArgumentError('Cron expression must have exactly 5 fields: "$expr"');
+      throw ArgumentError(
+          'Cron expression must have exactly 5 fields: "$expr"');
     }
   }
 }

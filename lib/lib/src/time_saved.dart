@@ -5,6 +5,8 @@
 /// minutes" number. The baseline is an average per-file cost captured from
 /// historical observations or a user-supplied constant.
 class TimeSavedTracker {
+  TimeSavedTracker({this.baselinePerFile = const Duration(seconds: 12)});
+
   /// Baseline cost of processing a single file manually (start UI, pick
   /// file, enter options, save). Defaults to 12 seconds — a conservative
   /// estimate calibrated against user studies. Configurable per-instance.
@@ -13,8 +15,6 @@ class TimeSavedTracker {
   Duration _totalBatchDuration = Duration.zero;
   int _batchFileCount = 0;
   int _batchRuns = 0;
-
-  TimeSavedTracker({this.baselinePerFile = const Duration(seconds: 12)});
 
   /// Records one batch run that processed [files] files in [duration].
   void recordBatch({required int files, required Duration duration}) {
@@ -37,8 +37,7 @@ class TimeSavedTracker {
   int get batchRuns => _batchRuns;
 
   /// Estimated manual time, using the baseline.
-  Duration get estimatedManualDuration =>
-      Duration(
+  Duration get estimatedManualDuration => Duration(
         microseconds: baselinePerFile.inMicroseconds * _batchFileCount,
       );
 
