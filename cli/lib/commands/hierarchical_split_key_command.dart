@@ -183,7 +183,6 @@ class HierarchicalSplitSplitCommand extends Command<int> {
       );
     }
 
-    SecureMemory.wipe(masterKey);
     return 0;
   }
 
@@ -401,7 +400,6 @@ class HierarchicalSplitReconstructCommand extends Command<int> {
       stdout.writeln('  ${level.classification}: ${level.threshold} shares');
     }
 
-    SecureMemory.wipe(masterKey);
     return 0;
   }
 }

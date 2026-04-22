@@ -13,14 +13,14 @@ void main() {
         senderName: 'Alice',
         senderEmail: 'alice@example.com',
         recipients: [
-          const EnvelopeRecipient(
+          EnvelopeRecipient(
             id: 'rcpt-1',
             name: 'Bob',
             email: 'bob@example.com',
             role: RecipientRole.signer,
             routingOrder: 1,
           ),
-          const EnvelopeRecipient(
+          EnvelopeRecipient(
             id: 'rcpt-2',
             name: 'Carol',
             email: 'carol@example.com',
@@ -40,7 +40,7 @@ void main() {
         id: 'env-roundtrip',
         subject: 'Test roundtrip',
         recipients: [
-          const EnvelopeRecipient(
+          EnvelopeRecipient(
             id: 'r1',
             name: 'Alice',
             email: 'alice@test.com',
@@ -64,7 +64,7 @@ void main() {
         subject: 'Sequential test',
         routingMode: RoutingMode.sequential,
         recipients: [
-          const EnvelopeRecipient(
+          EnvelopeRecipient(
             id: 'r1',
             name: 'First',
             email: 'first@test.com',
@@ -72,7 +72,7 @@ void main() {
             routingOrder: 1,
             status: RecipientStatus.signed,
           ),
-          const EnvelopeRecipient(
+          EnvelopeRecipient(
             id: 'r2',
             name: 'Second',
             email: 'second@test.com',
@@ -80,7 +80,7 @@ void main() {
             routingOrder: 2,
             status: RecipientStatus.sent,
           ),
-          const EnvelopeRecipient(
+          EnvelopeRecipient(
             id: 'r3',
             name: 'Third',
             email: 'third@test.com',
@@ -102,21 +102,21 @@ void main() {
         subject: 'Parallel test',
         routingMode: RoutingMode.parallel,
         recipients: [
-          const EnvelopeRecipient(
+          EnvelopeRecipient(
             id: 'r1',
             name: 'A',
             email: 'a@test.com',
             role: RecipientRole.signer,
             status: RecipientStatus.signed,
           ),
-          const EnvelopeRecipient(
+          EnvelopeRecipient(
             id: 'r2',
             name: 'B',
             email: 'b@test.com',
             role: RecipientRole.signer,
             status: RecipientStatus.sent,
           ),
-          const EnvelopeRecipient(
+          EnvelopeRecipient(
             id: 'r3',
             name: 'C',
             email: 'c@test.com',
@@ -136,14 +136,14 @@ void main() {
         id: 'env-cc',
         subject: 'CC test',
         recipients: [
-          const EnvelopeRecipient(
+          EnvelopeRecipient(
             id: 'r1',
             name: 'Signer',
             email: 's@test.com',
             role: RecipientRole.signer,
             status: RecipientStatus.signed,
           ),
-          const EnvelopeRecipient(
+          EnvelopeRecipient(
             id: 'r2',
             name: 'Copy',
             email: 'c@test.com',
@@ -161,7 +161,7 @@ void main() {
         id: 'env-audit',
         subject: 'Audit chain test',
         recipients: [
-          const EnvelopeRecipient(
+          EnvelopeRecipient(
             id: 'r1',
             name: 'Alice',
             email: 'a@test.com',
@@ -199,7 +199,7 @@ void main() {
         id: 'env-tamper',
         subject: 'Tamper test',
         recipients: [
-          const EnvelopeRecipient(
+          EnvelopeRecipient(
             id: 'r1',
             name: 'X',
             email: 'x@test.com',
@@ -236,7 +236,7 @@ void main() {
         subject: 'Expired',
         expiresAt: past,
         recipients: [
-          const EnvelopeRecipient(
+          EnvelopeRecipient(
             id: 'r1',
             name: 'X',
             email: 'x@test.com',
@@ -437,7 +437,7 @@ void main() {
         senderName: 'Alice',
         senderEmail: 'alice@test.com',
         recipients: [
-          const EnvelopeRecipient(
+          EnvelopeRecipient(
             id: 'r1',
             name: 'Bob',
             email: 'bob@test.com',
@@ -483,7 +483,7 @@ void main() {
         id: 'env-tampered-cert',
         subject: 'Test',
         recipients: [
-          const EnvelopeRecipient(
+          EnvelopeRecipient(
             id: 'r1',
             name: 'X',
             email: 'x@test.com',
@@ -523,7 +523,7 @@ void main() {
         senderName: 'Alice Smith',
         senderEmail: 'alice@example.com',
         recipients: [
-          const EnvelopeRecipient(
+          EnvelopeRecipient(
             id: 'r1',
             name: 'Bob Jones',
             email: 'bob@vendor.com',
@@ -553,7 +553,7 @@ void main() {
 
   group('Bulk send', () {
     test('parses CSV recipient list', () {
-      const csv = '''name,email,company,employee_id
+      final csv = '''name,email,company,employee_id
 Alice,alice@test.com,Acme,E001
 Bob,bob@test.com,Acme,E002
 Carol,carol@test.com,Acme,E003

@@ -4,7 +4,7 @@ import 'package:zegel/zegel.dart';
 void main() {
   group('ThemeScheduler', () {
     group('alwaysLight mode', () {
-      const scheduler = ThemeScheduler(mode: ThemeScheduleMode.alwaysLight);
+      final scheduler = ThemeScheduler(mode: ThemeScheduleMode.alwaysLight);
 
       test('returns light regardless of time', () {
         expect(
@@ -33,7 +33,7 @@ void main() {
     });
 
     group('alwaysDark mode', () {
-      const scheduler = ThemeScheduler(mode: ThemeScheduleMode.alwaysDark);
+      final scheduler = ThemeScheduler(mode: ThemeScheduleMode.alwaysDark);
 
       test('returns dark regardless of time', () {
         expect(
@@ -62,7 +62,7 @@ void main() {
     });
 
     group('system mode', () {
-      const scheduler = ThemeScheduler(mode: ThemeScheduleMode.system);
+      final scheduler = ThemeScheduler(mode: ThemeScheduleMode.system);
 
       test('forwards systemBrightness.light', () {
         expect(

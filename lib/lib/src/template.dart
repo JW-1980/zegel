@@ -30,21 +30,6 @@ import 'envelope.dart';
 /// When instantiating the template, each role is mapped to a concrete
 /// [EnvelopeRecipient] by providing a name, email, and authentication details.
 class TemplateRole {
-
-  /// Deserializes from JSON.
-  factory TemplateRole.fromJson(Map<String, dynamic> json) {
-    return TemplateRole(
-      roleId: json['role_id'] as String,
-      roleName: json['role_name'] as String,
-      recipientRole: RecipientRole.values
-          .firstWhere((r) => r.name == json['recipient_role']),
-      routingOrder: json['routing_order'] as int? ?? 1,
-      defaultAuthentication: AuthenticationMethod.values.firstWhere(
-          (a) => a.name == (json['default_authentication'] ?? 'none')),
-      defaultNote: json['default_note'] as String?,
-      description: json['description'] as String?,
-    );
-  }
   /// Creates a [TemplateRole].
   const TemplateRole({
     required this.roleId,
@@ -90,6 +75,21 @@ class TemplateRole {
     if (description != null) json['description'] = description;
     return json;
   }
+
+  /// Deserializes from JSON.
+  factory TemplateRole.fromJson(Map<String, dynamic> json) {
+    return TemplateRole(
+      roleId: json['role_id'] as String,
+      roleName: json['role_name'] as String,
+      recipientRole: RecipientRole.values
+          .firstWhere((r) => r.name == json['recipient_role']),
+      routingOrder: json['routing_order'] as int? ?? 1,
+      defaultAuthentication: AuthenticationMethod.values.firstWhere(
+          (a) => a.name == (json['default_authentication'] ?? 'none')),
+      defaultNote: json['default_note'] as String?,
+      description: json['description'] as String?,
+    );
+  }
 }
 
 // =============================================================================
@@ -102,25 +102,6 @@ class TemplateRole {
 /// When the template is instantiated, fields are remapped to the actual
 /// recipients for each role.
 class TemplateField {
-
-  /// Deserializes from JSON.
-  factory TemplateField.fromJson(Map<String, dynamic> json) {
-    return TemplateField(
-      id: json['id'] as String,
-      type: FieldType.values.firstWhere((t) => t.name == json['type']),
-      roleId: json['role_id'] as String,
-      page: json['page'] as int,
-      x: (json['x'] as num).toDouble(),
-      y: (json['y'] as num).toDouble(),
-      width: (json['width'] as num?)?.toDouble() ?? 120,
-      height: (json['height'] as num?)?.toDouble() ?? 40,
-      required: json['required'] as bool? ?? true,
-      label: json['label'] as String?,
-      defaultValue: json['default_value'] as String?,
-      options:
-          (json['options'] as List<dynamic>?)?.map((o) => o as String).toList(),
-    );
-  }
   /// Creates a [TemplateField].
   const TemplateField({
     required this.id,
@@ -191,6 +172,25 @@ class TemplateField {
     if (options != null) json['options'] = options;
     return json;
   }
+
+  /// Deserializes from JSON.
+  factory TemplateField.fromJson(Map<String, dynamic> json) {
+    return TemplateField(
+      id: json['id'] as String,
+      type: FieldType.values.firstWhere((t) => t.name == json['type']),
+      roleId: json['role_id'] as String,
+      page: json['page'] as int,
+      x: (json['x'] as num).toDouble(),
+      y: (json['y'] as num).toDouble(),
+      width: (json['width'] as num?)?.toDouble() ?? 120,
+      height: (json['height'] as num?)?.toDouble() ?? 40,
+      required: json['required'] as bool? ?? true,
+      label: json['label'] as String?,
+      defaultValue: json['default_value'] as String?,
+      options:
+          (json['options'] as List<dynamic>?)?.map((o) => o as String).toList(),
+    );
+  }
 }
 
 // =============================================================================
@@ -199,42 +199,6 @@ class TemplateField {
 
 /// A reusable envelope template.
 class EnvelopeTemplate {
-
-  /// Decodes a template from JSON bytes.
-  factory EnvelopeTemplate.decode(Uint8List data) {
-    return EnvelopeTemplate.fromJson(
-      jsonDecode(utf8.decode(data)) as Map<String, dynamic>,
-    );
-  }
-
-  /// Deserializes from JSON.
-  factory EnvelopeTemplate.fromJson(Map<String, dynamic> json) {
-    return EnvelopeTemplate(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      description: json['description'] as String?,
-      subject: json['subject'] as String,
-      message: json['message'] as String?,
-      routingMode: RoutingMode.values
-          .firstWhere((r) => r.name == (json['routing_mode'] ?? 'sequential')),
-      roles: (json['roles'] as List<dynamic>)
-          .map((r) => TemplateRole.fromJson(r as Map<String, dynamic>))
-          .toList(),
-      fields: (json['fields'] as List<dynamic>)
-          .map((f) => TemplateField.fromJson(f as Map<String, dynamic>))
-          .toList(),
-      createdAt: json['created_at'] as int?,
-      updatedAt: json['updated_at'] as int?,
-      author: json['author'] as String?,
-      tags:
-          (json['tags'] as List<dynamic>?)?.map((t) => t as String).toList() ??
-              <String>[],
-      expirationDays: json['expiration_days'] as int?,
-      remindersEnabled: json['reminders_enabled'] as bool? ?? false,
-      reminderIntervalDays: json['reminder_interval_days'] as int? ?? 3,
-      reminderMaxCount: json['reminder_max_count'] as int? ?? 3,
-    );
-  }
   /// Creates a new [EnvelopeTemplate].
   const EnvelopeTemplate({
     required this.id,
@@ -399,6 +363,13 @@ class EnvelopeTemplate {
     return Uint8List.fromList(utf8.encode(jsonEncode(toJson())));
   }
 
+  /// Decodes a template from JSON bytes.
+  factory EnvelopeTemplate.decode(Uint8List data) {
+    return EnvelopeTemplate.fromJson(
+      jsonDecode(utf8.decode(data)) as Map<String, dynamic>,
+    );
+  }
+
   /// Serializes to JSON.
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> json = <String, dynamic>{
@@ -421,6 +392,35 @@ class EnvelopeTemplate {
     if (author != null) json['author'] = author;
     if (expirationDays != null) json['expiration_days'] = expirationDays;
     return json;
+  }
+
+  /// Deserializes from JSON.
+  factory EnvelopeTemplate.fromJson(Map<String, dynamic> json) {
+    return EnvelopeTemplate(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      description: json['description'] as String?,
+      subject: json['subject'] as String,
+      message: json['message'] as String?,
+      routingMode: RoutingMode.values
+          .firstWhere((r) => r.name == (json['routing_mode'] ?? 'sequential')),
+      roles: (json['roles'] as List<dynamic>)
+          .map((r) => TemplateRole.fromJson(r as Map<String, dynamic>))
+          .toList(),
+      fields: (json['fields'] as List<dynamic>)
+          .map((f) => TemplateField.fromJson(f as Map<String, dynamic>))
+          .toList(),
+      createdAt: json['created_at'] as int?,
+      updatedAt: json['updated_at'] as int?,
+      author: json['author'] as String?,
+      tags:
+          (json['tags'] as List<dynamic>?)?.map((t) => t as String).toList() ??
+              <String>[],
+      expirationDays: json['expiration_days'] as int?,
+      remindersEnabled: json['reminders_enabled'] as bool? ?? false,
+      reminderIntervalDays: json['reminder_interval_days'] as int? ?? 3,
+      reminderMaxCount: json['reminder_max_count'] as int? ?? 3,
+    );
   }
 }
 
