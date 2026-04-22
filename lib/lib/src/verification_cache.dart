@@ -124,7 +124,8 @@ class CachedVerification {
         failureReason: json['failure_reason'] as String?,
         metadata: json['metadata'] == null
             ? const <String, dynamic>{}
-            : Map<String, dynamic>.from(json['metadata'] as Map<String, dynamic>),
+            : Map<String, dynamic>.from(
+                json['metadata'] as Map<String, dynamic>),
         cachedAt: DateTime.parse(json['cached_at'] as String).toUtc(),
       );
 

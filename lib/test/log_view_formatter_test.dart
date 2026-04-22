@@ -261,14 +261,16 @@ void main() {
 
       test('LogLevel.error returns only failed entries', () {
         final log = _buildLog();
-        final errors = LogViewFormatter.filterByLevel(log, level: LogLevel.error);
+        final errors =
+            LogViewFormatter.filterByLevel(log, level: LogLevel.error);
         expect(errors.every((e) => !e.success), isTrue);
       });
 
       test('info count + error count equals total entry count', () {
         final log = _buildLog();
         final infos = LogViewFormatter.filterByLevel(log, level: LogLevel.info);
-        final errors = LogViewFormatter.filterByLevel(log, level: LogLevel.error);
+        final errors =
+            LogViewFormatter.filterByLevel(log, level: LogLevel.error);
         expect(infos.length + errors.length, log.entries.length);
       });
 
@@ -276,7 +278,8 @@ void main() {
         final log = HistoryLog();
         log.record(operation: 'seal', success: true);
         // No failures, so error filter should be empty.
-        final errors = LogViewFormatter.filterByLevel(log, level: LogLevel.error);
+        final errors =
+            LogViewFormatter.filterByLevel(log, level: LogLevel.error);
         expect(errors, isEmpty);
       });
 

@@ -14,7 +14,8 @@ class ContactService {
 
   /// Returns the path to the contacts file.
   String get _filePath {
-    final home = Platform.environment['HOME'] ??
+    final home =
+        Platform.environment['HOME'] ??
         Platform.environment['USERPROFILE'] ??
         '.';
     return '$home/$_fileName';

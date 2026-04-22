@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:test/test.dart';
 import 'package:zegel/zegel.dart';
 
@@ -12,16 +14,16 @@ void main() {
         expect(cmd.executable, 'explorer');
       });
 
-      test('passes /select,<path> as single argument', () {
-        const path = r'C:\Users\alice\secret.zgl';
+      test('passes /select,"<path>" as single argument', () {
+        final path = File(r'C:\Users\alice\secret.zgl').absolute.path;
         final cmd = RevealInOs.commandFor(path, overrideOs: 'windows');
-        expect(cmd.arguments, ['/select,$path']);
+        expect(cmd.arguments, ['/select,"$path"']);
       });
 
       test('works for paths with spaces', () {
-        const path = r'C:\My Documents\report.zgl';
+        final path = File(r'C:\My Documents\report.zgl').absolute.path;
         final cmd = RevealInOs.commandFor(path, overrideOs: 'windows');
-        expect(cmd.arguments.first, '/select,$path');
+        expect(cmd.arguments.first, '/select,"$path"');
       });
     });
 
@@ -34,18 +36,18 @@ void main() {
         expect(cmd.executable, 'open');
       });
 
-      test('passes -R flag followed by the path', () {
-        const path = '/Users/alice/Documents/secret.zgl';
+      test('passes -R flag followed by -- separator and the path', () {
+        final path = File('/Users/alice/Documents/secret.zgl').absolute.path;
         final cmd = RevealInOs.commandFor(path, overrideOs: 'macos');
-        expect(cmd.arguments, ['-R', path]);
+        expect(cmd.arguments, ['-R', '--', path]);
       });
 
-      test('arguments list has exactly two elements', () {
+      test('arguments list has exactly three elements', () {
         final cmd = RevealInOs.commandFor(
           '/tmp/foo.zgl',
           overrideOs: 'macos',
         );
-        expect(cmd.arguments.length, 2);
+        expect(cmd.arguments.length, 3);
       });
     });
 
@@ -58,31 +60,63 @@ void main() {
         expect(cmd.executable, 'xdg-open');
       });
 
-      test('passes the parent directory, not the file itself', () {
+      test('passes the parent directory, not the file itself, prefixed by --',
+          () {
+        final file = File('/home/alice/docs/secret.zgl').absolute;
+        final parentDir = file.parent.path;
         final cmd = RevealInOs.commandFor(
-          '/home/alice/docs/secret.zgl',
+          file.path,
           overrideOs: 'linux',
         );
-        expect(cmd.arguments, ['/home/alice/docs']);
+        expect(cmd.arguments, ['--', parentDir]);
       });
 
       test('handles file in root directory gracefully', () {
+        final file = File('/secret.zgl').absolute;
+
+        // _parentOf has a fallback `if (idx <= 0) return path;`
+        // In Dart, File('/secret.zgl').absolute.path is typically /secret.zgl.
+        // lastIndexOf('/') == 0. Thus `idx <= 0` is true and it returns the original path.
         final cmd = RevealInOs.commandFor(
-          '/secret.zgl',
+          file.path,
           overrideOs: 'linux',
         );
         // The file is at the root; the parent resolution falls back to
         // the path itself when idx <= 0.
-        expect(cmd.arguments.length, 1);
-        expect(cmd.arguments.first, isNotEmpty);
+        expect(cmd.arguments.length, 2);
+        expect(cmd.arguments[1], file.path);
       });
 
-      test('arguments list has exactly one element', () {
+      test('arguments list has exactly two elements', () {
         final cmd = RevealInOs.commandFor(
           '/var/data/report.zgl',
           overrideOs: 'linux',
         );
-        expect(cmd.arguments.length, 1);
+        expect(cmd.arguments.length, 2);
+      });
+    });
+
+    group('commandFor – URI rejection', () {
+      test('rejects file:// URIs', () {
+        expect(
+          () => RevealInOs.commandFor('file:///tmp/secret.zgl'),
+          throwsA(isA<ArgumentError>().having(
+            (e) => e.message,
+            'message',
+            contains('URI schemes are not supported'),
+          )),
+        );
+      });
+
+      test('rejects http:// URIs', () {
+        expect(
+          () => RevealInOs.commandFor('http://example.com/secret.zgl'),
+          throwsA(isA<ArgumentError>().having(
+            (e) => e.message,
+            'message',
+            contains('URI schemes are not supported'),
+          )),
+        );
       });
     });
 
