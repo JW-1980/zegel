@@ -92,19 +92,19 @@ class SealingTemplate {
   }
 
   Map<String, dynamic> toJson() => {
-    'name': name,
-    if (description != null) 'description': description,
-    if (contentType != null) 'content_type': contentType,
-    if (classification != null) 'classification': classification,
-    'compress': compress,
-    'password_derived': passwordDerived,
-    if (expirationFromNow != null)
-      'expiration_from_now_seconds': expirationFromNow!.inSeconds,
-    if (blockSize != null) 'block_size': blockSize,
-    'public_metadata': publicMetadata,
-    'metadata': metadata,
-    'created_at': createdAt.toUtc().toIso8601String(),
-  };
+        'name': name,
+        if (description != null) 'description': description,
+        if (contentType != null) 'content_type': contentType,
+        if (classification != null) 'classification': classification,
+        'compress': compress,
+        'password_derived': passwordDerived,
+        if (expirationFromNow != null)
+          'expiration_from_now_seconds': expirationFromNow!.inSeconds,
+        if (blockSize != null) 'block_size': blockSize,
+        'public_metadata': publicMetadata,
+        'metadata': metadata,
+        'created_at': createdAt.toUtc().toIso8601String(),
+      };
 
   static SealingTemplate fromJson(Map<String, dynamic> json) {
     return SealingTemplate(

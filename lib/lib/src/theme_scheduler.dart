@@ -79,8 +79,8 @@ enum ThemeBrightness { light, dark }
 
 class TimeOfDay {
   const TimeOfDay({required this.hour, required this.minute})
-    : assert(hour >= 0 && hour < 24, 'hour out of range'),
-      assert(minute >= 0 && minute < 60, 'minute out of range');
+      : assert(hour >= 0 && hour < 24, 'hour out of range'),
+        assert(minute >= 0 && minute < 60, 'minute out of range');
 
   factory TimeOfDay.fromDateTime(DateTime dt) =>
       TimeOfDay(hour: dt.hour, minute: dt.minute);

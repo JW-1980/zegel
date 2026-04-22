@@ -208,11 +208,11 @@ class DisclosureToken {
   });
 
   Map<String, dynamic> toJson() => {
-    'version': version,
-    'merkle_root': merkleRoot,
-    'block_keys': blockKeys.map((k, v) => MapEntry(k.toString(), v)),
-    'created_at': createdAt.millisecondsSinceEpoch ~/ 1000,
-  };
+        'version': version,
+        'merkle_root': merkleRoot,
+        'block_keys': blockKeys.map((k, v) => MapEntry(k.toString(), v)),
+        'created_at': createdAt.millisecondsSinceEpoch ~/ 1000,
+      };
 
   factory DisclosureToken.fromJson(Map<String, dynamic> json) {
     final blockKeysRaw = json['block_keys'] as Map<String, dynamic>;
@@ -521,8 +521,7 @@ class ZegelService {
         inspection.expirationTimestamp! * 1000,
         isUtc: true,
       );
-      expirationDate =
-          '${dt.year.toString().padLeft(4, '0')}-'
+      expirationDate = '${dt.year.toString().padLeft(4, '0')}-'
           '${dt.month.toString().padLeft(2, '0')}-'
           '${dt.day.toString().padLeft(2, '0')}';
     }

@@ -87,19 +87,19 @@ class StatisticsSnapshot {
   final List<MapEntry<String, int>> topAlgorithms;
 
   Map<String, dynamic> toJson() => <String, dynamic>{
-    'total_files': totalFiles,
-    'total_bytes': totalBytes,
-    'total_operations': totalOperations,
-    'total_failures': totalFailures,
-    'success_rate': successRate,
-    'time_saved_seconds': timeSaved.inSeconds,
-    'top_commands': <Map<String, dynamic>>[
-      for (final entry in topCommands)
-        <String, dynamic>{'name': entry.key, 'count': entry.value},
-    ],
-    'top_algorithms': <Map<String, dynamic>>[
-      for (final entry in topAlgorithms)
-        <String, dynamic>{'name': entry.key, 'count': entry.value},
-    ],
-  };
+        'total_files': totalFiles,
+        'total_bytes': totalBytes,
+        'total_operations': totalOperations,
+        'total_failures': totalFailures,
+        'success_rate': successRate,
+        'time_saved_seconds': timeSaved.inSeconds,
+        'top_commands': <Map<String, dynamic>>[
+          for (final entry in topCommands)
+            <String, dynamic>{'name': entry.key, 'count': entry.value},
+        ],
+        'top_algorithms': <Map<String, dynamic>>[
+          for (final entry in topAlgorithms)
+            <String, dynamic>{'name': entry.key, 'count': entry.value},
+        ],
+      };
 }

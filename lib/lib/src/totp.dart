@@ -78,8 +78,7 @@ class Totp {
     final hmac = Hmac(sha1, secret);
     final digest = hmac.convert(counterBytes).bytes;
     final offset = digest.last & 0x0F;
-    final binary =
-        ((digest[offset] & 0x7F) << 24) |
+    final binary = ((digest[offset] & 0x7F) << 24) |
         ((digest[offset + 1] & 0xFF) << 16) |
         ((digest[offset + 2] & 0xFF) << 8) |
         (digest[offset + 3] & 0xFF);

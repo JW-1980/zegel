@@ -157,8 +157,8 @@ class _SensitiveDisplayState extends State<SensitiveDisplay> {
               Text(
                 widget.label,
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
               ),
               const SizedBox(height: 2),
               SelectableText(

@@ -532,9 +532,8 @@ void main() {
 
       // 4. Verify new classification level
       final declInspection = const ZegelReader().inspect(declassified);
-      final declClassInfo =
-          declInspection.publicMetadata!['classification']
-              as Map<String, dynamic>;
+      final declClassInfo = declInspection.publicMetadata!['classification']
+          as Map<String, dynamic>;
       expect(
         declClassInfo['level'],
         equals(ZegelFormat.classificationConfidential),
@@ -562,8 +561,7 @@ void main() {
 
     test('prove quote exists in sealed source', () {
       // A journalist seals a source document
-      final sourceText =
-          'The internal memo reveals that the budget was '
+      final sourceText = 'The internal memo reveals that the budget was '
           'overspent by EUR 2.5 million in the third quarter. '
           'Management attempted to conceal this by deferring '
           'expenses to the next fiscal year. '

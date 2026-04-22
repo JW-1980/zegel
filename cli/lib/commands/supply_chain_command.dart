@@ -28,7 +28,8 @@ class VerifyBinaryCommand extends Command<int> {
       ..addOption(
         'binary',
         abbr: 'b',
-        help: 'Path to the binary to verify. If omitted, verifies the '
+        help:
+            'Path to the binary to verify. If omitted, verifies the '
             'currently running binary.',
       )
       ..addOption(
@@ -50,8 +51,9 @@ class VerifyBinaryCommand extends Command<int> {
     final Uint8List actualHash = await SupplyChainVerifier.computeBinaryHash(
       binaryPath,
     );
-    final String actualHex =
-        actualHash.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
+    final String actualHex = actualHash
+        .map((b) => b.toRadixString(16).padLeft(2, '0'))
+        .join();
 
     stdout.writeln('  SHA-256: $actualHex');
 
@@ -186,8 +188,9 @@ class VerifyBuildCommand extends Command<int> {
 
     final attestation =
         jsonDecode(File(attPath).readAsStringSync()) as Map<String, dynamic>;
-    final List<Uint8List> trustedKeys =
-        trustedKeyPaths.map((p) => readKeyFile(p)).toList();
+    final List<Uint8List> trustedKeys = trustedKeyPaths
+        .map((p) => readKeyFile(p))
+        .toList();
 
     final result = SupplyChainVerifier.verifyBuildAttestation(
       attestation,

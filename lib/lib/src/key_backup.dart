@@ -202,9 +202,9 @@ class KeyBackupResult {
   final bool skipped;
 
   KeyBackupResult copyWithSkipped() => KeyBackupResult(
-    snapshotDirectory: snapshotDirectory,
-    timestamp: timestamp,
-    manifest: manifest,
-    skipped: true,
-  );
+        snapshotDirectory: snapshotDirectory,
+        timestamp: timestamp,
+        manifest: manifest,
+        skipped: true,
+      );
 }

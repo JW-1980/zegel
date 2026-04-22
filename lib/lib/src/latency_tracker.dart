@@ -73,21 +73,21 @@ class LatencyTracker {
   void reset() => _samples.clear();
 
   Map<String, dynamic> summary() => {
-    'endpoint': endpoint,
-    'count': count,
-    'min_ms': minMs,
-    'max_ms': maxMs,
-    'average_ms': averageMs,
-    'p50_ms': percentileMs(50),
-    'p95_ms': percentileMs(95),
-    'p99_ms': percentileMs(99),
-  };
+        'endpoint': endpoint,
+        'count': count,
+        'min_ms': minMs,
+        'max_ms': maxMs,
+        'average_ms': averageMs,
+        'p50_ms': percentileMs(50),
+        'p95_ms': percentileMs(95),
+        'p99_ms': percentileMs(99),
+      };
 
   String encode() => jsonEncode({
-    'endpoint': endpoint,
-    'max_samples': maxSamples,
-    'samples': _samples.map((s) => s.toJson()).toList(),
-  });
+        'endpoint': endpoint,
+        'max_samples': maxSamples,
+        'samples': _samples.map((s) => s.toJson()).toList(),
+      });
 
   static LatencyTracker decodeJson(String raw) {
     final m = jsonDecode(raw) as Map<String, dynamic>;
@@ -108,15 +108,15 @@ class LatencySample {
   const LatencySample({required this.latencyMs, required this.at});
 
   static LatencySample fromJson(Map<String, dynamic> json) => LatencySample(
-    latencyMs: (json['latency_ms'] as num).toInt(),
-    at: DateTime.parse(json['at'] as String).toUtc(),
-  );
+        latencyMs: (json['latency_ms'] as num).toInt(),
+        at: DateTime.parse(json['at'] as String).toUtc(),
+      );
 
   final int latencyMs;
   final DateTime at;
 
   Map<String, dynamic> toJson() => {
-    'latency_ms': latencyMs,
-    'at': at.toUtc().toIso8601String(),
-  };
+        'latency_ms': latencyMs,
+        'at': at.toUtc().toIso8601String(),
+      };
 }

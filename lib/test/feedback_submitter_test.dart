@@ -44,8 +44,8 @@ void main() {
 
       test('at defaults to a UTC time close to now', () {
         final before = DateTime.now().toUtc().subtract(
-          const Duration(seconds: 1),
-        );
+              const Duration(seconds: 1),
+            );
         final entry = submitter.submit(
           category: FeedbackCategory.other,
           message: 'Hello',

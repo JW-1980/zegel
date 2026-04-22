@@ -44,9 +44,8 @@ class SafeView {
     }
 
     final maskedLength = total - visibleHead - visibleTail;
-    final minPadded = maskedLength < minMaskLength
-        ? minMaskLength
-        : maskedLength;
+    final minPadded =
+        maskedLength < minMaskLength ? minMaskLength : maskedLength;
     final head = value.substring(0, visibleHead);
     final tail = value.substring(total - visibleTail);
     return '$head${maskChar * minPadded}$tail';

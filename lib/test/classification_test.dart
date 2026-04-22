@@ -164,9 +164,8 @@ void main() {
         // Inspect the declassified file to check the new level
         final inspection = const ZegelReader().inspect(declassified);
         expect(inspection.publicMetadata, isNotNull);
-        final classification =
-            inspection.publicMetadata!['classification']
-                as Map<String, dynamic>;
+        final classification = inspection.publicMetadata!['classification']
+            as Map<String, dynamic>;
         expect(
           classification['level'],
           equals(ZegelFormat.classificationConfidential),
@@ -289,9 +288,8 @@ void main() {
         // Public metadata should be readable without the master key
         final inspection = const ZegelReader().inspect(fileBytes);
         expect(inspection.publicMetadata, isNotNull);
-        final classification =
-            inspection.publicMetadata!['classification']
-                as Map<String, dynamic>;
+        final classification = inspection.publicMetadata!['classification']
+            as Map<String, dynamic>;
         expect(
           classification['level'],
           equals(ZegelFormat.classificationPublic),
@@ -304,9 +302,9 @@ void main() {
           final content = Uint8List.fromList(utf8.encode('Classified'));
           final classificationMeta =
               Classification.createClassificationMetadata(
-                level: ZegelFormat.classificationSecret,
-                authority: 'Security Office',
-              );
+            level: ZegelFormat.classificationSecret,
+            authority: 'Security Office',
+          );
           final options = ZegelOptions(
             contentType: 'text/plain',
             filename: 'secret.txt',

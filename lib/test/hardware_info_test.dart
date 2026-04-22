@@ -14,7 +14,7 @@ void main() {
     });
 
     test('recommendedBatchConcurrency leaves a core free on >1 core hosts', () {
-      final info = HardwareInfo(
+      const info = HardwareInfo(
         processorCount: 4,
         operatingSystem: 'linux',
         operatingSystemVersion: '0',
@@ -27,7 +27,7 @@ void main() {
     });
 
     test('recommendedBatchConcurrency returns 1 on single-core hosts', () {
-      final info = HardwareInfo(
+      const info = HardwareInfo(
         processorCount: 1,
         operatingSystem: 'linux',
         operatingSystemVersion: '0',
@@ -41,14 +41,14 @@ void main() {
 
     test('recommendedBlockSizeBytes scales with core count', () {
       int blockFor(int cores) => HardwareInfo(
-        processorCount: cores,
-        operatingSystem: 'linux',
-        operatingSystemVersion: '0',
-        hostname: 'h',
-        architecture: 'x64',
-        dartVersion: 'test',
-        localHostname: 'h',
-      ).recommendedBlockSizeBytes();
+            processorCount: cores,
+            operatingSystem: 'linux',
+            operatingSystemVersion: '0',
+            hostname: 'h',
+            architecture: 'x64',
+            dartVersion: 'test',
+            localHostname: 'h',
+          ).recommendedBlockSizeBytes();
 
       expect(blockFor(1), 32768);
       expect(blockFor(2), 65536);

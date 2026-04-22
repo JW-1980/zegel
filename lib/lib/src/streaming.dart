@@ -36,10 +36,10 @@ class StreamingSealWriter {
   /// If [salt] is provided (via [options]), it is used for deterministic
   /// output (testing). Otherwise a CSPRNG-generated salt is used.
   StreamingSealWriter(this.masterKey, this.options)
-    : _secureRandom = Random.secure(),
-      _salt = options.salt != null
-          ? Uint8List.fromList(options.salt!)
-          : _generateRandom(Random.secure(), ZegelFormat.saltSize) {
+      : _secureRandom = Random.secure(),
+        _salt = options.salt != null
+            ? Uint8List.fromList(options.salt!)
+            : _generateRandom(Random.secure(), ZegelFormat.saltSize) {
     if (masterKey.length != 32) {
       throw ArgumentError('Master key must be exactly 32 bytes');
     }
@@ -214,8 +214,7 @@ class StreamingSealWriter {
     String? expirationDate;
     if (options.expiration != null) {
       final DateTime dt = options.expiration!.toUtc();
-      expirationDate =
-          '${dt.year.toString().padLeft(4, '0')}-'
+      expirationDate = '${dt.year.toString().padLeft(4, '0')}-'
           '${dt.month.toString().padLeft(2, '0')}-'
           '${dt.day.toString().padLeft(2, '0')}';
     }

@@ -17,7 +17,8 @@ class SignCommand extends Command<int> {
   final String name = 'sign';
 
   @override
-  final String description = 'Sign a .zgl file with an Ed25519 signing key.\n'
+  final String description =
+      'Sign a .zgl file with an Ed25519 signing key.\n'
       '\n'
       'Creates a digital signature over the file\'s Merkle root, master seal,\n'
       'and timestamp using Ed25519. The signature is embedded as a SIGNATURE\n'
@@ -29,7 +30,8 @@ class SignCommand extends Command<int> {
       ..addOption(
         'signing-key',
         abbr: 's',
-        help: 'Path to the Ed25519 private key file (32 bytes raw or '
+        help:
+            'Path to the Ed25519 private key file (32 bytes raw or '
             '64-char hex).',
         mandatory: true,
       )
@@ -40,7 +42,8 @@ class SignCommand extends Command<int> {
       ..addOption(
         'output',
         abbr: 'o',
-        help: 'Output path for the signed file. If omitted, the file is '
+        help:
+            'Output path for the signed file. If omitted, the file is '
             'modified in place.',
       );
   }
@@ -145,9 +148,9 @@ class VerifySignatureCommand extends Command<int> {
     final int timestamp = signatureData['timestamp'] is int
         ? signatureData['timestamp'] as int
         : DateTime.parse(
-              signatureData['timestamp'] as String,
-            ).millisecondsSinceEpoch ~/
-            1000;
+                signatureData['timestamp'] as String,
+              ).millisecondsSinceEpoch ~/
+              1000;
 
     final ZegelSignature sig = ZegelSignature(
       signature: _hexToBytes(sigHex),
@@ -167,8 +170,9 @@ class VerifySignatureCommand extends Command<int> {
       // Check against expected public key if provided.
       if (pubKeyPath != null) {
         final Uint8List expectedKey = readKeyFile(pubKeyPath);
-        final String expectedHex =
-            expectedKey.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
+        final String expectedHex = expectedKey
+            .map((b) => b.toRadixString(16).padLeft(2, '0'))
+            .join();
         final String actualHex = signatureData['public_key_hex'] as String;
 
         if (expectedHex == actualHex) {

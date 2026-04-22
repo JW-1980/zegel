@@ -152,7 +152,7 @@ void main() {
       });
 
       test('returns error when non-hex chars present', () {
-        final bad = 'g' + 'a' * 63;
+        final bad = 'g${'a' * 63}';
         expect(rule.check(bad), isNotNull);
       });
 

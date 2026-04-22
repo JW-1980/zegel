@@ -138,7 +138,7 @@ void main() {
     // derive
     // -------------------------------------------------------------------------
     group('derive', () {
-      final source = ThemeBrand.zegelDefault;
+      const source = ThemeBrand.zegelDefault;
 
       test('derived light theme has white background', () {
         final theme = AccessibilityTheme.derive(source, dark: false);
@@ -178,7 +178,7 @@ void main() {
       });
 
       test('derived theme preserves font family from source', () {
-        final custom = ThemeBrand(
+        const custom = ThemeBrand(
           name: 'Custom',
           primaryColor: 0xFF111111,
           secondaryColor: 0xFF222222,

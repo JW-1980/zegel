@@ -85,10 +85,10 @@ class VerificationCache {
   }
 
   String encode() => jsonEncode({
-    'max_entries': maxEntries,
-    'ttl_seconds': ttl?.inSeconds,
-    'entries': _entries.values.map((e) => e.toJson()).toList(),
-  });
+        'max_entries': maxEntries,
+        'ttl_seconds': ttl?.inSeconds,
+        'entries': _entries.values.map((e) => e.toJson()).toList(),
+      });
 
   static VerificationCache decodeJson(String raw) {
     final m = jsonDecode(raw) as Map<String, dynamic>;
@@ -135,10 +135,10 @@ class CachedVerification {
   final DateTime cachedAt;
 
   Map<String, dynamic> toJson() => {
-    'key': key,
-    'valid': valid,
-    if (failureReason != null) 'failure_reason': failureReason,
-    'metadata': metadata,
-    'cached_at': cachedAt.toUtc().toIso8601String(),
-  };
+        'key': key,
+        'valid': valid,
+        if (failureReason != null) 'failure_reason': failureReason,
+        'metadata': metadata,
+        'cached_at': cachedAt.toUtc().toIso8601String(),
+      };
 }

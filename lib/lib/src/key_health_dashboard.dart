@@ -31,9 +31,8 @@ class KeyHealthDashboard {
       }
     }
     final total = ok + due + overdue;
-    final healthScore = total == 0
-        ? 1.0
-        : (ok * 1.0 + due * 0.5 + overdue * 0.0) / total;
+    final healthScore =
+        total == 0 ? 1.0 : (ok * 1.0 + due * 0.5 + overdue * 0.0) / total;
 
     KeyRotationSummary? mostUrgent;
     if (summaries.isNotEmpty) {

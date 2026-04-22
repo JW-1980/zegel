@@ -88,19 +88,20 @@ class FeedbackEntry {
   });
 
   static FeedbackEntry fromJson(Map<String, dynamic> json) => FeedbackEntry(
-    id: json['id'] as String,
-    at: DateTime.parse(json['at'] as String).toUtc(),
-    category: FeedbackCategory.values.firstWhere(
-      (c) => c.name == json['category'],
-      orElse: () => FeedbackCategory.other,
-    ),
-    message: json['message'] as String,
-    email: json['email'] as String?,
-    screen: json['screen'] as String?,
-    context: json['context'] == null
-        ? const <String, dynamic>{}
-        : Map<String, dynamic>.from(json['context'] as Map<String, dynamic>),
-  );
+        id: json['id'] as String,
+        at: DateTime.parse(json['at'] as String).toUtc(),
+        category: FeedbackCategory.values.firstWhere(
+          (c) => c.name == json['category'],
+          orElse: () => FeedbackCategory.other,
+        ),
+        message: json['message'] as String,
+        email: json['email'] as String?,
+        screen: json['screen'] as String?,
+        context: json['context'] == null
+            ? const <String, dynamic>{}
+            : Map<String, dynamic>.from(
+                json['context'] as Map<String, dynamic>),
+      );
 
   final String id;
   final DateTime at;
@@ -111,12 +112,12 @@ class FeedbackEntry {
   final Map<String, dynamic> context;
 
   Map<String, dynamic> toJson() => <String, dynamic>{
-    'id': id,
-    'at': at.toUtc().toIso8601String(),
-    'category': category.name,
-    'message': message,
-    if (email != null) 'email': email,
-    if (screen != null) 'screen': screen,
-    'context': context,
-  };
+        'id': id,
+        'at': at.toUtc().toIso8601String(),
+        'category': category.name,
+        'message': message,
+        if (email != null) 'email': email,
+        if (screen != null) 'screen': screen,
+        'context': context,
+      };
 }

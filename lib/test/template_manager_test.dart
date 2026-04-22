@@ -22,7 +22,7 @@ void main() {
     // -----------------------------------------------------------------------
     // Helper
     // -----------------------------------------------------------------------
-    SealingTemplate _template(String name, {String? description}) =>
+    SealingTemplate template(String name, {String? description}) =>
         SealingTemplate(
           name: name,
           description: description,
@@ -38,22 +38,22 @@ void main() {
       });
 
       test('get returns the template after upsert', () {
-        manager.upsert(_template('alpha'));
+        manager.upsert(template('alpha'));
         final t = manager.get('alpha');
         expect(t, isNotNull);
         expect(t!.name, 'alpha');
       });
 
       test('upsert overwrites an existing template with the same name', () {
-        manager.upsert(_template('replace-me', description: 'v1'));
-        manager.upsert(_template('replace-me', description: 'v2'));
+        manager.upsert(template('replace-me', description: 'v1'));
+        manager.upsert(template('replace-me', description: 'v2'));
         expect(manager.get('replace-me')!.description, 'v2');
       });
 
       test('multiple distinct templates can be stored', () {
-        manager.upsert(_template('a'));
-        manager.upsert(_template('b'));
-        manager.upsert(_template('c'));
+        manager.upsert(template('a'));
+        manager.upsert(template('b'));
+        manager.upsert(template('c'));
         expect(manager.list().toSet(), containsAll(['a', 'b', 'c']));
       });
     });
@@ -67,16 +67,16 @@ void main() {
       });
 
       test('returns names of all stored templates', () {
-        manager.upsert(_template('first'));
-        manager.upsert(_template('second'));
+        manager.upsert(template('first'));
+        manager.upsert(template('second'));
         expect(manager.list(), containsAll(['first', 'second']));
       });
     });
 
     group('allTemplates', () {
       test('returns SealingTemplate objects for each name', () {
-        manager.upsert(_template('x'));
-        manager.upsert(_template('y'));
+        manager.upsert(template('x'));
+        manager.upsert(template('y'));
         final all = manager.allTemplates();
         expect(all.length, 2);
         final names = all.map((t) => t.name).toSet();
@@ -93,38 +93,38 @@ void main() {
     // -----------------------------------------------------------------------
     group('update', () {
       test('updates description of an existing template', () {
-        manager.upsert(_template('upd', description: 'old'));
+        manager.upsert(template('upd', description: 'old'));
         final updated = manager.update('upd', description: 'new');
         expect(updated.description, 'new');
         expect(manager.get('upd')!.description, 'new');
       });
 
       test('updates contentType', () {
-        manager.upsert(_template('ct'));
+        manager.upsert(template('ct'));
         final updated = manager.update('ct', contentType: 'application/pdf');
         expect(updated.contentType, 'application/pdf');
       });
 
       test('updates compress flag', () {
-        manager.upsert(_template('comp'));
+        manager.upsert(template('comp'));
         final updated = manager.update('comp', compress: true);
         expect(updated.compress, isTrue);
       });
 
       test('updates classification', () {
-        manager.upsert(_template('cls'));
+        manager.upsert(template('cls'));
         final updated = manager.update('cls', classification: 'TOP_SECRET');
         expect(updated.classification, 'TOP_SECRET');
       });
 
       test('updates blockSize', () {
-        manager.upsert(_template('bs'));
+        manager.upsert(template('bs'));
         final updated = manager.update('bs', blockSize: 65536);
         expect(updated.blockSize, 65536);
       });
 
       test('updates expirationFromNow', () {
-        manager.upsert(_template('exp'));
+        manager.upsert(template('exp'));
         final updated = manager.update(
           'exp',
           expirationFromNow: const Duration(days: 30),
@@ -140,7 +140,7 @@ void main() {
       });
 
       test('name is preserved after update', () {
-        manager.upsert(_template('stable-name'));
+        manager.upsert(template('stable-name'));
         final updated = manager.update('stable-name', description: 'changed');
         expect(updated.name, 'stable-name');
       });
@@ -151,7 +151,7 @@ void main() {
     // -----------------------------------------------------------------------
     group('delete', () {
       test('returns true when the template existed', () {
-        manager.upsert(_template('to-del'));
+        manager.upsert(template('to-del'));
         expect(manager.delete('to-del'), isTrue);
       });
 
@@ -160,21 +160,21 @@ void main() {
       });
 
       test('deleted template is no longer returned by get', () {
-        manager.upsert(_template('gone'));
+        manager.upsert(template('gone'));
         manager.delete('gone');
         expect(manager.get('gone'), isNull);
       });
 
       test('deleted template is no longer in list', () {
-        manager.upsert(_template('rem'));
-        manager.upsert(_template('keep'));
+        manager.upsert(template('rem'));
+        manager.upsert(template('keep'));
         manager.delete('rem');
         expect(manager.list(), isNot(contains('rem')));
         expect(manager.list(), contains('keep'));
       });
 
       test('deleting the default template clears the default', () {
-        manager.upsert(_template('def'));
+        manager.upsert(template('def'));
         manager.setDefault('def');
         manager.delete('def');
         expect(manager.defaultTemplate(), isNull);
@@ -186,7 +186,7 @@ void main() {
     // -----------------------------------------------------------------------
     group('duplicate', () {
       test('creates a new template under the new name', () {
-        manager.upsert(_template('original', description: 'desc'));
+        manager.upsert(template('original', description: 'desc'));
         final copy = manager.duplicate('original', 'copy');
         expect(copy, isNotNull);
         expect(copy!.name, 'copy');
@@ -194,13 +194,13 @@ void main() {
       });
 
       test('copy preserves description from source', () {
-        manager.upsert(_template('src', description: 'inherited'));
+        manager.upsert(template('src', description: 'inherited'));
         final copy = manager.duplicate('src', 'dst');
         expect(copy!.description, 'inherited');
       });
 
       test('source template still exists after duplicate', () {
-        manager.upsert(_template('orig'));
+        manager.upsert(template('orig'));
         manager.duplicate('orig', 'dup');
         expect(manager.get('orig'), isNotNull);
       });
@@ -211,7 +211,7 @@ void main() {
       });
 
       test('duplicate with a different name does not overwrite source', () {
-        manager.upsert(_template('base'));
+        manager.upsert(template('base'));
         manager.duplicate('base', 'branch');
         expect(manager.get('base'), isNotNull);
         expect(manager.get('branch'), isNotNull);
@@ -228,14 +228,14 @@ void main() {
       });
 
       test('setDefault marks a template as the default', () {
-        manager.upsert(_template('preferred'));
+        manager.upsert(template('preferred'));
         manager.setDefault('preferred');
         expect(manager.defaultTemplate()!.name, 'preferred');
       });
 
       test('setDefault can be changed to a different template', () {
-        manager.upsert(_template('a'));
-        manager.upsert(_template('b'));
+        manager.upsert(template('a'));
+        manager.upsert(template('b'));
         manager.setDefault('a');
         manager.setDefault('b');
         expect(manager.defaultTemplate()!.name, 'b');
@@ -246,7 +246,7 @@ void main() {
       });
 
       test('defaultTemplate returns null after the default is deleted', () {
-        manager.upsert(_template('def'));
+        manager.upsert(template('def'));
         manager.setDefault('def');
         manager.delete('def');
         expect(manager.defaultTemplate(), isNull);
@@ -255,7 +255,7 @@ void main() {
       test(
         'setDefault references the live store — changes reflected immediately',
         () {
-          manager.upsert(_template('live', description: 'v1'));
+          manager.upsert(template('live', description: 'v1'));
           manager.setDefault('live');
           // Update the template after setting default.
           manager.update('live', description: 'v2');

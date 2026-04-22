@@ -13,8 +13,8 @@ class KeyRotationReminder {
     this.rotationWindow = const Duration(days: 90),
     Map<String, KeyRotationRecord>? initial,
   }) : _records = Map<String, KeyRotationRecord>.of(
-         initial ?? const <String, KeyRotationRecord>{},
-       );
+          initial ?? const <String, KeyRotationRecord>{},
+        );
 
   /// Default rotation window (90 days).
   static const Duration defaultRotationWindow = Duration(days: 90);
@@ -78,9 +78,9 @@ class KeyRotationReminder {
 
   /// Serializes the tracker to JSON.
   String encode() => jsonEncode({
-    'rotation_window_days': rotationWindow.inDays,
-    'records': _records.values.map((r) => r.toJson()).toList(),
-  });
+        'rotation_window_days': rotationWindow.inDays,
+        'records': _records.values.map((r) => r.toJson()).toList(),
+      });
 
   /// Decodes a tracker previously serialized by [encode].
   static KeyRotationReminder decodeJson(String raw) {
@@ -138,10 +138,10 @@ class KeyRotationRecord {
   final DateTime lastRotatedAt;
 
   Map<String, dynamic> toJson() => {
-    'name': name,
-    'created_at': createdAt.toUtc().toIso8601String(),
-    'last_rotated_at': lastRotatedAt.toUtc().toIso8601String(),
-  };
+        'name': name,
+        'created_at': createdAt.toUtc().toIso8601String(),
+        'last_rotated_at': lastRotatedAt.toUtc().toIso8601String(),
+      };
 }
 
 enum RotationStatus { unknown, ok, due, overdue }
