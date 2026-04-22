@@ -123,8 +123,9 @@ void main() {
         if (tamperedHash.isNotEmpty) {
           tamperedHash[0] ^= 0xFF;
         }
-        final tamperedHashHex =
-            tamperedHash.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
+        final tamperedHashHex = tamperedHash
+            .map((b) => b.toRadixString(16).padLeft(2, '0'))
+            .join();
 
         final tamperedProof = Map<String, dynamic>.from(proof);
         tamperedProof['block_hash'] = tamperedHashHex;
@@ -174,8 +175,9 @@ void main() {
 
         // Additionally, confirm the proof's merkle_root matches the computed root
         final proofRootHex = proof['merkle_root'] as String;
-        final computedRootHex =
-            expectedRoot.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
+        final computedRootHex = expectedRoot
+            .map((b) => b.toRadixString(16).padLeft(2, '0'))
+            .join();
         expect(
           proofRootHex,
           equals(computedRootHex),

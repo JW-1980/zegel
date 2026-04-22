@@ -170,22 +170,28 @@ void main() {
         ],
       );
 
-      envelope.appendEvent(const EnvelopeEvent(
-        timestamp: 1000,
-        eventType: 'envelope_created',
-        description: 'Envelope created',
-      ));
-      envelope.appendEvent(const EnvelopeEvent(
-        timestamp: 1001,
-        eventType: 'envelope_sent',
-        description: 'Envelope sent to recipients',
-      ));
-      envelope.appendEvent(const EnvelopeEvent(
-        timestamp: 1002,
-        eventType: 'recipient_signed',
-        description: 'Alice signed',
-        recipientId: 'r1',
-      ));
+      envelope.appendEvent(
+        const EnvelopeEvent(
+          timestamp: 1000,
+          eventType: 'envelope_created',
+          description: 'Envelope created',
+        ),
+      );
+      envelope.appendEvent(
+        const EnvelopeEvent(
+          timestamp: 1001,
+          eventType: 'envelope_sent',
+          description: 'Envelope sent to recipients',
+        ),
+      );
+      envelope.appendEvent(
+        const EnvelopeEvent(
+          timestamp: 1002,
+          eventType: 'recipient_signed',
+          description: 'Alice signed',
+          recipientId: 'r1',
+        ),
+      );
 
       expect(envelope.events.length, equals(3));
       expect(envelope.events[0].previousHash, isNull);
@@ -208,16 +214,20 @@ void main() {
         ],
       );
 
-      envelope.appendEvent(const EnvelopeEvent(
-        timestamp: 1000,
-        eventType: 'envelope_created',
-        description: 'Original',
-      ));
-      envelope.appendEvent(const EnvelopeEvent(
-        timestamp: 1001,
-        eventType: 'envelope_sent',
-        description: 'Sent',
-      ));
+      envelope.appendEvent(
+        const EnvelopeEvent(
+          timestamp: 1000,
+          eventType: 'envelope_created',
+          description: 'Original',
+        ),
+      );
+      envelope.appendEvent(
+        const EnvelopeEvent(
+          timestamp: 1001,
+          eventType: 'envelope_sent',
+          description: 'Sent',
+        ),
+      );
 
       // Tamper: replace first event with a different description.
       envelope.events[0] = const EnvelopeEvent(
@@ -379,10 +389,7 @@ void main() {
         () => template.instantiate(
           envelopeId: 'env-bad',
           roleMapping: {
-            'a': const TemplateRoleMapping(
-              name: 'X',
-              email: 'x@test.com',
-            ),
+            'a': const TemplateRoleMapping(name: 'X', email: 'x@test.com'),
             // 'b' is missing!
           },
           documentMerkleRoots: [],
@@ -452,21 +459,27 @@ void main() {
         completedAt: 1700000000,
       );
 
-      envelope.appendEvent(const EnvelopeEvent(
-        timestamp: 1699999000,
-        eventType: 'envelope_created',
-        description: 'Created',
-      ));
-      envelope.appendEvent(const EnvelopeEvent(
-        timestamp: 1699999500,
-        eventType: 'envelope_sent',
-        description: 'Sent',
-      ));
-      envelope.appendEvent(const EnvelopeEvent(
-        timestamp: 1700000000,
-        eventType: 'envelope_completed',
-        description: 'All signatures collected',
-      ));
+      envelope.appendEvent(
+        const EnvelopeEvent(
+          timestamp: 1699999000,
+          eventType: 'envelope_created',
+          description: 'Created',
+        ),
+      );
+      envelope.appendEvent(
+        const EnvelopeEvent(
+          timestamp: 1699999500,
+          eventType: 'envelope_sent',
+          description: 'Sent',
+        ),
+      );
+      envelope.appendEvent(
+        const EnvelopeEvent(
+          timestamp: 1700000000,
+          eventType: 'envelope_completed',
+          description: 'All signatures collected',
+        ),
+      );
 
       final cert = CertificateOfCompletion.generate(envelope);
 
@@ -492,11 +505,9 @@ void main() {
           ),
         ],
       );
-      envelope.appendEvent(const EnvelopeEvent(
-        timestamp: 1000,
-        eventType: 'a',
-        description: 'a',
-      ));
+      envelope.appendEvent(
+        const EnvelopeEvent(timestamp: 1000, eventType: 'a', description: 'a'),
+      );
 
       final cert = CertificateOfCompletion.generate(envelope);
 
@@ -533,11 +544,13 @@ void main() {
           ),
         ],
       );
-      envelope.appendEvent(const EnvelopeEvent(
-        timestamp: 1699999000,
-        eventType: 'envelope_created',
-        description: 'Envelope created by Alice Smith',
-      ));
+      envelope.appendEvent(
+        const EnvelopeEvent(
+          timestamp: 1699999000,
+          eventType: 'envelope_created',
+          description: 'Envelope created by Alice Smith',
+        ),
+      );
 
       final cert = CertificateOfCompletion.generate(envelope);
       final text = cert.renderText();
@@ -675,9 +688,7 @@ Carol,carol@test.com,Acme,E003
           jobId: 'bad',
           template: template,
           signerRoleId: 'nonexistent',
-          recipients: const [
-            BulkRecipient(name: 'X', email: 'x@t.com'),
-          ],
+          recipients: const [BulkRecipient(name: 'X', email: 'x@t.com')],
           documentMerkleRoots: [],
         ),
         throwsA(isA<ArgumentError>()),

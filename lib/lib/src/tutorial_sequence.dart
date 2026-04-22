@@ -6,7 +6,7 @@
 /// sequence, and the sequence decides what to show next.
 class TutorialSequence {
   TutorialSequence(this.steps)
-      : assert(steps.length > 0, 'At least one step is required');
+    : assert(steps.length > 0, 'At least one step is required');
 
   /// The ordered list of steps.
   final List<TutorialStep> steps;

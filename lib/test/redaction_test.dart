@@ -239,14 +239,14 @@ void main() {
         );
         // Block 1 should still be CONTENT
         expect(
-          redactedBytes[
-              offsets['directory']! + ZegelFormat.blockDirectoryEntrySize],
+          redactedBytes[offsets['directory']! +
+              ZegelFormat.blockDirectoryEntrySize],
           equals(ZegelFormat.blockContent),
         );
         // Block 2 should be REDACTED
         expect(
-          redactedBytes[
-              offsets['directory']! + 2 * ZegelFormat.blockDirectoryEntrySize],
+          redactedBytes[offsets['directory']! +
+              2 * ZegelFormat.blockDirectoryEntrySize],
           equals(ZegelFormat.blockRedacted),
         );
       });

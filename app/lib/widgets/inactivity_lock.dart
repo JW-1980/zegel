@@ -116,8 +116,9 @@ class _PinScreenState extends State<_PinScreen> {
   bool get _isLockedOut =>
       _cooldownUntil != null && DateTime.now().isBefore(_cooldownUntil!);
 
-  Duration get _remainingLockout =>
-      _cooldownUntil == null ? Duration.zero : _cooldownUntil!.difference(DateTime.now());
+  Duration get _remainingLockout => _cooldownUntil == null
+      ? Duration.zero
+      : _cooldownUntil!.difference(DateTime.now());
 
   void _addDigit(String digit) {
     if (_isLockedOut) return;
@@ -146,7 +147,11 @@ class _PinScreenState extends State<_PinScreen> {
     // Constant-time comparison to prevent timing attacks.
     bool match = _enteredPin.length == widget.expectedPin.length;
     int diff = 0;
-    for (int i = 0; i < _enteredPin.length && i < widget.expectedPin.length; i++) {
+    for (
+      int i = 0;
+      i < _enteredPin.length && i < widget.expectedPin.length;
+      i++
+    ) {
       diff |= _enteredPin.codeUnitAt(i) ^ widget.expectedPin.codeUnitAt(i);
     }
     match = match && diff == 0;
@@ -203,8 +208,8 @@ class _PinScreenState extends State<_PinScreen> {
                   _isLockedOut
                       ? 'Too many attempts. Wait ${_remainingLockout.inSeconds + 1}s.'
                       : (_error
-                          ? 'Incorrect PIN. Try again.'
-                          : 'Enter your PIN to unlock'),
+                            ? 'Incorrect PIN. Try again.'
+                            : 'Enter your PIN to unlock'),
                   style: TextStyle(
                     color: _error || _isLockedOut
                         ? Colors.red.shade300

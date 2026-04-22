@@ -10,10 +10,9 @@ void main() {
         url: Uri.parse('https://example.org/hook'),
         eventType: 'verify_succeeded',
       );
-      final payload = webhook.buildPayload(
-        {'file': 'report.zgl'},
-        at: DateTime.utc(2026, 4, 12, 12, 0, 0),
-      );
+      final payload = webhook.buildPayload({
+        'file': 'report.zgl',
+      }, at: DateTime.utc(2026, 4, 12, 12, 0, 0));
       final decoded = jsonDecode(payload) as Map<String, dynamic>;
       expect(decoded['event'], 'verify_succeeded');
       expect(decoded['timestamp'], '2026-04-12T12:00:00.000Z');

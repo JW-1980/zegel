@@ -76,8 +76,7 @@ class HistoryLog {
   }
 
   /// Serializes the log as newline-delimited JSON.
-  String encode() =>
-      _entries.map((e) => jsonEncode(e.toJson())).join('\n');
+  String encode() => _entries.map((e) => jsonEncode(e.toJson())).join('\n');
 
   /// Loads a previously saved log from a newline-delimited JSON string.
   static HistoryLog decode(String raw) {
@@ -116,18 +115,18 @@ class HistoryEntry extends RetainableEvent {
   });
 
   static HistoryEntry fromJson(Map<String, dynamic> json) => HistoryEntry(
-        operation: json['operation'] as String,
-        success: json['success'] as bool,
-        filename: json['filename'] as String?,
-        message: json['message'] as String?,
-        duration: json['duration_ms'] == null
-            ? null
-            : Duration(milliseconds: (json['duration_ms'] as num).toInt()),
-        details: json['details'] == null
-            ? const <String, dynamic>{}
-            : Map<String, dynamic>.from(json['details'] as Map<String, dynamic>),
-        at: DateTime.parse(json['at'] as String).toUtc(),
-      );
+    operation: json['operation'] as String,
+    success: json['success'] as bool,
+    filename: json['filename'] as String?,
+    message: json['message'] as String?,
+    duration: json['duration_ms'] == null
+        ? null
+        : Duration(milliseconds: (json['duration_ms'] as num).toInt()),
+    details: json['details'] == null
+        ? const <String, dynamic>{}
+        : Map<String, dynamic>.from(json['details'] as Map<String, dynamic>),
+    at: DateTime.parse(json['at'] as String).toUtc(),
+  );
 
   final String operation;
   final bool success;
@@ -144,12 +143,12 @@ class HistoryEntry extends RetainableEvent {
   String get category => operation;
 
   Map<String, dynamic> toJson() => {
-        'operation': operation,
-        'success': success,
-        if (filename != null) 'filename': filename,
-        if (message != null) 'message': message,
-        if (duration != null) 'duration_ms': duration!.inMilliseconds,
-        'details': details,
-        'at': at.toUtc().toIso8601String(),
-      };
+    'operation': operation,
+    'success': success,
+    if (filename != null) 'filename': filename,
+    if (message != null) 'message': message,
+    if (duration != null) 'duration_ms': duration!.inMilliseconds,
+    'details': details,
+    'at': at.toUtc().toIso8601String(),
+  };
 }

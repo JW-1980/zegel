@@ -34,50 +34,61 @@ class SealPreflight {
     final warnings = <PreflightWarning>[];
 
     if (bytes.isEmpty) {
-      warnings.add(const PreflightWarning(
-        severity: PreflightSeverity.error,
-        code: 'empty_file',
-        message: 'The file is empty; sealing would produce an empty payload.',
-      ));
+      warnings.add(
+        const PreflightWarning(
+          severity: PreflightSeverity.error,
+          code: 'empty_file',
+          message: 'The file is empty; sealing would produce an empty payload.',
+        ),
+      );
     }
 
     if (bytes.length > oversizeThreshold) {
-      warnings.add(PreflightWarning(
-        severity: PreflightSeverity.info,
-        code: 'oversize_file',
-        message:
-            'File is ${_humanSize(bytes.length)}; consider enabling compression.',
-      ));
+      warnings.add(
+        PreflightWarning(
+          severity: PreflightSeverity.info,
+          code: 'oversize_file',
+          message:
+              'File is ${_humanSize(bytes.length)}; consider enabling compression.',
+        ),
+      );
     }
 
     final piiMatches = _scanForPii(bytes);
     if (piiMatches.isNotEmpty) {
-      warnings.add(PreflightWarning(
-        severity: PreflightSeverity.warning,
-        code: 'pii_detected',
-        message:
-            'Found ${piiMatches.length} potential PII match(es). Consider redaction.',
-        details: {
-          'categories': piiMatches.map((m) => m.category.name).toSet().toList(),
-          'count': piiMatches.length,
-        },
-      ));
+      warnings.add(
+        PreflightWarning(
+          severity: PreflightSeverity.warning,
+          code: 'pii_detected',
+          message:
+              'Found ${piiMatches.length} potential PII match(es). Consider redaction.',
+          details: {
+            'categories': piiMatches
+                .map((m) => m.category.name)
+                .toSet()
+                .toList(),
+            'count': piiMatches.length,
+          },
+        ),
+      );
     }
 
     if (password != null) {
       final strength = PasswordStrength.evaluate(password);
       if (PasswordStrength.isWeakForSealing(password)) {
-        warnings.add(PreflightWarning(
-          severity: PreflightSeverity.warning,
-          code: 'weak_password',
-          message:
-              'Password strength is ${strength.label.name} (${strength.entropyBits.toStringAsFixed(1)} bits).',
-          details: {
-            'entropy_bits': strength.entropyBits,
-            'score': strength.score,
-            'feedback': strength.feedback,
-          },
-        ));
+        warnings.add(
+          PreflightWarning(
+            severity: PreflightSeverity.warning,
+            code: 'weak_password',
+            message:
+                'Password strength is ${strength.label.name} (${strength.entropyBits.toStringAsFixed(1)} bits).',
+            details: {
+              'entropy_bits': strength.entropyBits,
+              'score': strength.score,
+              'feedback': strength.feedback,
+            },
+          ),
+        );
       }
     }
 
@@ -110,7 +121,8 @@ class PreflightResult {
 
   final List<PreflightWarning> warnings;
 
-  bool get hasErrors => warnings.any((w) => w.severity == PreflightSeverity.error);
+  bool get hasErrors =>
+      warnings.any((w) => w.severity == PreflightSeverity.error);
   bool get hasWarnings =>
       warnings.any((w) => w.severity == PreflightSeverity.warning);
   bool get safeToProceed => !hasErrors;

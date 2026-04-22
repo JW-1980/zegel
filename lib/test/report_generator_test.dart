@@ -18,10 +18,7 @@ void main() {
         message: 'Merkle mismatch',
         duration: const Duration(milliseconds: 150),
       );
-      log.record(
-        operation: 'seal',
-        success: true,
-      );
+      log.record(operation: 'seal', success: true);
 
       final report = ReportGenerator.batchVerifyReport(log);
       expect(report, contains('Files processed | 2'));

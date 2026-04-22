@@ -14,10 +14,8 @@ import 'hardware_info.dart';
 /// Nothing is transmitted automatically. A dispatcher (e.g. `ZegelWebhook`)
 /// can pick reports up later and send them to a telemetry endpoint.
 class CrashReporter {
-  CrashReporter({
-    this.enabled = false,
-    Anonymizer? anonymizer,
-  }) : _anonymizer = anonymizer ?? Anonymizer.random();
+  CrashReporter({this.enabled = false, Anonymizer? anonymizer})
+    : _anonymizer = anonymizer ?? Anonymizer.random();
 
   /// Master toggle for the reporter. When false every `report*` call is a
   /// no-op.
@@ -67,15 +65,14 @@ class CrashReporter {
   void clear() => _reports.clear();
 
   String encode() => jsonEncode({
-        'enabled': enabled,
-        'reports': _reports.map((r) => r.toJson()).toList(),
-      });
+    'enabled': enabled,
+    'reports': _reports.map((r) => r.toJson()).toList(),
+  });
 
   static CrashReporter decodeJson(String raw) {
     final m = jsonDecode(raw) as Map<String, dynamic>;
     final reporter = CrashReporter(enabled: m['enabled'] as bool? ?? false);
-    for (final entry
-        in (m['reports'] as List<dynamic>? ?? const <dynamic>[])) {
+    for (final entry in (m['reports'] as List<dynamic>? ?? const <dynamic>[])) {
       reporter._reports.add(
         CrashReport.fromJson(entry as Map<String, dynamic>),
       );
@@ -107,17 +104,17 @@ class CrashReport {
   });
 
   static CrashReport fromJson(Map<String, dynamic> json) => CrashReport(
-        at: DateTime.parse(json['at'] as String).toUtc(),
-        message: json['message'] as String,
-        stackTrace: json['stack_trace'] as String,
-        context: json['context'] as String?,
-        hardware: json['hardware'] == null
-            ? const <String, dynamic>{}
-            : Map<String, dynamic>.from(json['hardware'] as Map<String, dynamic>),
-        extra: json['extra'] == null
-            ? const <String, dynamic>{}
-            : Map<String, dynamic>.from(json['extra'] as Map<String, dynamic>),
-      );
+    at: DateTime.parse(json['at'] as String).toUtc(),
+    message: json['message'] as String,
+    stackTrace: json['stack_trace'] as String,
+    context: json['context'] as String?,
+    hardware: json['hardware'] == null
+        ? const <String, dynamic>{}
+        : Map<String, dynamic>.from(json['hardware'] as Map<String, dynamic>),
+    extra: json['extra'] == null
+        ? const <String, dynamic>{}
+        : Map<String, dynamic>.from(json['extra'] as Map<String, dynamic>),
+  );
 
   final DateTime at;
   final String message;
@@ -127,11 +124,11 @@ class CrashReport {
   final Map<String, dynamic> extra;
 
   Map<String, dynamic> toJson() => {
-        'at': at.toUtc().toIso8601String(),
-        'message': message,
-        'stack_trace': stackTrace,
-        if (context != null) 'context': context,
-        'hardware': hardware,
-        'extra': extra,
-      };
+    'at': at.toUtc().toIso8601String(),
+    'message': message,
+    'stack_trace': stackTrace,
+    if (context != null) 'context': context,
+    'hardware': hardware,
+    'extra': extra,
+  };
 }

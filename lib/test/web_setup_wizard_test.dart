@@ -12,21 +12,21 @@ void main() {
 
     // A minimal two-step wizard for tests that need a simpler setup.
     WebSetupWizard _twoStepWizard() => WebSetupWizard(
-          steps: [
-            const SetupStep(
-              id: 'step-a',
-              title: 'Step A',
-              description: 'No answer needed.',
-              requiredAnswer: null,
-            ),
-            const SetupStep(
-              id: 'step-b',
-              title: 'Step B',
-              description: 'Requires an answer.',
-              requiredAnswer: 'some_key',
-            ),
-          ],
-        );
+      steps: [
+        const SetupStep(
+          id: 'step-a',
+          title: 'Step A',
+          description: 'No answer needed.',
+          requiredAnswer: null,
+        ),
+        const SetupStep(
+          id: 'step-b',
+          title: 'Step B',
+          description: 'Requires an answer.',
+          requiredAnswer: 'some_key',
+        ),
+      ],
+    );
 
     // -----------------------------------------------------------------------
     // Initial state
@@ -79,11 +79,14 @@ void main() {
         expect(wizard.progress, greaterThan(0.0));
       });
 
-      test('completing all informational steps leaves the wizard at the first required step', () {
-        final wizard = _twoStepWizard();
-        wizard.complete('step-a');
-        expect(wizard.currentStep!.id, 'step-b');
-      });
+      test(
+        'completing all informational steps leaves the wizard at the first required step',
+        () {
+          final wizard = _twoStepWizard();
+          wizard.complete('step-a');
+          expect(wizard.currentStep!.id, 'step-b');
+        },
+      );
     });
 
     // -----------------------------------------------------------------------
@@ -93,10 +96,7 @@ void main() {
       test('complete throws StateError when required answer is missing', () {
         final wizard = _freshWizard();
         wizard.complete('welcome'); // advance past welcome
-        expect(
-          () => wizard.complete('database'),
-          throwsA(isA<StateError>()),
-        );
+        expect(() => wizard.complete('database'), throwsA(isA<StateError>()));
       });
 
       test('complete succeeds after providing the required answer', () {
@@ -153,7 +153,10 @@ void main() {
         wizard.answer('database', 'postgres://localhost/zegel');
         wizard.complete('database');
         wizard.complete('tsa');
-        wizard.answer('admin-key', 'abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890');
+        wizard.answer(
+          'admin-key',
+          'abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890',
+        );
         wizard.complete('admin-key');
         wizard.complete('finish');
       }
@@ -309,11 +312,7 @@ void main() {
       });
 
       test('requiredAnswer defaults to null', () {
-        const step = SetupStep(
-          id: 's',
-          title: 'S',
-          description: 'D',
-        );
+        const step = SetupStep(id: 's', title: 'S', description: 'D');
         expect(step.requiredAnswer, isNull);
       });
     });

@@ -29,9 +29,9 @@ void main() {
         secureWipe: false,
       );
       final oldPath = cleanup.createTempFile('old.bin');
-      await File(oldPath).setLastModified(
-        DateTime.now().subtract(const Duration(minutes: 10)),
-      );
+      await File(
+        oldPath,
+      ).setLastModified(DateTime.now().subtract(const Duration(minutes: 10)));
       final freshPath = cleanup.createTempFile('fresh.bin');
       final now = DateTime.now();
       // Ensure 'fresh.bin' has a timestamp explicitly set to 'now' so it is NOT expired

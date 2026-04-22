@@ -60,8 +60,11 @@ void main() {
       final fakeRoot = MerkleTree.buildRoot([fakeHash]);
 
       // The roots must differ -- this proves domain separation works.
-      expect(root, isNot(equals(fakeRoot)),
-          reason: 'Domain separation must prevent leaf/node confusion');
+      expect(
+        root,
+        isNot(equals(fakeRoot)),
+        reason: 'Domain separation must prevent leaf/node confusion',
+      );
     });
 
     test('buildRoot produces different result than naive (no prefix) tree', () {
@@ -78,8 +81,11 @@ void main() {
       naiveCombined.setRange(32, 64, naiveLeaf2);
       final naiveRoot = Uint8List.fromList(sha256.convert(naiveCombined).bytes);
 
-      expect(root, isNot(equals(naiveRoot)),
-          reason: 'Domain-separated root must differ from naive root');
+      expect(
+        root,
+        isNot(equals(naiveRoot)),
+        reason: 'Domain-separated root must differ from naive root',
+      );
     });
 
     test('single leaf root is domain-separated', () {
@@ -87,8 +93,11 @@ void main() {
       final root = MerkleTree.buildRoot([leaf]);
 
       // Should be SHA-256(0x00 || leaf), not just leaf itself.
-      expect(root, isNot(equals(leaf)),
-          reason: 'Single leaf should still be domain-separated');
+      expect(
+        root,
+        isNot(equals(leaf)),
+        reason: 'Single leaf should still be domain-separated',
+      );
       expect(root, equals(MerkleTree.hashLeaf(leaf)));
     });
 
@@ -176,11 +185,13 @@ void main() {
 
       expect(
         () => ShamirSecretSharing.reconstruct(dupeShares, 3),
-        throwsA(isA<ArgumentError>().having(
-          (e) => e.message,
-          'message',
-          contains('Duplicate x-coordinate'),
-        )),
+        throwsA(
+          isA<ArgumentError>().having(
+            (e) => e.message,
+            'message',
+            contains('Duplicate x-coordinate'),
+          ),
+        ),
       );
     });
 
@@ -193,13 +204,18 @@ void main() {
       badShare[0] = 0;
 
       expect(
-        () => ShamirSecretSharing.reconstruct(
-            [badShare, shares[1], shares[2]], 3),
-        throwsA(isA<ArgumentError>().having(
-          (e) => e.message,
-          'message',
-          contains('invalid x-coordinate 0'),
-        )),
+        () => ShamirSecretSharing.reconstruct([
+          badShare,
+          shares[1],
+          shares[2],
+        ], 3),
+        throwsA(
+          isA<ArgumentError>().having(
+            (e) => e.message,
+            'message',
+            contains('invalid x-coordinate 0'),
+          ),
+        ),
       );
     });
 
@@ -208,15 +224,18 @@ void main() {
       shortShare[0] = 1;
 
       expect(
-        () => ShamirSecretSharing.reconstruct(
-          [shortShare, Uint8List(33)..first, Uint8List(33)],
-          3,
+        () => ShamirSecretSharing.reconstruct([
+          shortShare,
+          Uint8List(33)..first,
+          Uint8List(33),
+        ], 3),
+        throwsA(
+          isA<ArgumentError>().having(
+            (e) => e.message,
+            'message',
+            contains('invalid length'),
+          ),
         ),
-        throwsA(isA<ArgumentError>().having(
-          (e) => e.message,
-          'message',
-          contains('invalid length'),
-        )),
       );
     });
 
@@ -224,10 +243,11 @@ void main() {
       final key = _testKey();
       final shares = ShamirSecretSharing.split(key, 3, 5);
 
-      final reconstructed = ShamirSecretSharing.reconstruct(
-        [shares[0], shares[2], shares[4]],
-        3,
-      );
+      final reconstructed = ShamirSecretSharing.reconstruct([
+        shares[0],
+        shares[2],
+        shares[4],
+      ], 3);
       expect(reconstructed, equals(key));
     });
 
@@ -248,10 +268,12 @@ void main() {
       final shares = ShamirSecretSharing.split(key, 3, 5);
 
       // Provide 4 shares (more than threshold of 3) -- only first 3 are used
-      final reconstructed = ShamirSecretSharing.reconstruct(
-        [shares[0], shares[1], shares[2], shares[3]],
-        3,
-      );
+      final reconstructed = ShamirSecretSharing.reconstruct([
+        shares[0],
+        shares[1],
+        shares[2],
+        shares[3],
+      ], 3);
       expect(reconstructed, equals(key));
     });
   });
@@ -357,11 +379,13 @@ void main() {
             argon2MemoryCost: 19456,
           ),
         ),
-        throwsA(isA<ArgumentError>().having(
-          (e) => e.message,
-          'message',
-          contains('time cost'),
-        )),
+        throwsA(
+          isA<ArgumentError>().having(
+            (e) => e.message,
+            'message',
+            contains('time cost'),
+          ),
+        ),
       );
     });
 
@@ -374,11 +398,13 @@ void main() {
             argon2MemoryCost: 1024, // Below minimum of 19456
           ),
         ),
-        throwsA(isA<ArgumentError>().having(
-          (e) => e.message,
-          'message',
-          contains('memory cost'),
-        )),
+        throwsA(
+          isA<ArgumentError>().having(
+            (e) => e.message,
+            'message',
+            contains('memory cost'),
+          ),
+        ),
       );
     });
 
@@ -386,10 +412,7 @@ void main() {
       // Should not throw.
       final writer = ZegelWriter(
         _testKey(),
-        const ZegelOptions(
-          argon2TimeCost: 2,
-          argon2MemoryCost: 19456,
-        ),
+        const ZegelOptions(argon2TimeCost: 2, argon2MemoryCost: 19456),
       );
       expect(writer, isNotNull);
     });
@@ -427,10 +450,7 @@ void main() {
         isTrue,
         reason: 'Password-derived files must auto-enable key commitment',
       );
-      expect(
-        inspection.flags & ZegelFormat.flagPasswordDerived != 0,
-        isTrue,
-      );
+      expect(inspection.flags & ZegelFormat.flagPasswordDerived != 0, isTrue);
     });
 
     test('non-password files without explicit flag have no key commitment', () {
@@ -613,12 +633,13 @@ void main() {
 
       final content = Uint8List.fromList(utf8.encode('Wrong key test'));
       final sealed = ZegelWriter(
-          key,
-          const ZegelOptions(
-            contentType: 'text/plain',
-            filename: 'test.txt',
-            salt: null,
-          )).seal(content);
+        key,
+        const ZegelOptions(
+          contentType: 'text/plain',
+          filename: 'test.txt',
+          salt: null,
+        ),
+      ).seal(content);
 
       expect(
         () => const ZegelReader().verify(sealed, wrongKey),
@@ -677,11 +698,7 @@ void main() {
             hashValue: 'abc123',
             license: 'BSD-3-Clause',
           ),
-          SbomPackage(
-            name: 'pointycastle',
-            version: '3.7.3',
-            license: 'MIT',
-          ),
+          SbomPackage(name: 'pointycastle', version: '3.7.3', license: 'MIT'),
         ],
         sbomFormat: 'CycloneDX',
         toolName: 'zegel-sbom',

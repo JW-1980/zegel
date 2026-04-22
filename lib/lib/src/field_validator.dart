@@ -57,7 +57,8 @@ class RequiredRule extends ValidatorRule {
 }
 
 class MinLengthRule extends ValidatorRule {
-  const MinLengthRule(this.length, {String? message}) : _customMessage = message;
+  const MinLengthRule(this.length, {String? message})
+    : _customMessage = message;
 
   final int length;
   final String? _customMessage;
@@ -72,7 +73,8 @@ class MinLengthRule extends ValidatorRule {
 }
 
 class MaxLengthRule extends ValidatorRule {
-  const MaxLengthRule(this.length, {String? message}) : _customMessage = message;
+  const MaxLengthRule(this.length, {String? message})
+    : _customMessage = message;
 
   final int length;
   final String? _customMessage;

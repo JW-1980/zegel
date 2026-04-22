@@ -31,8 +31,10 @@ void main() {
       expect(copy.blockSize, template.blockSize);
       expect(copy.publicMetadata, template.publicMetadata);
       expect(copy.metadata, template.metadata);
-      expect(copy.createdAt.toIso8601String(),
-          template.createdAt.toIso8601String());
+      expect(
+        copy.createdAt.toIso8601String(),
+        template.createdAt.toIso8601String(),
+      );
     });
 
     test('copyWith overrides fields', () {
@@ -59,14 +61,12 @@ void main() {
       final store = SealingTemplateStore(tmp.path);
       expect(store.list(), isEmpty);
 
-      store.save(SealingTemplate(
-        name: 'alpha',
-        createdAt: DateTime.utc(2026, 1, 1),
-      ));
-      store.save(SealingTemplate(
-        name: 'beta',
-        createdAt: DateTime.utc(2026, 1, 1),
-      ));
+      store.save(
+        SealingTemplate(name: 'alpha', createdAt: DateTime.utc(2026, 1, 1)),
+      );
+      store.save(
+        SealingTemplate(name: 'beta', createdAt: DateTime.utc(2026, 1, 1)),
+      );
 
       expect(store.list(), ['alpha', 'beta']);
 
@@ -82,10 +82,12 @@ void main() {
 
     test('sanitizes filesystem-hostile characters in names', () {
       final store = SealingTemplateStore(tmp.path);
-      store.save(SealingTemplate(
-        name: 'crazy/name:1',
-        createdAt: DateTime.utc(2026, 1, 1),
-      ));
+      store.save(
+        SealingTemplate(
+          name: 'crazy/name:1',
+          createdAt: DateTime.utc(2026, 1, 1),
+        ),
+      );
       final names = store.list();
       expect(names, hasLength(1));
       expect(names.single, contains('crazy_name_1'));

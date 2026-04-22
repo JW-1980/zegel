@@ -61,11 +61,14 @@ void main() {
       c.resume();
       c.cancel();
       await Future<void>.delayed(const Duration(milliseconds: 5));
-      expect(received, containsAllInOrder([
-        BatchState.paused,
-        BatchState.running,
-        BatchState.cancelled,
-      ]));
+      expect(
+        received,
+        containsAllInOrder([
+          BatchState.paused,
+          BatchState.running,
+          BatchState.cancelled,
+        ]),
+      );
     });
   });
 }

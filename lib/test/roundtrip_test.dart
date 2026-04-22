@@ -139,7 +139,8 @@ void main() {
       });
 
       test('UTF-8 content with Unicode characters', () {
-        const text = 'Hello \u{1F600} World \u00e9\u00e8\u00ea '
+        const text =
+            'Hello \u{1F600} World \u00e9\u00e8\u00ea '
             '\u4e16\u754c \u0410\u0411\u0412';
         final content = Uint8List.fromList(utf8.encode(text));
         final options = ZegelOptions(
