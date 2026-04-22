@@ -99,7 +99,8 @@ class _CommandPaletteState extends State<CommandPalette> {
                           _filteredCommands.length - 1,
                         );
                       });
-                    } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+                    } else if (event.logicalKey ==
+                        LogicalKeyboardKey.arrowUp) {
                       setState(() {
                         _selectedIndex = (_selectedIndex - 1).clamp(
                           0,

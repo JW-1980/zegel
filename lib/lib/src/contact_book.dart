@@ -74,8 +74,7 @@ class ContactBook {
   static ContactBook decodeJson(String raw) {
     final m = jsonDecode(raw) as Map<String, dynamic>;
     final book = ContactBook();
-    for (final entry
-        in (m['contacts'] as List<dynamic>? ?? const <dynamic>[])) {
+    for (final entry in (m['contacts'] as List<dynamic>? ?? const <dynamic>[])) {
       final contact = Contact.fromJson(entry as Map<String, dynamic>);
       book._byId[contact.id] = contact;
     }

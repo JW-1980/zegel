@@ -39,8 +39,7 @@ class ErrorHelper {
     }
 
     // Wrong key.
-    if (msg.contains('decryption failed') ||
-        msg.contains('Merkle root mismatch')) {
+    if (msg.contains('decryption failed') || msg.contains('Merkle root mismatch')) {
       return const ErrorMessage(
         title: 'Wrong Master Key',
         description:
@@ -79,8 +78,7 @@ class ErrorHelper {
     }
 
     // Format errors.
-    if (msg.contains('Invalid magic bytes') ||
-        msg.contains('FormatException')) {
+    if (msg.contains('Invalid magic bytes') || msg.contains('FormatException')) {
       return const ErrorMessage(
         title: 'Not a Valid Zegel File',
         description:
@@ -97,7 +95,8 @@ class ErrorHelper {
     if (msg.contains('too short')) {
       return const ErrorMessage(
         title: 'File Is Truncated',
-        description: 'The file appears to be incomplete or truncated.',
+        description:
+            'The file appears to be incomplete or truncated.',
         suggestion:
             'The file may have been partially downloaded or the disk ran '
             'out of space during creation. Obtain a complete copy from '
@@ -113,14 +112,13 @@ class ErrorHelper {
             'The file claims to contain an unreasonably large number of '
             'blocks, which may indicate a malicious file designed to '
             'exhaust system memory.',
-        suggestion: 'Do not trust this file. Obtain it from a verified source.',
+        suggestion:
+            'Do not trust this file. Obtain it from a verified source.',
       );
     }
 
     // Argon2id parameter errors.
-    if (msg.contains('Argon2id') ||
-        msg.contains('time cost') ||
-        msg.contains('memory cost')) {
+    if (msg.contains('Argon2id') || msg.contains('time cost') || msg.contains('memory cost')) {
       return const ErrorMessage(
         title: 'Weak Password Parameters',
         description:
@@ -146,7 +144,8 @@ class ErrorHelper {
     if (msg.contains('Need at least') && msg.contains('shares')) {
       return const ErrorMessage(
         title: 'Not Enough Key Shares',
-        description: 'You need more key shares to reconstruct the master key.',
+        description:
+            'You need more key shares to reconstruct the master key.',
         suggestion:
             'Collect additional shares from other key holders until you '
             'have at least the threshold number.',

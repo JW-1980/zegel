@@ -37,7 +37,8 @@ class TimeSavedTracker {
   int get batchRuns => _batchRuns;
 
   /// Estimated manual time, using the baseline.
-  Duration get estimatedManualDuration => Duration(
+  Duration get estimatedManualDuration =>
+      Duration(
         microseconds: baselinePerFile.inMicroseconds * _batchFileCount,
       );
 

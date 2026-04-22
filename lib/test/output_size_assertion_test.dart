@@ -289,8 +289,7 @@ void main() {
     });
   });
 
-  group('Ciphertext length equals plaintext length (no GCM overhead inline)',
-      () {
+  group('Ciphertext length equals plaintext length (no GCM overhead inline)', () {
     test('single block ciphertext length matches directory entry', () {
       final content = Uint8List(1000);
       for (var i = 0; i < 1000; i++) {

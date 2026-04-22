@@ -28,8 +28,7 @@ void main() {
       });
 
       test('nextTransitionAfter returns null', () {
-        expect(
-            scheduler.nextTransitionAfter(DateTime(2026, 1, 1, 12, 0)), isNull);
+        expect(scheduler.nextTransitionAfter(DateTime(2026, 1, 1, 12, 0)), isNull);
       });
     });
 
@@ -58,8 +57,7 @@ void main() {
       });
 
       test('nextTransitionAfter returns null', () {
-        expect(
-            scheduler.nextTransitionAfter(DateTime(2026, 1, 1, 12, 0)), isNull);
+        expect(scheduler.nextTransitionAfter(DateTime(2026, 1, 1, 12, 0)), isNull);
       });
     });
 
@@ -94,8 +92,7 @@ void main() {
       });
 
       test('nextTransitionAfter returns null', () {
-        expect(
-            scheduler.nextTransitionAfter(DateTime(2026, 1, 1, 12, 0)), isNull);
+        expect(scheduler.nextTransitionAfter(DateTime(2026, 1, 1, 12, 0)), isNull);
       });
     });
 
@@ -176,8 +173,7 @@ void main() {
         expect(next.day, ref.day);
       });
 
-      test('returns darkStart when reference is between light and dark starts',
-          () {
+      test('returns darkStart when reference is between light and dark starts', () {
         final ref = DateTime(2026, 6, 1, 12, 0); // 12:00
         final next = scheduler.nextTransitionAfter(ref);
         expect(next, isNotNull);

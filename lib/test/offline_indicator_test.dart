@@ -45,8 +45,7 @@ void main() {
         await indicator.close();
       });
 
-      test('returns online with multiple endpoints (first hit short-circuits)',
-          () async {
+      test('returns online with multiple endpoints (first hit short-circuits)', () async {
         var callCount = 0;
         Future<bool> countingProber(String _) async {
           callCount++;
@@ -65,8 +64,7 @@ void main() {
     });
 
     group('probeOnce — always-offline prober', () {
-      test('returns offline when prober returns false for all endpoints',
-          () async {
+      test('returns offline when prober returns false for all endpoints', () async {
         final indicator = OfflineIndicator(
           endpoints: ['dead.example', 'also.dead'],
           prober: _alwaysOffline,
@@ -155,8 +153,7 @@ void main() {
     });
 
     group('stream — state transitions', () {
-      test('emits online event when state changes from unknown to online',
-          () async {
+      test('emits online event when state changes from unknown to online', () async {
         final indicator = OfflineIndicator(
           endpoints: ['host'],
           prober: _alwaysOnline,
@@ -169,8 +166,7 @@ void main() {
         expect(received, contains(ConnectivityState.online));
       });
 
-      test('emits offline event when state changes from unknown to offline',
-          () async {
+      test('emits offline event when state changes from unknown to offline', () async {
         final indicator = OfflineIndicator(
           endpoints: ['dead'],
           prober: _alwaysOffline,
@@ -197,8 +193,7 @@ void main() {
         expect(received.length, 1);
       });
 
-      test('emits transition when state flips from online to offline',
-          () async {
+      test('emits transition when state flips from online to offline', () async {
         var online = true;
         Future<bool> flippingProber(String _) async => online;
 
@@ -219,8 +214,7 @@ void main() {
         expect(received, [ConnectivityState.online, ConnectivityState.offline]);
       });
 
-      test('stream is a broadcast stream (multiple listeners allowed)',
-          () async {
+      test('stream is a broadcast stream (multiple listeners allowed)', () async {
         final indicator = OfflineIndicator(
           endpoints: ['host'],
           prober: _alwaysOnline,
@@ -286,13 +280,11 @@ void main() {
       });
 
       test('values are unknown, online, offline', () {
-        expect(
-            ConnectivityState.values,
-            containsAll([
-              ConnectivityState.unknown,
-              ConnectivityState.online,
-              ConnectivityState.offline,
-            ]));
+        expect(ConnectivityState.values, containsAll([
+          ConnectivityState.unknown,
+          ConnectivityState.online,
+          ConnectivityState.offline,
+        ]));
       });
     });
 

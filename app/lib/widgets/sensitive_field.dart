@@ -72,7 +72,8 @@ class _SensitiveFieldState extends State<SensitiveField> {
       decoration: InputDecoration(
         labelText: widget.labelText,
         hintText: widget.hintText,
-        prefixIcon: widget.prefixIcon != null ? Icon(widget.prefixIcon) : null,
+        prefixIcon:
+            widget.prefixIcon != null ? Icon(widget.prefixIcon) : null,
         suffixIcon: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -157,8 +158,8 @@ class _SensitiveDisplayState extends State<SensitiveDisplay> {
               Text(
                 widget.label,
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
               ),
               const SizedBox(height: 2),
               SelectableText(
