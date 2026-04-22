@@ -25,8 +25,7 @@ class DashboardCatalog {
   final Map<String, DashboardWidgetSpec> _specs;
 
   /// Default set of dashboard widgets shipped with Zegel.
-  static const List<DashboardWidgetSpec> defaultSpecs =
-      <DashboardWidgetSpec>[
+  static const List<DashboardWidgetSpec> defaultSpecs = <DashboardWidgetSpec>[
     DashboardWidgetSpec(
       key: 'files_sealed_today',
       title: 'Files sealed today',
