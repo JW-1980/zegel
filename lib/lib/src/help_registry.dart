@@ -32,8 +32,7 @@ class HelpRegistry {
         const HelpEntry(
           topic: 'split-key',
           title: 'Shamir Secret Sharing',
-          summary:
-              'Split a master key into N shares, any M of which can '
+          summary: 'Split a master key into N shares, any M of which can '
               'reconstruct it.',
           body:
               'Split-key support lets you hand out different shares to different '

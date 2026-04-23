@@ -57,7 +57,7 @@ class TutorialSequence {
     ]);
   }
   TutorialSequence(this.steps)
-    : assert(steps.length > 0, 'At least one step is required');
+      : assert(steps.isNotEmpty, 'At least one step is required');
 
   /// The ordered list of steps.
   final List<TutorialStep> steps;
