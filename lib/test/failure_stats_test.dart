@@ -12,10 +12,7 @@ void main() {
         FailureStats.classify('GCM auth tag failure in block 3'),
         FailureCategory.authTagFailure,
       );
-      expect(
-        FailureStats.classify('file expired'),
-        FailureCategory.expired,
-      );
+      expect(FailureStats.classify('file expired'), FailureCategory.expired);
       expect(
         FailureStats.classify('File is corrupt or truncated'),
         FailureCategory.corruptFile,
@@ -40,10 +37,7 @@ void main() {
       expect(stats.totalFailures, 4);
       expect(stats.samples.length, 3);
       // First sample ("bad magic") should have been dropped.
-      expect(
-        stats.samples.first.category,
-        FailureCategory.merkleMismatch,
-      );
+      expect(stats.samples.first.category, FailureCategory.merkleMismatch);
     });
 
     test('topCategory returns the most frequent bucket', () {
@@ -60,10 +54,7 @@ void main() {
       stats.record('Merkle root mismatch');
       final restored = FailureStats.decodeJson(stats.encode());
       expect(restored.totalFailures, 2);
-      expect(
-        restored.counts[FailureCategory.merkleMismatch],
-        1,
-      );
+      expect(restored.counts[FailureCategory.merkleMismatch], 1);
     });
   });
 }

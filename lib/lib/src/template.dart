@@ -30,21 +30,23 @@ import 'envelope.dart';
 /// When instantiating the template, each role is mapped to a concrete
 /// [EnvelopeRecipient] by providing a name, email, and authentication details.
 class TemplateRole {
+
   /// Deserializes from JSON.
   factory TemplateRole.fromJson(Map<String, dynamic> json) {
     return TemplateRole(
       roleId: json['role_id'] as String,
       roleName: json['role_name'] as String,
-      recipientRole: RecipientRole.values
-          .firstWhere((r) => r.name == json['recipient_role']),
+      recipientRole: RecipientRole.values.firstWhere(
+        (r) => r.name == json['recipient_role'],
+      ),
       routingOrder: json['routing_order'] as int? ?? 1,
       defaultAuthentication: AuthenticationMethod.values.firstWhere(
-          (a) => a.name == (json['default_authentication'] ?? 'none')),
+        (a) => a.name == (json['default_authentication'] ?? 'none'),
+      ),
       defaultNote: json['default_note'] as String?,
       description: json['description'] as String?,
     );
   }
-
   /// Creates a [TemplateRole].
   const TemplateRole({
     required this.roleId,
@@ -102,6 +104,7 @@ class TemplateRole {
 /// When the template is instantiated, fields are remapped to the actual
 /// recipients for each role.
 class TemplateField {
+
   /// Deserializes from JSON.
   factory TemplateField.fromJson(Map<String, dynamic> json) {
     return TemplateField(
@@ -120,7 +123,6 @@ class TemplateField {
           (json['options'] as List<dynamic>?)?.map((o) => o as String).toList(),
     );
   }
-
   /// Creates a [TemplateField].
   const TemplateField({
     required this.id,
@@ -199,6 +201,7 @@ class TemplateField {
 
 /// A reusable envelope template.
 class EnvelopeTemplate {
+
   /// Decodes a template from JSON bytes.
   factory EnvelopeTemplate.decode(Uint8List data) {
     return EnvelopeTemplate.fromJson(
@@ -214,8 +217,9 @@ class EnvelopeTemplate {
       description: json['description'] as String?,
       subject: json['subject'] as String,
       message: json['message'] as String?,
-      routingMode: RoutingMode.values
-          .firstWhere((r) => r.name == (json['routing_mode'] ?? 'sequential')),
+      routingMode: RoutingMode.values.firstWhere(
+        (r) => r.name == (json['routing_mode'] ?? 'sequential'),
+      ),
       roles: (json['roles'] as List<dynamic>)
           .map((r) => TemplateRole.fromJson(r as Map<String, dynamic>))
           .toList(),
@@ -234,7 +238,6 @@ class EnvelopeTemplate {
       reminderMaxCount: json['reminder_max_count'] as int? ?? 3,
     );
   }
-
   /// Creates a new [EnvelopeTemplate].
   const EnvelopeTemplate({
     required this.id,

@@ -2,11 +2,7 @@ import 'package:test/test.dart';
 import 'package:zegel/zegel.dart';
 
 class _Record {
-  const _Record({
-    required this.name,
-    required this.status,
-    required this.tags,
-  });
+  const _Record({required this.name, required this.status, required this.tags});
 
   final String name;
   final String status;
@@ -47,16 +43,8 @@ void main() {
   group('SearchQuery.matches', () {
     test('matches records satisfying all filters and terms', () {
       final records = <_Record>[
-        const _Record(
-          name: 'alpha',
-          status: 'ok',
-          tags: ['finance', 'q1'],
-        ),
-        const _Record(
-          name: 'beta',
-          status: 'failed',
-          tags: ['finance', 'q2'],
-        ),
+        const _Record(name: 'alpha', status: 'ok', tags: ['finance', 'q1']),
+        const _Record(name: 'beta', status: 'failed', tags: ['finance', 'q2']),
       ];
       final q = SearchQuery.parse('status:failed finance');
       final matching = records

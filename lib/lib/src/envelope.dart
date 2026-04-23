@@ -157,6 +157,7 @@ enum FieldType {
 
 /// A field on a document that a recipient must fill.
 class SignatureField {
+
   /// Deserializes from JSON.
   factory SignatureField.fromJson(Map<String, dynamic> json) {
     return SignatureField(
@@ -176,7 +177,6 @@ class SignatureField {
           (json['options'] as List<dynamic>?)?.map((o) => o as String).toList(),
     );
   }
-
   /// Creates a [SignatureField].
   const SignatureField({
     required this.id,
@@ -260,6 +260,7 @@ class SignatureField {
 
 /// A recipient in an envelope signing workflow.
 class EnvelopeRecipient {
+
   /// Deserializes from JSON.
   factory EnvelopeRecipient.fromJson(Map<String, dynamic> json) {
     return EnvelopeRecipient(
@@ -268,15 +269,17 @@ class EnvelopeRecipient {
       email: json['email'] as String,
       role: RecipientRole.values.firstWhere((r) => r.name == json['role']),
       routingOrder: json['routing_order'] as int? ?? 1,
-      authentication: AuthenticationMethod.values
-          .firstWhere((a) => a.name == (json['authentication'] ?? 'none')),
+      authentication: AuthenticationMethod.values.firstWhere(
+        (a) => a.name == (json['authentication'] ?? 'none'),
+      ),
       accessCode: json['access_code'] as String?,
       phoneNumber: json['phone_number'] as String?,
       company: json['company'] as String?,
       title: json['title'] as String?,
       note: json['note'] as String?,
-      status: RecipientStatus.values
-          .firstWhere((s) => s.name == (json['status'] ?? 'created')),
+      status: RecipientStatus.values.firstWhere(
+        (s) => s.name == (json['status'] ?? 'created'),
+      ),
       signedAt: json['signed_at'] as int?,
       declinedAt: json['declined_at'] as int?,
       declineReason: json['decline_reason'] as String?,
@@ -284,7 +287,6 @@ class EnvelopeRecipient {
       signatureHash: json['signature_hash'] as String?,
     );
   }
-
   /// Creates an [EnvelopeRecipient].
   const EnvelopeRecipient({
     required this.id,
@@ -412,6 +414,7 @@ enum RecipientStatus {
 
 /// A single event in the envelope audit log.
 class EnvelopeEvent {
+
   /// Deserializes from JSON.
   factory EnvelopeEvent.fromJson(Map<String, dynamic> json) {
     return EnvelopeEvent(
@@ -424,7 +427,6 @@ class EnvelopeEvent {
       previousHash: json['previous_hash'] as String?,
     );
   }
-
   /// Creates an [EnvelopeEvent].
   const EnvelopeEvent({
     required this.timestamp,
@@ -497,6 +499,7 @@ class EnvelopeEvent {
 /// sidecar file. It references one or more documents by their Merkle root
 /// and defines the signing workflow.
 class Envelope {
+
   /// Decodes an envelope from JSON bytes.
   factory Envelope.decode(Uint8List data) {
     return Envelope.fromJson(
@@ -510,10 +513,12 @@ class Envelope {
       id: json['id'] as String,
       subject: json['subject'] as String,
       message: json['message'] as String?,
-      routingMode: RoutingMode.values
-          .firstWhere((r) => r.name == (json['routing_mode'] ?? 'sequential')),
-      status: EnvelopeStatus.values
-          .firstWhere((s) => s.name == (json['status'] ?? 'draft')),
+      routingMode: RoutingMode.values.firstWhere(
+        (r) => r.name == (json['routing_mode'] ?? 'sequential'),
+      ),
+      status: EnvelopeStatus.values.firstWhere(
+        (s) => s.name == (json['status'] ?? 'draft'),
+      ),
       documentMerkleRoots: (json['document_merkle_roots'] as List<dynamic>?)
               ?.map((d) => d as String)
               .toList() ??
@@ -540,7 +545,6 @@ class Envelope {
       reminderMaxCount: json['reminder_max_count'] as int? ?? 3,
     );
   }
-
   /// Creates a new [Envelope].
   Envelope({
     required this.id,
@@ -627,10 +631,12 @@ class Envelope {
   List<EnvelopeRecipient> currentRecipients() {
     if (routingMode == RoutingMode.parallel) {
       return recipients
-          .where((r) =>
-              r.status != RecipientStatus.signed &&
-              r.status != RecipientStatus.completed &&
-              r.status != RecipientStatus.declined)
+          .where(
+            (r) =>
+                r.status != RecipientStatus.signed &&
+                r.status != RecipientStatus.completed &&
+                r.status != RecipientStatus.declined,
+          )
           .toList();
     }
 
@@ -644,11 +650,13 @@ class Envelope {
           recipient.status != RecipientStatus.declined) {
         // Return all recipients at this routing order (for mixed mode).
         return recipients
-            .where((r) =>
-                r.routingOrder == recipient.routingOrder &&
-                r.status != RecipientStatus.signed &&
-                r.status != RecipientStatus.completed &&
-                r.status != RecipientStatus.declined)
+            .where(
+              (r) =>
+                  r.routingOrder == recipient.routingOrder &&
+                  r.status != RecipientStatus.signed &&
+                  r.status != RecipientStatus.completed &&
+                  r.status != RecipientStatus.declined,
+            )
             .toList();
       }
     }

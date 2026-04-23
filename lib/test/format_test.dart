@@ -29,10 +29,12 @@ void main() {
         expect(ZegelFormat.versionMajor, equals(1));
       });
 
-      test('version minor is 4 (v1.4: domain separation + AAD + hedged nonces)',
-          () {
-        expect(ZegelFormat.versionMinor, equals(4));
-      });
+      test(
+        'version minor is 4 (v1.4: domain separation + AAD + hedged nonces)',
+        () {
+          expect(ZegelFormat.versionMinor, equals(4));
+        },
+      );
     });
 
     group('flags', () {

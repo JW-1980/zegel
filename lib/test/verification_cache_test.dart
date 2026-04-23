@@ -11,9 +11,10 @@ void main() {
       expect(cache.lookup(bytes), isNull);
 
       cache.put(
-          fileBytes: bytes,
-          valid: true,
-          metadata: {'contentType': 'text/plain'});
+        fileBytes: bytes,
+        valid: true,
+        metadata: {'contentType': 'text/plain'},
+      );
       final entry = cache.lookup(bytes);
       expect(entry, isNotNull);
       expect(entry!.valid, isTrue);
@@ -49,10 +50,7 @@ void main() {
         cache.lookup(a, now: DateTime.utc(2026, 1, 1, 12, 3, 0)),
         isNotNull,
       );
-      expect(
-        cache.lookup(a, now: DateTime.utc(2026, 1, 1, 12, 10, 0)),
-        isNull,
-      );
+      expect(cache.lookup(a, now: DateTime.utc(2026, 1, 1, 12, 10, 0)), isNull);
     });
 
     test('invalidate removes the entry', () {
@@ -68,9 +66,10 @@ void main() {
       final cache = VerificationCache(maxEntries: 8);
       cache.put(fileBytes: Uint8List.fromList([1, 2]), valid: true);
       cache.put(
-          fileBytes: Uint8List.fromList([3, 4]),
-          valid: false,
-          failureReason: 'Merkle');
+        fileBytes: Uint8List.fromList([3, 4]),
+        valid: false,
+        failureReason: 'Merkle',
+      );
       final restored = VerificationCache.decodeJson(cache.encode());
       expect(restored.length, 2);
     });

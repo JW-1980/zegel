@@ -283,16 +283,18 @@ void main() {
         expect(live.first.name, 'active');
       });
 
-      test('entry with future expiry is included when includeExpired = false',
-          () {
-        final km = KeyManager.empty();
-        km.create(
-          name: 'future',
-          keyBytes: makeKey(),
-          expiresAt: DateTime.utc(2099, 1, 1),
-        );
-        expect(km.list(includeExpired: false).length, 1);
-      });
+      test(
+        'entry with future expiry is included when includeExpired = false',
+        () {
+          final km = KeyManager.empty();
+          km.create(
+            name: 'future',
+            keyBytes: makeKey(),
+            expiresAt: DateTime.utc(2099, 1, 1),
+          );
+          expect(km.list(includeExpired: false).length, 1);
+        },
+      );
 
       test('entries are sorted by createdAt ascending', () {
         final km = KeyManager.empty();
@@ -316,11 +318,7 @@ void main() {
       test('includeExpired uses custom now for cutoff', () {
         final km = KeyManager.empty();
         final expiry = DateTime.utc(2024, 6, 1);
-        km.create(
-          name: 'borderline',
-          keyBytes: makeKey(),
-          expiresAt: expiry,
-        );
+        km.create(name: 'borderline', keyBytes: makeKey(), expiresAt: expiry);
         // Querying with a "now" before the expiry should include the entry.
         final before = km.list(
           includeExpired: false,

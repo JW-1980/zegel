@@ -249,10 +249,7 @@ void main() {
         final file = writeFile('closed_blocks.bin', [1, 2, 3]);
         final reader = MmapReader.open(file.path);
         reader.close();
-        expect(
-          () => reader.readBlocks().toList(),
-          throwsA(isA<StateError>()),
-        );
+        expect(() => reader.readBlocks().toList(), throwsA(isA<StateError>()));
       });
 
       test('readHeader throws StateError after close', () {

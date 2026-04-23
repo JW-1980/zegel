@@ -41,10 +41,7 @@ void main() {
       });
 
       test('arguments list has exactly two elements', () {
-        final cmd = RevealInOs.commandFor(
-          '/tmp/foo.zgl',
-          overrideOs: 'macos',
-        );
+        final cmd = RevealInOs.commandFor('/tmp/foo.zgl', overrideOs: 'macos');
         expect(cmd.arguments.length, 2);
       });
     });
@@ -67,10 +64,7 @@ void main() {
       });
 
       test('handles file in root directory gracefully', () {
-        final cmd = RevealInOs.commandFor(
-          '/secret.zgl',
-          overrideOs: 'linux',
-        );
+        final cmd = RevealInOs.commandFor('/secret.zgl', overrideOs: 'linux');
         // The file is at the root; the parent resolution falls back to
         // the path itself when idx <= 0.
         expect(cmd.arguments.length, 1);

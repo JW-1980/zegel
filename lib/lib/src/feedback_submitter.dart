@@ -56,9 +56,7 @@ class FeedbackSubmitter {
     final out = <FeedbackEntry>[];
     for (final line in const LineSplitter().convert(file.readAsStringSync())) {
       if (line.trim().isEmpty) continue;
-      out.add(FeedbackEntry.fromJson(
-        jsonDecode(line) as Map<String, dynamic>,
-      ));
+      out.add(FeedbackEntry.fromJson(jsonDecode(line) as Map<String, dynamic>));
     }
     return out;
   }

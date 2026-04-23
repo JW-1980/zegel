@@ -57,11 +57,13 @@ class FeatureRatings {
     for (final entry in _ratings.entries) {
       if (entry.value.isEmpty) continue;
       final avg = averageFor(entry.key)!;
-      out.add(FeatureRatingSummary(
-        feature: entry.key,
-        averageStars: avg,
-        sampleSize: entry.value.length,
-      ));
+      out.add(
+        FeatureRatingSummary(
+          feature: entry.key,
+          averageStars: avg,
+          sampleSize: entry.value.length,
+        ),
+      );
     }
     out.sort((a, b) {
       final cmp = b.averageStars.compareTo(a.averageStars);

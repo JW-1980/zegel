@@ -7,13 +7,12 @@ void main() {
   group('Totp', () {
     // RFC 6238 test vector: secret = "12345678901234567890" (ASCII).
     // Base32: GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ
-    final rfcSecretBytes = Uint8List.fromList(
-      '12345678901234567890'.codeUnits,
-    );
+    final rfcSecretBytes = Uint8List.fromList('12345678901234567890'.codeUnits);
 
     // A minimal 20-byte secret for ad-hoc tests.
-    final simpleSecret =
-        Uint8List.fromList(List<int>.generate(20, (i) => i + 1));
+    final simpleSecret = Uint8List.fromList(
+      List<int>.generate(20, (i) => i + 1),
+    );
 
     // -----------------------------------------------------------------------
     // Construction
@@ -93,8 +92,10 @@ void main() {
 
         // T=59 → counter=1 → expected code '94287082'
         test('T=59 produces 94287082', () {
-          final at =
-              DateTime.fromMillisecondsSinceEpoch(59 * 1000, isUtc: true);
+          final at = DateTime.fromMillisecondsSinceEpoch(
+            59 * 1000,
+            isUtc: true,
+          );
           expect(totp8.generate(now: at), '94287082');
         });
 

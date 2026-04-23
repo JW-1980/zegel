@@ -18,10 +18,7 @@ class RevealInOs {
   /// Returns the command [executable] and [arguments] needed to reveal
   /// [path] on the current platform. Callers typically run this as
   /// `Process.run(command.executable, command.arguments)`.
-  static RevealCommand commandFor(
-    String path, {
-    String? overrideOs,
-  }) {
+  static RevealCommand commandFor(String path, {String? overrideOs}) {
     final os = overrideOs ?? Platform.operatingSystem;
     switch (os) {
       case 'windows':

@@ -12,14 +12,8 @@ void main() {
     test('visibleSpecs omits hidden widgets', () {
       final catalog = DashboardCatalog();
       catalog.setVisible('key_health', false);
-      expect(
-        catalog.visibleSpecs().any((s) => s.key == 'key_health'),
-        isFalse,
-      );
-      expect(
-        catalog.allSpecs().any((s) => s.key == 'key_health'),
-        isTrue,
-      );
+      expect(catalog.visibleSpecs().any((s) => s.key == 'key_health'), isFalse);
+      expect(catalog.allSpecs().any((s) => s.key == 'key_health'), isTrue);
     });
 
     test('reorder places explicit keys first', () {
@@ -32,10 +26,7 @@ void main() {
 
     test('setVisible throws on unknown key', () {
       final catalog = DashboardCatalog();
-      expect(
-        () => catalog.setVisible('nonexistent', false),
-        throwsStateError,
-      );
+      expect(() => catalog.setVisible('nonexistent', false), throwsStateError);
     });
   });
 }

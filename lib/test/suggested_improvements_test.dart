@@ -9,8 +9,9 @@ import 'package:zegel/zegel.dart';
 void main() {
   group('Item 42: ErrorHelper-style error messages', () {
     test('ZegelTamperedException contains descriptive message', () {
-      const e =
-          ZegelTamperedException('Tamper detected: block decryption failed');
+      const e = ZegelTamperedException(
+        'Tamper detected: block decryption failed',
+      );
       expect(e.message, contains('Tamper detected'));
       expect(e.toString(), contains('ZegelTamperedException'));
     });

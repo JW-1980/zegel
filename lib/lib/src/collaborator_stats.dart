@@ -41,13 +41,15 @@ class CollaboratorStats {
     final out = <CollaboratorRank>[];
     for (final entry in entries.take(limit)) {
       final contact = _contactBook?.get(entry.key);
-      out.add(CollaboratorRank(
-        contactId: entry.key,
-        count: entry.value,
-        lastSeen: _lastSeen[entry.key],
-        displayName: contact?.displayName ?? entry.key,
-        trusted: contact?.trusted ?? false,
-      ));
+      out.add(
+        CollaboratorRank(
+          contactId: entry.key,
+          count: entry.value,
+          lastSeen: _lastSeen[entry.key],
+          displayName: contact?.displayName ?? entry.key,
+          trusted: contact?.trusted ?? false,
+        ),
+      );
     }
     return out;
   }

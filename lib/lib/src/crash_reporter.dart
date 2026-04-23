@@ -14,10 +14,8 @@ import 'hardware_info.dart';
 /// Nothing is transmitted automatically. A dispatcher (e.g. `ZegelWebhook`)
 /// can pick reports up later and send them to a telemetry endpoint.
 class CrashReporter {
-  CrashReporter({
-    this.enabled = false,
-    Anonymizer? anonymizer,
-  }) : _anonymizer = anonymizer ?? Anonymizer.random();
+  CrashReporter({this.enabled = false, Anonymizer? anonymizer})
+      : _anonymizer = anonymizer ?? Anonymizer.random();
 
   /// Master toggle for the reporter. When false every `report*` call is a
   /// no-op.
