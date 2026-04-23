@@ -24,8 +24,7 @@ class AttestCommand extends Command<int> {
   final String name = 'attest';
 
   @override
-  String get description =>
-      'Add a co-signature attestation to a .zgl file.\n'
+  String get description => 'Add a co-signature attestation to a .zgl file.\n'
       '\n'
       'Creates an HMAC-SHA256 attestation over the Merkle root, signer ID,\n'
       'timestamp, statement, and role. The attestation is stored as an\n'
@@ -65,8 +64,7 @@ class AttestCommand extends Command<int> {
 
     argParser.addOption(
       'signer-id',
-      help:
-          'Signer identifier string.\n'
+      help: 'Signer identifier string.\n'
           'Recommended format: "user:id:name@example.com" or\n'
           '"role:id:description".',
       valueHelp: 'id',
@@ -84,8 +82,7 @@ class AttestCommand extends Command<int> {
     argParser.addOption(
       'role',
       abbr: 'r',
-      help:
-          'Signer\'s role in the attestation workflow.\n'
+      help: 'Signer\'s role in the attestation workflow.\n'
           'Valid roles: owner, signer, witness, notary, auditor, reviewer.\n'
           'Roles are used by --check-attestation-policy during verification.',
       valueHelp: 'role',
@@ -94,8 +91,7 @@ class AttestCommand extends Command<int> {
     addKeyOptions(argParser);
     addOutputOption(
       argParser,
-      help:
-          'Output path for the attested .zgl file.\n'
+      help: 'Output path for the attested .zgl file.\n'
           'Defaults to overwriting the input file.',
     );
   }
@@ -267,8 +263,7 @@ class AttestCommand extends Command<int> {
         header.expirationTimestamp! * 1000,
         isUtc: true,
       );
-      expirationDateStr =
-          '${dt.year.toString().padLeft(4, '0')}-'
+      expirationDateStr = '${dt.year.toString().padLeft(4, '0')}-'
           '${dt.month.toString().padLeft(2, '0')}-'
           '${dt.day.toString().padLeft(2, '0')}';
     }
@@ -304,7 +299,11 @@ class AttestCommand extends Command<int> {
       );
 
       // Decrypt with the AAD bound to the original block position and salt.
-      final Uint8List decryptAad = _buildBlockAad(entry.type, i, header.salt);
+      final Uint8List decryptAad = _buildBlockAad(
+        entry.type,
+        i,
+        header.salt,
+      );
       final cipher = _createGCMCipher(false, blockKey, entry.iv, decryptAad);
       final Uint8List input = Uint8List(ciphertext.length + entry.tag.length);
       input.setRange(0, ciphertext.length, ciphertext);
@@ -497,7 +496,12 @@ class AttestCommand extends Command<int> {
     final cipher = GCMBlockCipher(AESEngine());
     cipher.init(
       encrypt,
-      AEADParameters(KeyParameter(key), ZegelFormat.tagSize * 8, iv, aad),
+      AEADParameters(
+        KeyParameter(key),
+        ZegelFormat.tagSize * 8,
+        iv,
+        aad,
+      ),
     );
     return cipher;
   }
@@ -506,10 +510,7 @@ class AttestCommand extends Command<int> {
   /// `blockType(1) || blockIndex(4 BE) || salt(32)`.
   /// Must match [ZegelWriter] exactly so re-sealed files remain verifiable.
   static Uint8List _buildBlockAad(
-    int blockType,
-    int blockIndex,
-    Uint8List salt,
-  ) {
+      int blockType, int blockIndex, Uint8List salt) {
     final Uint8List aad = Uint8List(1 + 4 + ZegelFormat.saltSize);
     aad[0] = blockType;
     final ByteData bd = ByteData.sublistView(aad);
