@@ -22,7 +22,10 @@ void main() {
 
     test('crontabLine rejects malformed literal expressions', () {
       expect(
-        () => CronTemplate.crontabLine(schedule: '* * * *', command: 'cmd'),
+        () => CronTemplate.crontabLine(
+          schedule: '* * * *',
+          command: 'cmd',
+        ),
         throwsArgumentError,
       );
     });
@@ -48,10 +51,8 @@ void main() {
       );
 
       expect(units.service, contains('[Service]'));
-      expect(
-        units.service,
-        contains('ExecStart=/usr/local/bin/zegel verify /data'),
-      );
+      expect(units.service,
+          contains('ExecStart=/usr/local/bin/zegel verify /data'));
       expect(units.service, contains('WorkingDirectory=/data'));
 
       expect(units.timer, contains('[Timer]'));

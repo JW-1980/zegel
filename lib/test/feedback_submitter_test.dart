@@ -43,9 +43,8 @@ void main() {
       });
 
       test('at defaults to a UTC time close to now', () {
-        final before = DateTime.now().toUtc().subtract(
-          const Duration(seconds: 1),
-        );
+        final before =
+            DateTime.now().toUtc().subtract(const Duration(seconds: 1));
         final entry = submitter.submit(
           category: FeedbackCategory.other,
           message: 'Hello',
@@ -80,9 +79,7 @@ void main() {
         submitter.submit(category: FeedbackCategory.bug, message: 'Bug 1');
         submitter.submit(category: FeedbackCategory.bug, message: 'Bug 2');
         submitter.submit(
-          category: FeedbackCategory.feature,
-          message: 'Feature 1',
-        );
+            category: FeedbackCategory.feature, message: 'Feature 1');
         final lines = File(storagePath)
             .readAsStringSync()
             .trim()
@@ -130,8 +127,7 @@ void main() {
 
       test('returns empty list when file does not exist', () {
         final s = FeedbackSubmitter(
-          storagePath: '/tmp/nonexistent_zgl_feedback.ndjson',
-        );
+            storagePath: '/tmp/nonexistent_zgl_feedback.ndjson');
         expect(s.list(), isEmpty);
       });
 
@@ -223,14 +219,10 @@ void main() {
 
       test('submit after clear creates a fresh file', () {
         submitter.submit(
-          category: FeedbackCategory.bug,
-          message: 'Before clear',
-        );
+            category: FeedbackCategory.bug, message: 'Before clear');
         submitter.clear();
         submitter.submit(
-          category: FeedbackCategory.feature,
-          message: 'After clear',
-        );
+            category: FeedbackCategory.feature, message: 'After clear');
         final entries = submitter.list();
         expect(entries.length, 1);
         expect(entries.first.message, 'After clear');

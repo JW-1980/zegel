@@ -159,7 +159,10 @@ void main() {
       test('contains message when present', () {
         final log = _buildLog();
         final verify = log.byOperation('verify').first;
-        expect(LogViewFormatter.formatEntry(verify), contains('HMAC mismatch'));
+        expect(
+          LogViewFormatter.formatEntry(verify),
+          contains('HMAC mismatch'),
+        );
       });
 
       test('contains duration in ms when includeDuration = true', () {
@@ -199,9 +202,10 @@ void main() {
 
       test('contains one line per entry', () {
         final log = _buildLog();
-        final lines = LogViewFormatter.dump(
-          log,
-        ).split('\n').where((l) => l.isNotEmpty).toList();
+        final lines = LogViewFormatter.dump(log)
+            .split('\n')
+            .where((l) => l.isNotEmpty)
+            .toList();
         expect(lines.length, 3);
       });
 
@@ -215,9 +219,10 @@ void main() {
 
       test('each line contains OK or FAIL', () {
         final log = _buildLog();
-        final lines = LogViewFormatter.dump(
-          log,
-        ).split('\n').where((l) => l.isNotEmpty).toList();
+        final lines = LogViewFormatter.dump(log)
+            .split('\n')
+            .where((l) => l.isNotEmpty)
+            .toList();
         for (final line in lines) {
           expect(line.contains('OK') || line.contains('FAIL'), isTrue);
         }
@@ -225,9 +230,10 @@ void main() {
 
       test('each line starts with an ISO-8601 timestamp', () {
         final log = _buildLog();
-        final lines = LogViewFormatter.dump(
-          log,
-        ).split('\n').where((l) => l.isNotEmpty).toList();
+        final lines = LogViewFormatter.dump(log)
+            .split('\n')
+            .where((l) => l.isNotEmpty)
+            .toList();
         for (final line in lines) {
           expect(
             RegExp(r'^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}').hasMatch(line),
@@ -255,20 +261,16 @@ void main() {
 
       test('LogLevel.error returns only failed entries', () {
         final log = _buildLog();
-        final errors = LogViewFormatter.filterByLevel(
-          log,
-          level: LogLevel.error,
-        );
+        final errors =
+            LogViewFormatter.filterByLevel(log, level: LogLevel.error);
         expect(errors.every((e) => !e.success), isTrue);
       });
 
       test('info count + error count equals total entry count', () {
         final log = _buildLog();
         final infos = LogViewFormatter.filterByLevel(log, level: LogLevel.info);
-        final errors = LogViewFormatter.filterByLevel(
-          log,
-          level: LogLevel.error,
-        );
+        final errors =
+            LogViewFormatter.filterByLevel(log, level: LogLevel.error);
         expect(infos.length + errors.length, log.entries.length);
       });
 
@@ -276,10 +278,8 @@ void main() {
         final log = HistoryLog();
         log.record(operation: 'seal', success: true);
         // No failures, so error filter should be empty.
-        final errors = LogViewFormatter.filterByLevel(
-          log,
-          level: LogLevel.error,
-        );
+        final errors =
+            LogViewFormatter.filterByLevel(log, level: LogLevel.error);
         expect(errors, isEmpty);
       });
 

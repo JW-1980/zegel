@@ -18,7 +18,11 @@ import 'package:crypto/crypto.dart';
 /// mainstream authenticator). Callers should use [period] = 30 and
 /// [digits] = 6 unless they have a specific reason not to.
 class Totp {
-  const Totp({required this.secret, this.digits = 6, this.period = 30});
+  const Totp({
+    required this.secret,
+    this.digits = 6,
+    this.period = 30,
+  });
 
   /// The shared secret (raw bytes before base32 encoding).
   final Uint8List secret;
@@ -41,7 +45,11 @@ class Totp {
 
   /// Verifies [code] against the expected code for [now], allowing a
   /// symmetric drift of [window] periods (default: 1, i.e. ±30 s).
-  bool verify(String code, {DateTime? now, int window = 1}) {
+  bool verify(
+    String code, {
+    DateTime? now,
+    int window = 1,
+  }) {
     final t = (now ?? DateTime.now()).toUtc();
     final counter = t.millisecondsSinceEpoch ~/ 1000 ~/ period;
     for (var offset = -window; offset <= window; offset++) {
@@ -52,7 +60,10 @@ class Totp {
   }
 
   /// Returns the `otpauth://` URI suitable for encoding into a QR code.
-  Uri provisioningUri({required String accountName, required String issuer}) {
+  Uri provisioningUri({
+    required String accountName,
+    required String issuer,
+  }) {
     return Uri(
       scheme: 'otpauth',
       host: 'totp',
@@ -67,7 +78,11 @@ class Totp {
     );
   }
 
-  static String _hotp(Uint8List secret, int counter, {required int digits}) {
+  static String _hotp(
+    Uint8List secret,
+    int counter, {
+    required int digits,
+  }) {
     // Convert counter to 8-byte big-endian.
     final counterBytes = Uint8List(8);
     var remaining = counter;
@@ -78,8 +93,7 @@ class Totp {
     final hmac = Hmac(sha1, secret);
     final digest = hmac.convert(counterBytes).bytes;
     final offset = digest.last & 0x0F;
-    final binary =
-        ((digest[offset] & 0x7F) << 24) |
+    final binary = ((digest[offset] & 0x7F) << 24) |
         ((digest[offset + 1] & 0xFF) << 16) |
         ((digest[offset + 2] & 0xFF) << 8) |
         (digest[offset + 3] & 0xFF);
@@ -138,8 +152,7 @@ class Totp {
       final idx = _base32Alphabet.indexOf(String.fromCharCode(ch));
       if (idx < 0) {
         throw FormatException(
-          'Invalid base32 character: ${String.fromCharCode(ch)}',
-        );
+            'Invalid base32 character: ${String.fromCharCode(ch)}');
       }
       buffer = (buffer << 5) | idx;
       bits += 5;

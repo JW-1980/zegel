@@ -7,7 +7,9 @@ import 'dart:io';
 /// buckets so support teams can quickly spot the most common user errors
 /// without needing to inspect individual logs.
 class FailureStats {
-  FailureStats({this.maxSamples = 50}) : _counts = {}, _samples = [];
+  FailureStats({this.maxSamples = 50})
+      : _counts = {},
+        _samples = [];
 
   final Map<FailureCategory, int> _counts;
   final List<FailureSample> _samples;
@@ -18,13 +20,11 @@ class FailureStats {
   void record(String message, {FailureCategory? category, DateTime? at}) {
     final bucket = category ?? classify(message);
     _counts[bucket] = (_counts[bucket] ?? 0) + 1;
-    _samples.add(
-      FailureSample(
-        category: bucket,
-        message: message,
-        at: (at ?? DateTime.now().toUtc()).toUtc(),
-      ),
-    );
+    _samples.add(FailureSample(
+      category: bucket,
+      message: message,
+      at: (at ?? DateTime.now().toUtc()).toUtc(),
+    ));
     while (_samples.length > maxSamples) {
       _samples.removeAt(0);
     }
@@ -81,18 +81,17 @@ class FailureStats {
   }
 
   Map<String, dynamic> toJson() => {
-    'counts': {for (final e in _counts.entries) e.key.name: e.value},
-    'samples': _samples.map((s) => s.toJson()).toList(),
-    'max_samples': maxSamples,
-  };
+        'counts': {for (final e in _counts.entries) e.key.name: e.value},
+        'samples': _samples.map((s) => s.toJson()).toList(),
+        'max_samples': maxSamples,
+      };
 
   String encode() => jsonEncode(toJson());
 
   static FailureStats decodeJson(String raw) {
     final m = jsonDecode(raw) as Map<String, dynamic>;
-    final stats = FailureStats(
-      maxSamples: (m['max_samples'] as num?)?.toInt() ?? 50,
-    );
+    final stats =
+        FailureStats(maxSamples: (m['max_samples'] as num?)?.toInt() ?? 50);
     final countsMap =
         (m['counts'] as Map<String, dynamic>?) ?? const <String, dynamic>{};
     countsMap.forEach((k, v) {
@@ -141,21 +140,21 @@ class FailureSample {
   });
 
   static FailureSample fromJson(Map<String, dynamic> json) => FailureSample(
-    category: FailureCategory.values.firstWhere(
-      (c) => c.name == json['category'],
-      orElse: () => FailureCategory.other,
-    ),
-    message: json['message'] as String,
-    at: DateTime.parse(json['at'] as String).toUtc(),
-  );
+        category: FailureCategory.values.firstWhere(
+          (c) => c.name == json['category'],
+          orElse: () => FailureCategory.other,
+        ),
+        message: json['message'] as String,
+        at: DateTime.parse(json['at'] as String).toUtc(),
+      );
 
   final FailureCategory category;
   final String message;
   final DateTime at;
 
   Map<String, dynamic> toJson() => {
-    'category': category.name,
-    'message': message,
-    'at': at.toUtc().toIso8601String(),
-  };
+        'category': category.name,
+        'message': message,
+        'at': at.toUtc().toIso8601String(),
+      };
 }

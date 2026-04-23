@@ -36,10 +36,10 @@ class StreamingSealWriter {
   /// If [salt] is provided (via [options]), it is used for deterministic
   /// output (testing). Otherwise a CSPRNG-generated salt is used.
   StreamingSealWriter(this.masterKey, this.options)
-    : _secureRandom = Random.secure(),
-      _salt = options.salt != null
-          ? Uint8List.fromList(options.salt!)
-          : _generateRandom(Random.secure(), ZegelFormat.saltSize) {
+      : _secureRandom = Random.secure(),
+        _salt = options.salt != null
+            ? Uint8List.fromList(options.salt!)
+            : _generateRandom(Random.secure(), ZegelFormat.saltSize) {
     if (masterKey.length != 32) {
       throw ArgumentError('Master key must be exactly 32 bytes');
     }
@@ -214,8 +214,7 @@ class StreamingSealWriter {
     String? expirationDate;
     if (options.expiration != null) {
       final DateTime dt = options.expiration!.toUtc();
-      expirationDate =
-          '${dt.year.toString().padLeft(4, '0')}-'
+      expirationDate = '${dt.year.toString().padLeft(4, '0')}-'
           '${dt.month.toString().padLeft(2, '0')}-'
           '${dt.day.toString().padLeft(2, '0')}';
     }
@@ -260,7 +259,12 @@ class StreamingSealWriter {
       final GCMBlockCipher cipher = GCMBlockCipher(AESEngine());
       cipher.init(
         true,
-        AEADParameters(KeyParameter(key), ZegelFormat.tagSize * 8, iv, aad),
+        AEADParameters(
+          KeyParameter(key),
+          ZegelFormat.tagSize * 8,
+          iv,
+          aad,
+        ),
       );
       final Uint8List encrypted = cipher.process(allPlaintexts[i]);
 
@@ -447,10 +451,7 @@ class StreamingSealWriter {
   /// Must match [ZegelWriter] exactly so the streaming output is verifiable
   /// by [ZegelReader].
   static Uint8List _buildBlockAad(
-    int blockType,
-    int blockIndex,
-    Uint8List salt,
-  ) {
+      int blockType, int blockIndex, Uint8List salt) {
     final Uint8List aad = Uint8List(1 + 4 + ZegelFormat.saltSize);
     aad[0] = blockType;
     final ByteData bd = ByteData.sublistView(aad);

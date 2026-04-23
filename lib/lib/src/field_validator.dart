@@ -6,6 +6,20 @@
 /// purely string-based so the class can live in the core library and
 /// be exercised in unit tests without any UI framework.
 class FieldValidator {
+  const FieldValidator(this.rules);
+
+  final List<ValidatorRule> rules;
+
+  /// Returns the first error message produced by any rule, or `null`
+  /// when every rule passes.
+  String? validate(String? value) {
+    for (final rule in rules) {
+      final error = rule.check(value);
+      if (error != null) return error;
+    }
+    return null;
+  }
+
   /// Shortcut for "all common text-field rules with defaults".
   factory FieldValidator.text({
     bool required = false,
@@ -21,19 +35,6 @@ class FieldValidator {
       if (pattern != null)
         PatternRule(pattern, message: patternMessage ?? 'Invalid format'),
     ]);
-  }
-  const FieldValidator(this.rules);
-
-  final List<ValidatorRule> rules;
-
-  /// Returns the first error message produced by any rule, or `null`
-  /// when every rule passes.
-  String? validate(String? value) {
-    for (final rule in rules) {
-      final error = rule.check(value);
-      if (error != null) return error;
-    }
-    return null;
   }
 }
 
@@ -57,7 +58,7 @@ class RequiredRule extends ValidatorRule {
 
 class MinLengthRule extends ValidatorRule {
   const MinLengthRule(this.length, {String? message})
-    : _customMessage = message;
+      : _customMessage = message;
 
   final int length;
   final String? _customMessage;
@@ -73,7 +74,7 @@ class MinLengthRule extends ValidatorRule {
 
 class MaxLengthRule extends ValidatorRule {
   const MaxLengthRule(this.length, {String? message})
-    : _customMessage = message;
+      : _customMessage = message;
 
   final int length;
   final String? _customMessage;

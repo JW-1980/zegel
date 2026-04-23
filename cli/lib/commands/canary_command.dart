@@ -23,8 +23,7 @@ class CanaryCommand extends Command<int> {
   final String name = 'canary';
 
   @override
-  String get description =>
-      'Canary trap fingerprinting operations.\n'
+  String get description => 'Canary trap fingerprinting operations.\n'
       '\n'
       'Canary traps embed invisible, recipient-specific markers in sealed\n'
       'files. If a file is leaked, the markers can identify which recipient\n'
@@ -57,8 +56,7 @@ class CanaryEmbedCommand extends Command<int> {
   final String name = 'embed';
 
   @override
-  String get description =>
-      'Embed a canary trap for a specific recipient.\n'
+  String get description => 'Embed a canary trap for a specific recipient.\n'
       '\n'
       'Creates a copy of the sealed file with invisible fingerprinting that\n'
       'is unique to the specified recipient. The canary padding is derived\n'
@@ -89,8 +87,7 @@ class CanaryEmbedCommand extends Command<int> {
     argParser.addOption(
       'recipient',
       abbr: 'r',
-      help:
-          'Recipient identifier string.\n'
+      help: 'Recipient identifier string.\n'
           'This is hashed to produce a 32-byte canary ID.',
       valueHelp: 'id',
       mandatory: true,
@@ -184,8 +181,7 @@ class CanaryEmbedCommand extends Command<int> {
         header.expirationTimestamp! * 1000,
         isUtc: true,
       );
-      expirationDateStr =
-          '${dt.year.toString().padLeft(4, '0')}-'
+      expirationDateStr = '${dt.year.toString().padLeft(4, '0')}-'
           '${dt.month.toString().padLeft(2, '0')}-'
           '${dt.day.toString().padLeft(2, '0')}';
     }
@@ -220,7 +216,11 @@ class CanaryEmbedCommand extends Command<int> {
       );
 
       // Decrypt with AAD bound to the original block position and salt.
-      final Uint8List decryptAad = _buildBlockAad(entry.type, i, header.salt);
+      final Uint8List decryptAad = _buildBlockAad(
+        entry.type,
+        i,
+        header.salt,
+      );
       final cipher = _createGCMCipher(false, blockKey, entry.iv, decryptAad);
       final Uint8List input = Uint8List(ciphertext.length + entry.tag.length);
       input.setRange(0, ciphertext.length, ciphertext);
@@ -417,7 +417,12 @@ class CanaryEmbedCommand extends Command<int> {
     final cipher = GCMBlockCipher(AESEngine());
     cipher.init(
       encrypt,
-      AEADParameters(KeyParameter(key), ZegelFormat.tagSize * 8, iv, aad),
+      AEADParameters(
+        KeyParameter(key),
+        ZegelFormat.tagSize * 8,
+        iv,
+        aad,
+      ),
     );
     return cipher;
   }
@@ -426,10 +431,7 @@ class CanaryEmbedCommand extends Command<int> {
   /// `blockType(1) || blockIndex(4 BE) || salt(32)`.
   /// Must match [ZegelWriter] exactly so re-sealed files remain verifiable.
   static Uint8List _buildBlockAad(
-    int blockType,
-    int blockIndex,
-    Uint8List salt,
-  ) {
+      int blockType, int blockIndex, Uint8List salt) {
     final Uint8List aad = Uint8List(1 + 4 + ZegelFormat.saltSize);
     aad[0] = blockType;
     final ByteData bd = ByteData.sublistView(aad);
@@ -469,8 +471,7 @@ class CanaryIdentifyCommand extends Command<int> {
   final String name = 'identify';
 
   @override
-  String get description =>
-      'Identify which recipient leaked a file.\n'
+  String get description => 'Identify which recipient leaked a file.\n'
       '\n'
       'Given a potentially leaked file and a list of candidate recipients,\n'
       'this command checks the canary padding in content blocks to identify\n'
@@ -592,8 +593,7 @@ class CanaryIdentifyCommand extends Command<int> {
         rawHeader.expirationTimestamp! * 1000,
         isUtc: true,
       );
-      expirationDateStr =
-          '${dt.year.toString().padLeft(4, '0')}-'
+      expirationDateStr = '${dt.year.toString().padLeft(4, '0')}-'
           '${dt.month.toString().padLeft(2, '0')}-'
           '${dt.day.toString().padLeft(2, '0')}';
     }
@@ -691,7 +691,12 @@ class CanaryIdentifyCommand extends Command<int> {
     final cipher = GCMBlockCipher(AESEngine());
     cipher.init(
       encrypt,
-      AEADParameters(KeyParameter(key), ZegelFormat.tagSize * 8, iv, aad),
+      AEADParameters(
+        KeyParameter(key),
+        ZegelFormat.tagSize * 8,
+        iv,
+        aad,
+      ),
     );
     return cipher;
   }
