@@ -20,8 +20,7 @@ class TimestampCommand extends Command<int> {
   final String name = 'timestamp';
 
   @override
-  String get description =>
-      'Trusted timestamp operations.\n'
+  String get description => 'Trusted timestamp operations.\n'
       '\n'
       'Timestamps provide provable creation times for sealed files,\n'
       'independent of local system clocks. This helps prevent\n'
@@ -54,8 +53,7 @@ class TimestampCreateCommand extends Command<int> {
   final String name = 'create';
 
   @override
-  String get description =>
-      'Create a timestamp for a .zgl file.\n'
+  String get description => 'Create a timestamp for a .zgl file.\n'
       '\n'
       'Creates a timestamp token that binds the file\'s Merkle root and\n'
       'master seal to a specific point in time. The timestamp can be\n'
@@ -87,16 +85,14 @@ class TimestampCreateCommand extends Command<int> {
 
     argParser.addOption(
       'tsa',
-      help:
-          'URL of a trusted timestamping authority (RFC 3161).\n'
+      help: 'URL of a trusted timestamping authority (RFC 3161).\n'
           'If not specified, creates a local timestamp.',
       valueHelp: 'url',
     );
 
     argParser.addOption(
       'signer-key',
-      help:
-          'Key for signing local timestamps (hex).\n'
+      help: 'Key for signing local timestamps (hex).\n'
           'If not specified, uses the master key.',
       valueHelp: 'hex',
     );
@@ -155,29 +151,64 @@ class TimestampCreateCommand extends Command<int> {
     Map<String, dynamic> timestampToken;
 
     if (tsaUrl != null && tsaUrl.isNotEmpty) {
-      // Create TSA request (for external TSA).
-      final request = TrustedTimestamp.createRequest(
+      // Fetch RFC 3161 timestamp from TSA.
+      final messageImprint = TrustedTimestamp.computeMessageImprint(
         rawHeader.merkleRoot,
         masterSeal,
       );
 
-      stdout.writeln('Sending timestamp request to: $tsaUrl');
       try {
-        final client = HttpClient();
-        final req = await client.postUrl(Uri.parse(tsaUrl));
-        req.headers.set('Content-Type', 'application/json');
-        req.add(utf8.encode(jsonEncode(request)));
-        final response = await req.close();
+        final tsData = await TrustedTimestamp.fetchRfc3161(
+          Uri.parse(tsaUrl),
+          messageImprint,
+        );
 
-        if (response.statusCode != 200) {
-          exitError('TSA returned error status: ${response.statusCode}');
+        timestampToken = {
+          'type': 'rfc3161',
+          'tsa_url': tsaUrl,
+          'timestamp': tsData.verifiedTime.notBefore != null
+              ? tsData.verifiedTime.notBefore!.millisecondsSinceEpoch ~/ 1000
+              : DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000,
+          'anchor_source': tsData.verifiedTime.anchorSource,
+          'self_asserted': tsData.verifiedTime.selfAsserted,
+          'payload_length': tsData.payload.length,
+        };
+
+        if (outputPath != null && outputPath.isNotEmpty) {
+          // Also write the raw DER token for use with --tsa-token.
+          final derPath = '$outputPath.der';
+          File(derPath).writeAsBytesSync(tsData.payload);
+          stdout.writeln(
+            Ansi.success('RFC 3161 token saved to $derPath'),
+          );
+          stdout.writeln(
+            '  Use with: zegel seal --tsa-token $derPath',
+          );
+        }
+      } on Exception catch (e) {
+        stdout.writeln(
+          Ansi.warning('TSA communication failed: $e'),
+        );
+        stdout.writeln('Falling back to local timestamp.');
+
+        Uint8List signerKey = masterKey;
+        final signerKeyHex = argResults!['signer-key'] as String?;
+        final signerKeyFilePath = argResults!['signer-key-file'] as String?;
+
+        if (signerKeyHex != null && signerKeyHex.isNotEmpty) {
+          signerKey = hexDecode(signerKeyHex, label: 'signer-key');
+        } else if (signerKeyFilePath != null && signerKeyFilePath.isNotEmpty) {
+          signerKey = readKeyFile(signerKeyFilePath);
         }
 
-        final responseBody = await response.transform(utf8.decoder).join();
-        timestampToken = jsonDecode(responseBody) as Map<String, dynamic>;
-        client.close();
-      } catch (e) {
-        exitError('TSA communication failed: $e');
+        // ignore: deprecated_member_use
+        timestampToken = TrustedTimestamp.createLocalToken(
+          rawHeader.merkleRoot,
+          masterSeal,
+          signerKey,
+        );
+        timestampToken['tsa_url'] = tsaUrl;
+        timestampToken['tsa_fallback'] = 'local';
       }
     } else {
       // Create local timestamp.
@@ -198,6 +229,7 @@ class TimestampCreateCommand extends Command<int> {
         );
       }
 
+      // ignore: deprecated_member_use
       timestampToken = TrustedTimestamp.createLocalToken(
         rawHeader.merkleRoot,
         masterSeal,
@@ -243,8 +275,7 @@ class TimestampVerifyCommand extends Command<int> {
   final String name = 'verify';
 
   @override
-  String get description =>
-      'Verify a timestamp token for a .zgl file.\n'
+  String get description => 'Verify a timestamp token for a .zgl file.\n'
       '\n'
       'Verifies that a timestamp token matches the specified .zgl file\n'
       'and that the signature is valid. For local timestamps, the signer\n'
@@ -274,8 +305,7 @@ class TimestampVerifyCommand extends Command<int> {
 
     argParser.addOption(
       'signer-key',
-      help:
-          'Key used for signing local timestamps (hex).\n'
+      help: 'Key used for signing local timestamps (hex).\n'
           'If not specified, uses the master key.',
       valueHelp: 'hex',
     );

@@ -7,9 +7,9 @@ import 'package:pointycastle/export.dart';
 
 import 'canary.dart';
 import 'format.dart';
-import 'secure_memory.dart';
 import 'key_derivation.dart';
 import 'merkle_tree.dart';
+import 'timestamp.dart';
 
 // =============================================================================
 // Result types
@@ -30,6 +30,7 @@ class ZegelResult {
     this.provenance,
     this.redactedBlocks,
     this.disclosedBlocks,
+    this.verifiedCreationTime,
   });
 
   /// Whether all cryptographic checks passed.
@@ -64,6 +65,13 @@ class ZegelResult {
 
   /// Zero-based indices of blocks successfully disclosed (only for selective disclosure).
   final List<int>? disclosedBlocks;
+
+  /// Verified creation time from the TIMESTAMP appendix.
+  ///
+  /// When null, no timestamp verification was performed.
+  /// When [VerifiedCreationTime.selfAsserted] is true, the creation time
+  /// in the header is from the sealer's local clock with no external proof.
+  final VerifiedCreationTime? verifiedCreationTime;
 }
 
 /// Header-only inspection result (no master key required).
@@ -79,8 +87,7 @@ class ZegelInspection {
     this.publicMetadata,
     this.splitKeyParams,
     this.expirationTimestamp,
-    required this.merkleRoot,
-    required this.masterSeal,
+    this.verifiedCreationTime,
   });
 
   /// Format version string (e.g. `"1.2"`).
@@ -110,11 +117,8 @@ class ZegelInspection {
   /// Expiration timestamp as Unix epoch seconds.
   final int? expirationTimestamp;
 
-  /// The 32-byte Merkle root extracted from the file.
-  final Uint8List merkleRoot;
-
-  /// The 64-byte master seal extracted from the end of the file.
-  final Uint8List masterSeal;
+  /// Whether the file has a trusted timestamp flag set.
+  final VerifiedCreationTime? verifiedCreationTime;
 }
 
 // =============================================================================
@@ -226,14 +230,21 @@ class ZegelReader {
     // =========================================================================
     // 6. Verify master seal (HMAC-SHA512)
     // =========================================================================
+    // Compute the seal position from the file structure rather than
+    // assuming the seal is the last 64 bytes (TIMESTAMP appendix may follow).
+    int sealStart = h.dataStart;
+    for (final entry in h.directory) {
+      sealStart += entry.ciphertextLen;
+    }
     final Uint8List preSealBytes = Uint8List.sublistView(
       fileBytes,
       0,
-      fileBytes.length - ZegelFormat.sealSize,
+      sealStart,
     );
     final Uint8List storedSeal = Uint8List.sublistView(
       fileBytes,
-      fileBytes.length - ZegelFormat.sealSize,
+      sealStart,
+      sealStart + ZegelFormat.sealSize,
     );
 
     final Uint8List sealKey = KeyDerivation.computeSealKey(
@@ -294,11 +305,6 @@ class ZegelReader {
       final Uint8List computedCommitment = KeyDerivation.computeKeyCommitment(
         blockKeys,
       );
-
-      // Best-effort wipe of the derived block keys before we drop the list.
-      // Dart's GC may still retain copies, but zeroing the live references
-      // shrinks the window in which raw block keys sit in the heap.
-      SecureMemory.wipeAll(blockKeys);
 
       if (!_constantTimeEquals(computedCommitment, h.keyCommitment!)) {
         throw const ZegelTamperedException('Key commitment mismatch');
@@ -369,16 +375,10 @@ class ZegelReader {
         gcmInput.setRange(ciphertext.length, gcmInput.length, entry.tag);
         plaintext = cipher.process(gcmInput);
       } on Exception {
-        // Best-effort wipe of the derived block key before surfacing the
-        // tamper error.
-        SecureMemory.wipe(blockKey);
         throw const ZegelTamperedException(
           'Tamper detected: block decryption failed',
         );
       }
-
-      // The block key is no longer needed beyond this point; wipe it.
-      SecureMemory.wipe(blockKey);
 
       // Verify plaintext hash BEFORE decompression.
       // Per spec: "The plaintext hash in the directory is computed from the
@@ -395,7 +395,9 @@ class ZegelReader {
       // Decompress content blocks (if COMPRESSED flag is set).
       if (h.flags & ZegelFormat.flagCompressed != 0 &&
           entry.type == ZegelFormat.blockContent) {
-        plaintext = _safeDecompress(plaintext);
+        plaintext = Uint8List.fromList(
+          const ZLibDecoder().decodeBytes(plaintext),
+        );
       }
 
       // Strip canary padding from content blocks.
@@ -409,13 +411,19 @@ class ZegelReader {
         case ZegelFormat.blockContent:
           contentParts.add(plaintext);
         case ZegelFormat.blockMetadata:
-          metadata = _decodeJsonMap(plaintext, 'metadata block');
+          metadata = jsonDecode(utf8.decode(plaintext)) as Map<String, dynamic>;
         case ZegelFormat.blockProvenance:
-          provenanceEntries.add(_decodeJsonMap(plaintext, 'provenance block'));
+          provenanceEntries.add(
+            jsonDecode(utf8.decode(plaintext)) as Map<String, dynamic>,
+          );
         case ZegelFormat.blockAttestation:
-          attestations.add(_decodeJsonMap(plaintext, 'attestation block'));
+          attestations.add(
+            jsonDecode(utf8.decode(plaintext)) as Map<String, dynamic>,
+          );
         case ZegelFormat.blockAudit:
-          auditTrail.add(_decodeJsonMap(plaintext, 'audit block'));
+          auditTrail.add(
+            jsonDecode(utf8.decode(plaintext)) as Map<String, dynamic>,
+          );
         default:
           // PUBLIC_METADATA, FILE_HEADER, REFERENCE, DISCLOSURE_INDEX:
           // silently consumed.
@@ -424,7 +432,59 @@ class ZegelReader {
     }
 
     // =========================================================================
-    // 11. Build result
+    // 11. Parse TIMESTAMP appendix (after master seal)
+    // =========================================================================
+    VerifiedCreationTime? verifiedCreationTime;
+    final int timestampStart = sealStart + ZegelFormat.sealSize;
+
+    if (h.flags & ZegelFormat.flagHasTimestamp != 0) {
+      if (timestampStart < fileBytes.length) {
+        final tsAppendix = Uint8List.sublistView(fileBytes, timestampStart);
+        final messageImprint = TrustedTimestamp.computeMessageImprint(
+          h.merkleRoot,
+          storedSeal,
+        );
+        try {
+          final tsData = TimestampBlockData.fromBytes(tsAppendix, messageImprint);
+          verifiedCreationTime = tsData.verifiedTime;
+        } on FormatException {
+          verifiedCreationTime = const VerifiedCreationTime(
+            selfAsserted: true,
+            anchorSource: 'TIMESTAMP appendix corrupt',
+          );
+        }
+      } else {
+        verifiedCreationTime = const VerifiedCreationTime(
+          selfAsserted: true,
+          anchorSource: 'FLAG_HAS_TIMESTAMP set but no appendix found',
+        );
+      }
+    } else {
+      verifiedCreationTime = const VerifiedCreationTime(selfAsserted: true);
+    }
+
+    // =========================================================================
+    // 11b. Clock-rollback defense for expiration
+    // =========================================================================
+    if (h.expirationTimestamp != null &&
+        verifiedCreationTime != null &&
+        !verifiedCreationTime.selfAsserted &&
+        verifiedCreationTime.notAfter != null) {
+      final int anchorEpoch =
+          verifiedCreationTime.notAfter!.millisecondsSinceEpoch ~/ 1000;
+      final int nowEpoch =
+          DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
+      final int effectiveNow = anchorEpoch > nowEpoch ? anchorEpoch : nowEpoch;
+      if (effectiveNow >= h.expirationTimestamp!) {
+        throw ZegelExpiredException(
+          'File expired at epoch ${h.expirationTimestamp} '
+          '(verified against trusted anchor)',
+        );
+      }
+    }
+
+    // =========================================================================
+    // 12. Build result
     // =========================================================================
     return ZegelResult(
       valid: true,
@@ -437,6 +497,7 @@ class ZegelReader {
       auditTrail: auditTrail.isNotEmpty ? auditTrail : null,
       provenance: provenanceEntries.isNotEmpty ? provenanceEntries : null,
       redactedBlocks: redactedBlocks.isNotEmpty ? redactedBlocks : null,
+      verifiedCreationTime: verifiedCreationTime,
     );
   }
 
@@ -458,9 +519,14 @@ class ZegelReader {
       };
     }
 
-    final Uint8List masterSeal = Uint8List.fromList(
-      fileBytes.sublist(fileBytes.length - ZegelFormat.sealSize),
-    );
+    final bool hasTimestampFlag =
+        h.flags & ZegelFormat.flagHasTimestamp != 0;
+    final VerifiedCreationTime inspectTime = hasTimestampFlag
+        ? const VerifiedCreationTime(
+            selfAsserted: false,
+            anchorSource: 'FLAG_HAS_TIMESTAMP set (verify with key to confirm)',
+          )
+        : const VerifiedCreationTime(selfAsserted: true);
 
     return ZegelInspection(
       version: '${h.versionMajor}.${h.versionMinor}',
@@ -472,8 +538,7 @@ class ZegelReader {
       publicMetadata: h.publicMetadata,
       splitKeyParams: splitKeyParams,
       expirationTimestamp: h.expirationTimestamp,
-      merkleRoot: h.merkleRoot,
-      masterSeal: masterSeal,
+      verifiedCreationTime: inspectTime,
     );
   }
 
@@ -508,28 +573,14 @@ class ZegelReader {
 
     final _ParsedHeader h = _parseAll(fileBytes);
 
-    // SEC-17: Re-compute the Merkle root from the directory and ensure it
-    // matches the header. Without this, an attacker could mutate the header
-    // Merkle root field; the per-block GCM tag would still succeed because
-    // the AAD does not include the root, and the caller would receive
-    // decrypted content from what it believes is a trusted file.
-    final List<Uint8List> directoryLeafHashes =
-        h.directory.map((_DirEntry e) => e.hash).toList();
-    final Uint8List computedRoot = MerkleTree.buildRoot(directoryLeafHashes);
-    if (!_constantTimeEquals(computedRoot, h.merkleRoot)) {
-      throw const ZegelTamperedException(
-        'Merkle root does not match directory hashes',
-      );
-    }
-
     final Map<String, dynamic> blockKeysMap =
         token['block_keys'] as Map<String, dynamic>;
 
-    // Verify token Merkle root matches file.
+    // Verify token Merkle root matches file
     if (token.containsKey('merkle_root')) {
       final String tokenRoot = token['merkle_root'] as String;
       final String fileRoot = _bytesToHex(h.merkleRoot);
-      if (!_constantTimeEqualsString(tokenRoot, fileRoot)) {
+      if (tokenRoot != fileRoot) {
         throw const ZegelTamperedException(
           'Token Merkle root does not match file',
         );
@@ -621,7 +672,9 @@ class ZegelReader {
       // Decompress if needed.
       if (h.flags & ZegelFormat.flagCompressed != 0 &&
           entry.type == ZegelFormat.blockContent) {
-        plaintext = _safeDecompress(plaintext);
+        plaintext = Uint8List.fromList(
+          const ZLibDecoder().decodeBytes(plaintext),
+        );
       }
 
       // Strip canary padding.
@@ -634,13 +687,19 @@ class ZegelReader {
         case ZegelFormat.blockContent:
           contentParts.add(plaintext);
         case ZegelFormat.blockMetadata:
-          metadata = _decodeJsonMap(plaintext, 'metadata block');
+          metadata = jsonDecode(utf8.decode(plaintext)) as Map<String, dynamic>;
         case ZegelFormat.blockProvenance:
-          provenanceEntries.add(_decodeJsonMap(plaintext, 'provenance block'));
+          provenanceEntries.add(
+            jsonDecode(utf8.decode(plaintext)) as Map<String, dynamic>,
+          );
         case ZegelFormat.blockAttestation:
-          attestations.add(_decodeJsonMap(plaintext, 'attestation block'));
+          attestations.add(
+            jsonDecode(utf8.decode(plaintext)) as Map<String, dynamic>,
+          );
         case ZegelFormat.blockAudit:
-          auditTrail.add(_decodeJsonMap(plaintext, 'audit block'));
+          auditTrail.add(
+            jsonDecode(utf8.decode(plaintext)) as Map<String, dynamic>,
+          );
         default:
           break;
       }
@@ -875,90 +934,13 @@ class ZegelReader {
     return diff == 0;
   }
 
-  /// Constant-time string comparison (used for hex-encoded hashes).
-  static bool _constantTimeEqualsString(String a, String b) {
-    if (a.length != b.length) return false;
-    int diff = 0;
-    for (int i = 0; i < a.length; i++) {
-      diff |= a.codeUnitAt(i) ^ b.codeUnitAt(i);
-    }
-    return diff == 0;
-  }
-
   /// Converts a hex string to bytes.
   static Uint8List _hexToBytes(String hex) {
-    if (hex.length.isOdd) {
-      throw const ZegelFormatException(
-        'Invalid hex string: odd number of characters',
-      );
-    }
     final int length = hex.length ~/ 2;
     final Uint8List bytes = Uint8List(length);
     for (int i = 0; i < length; i++) {
-      final int? parsed = int.tryParse(
-        hex.substring(i * 2, i * 2 + 2),
-        radix: 16,
-      );
-      if (parsed == null) {
-        throw const ZegelFormatException(
-          'Invalid hex string: non-hex character',
-        );
-      }
-      bytes[i] = parsed;
+      bytes[i] = int.parse(hex.substring(i * 2, i * 2 + 2), radix: 16);
     }
     return bytes;
-  }
-
-  /// Decompresses [compressed] using zlib, capping output at
-  /// [ZegelFormat.maxDecompressedBlockSize] to prevent zip-bomb DoS.
-  ///
-  /// Throws [ZegelFormatException] if the decompressed data exceeds the
-  /// limit or the input is not valid zlib-compressed data. The underlying
-  /// exception is deliberately not interpolated into the message so that
-  /// future changes in the zlib backend cannot leak internal state.
-  static Uint8List _safeDecompress(Uint8List compressed) {
-    try {
-      final List<int> decoded = const ZLibDecoder().decodeBytes(compressed);
-      if (decoded.length > ZegelFormat.maxDecompressedBlockSize) {
-        throw ZegelFormatException(
-          'Decompressed block size ${decoded.length} exceeds maximum '
-          '${ZegelFormat.maxDecompressedBlockSize}',
-        );
-      }
-      return Uint8List.fromList(decoded);
-    } on ZegelFormatException {
-      rethrow;
-    } on Exception {
-      throw const ZegelFormatException('Failed to decompress block');
-    }
-  }
-
-  /// Decodes an authenticated plaintext payload as a `Map<String, dynamic>`
-  /// JSON object. Throws [ZegelFormatException] if the payload is not valid
-  /// UTF-8, not valid JSON, or not a JSON object. Called only after AES-GCM
-  /// authentication and plaintext-hash verification have already succeeded,
-  /// so this protects against producer bugs rather than adversarial input.
-  static Map<String, dynamic> _decodeJsonMap(
-    Uint8List plaintext,
-    String context,
-  ) {
-    final String text;
-    try {
-      text = utf8.decode(plaintext);
-    } on FormatException catch (e) {
-      throw ZegelFormatException('Invalid UTF-8 in $context: $e');
-    }
-    final dynamic decoded;
-    try {
-      decoded = jsonDecode(text);
-    } on FormatException catch (e) {
-      throw ZegelFormatException('Invalid JSON in $context: $e');
-    }
-    if (decoded is! Map<String, dynamic>) {
-      throw ZegelFormatException(
-        '$context must contain a JSON object (got ${decoded.runtimeType})',
-      );
-    }
-    return decoded;
   }
 }
