@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
+import 'secure_memory.dart';
 
 import 'format.dart';
 import 'reader.dart';
@@ -88,7 +89,9 @@ class TimeLock {
     // Compute hash^N(masterKey).
     Uint8List lockedKey = Uint8List.fromList(masterKey);
     for (int i = 0; i < iterations; i++) {
+      final oldKey = lockedKey;
       lockedKey = Uint8List.fromList(sha256.convert(lockedKey).bytes);
+      SecureMemory.wipe(oldKey);
     }
 
     // Compute a verification hash so the solver can confirm they got the
@@ -145,7 +148,9 @@ class TimeLock {
         );
 
     for (int i = 0; i < puzzle.iterations; i++) {
+      final oldCurrent = current;
       current = Uint8List.fromList(sha256.convert(current).bytes);
+      SecureMemory.wipe(oldCurrent);
       if (onProgress != null && i % progressInterval == 0) {
         onProgress(i / puzzle.iterations);
       }
