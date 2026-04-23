@@ -99,7 +99,9 @@ class VerificationCache {
           : Duration(seconds: (m['ttl_seconds'] as num).toInt()),
     );
     for (final entry in (m['entries'] as List<dynamic>? ?? const <dynamic>[])) {
-      final obj = CachedVerification.fromJson(entry as Map<String, dynamic>);
+      final obj = CachedVerification.fromJson(
+        entry as Map<String, dynamic>,
+      );
       cache._entries[obj.key] = obj;
     }
     return cache;
@@ -123,8 +125,7 @@ class CachedVerification {
         metadata: json['metadata'] == null
             ? const <String, dynamic>{}
             : Map<String, dynamic>.from(
-                json['metadata'] as Map<String, dynamic>,
-              ),
+                json['metadata'] as Map<String, dynamic>),
         cachedAt: DateTime.parse(json['cached_at'] as String).toUtc(),
       );
 

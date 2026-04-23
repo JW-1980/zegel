@@ -28,7 +28,6 @@ import 'template.dart';
 
 /// A single recipient in a bulk send list.
 class BulkRecipient {
-
   /// Deserializes from JSON.
   factory BulkRecipient.fromJson(Map<String, dynamic> json) {
     return BulkRecipient(
@@ -44,6 +43,7 @@ class BulkRecipient {
       title: json['title'] as String?,
     );
   }
+
   /// Creates a [BulkRecipient].
   const BulkRecipient({
     required this.name,
@@ -218,7 +218,6 @@ enum BulkSendStatus {
 
 /// A bulk send job containing many envelopes generated from one template.
 class BulkSendJob {
-
   /// Decodes from JSON bytes.
   factory BulkSendJob.decode(Uint8List data) {
     return BulkSendJob.fromJson(
@@ -237,9 +236,8 @@ class BulkSendJob {
       envelopeIds: (json['envelope_ids'] as List<dynamic>)
           .map((e) => e as String)
           .toList(),
-      status: BulkSendStatus.values.firstWhere(
-        (s) => s.name == (json['status'] ?? 'draft'),
-      ),
+      status: BulkSendStatus.values
+          .firstWhere((s) => s.name == (json['status'] ?? 'draft')),
       createdAt: json['created_at'] as int?,
       dispatchedAt: json['dispatched_at'] as int?,
       completedAt: json['completed_at'] as int?,
@@ -248,6 +246,7 @@ class BulkSendJob {
       name: json['name'] as String?,
     );
   }
+
   /// Creates a [BulkSendJob].
   BulkSendJob({
     required this.id,
@@ -312,7 +311,9 @@ class BulkSendJob {
   }) {
     // Validate signer role exists.
     if (!template.roles.any((r) => r.roleId == signerRoleId)) {
-      throw ArgumentError('Template does not contain role "$signerRoleId"');
+      throw ArgumentError(
+        'Template does not contain role "$signerRoleId"',
+      );
     }
 
     final now = DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;

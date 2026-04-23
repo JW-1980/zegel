@@ -5,7 +5,6 @@
 /// events ("user clicked next", "user completed step X") to the
 /// sequence, and the sequence decides what to show next.
 class TutorialSequence {
-
   /// Builds the default introduction sequence for new users.
   factory TutorialSequence.introduction() {
     return TutorialSequence(const <TutorialStep>[

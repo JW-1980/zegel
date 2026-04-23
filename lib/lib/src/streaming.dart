@@ -259,7 +259,12 @@ class StreamingSealWriter {
       final GCMBlockCipher cipher = GCMBlockCipher(AESEngine());
       cipher.init(
         true,
-        AEADParameters(KeyParameter(key), ZegelFormat.tagSize * 8, iv, aad),
+        AEADParameters(
+          KeyParameter(key),
+          ZegelFormat.tagSize * 8,
+          iv,
+          aad,
+        ),
       );
       final Uint8List encrypted = cipher.process(allPlaintexts[i]);
 
@@ -446,10 +451,7 @@ class StreamingSealWriter {
   /// Must match [ZegelWriter] exactly so the streaming output is verifiable
   /// by [ZegelReader].
   static Uint8List _buildBlockAad(
-    int blockType,
-    int blockIndex,
-    Uint8List salt,
-  ) {
+      int blockType, int blockIndex, Uint8List salt) {
     final Uint8List aad = Uint8List(1 + 4 + ZegelFormat.saltSize);
     aad[0] = blockType;
     final ByteData bd = ByteData.sublistView(aad);

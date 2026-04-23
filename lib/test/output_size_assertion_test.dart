@@ -116,11 +116,8 @@ void main() {
         blockSize: 65536,
       );
 
-      expect(
-        sealed.length,
-        equals(expected),
-        reason: 'Empty content should produce exactly $expected bytes',
-      );
+      expect(sealed.length, equals(expected),
+          reason: 'Empty content should produce exactly $expected bytes');
     });
 
     test('13-byte content "Hello, Zegel!" produces expected size', () {
@@ -215,11 +212,8 @@ void main() {
       final sealedBase = ZegelWriter(masterKey, optionsBase).seal(content);
       final sealedKc = ZegelWriter(masterKey, optionsKc).seal(content);
 
-      expect(
-        sealedKc.length - sealedBase.length,
-        equals(32),
-        reason: 'Key commitment must add exactly 32 bytes',
-      );
+      expect(sealedKc.length - sealedBase.length, equals(32),
+          reason: 'Key commitment must add exactly 32 bytes');
     });
 
     test('two seals of same content produce same size', () {
@@ -238,11 +232,8 @@ void main() {
       final sealed1 = ZegelWriter(masterKey, options1).seal(content);
       final sealed2 = ZegelWriter(masterKey, options2).seal(content);
 
-      expect(
-        sealed1.length,
-        equals(sealed2.length),
-        reason: 'Same inputs must always produce same output size',
-      );
+      expect(sealed1.length, equals(sealed2.length),
+          reason: 'Same inputs must always produce same output size');
     });
 
     test('no extra bytes appended after master seal', () {
@@ -316,18 +307,12 @@ void main() {
       // Then directory entry: type(1) + hash(32) + ctLen(4) + iv(12) + tag(16).
       const dirStart = 122 + 6; // 128
       const ctLenOffset = dirStart + 1 + 32; // type + hash = 33 bytes in
-      final ctLen = ByteData.sublistView(
-        sealed,
-        ctLenOffset,
-        ctLenOffset + 4,
-      ).getUint32(0, Endian.big);
+      final ctLen = ByteData.sublistView(sealed, ctLenOffset, ctLenOffset + 4)
+          .getUint32(0, Endian.big);
 
       // Ciphertext length should equal plaintext length (1000 bytes).
-      expect(
-        ctLen,
-        equals(1000),
-        reason: 'Ciphertext length in directory should match plaintext',
-      );
+      expect(ctLen, equals(1000),
+          reason: 'Ciphertext length in directory should match plaintext');
     });
   });
 }

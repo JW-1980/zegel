@@ -80,13 +80,12 @@ void main() {
       });
 
       test(
-        'completing all informational steps leaves the wizard at the first required step',
-        () {
-          final wizard = twoStepWizard();
-          wizard.complete('step-a');
-          expect(wizard.currentStep!.id, 'step-b');
-        },
-      );
+          'completing all informational steps leaves the wizard at the first required step',
+          () {
+        final wizard = twoStepWizard();
+        wizard.complete('step-a');
+        expect(wizard.currentStep!.id, 'step-b');
+      });
     });
 
     // -----------------------------------------------------------------------
@@ -96,7 +95,10 @@ void main() {
       test('complete throws StateError when required answer is missing', () {
         final wizard = freshWizard();
         wizard.complete('welcome'); // advance past welcome
-        expect(() => wizard.complete('database'), throwsA(isA<StateError>()));
+        expect(
+          () => wizard.complete('database'),
+          throwsA(isA<StateError>()),
+        );
       });
 
       test('complete succeeds after providing the required answer', () {
@@ -153,10 +155,8 @@ void main() {
         wizard.answer('database', 'postgres://localhost/zegel');
         wizard.complete('database');
         wizard.complete('tsa');
-        wizard.answer(
-          'admin-key',
-          'abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890',
-        );
+        wizard.answer('admin-key',
+            'abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890');
         wizard.complete('admin-key');
         wizard.complete('finish');
       }
@@ -312,7 +312,11 @@ void main() {
       });
 
       test('requiredAnswer defaults to null', () {
-        const step = SetupStep(id: 's', title: 'S', description: 'D');
+        const step = SetupStep(
+          id: 's',
+          title: 'S',
+          description: 'D',
+        );
         expect(step.requiredAnswer, isNull);
       });
     });

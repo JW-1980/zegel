@@ -11,9 +11,8 @@
 class PiiDetector {
   PiiDetector._();
 
-  static final RegExp _ssnUs = RegExp(
-    r'\b(?!000|666|9\d\d)\d{3}[- ]?\d{2}[- ]?\d{4}\b',
-  );
+  static final RegExp _ssnUs =
+      RegExp(r'\b(?!000|666|9\d\d)\d{3}[- ]?\d{2}[- ]?\d{4}\b');
   static final RegExp _email = RegExp(
     r'[\w.+\-]+@[\w\-]+(?:\.[\w\-]+)+',
     caseSensitive: false,
@@ -22,7 +21,9 @@ class PiiDetector {
     r'(?:\+?\d{1,3}[ -]?)?(?:\(\d{2,4}\)[ -]?)?\d{3}[ -]?\d{3,4}[ -]?\d{3,4}',
   );
   static final RegExp _creditCard = RegExp(r'\b(?:\d[ -]?){13,19}\b');
-  static final RegExp _iban = RegExp(r'\b[A-Z]{2}\d{2}[A-Z0-9]{10,30}\b');
+  static final RegExp _iban = RegExp(
+    r'\b[A-Z]{2}\d{2}[A-Z0-9]{10,30}\b',
+  );
   static final RegExp _ipv4 = RegExp(
     r'\b(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\b',
   );
@@ -33,21 +34,16 @@ class PiiDetector {
     final matches = <PiiMatch>[];
 
     void collect(
-      RegExp re,
-      PiiCategory category,
-      bool Function(String)? extra,
-    ) {
+        RegExp re, PiiCategory category, bool Function(String)? extra) {
       for (final m in re.allMatches(text)) {
         final value = m.group(0) ?? '';
         if (extra != null && !extra(value)) continue;
-        matches.add(
-          PiiMatch(
-            category: category,
-            value: value,
-            start: m.start,
-            end: m.end,
-          ),
-        );
+        matches.add(PiiMatch(
+          category: category,
+          value: value,
+          start: m.start,
+          end: m.end,
+        ));
       }
     }
 
@@ -120,7 +116,14 @@ class PiiDetector {
   }
 }
 
-enum PiiCategory { ssn, email, phone, creditCard, iban, ipv4 }
+enum PiiCategory {
+  ssn,
+  email,
+  phone,
+  creditCard,
+  iban,
+  ipv4,
+}
 
 class PiiMatch {
   const PiiMatch({

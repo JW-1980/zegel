@@ -29,9 +29,7 @@ void main() {
 
       test('nextTransitionAfter returns null', () {
         expect(
-          scheduler.nextTransitionAfter(DateTime(2026, 1, 1, 12, 0)),
-          isNull,
-        );
+            scheduler.nextTransitionAfter(DateTime(2026, 1, 1, 12, 0)), isNull);
       });
     });
 
@@ -61,9 +59,7 @@ void main() {
 
       test('nextTransitionAfter returns null', () {
         expect(
-          scheduler.nextTransitionAfter(DateTime(2026, 1, 1, 12, 0)),
-          isNull,
-        );
+            scheduler.nextTransitionAfter(DateTime(2026, 1, 1, 12, 0)), isNull);
       });
     });
 
@@ -99,9 +95,7 @@ void main() {
 
       test('nextTransitionAfter returns null', () {
         expect(
-          scheduler.nextTransitionAfter(DateTime(2026, 1, 1, 12, 0)),
-          isNull,
-        );
+            scheduler.nextTransitionAfter(DateTime(2026, 1, 1, 12, 0)), isNull);
       });
     });
 
@@ -182,17 +176,15 @@ void main() {
         expect(next.day, ref.day);
       });
 
-      test(
-        'returns darkStart when reference is between light and dark starts',
-        () {
-          final ref = DateTime(2026, 6, 1, 12, 0); // 12:00
-          final next = scheduler.nextTransitionAfter(ref);
-          expect(next, isNotNull);
-          expect(next!.hour, 20);
-          expect(next.minute, 0);
-          expect(next.day, ref.day);
-        },
-      );
+      test('returns darkStart when reference is between light and dark starts',
+          () {
+        final ref = DateTime(2026, 6, 1, 12, 0); // 12:00
+        final next = scheduler.nextTransitionAfter(ref);
+        expect(next, isNotNull);
+        expect(next!.hour, 20);
+        expect(next.minute, 0);
+        expect(next.day, ref.day);
+      });
 
       test('returns next day lightStart when both transitions have passed', () {
         final ref = DateTime(2026, 6, 1, 23, 0); // 23:00

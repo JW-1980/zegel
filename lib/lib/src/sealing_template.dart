@@ -117,14 +117,12 @@ class SealingTemplate {
       expirationFromNow: json['expiration_from_now_seconds'] == null
           ? null
           : Duration(
-              seconds: (json['expiration_from_now_seconds'] as num).toInt(),
-            ),
+              seconds: (json['expiration_from_now_seconds'] as num).toInt()),
       blockSize: (json['block_size'] as num?)?.toInt(),
       publicMetadata: json['public_metadata'] == null
           ? const <String, dynamic>{}
           : Map<String, dynamic>.from(
-              json['public_metadata'] as Map<String, dynamic>,
-            ),
+              json['public_metadata'] as Map<String, dynamic>),
       metadata: json['metadata'] == null
           ? const <String, dynamic>{}
           : Map<String, dynamic>.from(json['metadata'] as Map<String, dynamic>),
@@ -186,8 +184,7 @@ class SealingTemplateStore {
         .whereType<File>()
         .where((f) => f.path.endsWith('.json'))
         .map(
-          (f) => f.uri.pathSegments.last.replaceFirst(RegExp(r'\.json$'), ''),
-        )
+            (f) => f.uri.pathSegments.last.replaceFirst(RegExp(r'\.json$'), ''))
         .toList()
       ..sort();
   }

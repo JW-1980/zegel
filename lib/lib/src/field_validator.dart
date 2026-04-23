@@ -6,7 +6,6 @@
 /// purely string-based so the class can live in the core library and
 /// be exercised in unit tests without any UI framework.
 class FieldValidator {
-
   /// Shortcut for "all common text-field rules with defaults".
   factory FieldValidator.text({
     bool required = false,

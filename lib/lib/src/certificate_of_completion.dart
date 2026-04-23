@@ -26,7 +26,6 @@ import 'envelope.dart';
 
 /// A Certificate of Completion for a signing envelope.
 class CertificateOfCompletion {
-
   /// Decodes a certificate from JSON bytes.
   factory CertificateOfCompletion.decode(Uint8List data) {
     return CertificateOfCompletion.fromJson(
@@ -39,9 +38,8 @@ class CertificateOfCompletion {
     return CertificateOfCompletion(
       envelopeId: json['envelope_id'] as String,
       envelopeSubject: json['envelope_subject'] as String,
-      envelopeStatus: EnvelopeStatus.values.firstWhere(
-        (s) => s.name == json['envelope_status'],
-      ),
+      envelopeStatus: EnvelopeStatus.values
+          .firstWhere((s) => s.name == json['envelope_status']),
       senderName: json['sender_name'] as String?,
       senderEmail: json['sender_email'] as String?,
       recipients: (json['recipients'] as List<dynamic>)
@@ -60,6 +58,7 @@ class CertificateOfCompletion {
       certificateHash: json['certificate_hash'] as String?,
     );
   }
+
   /// Creates a [CertificateOfCompletion] from a completed [Envelope].
   CertificateOfCompletion({
     required this.envelopeId,

@@ -20,13 +20,11 @@ class FailureStats {
   void record(String message, {FailureCategory? category, DateTime? at}) {
     final bucket = category ?? classify(message);
     _counts[bucket] = (_counts[bucket] ?? 0) + 1;
-    _samples.add(
-      FailureSample(
-        category: bucket,
-        message: message,
-        at: (at ?? DateTime.now().toUtc()).toUtc(),
-      ),
-    );
+    _samples.add(FailureSample(
+      category: bucket,
+      message: message,
+      at: (at ?? DateTime.now().toUtc()).toUtc(),
+    ));
     while (_samples.length > maxSamples) {
       _samples.removeAt(0);
     }
@@ -92,9 +90,8 @@ class FailureStats {
 
   static FailureStats decodeJson(String raw) {
     final m = jsonDecode(raw) as Map<String, dynamic>;
-    final stats = FailureStats(
-      maxSamples: (m['max_samples'] as num?)?.toInt() ?? 50,
-    );
+    final stats =
+        FailureStats(maxSamples: (m['max_samples'] as num?)?.toInt() ?? 50);
     final countsMap =
         (m['counts'] as Map<String, dynamic>?) ?? const <String, dynamic>{};
     countsMap.forEach((k, v) {
