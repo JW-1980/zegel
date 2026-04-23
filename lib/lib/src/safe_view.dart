@@ -44,8 +44,9 @@ class SafeView {
     }
 
     final maskedLength = total - visibleHead - visibleTail;
-    final minPadded =
-        maskedLength < minMaskLength ? minMaskLength : maskedLength;
+    final minPadded = maskedLength < minMaskLength
+        ? minMaskLength
+        : maskedLength;
     final head = value.substring(0, visibleHead);
     final tail = value.substring(total - visibleTail);
     return '$head${maskChar * minPadded}$tail';
@@ -53,8 +54,10 @@ class SafeView {
 
   /// Obscures a full key or password (no visible head/tail), useful for
   /// passwords typed into a field.
-  static String obscureFully(String value,
-      {String maskChar = defaultMaskChar}) {
+  static String obscureFully(
+    String value, {
+    String maskChar = defaultMaskChar,
+  }) {
     return obscure(value, visibleHead: 0, visibleTail: 0, maskChar: maskChar);
   }
 
@@ -80,11 +83,7 @@ class SafeView {
         end: total - visibleTail,
         visible: false,
       ),
-      SafeViewRegion(
-        start: total - visibleTail,
-        end: total,
-        visible: true,
-      ),
+      SafeViewRegion(start: total - visibleTail, end: total, visible: true),
     ];
   }
 }

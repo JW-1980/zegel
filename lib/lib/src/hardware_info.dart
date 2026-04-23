@@ -73,16 +73,16 @@ class HardwareInfo {
   }
 
   Map<String, dynamic> toJson() => {
-        'processor_count': processorCount,
-        'operating_system': operatingSystem,
-        'operating_system_version': operatingSystemVersion,
-        'hostname': hostname,
-        'architecture': architecture,
-        'dart_version': dartVersion,
-        'local_hostname': localHostname,
-        'recommended_batch_concurrency': recommendedBatchConcurrency(),
-        'recommended_block_size_bytes': recommendedBlockSizeBytes(),
-      };
+    'processor_count': processorCount,
+    'operating_system': operatingSystem,
+    'operating_system_version': operatingSystemVersion,
+    'hostname': hostname,
+    'architecture': architecture,
+    'dart_version': dartVersion,
+    'local_hostname': localHostname,
+    'recommended_batch_concurrency': recommendedBatchConcurrency(),
+    'recommended_block_size_bytes': recommendedBlockSizeBytes(),
+  };
 
   static String _detectArchitecture() {
     final env = Platform.environment;

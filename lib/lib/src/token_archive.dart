@@ -12,10 +12,7 @@ import 'dart:io';
 /// expiration timestamp. If no timestamp is supplied, [addToken] tries to
 /// parse the token JSON and read its `expires_at` field (ISO-8601).
 class TokenArchive {
-  TokenArchive({
-    required this.liveDirectory,
-    required this.archiveDirectory,
-  });
+  TokenArchive({required this.liveDirectory, required this.archiveDirectory});
 
   /// Directory where live (unexpired) tokens are kept.
   final String liveDirectory;
@@ -126,7 +123,8 @@ class TokenArchive {
         .whereType<File>()
         .where((f) => f.path.endsWith('.json'))
         .map(
-            (f) => f.uri.pathSegments.last.replaceFirst(RegExp(r'\.json$'), ''))
+          (f) => f.uri.pathSegments.last.replaceFirst(RegExp(r'\.json$'), ''),
+        )
         .toList()
       ..sort();
   }
@@ -140,7 +138,8 @@ class TokenArchive {
         .whereType<File>()
         .where((f) => f.path.endsWith('.json'))
         .map(
-            (f) => f.uri.pathSegments.last.replaceFirst(RegExp(r'\.json$'), ''))
+          (f) => f.uri.pathSegments.last.replaceFirst(RegExp(r'\.json$'), ''),
+        )
         .toList()
       ..sort();
   }

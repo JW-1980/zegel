@@ -244,8 +244,9 @@ class ZegelReader {
     // =========================================================================
     // 7. Verify Merkle tree
     // =========================================================================
-    final List<Uint8List> leafHashes =
-        h.directory.map((_DirEntry e) => e.hash).toList();
+    final List<Uint8List> leafHashes = h.directory
+        .map((_DirEntry e) => e.hash)
+        .toList();
     final Uint8List computedRoot = MerkleTree.buildRoot(leafHashes);
 
     if (!_constantTimeEquals(computedRoot, h.merkleRoot)) {
@@ -261,7 +262,8 @@ class ZegelReader {
         h.expirationTimestamp! * 1000,
         isUtc: true,
       );
-      expirationDate = '${dt.year.toString().padLeft(4, '0')}-'
+      expirationDate =
+          '${dt.year.toString().padLeft(4, '0')}-'
           '${dt.month.toString().padLeft(2, '0')}-'
           '${dt.day.toString().padLeft(2, '0')}';
     }
@@ -506,8 +508,9 @@ class ZegelReader {
     // Merkle root field; the per-block GCM tag would still succeed because
     // the AAD does not include the root, and the caller would receive
     // decrypted content from what it believes is a trusted file.
-    final List<Uint8List> directoryLeafHashes =
-        h.directory.map((_DirEntry e) => e.hash).toList();
+    final List<Uint8List> directoryLeafHashes = h.directory
+        .map((_DirEntry e) => e.hash)
+        .toList();
     final Uint8List computedRoot = MerkleTree.buildRoot(directoryLeafHashes);
     if (!_constantTimeEquals(computedRoot, h.merkleRoot)) {
       throw const ZegelTamperedException(
@@ -894,7 +897,8 @@ class ZegelReader {
       );
       if (parsed == null) {
         throw const ZegelFormatException(
-            'Invalid hex string: non-hex character');
+          'Invalid hex string: non-hex character',
+        );
       }
       bytes[i] = parsed;
     }

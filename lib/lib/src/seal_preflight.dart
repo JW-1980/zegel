@@ -63,8 +63,10 @@ class SealPreflight {
           message:
               'Found ${piiMatches.length} potential PII match(es). Consider redaction.',
           details: {
-            'categories':
-                piiMatches.map((m) => m.category.name).toSet().toList(),
+            'categories': piiMatches
+                .map((m) => m.category.name)
+                .toSet()
+                .toList(),
             'count': piiMatches.length,
           },
         ),

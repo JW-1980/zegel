@@ -24,7 +24,8 @@ class AuditCommand extends Command<int> {
   final String name = 'audit';
 
   @override
-  String get description => 'Audit trail operations for .zgl files.\n'
+  String get description =>
+      'Audit trail operations for .zgl files.\n'
       '\n'
       'The audit trail is a tamper-evident append-only log that records\n'
       'actions performed on a sealed file. Each entry is hash-chained to\n'
@@ -60,7 +61,8 @@ class AuditViewCommand extends Command<int> {
   final String name = 'view';
 
   @override
-  String get description => 'View audit trail entries in a .zgl file.\n'
+  String get description =>
+      'View audit trail entries in a .zgl file.\n'
       '\n'
       'Displays all audit entries including actor, action, timestamp,\n'
       'and chain hash for each entry.\n'
@@ -164,7 +166,8 @@ class AuditAddCommand extends Command<int> {
   final String name = 'add';
 
   @override
-  String get description => 'Add a new audit entry to a .zgl file.\n'
+  String get description =>
+      'Add a new audit entry to a .zgl file.\n'
       '\n'
       'Creates an audit entry with the specified actor, action, and optional\n'
       'details. The entry is hash-chained to the previous entry in the trail.\n'
@@ -187,13 +190,15 @@ class AuditAddCommand extends Command<int> {
     addKeyOptions(argParser);
     addOutputOption(
       argParser,
-      help: 'Output path for the updated .zgl file.\n'
+      help:
+          'Output path for the updated .zgl file.\n'
           'Defaults to overwriting the input file.',
     );
 
     argParser.addOption(
       'actor',
-      help: 'Actor identifier string.\n'
+      help:
+          'Actor identifier string.\n'
           'Recommended format: "user:id:name@example.com" or\n'
           '"role:id:description".',
       valueHelp: 'id',
@@ -202,7 +207,8 @@ class AuditAddCommand extends Command<int> {
 
     argParser.addOption(
       'action',
-      help: 'Action being recorded.\n'
+      help:
+          'Action being recorded.\n'
           'Common values: sealed, verified, redacted, attested,\n'
           'disclosed, accessed, shared, modified, exported.',
       valueHelp: 'action',
@@ -340,7 +346,8 @@ class AuditAddCommand extends Command<int> {
         header.expirationTimestamp! * 1000,
         isUtc: true,
       );
-      expirationDateStr = '${dt.year.toString().padLeft(4, '0')}-'
+      expirationDateStr =
+          '${dt.year.toString().padLeft(4, '0')}-'
           '${dt.month.toString().padLeft(2, '0')}-'
           '${dt.day.toString().padLeft(2, '0')}';
     }
@@ -375,11 +382,7 @@ class AuditAddCommand extends Command<int> {
       );
 
       // Decrypt with the AAD bound to the original block position and salt.
-      final Uint8List decryptAad = _buildBlockAad(
-        entry.type,
-        i,
-        header.salt,
-      );
+      final Uint8List decryptAad = _buildBlockAad(entry.type, i, header.salt);
       final cipher = _createGCMCipher(false, blockKey, entry.iv, decryptAad);
       final Uint8List input = Uint8List(ciphertext.length + entry.tag.length);
       input.setRange(0, ciphertext.length, ciphertext);
@@ -568,12 +571,7 @@ class AuditAddCommand extends Command<int> {
     final cipher = GCMBlockCipher(AESEngine());
     cipher.init(
       encrypt,
-      AEADParameters(
-        KeyParameter(key),
-        ZegelFormat.tagSize * 8,
-        iv,
-        aad,
-      ),
+      AEADParameters(KeyParameter(key), ZegelFormat.tagSize * 8, iv, aad),
     );
     return cipher;
   }
@@ -582,7 +580,10 @@ class AuditAddCommand extends Command<int> {
   /// `blockType(1) || blockIndex(4 BE) || salt(32)`.
   /// Must match [ZegelWriter] exactly so re-sealed files remain verifiable.
   static Uint8List _buildBlockAad(
-      int blockType, int blockIndex, Uint8List salt) {
+    int blockType,
+    int blockIndex,
+    Uint8List salt,
+  ) {
     final Uint8List aad = Uint8List(1 + 4 + ZegelFormat.saltSize);
     aad[0] = blockType;
     final ByteData bd = ByteData.sublistView(aad);
@@ -622,7 +623,8 @@ class AuditVerifyChainCommand extends Command<int> {
   final String name = 'verify-chain';
 
   @override
-  String get description => 'Verify the integrity of the audit chain.\n'
+  String get description =>
+      'Verify the integrity of the audit chain.\n'
       '\n'
       'Recomputes the chain hash for each audit entry and verifies it\n'
       'matches the stored value. If any entry has been tampered with,\n'

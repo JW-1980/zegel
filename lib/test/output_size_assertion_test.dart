@@ -104,7 +104,7 @@ void main() {
   group('Output size assertions (anti-kleptographic)', () {
     test('empty content produces expected size', () {
       final content = Uint8List(0);
-      const options = ZegelOptions(
+      final options = ZegelOptions(
         contentType: 'text/plain',
         filename: 'empty.txt',
       );
@@ -116,13 +116,16 @@ void main() {
         blockSize: 65536,
       );
 
-      expect(sealed.length, equals(expected),
-          reason: 'Empty content should produce exactly $expected bytes');
+      expect(
+        sealed.length,
+        equals(expected),
+        reason: 'Empty content should produce exactly $expected bytes',
+      );
     });
 
     test('13-byte content "Hello, Zegel!" produces expected size', () {
       final content = Uint8List.fromList(utf8.encode('Hello, Zegel!'));
-      const options = ZegelOptions(
+      final options = ZegelOptions(
         contentType: 'text/plain',
         filename: 'test.txt',
       );
@@ -142,7 +145,7 @@ void main() {
       for (var i = 0; i < content.length; i++) {
         content[i] = i & 0xFF;
       }
-      const options = ZegelOptions(
+      final options = ZegelOptions(
         contentType: 'application/octet-stream',
         filename: 'boundary.bin',
       );
@@ -162,7 +165,7 @@ void main() {
       for (var i = 0; i < content.length; i++) {
         content[i] = i & 0xFF;
       }
-      const options = ZegelOptions(
+      final options = ZegelOptions(
         contentType: 'application/octet-stream',
         filename: 'over.bin',
       );
@@ -182,7 +185,7 @@ void main() {
       for (var i = 0; i < content.length; i++) {
         content[i] = i & 0xFF;
       }
-      const options = ZegelOptions(
+      final options = ZegelOptions(
         contentType: 'application/octet-stream',
         filename: '1mb.bin',
       );
@@ -199,11 +202,11 @@ void main() {
 
     test('file with key commitment adds exactly 32 bytes', () {
       final content = Uint8List.fromList(utf8.encode('kc test'));
-      const optionsBase = ZegelOptions(
+      final optionsBase = ZegelOptions(
         contentType: 'text/plain',
         filename: 'kc.txt',
       );
-      const optionsKc = ZegelOptions(
+      final optionsKc = ZegelOptions(
         contentType: 'text/plain',
         filename: 'kc.txt',
         enableKeyCommitment: true,
@@ -212,19 +215,22 @@ void main() {
       final sealedBase = ZegelWriter(masterKey, optionsBase).seal(content);
       final sealedKc = ZegelWriter(masterKey, optionsKc).seal(content);
 
-      expect(sealedKc.length - sealedBase.length, equals(32),
-          reason: 'Key commitment must add exactly 32 bytes');
+      expect(
+        sealedKc.length - sealedBase.length,
+        equals(32),
+        reason: 'Key commitment must add exactly 32 bytes',
+      );
     });
 
     test('two seals of same content produce same size', () {
       // This protects against steganographic channels where different
       // runs might use different amounts of "random padding".
       final content = Uint8List.fromList(utf8.encode('deterministic size'));
-      const options1 = ZegelOptions(
+      final options1 = ZegelOptions(
         contentType: 'text/plain',
         filename: 'same.txt',
       );
-      const options2 = ZegelOptions(
+      final options2 = ZegelOptions(
         contentType: 'text/plain',
         filename: 'same.txt',
       );
@@ -232,15 +238,18 @@ void main() {
       final sealed1 = ZegelWriter(masterKey, options1).seal(content);
       final sealed2 = ZegelWriter(masterKey, options2).seal(content);
 
-      expect(sealed1.length, equals(sealed2.length),
-          reason: 'Same inputs must always produce same output size');
+      expect(
+        sealed1.length,
+        equals(sealed2.length),
+        reason: 'Same inputs must always produce same output size',
+      );
     });
 
     test('no extra bytes appended after master seal', () {
       // Verify the master seal is exactly the last 64 bytes, not followed
       // by any trailer (which could be a subliminal channel).
       final content = Uint8List.fromList(utf8.encode('trailer check'));
-      const options = ZegelOptions(
+      final options = ZegelOptions(
         contentType: 'text/plain',
         filename: 'trailer.txt',
       );
@@ -277,7 +286,7 @@ void main() {
     test('roundtrip of size-asserted file works', () {
       // Ensure our size calculation doesn't compromise verifiability.
       final content = Uint8List.fromList(utf8.encode('roundtrip check'));
-      const options = ZegelOptions(
+      final options = ZegelOptions(
         contentType: 'text/plain',
         filename: 'rt.txt',
       );
@@ -289,14 +298,13 @@ void main() {
     });
   });
 
-  group('Ciphertext length equals plaintext length (no GCM overhead inline)',
-      () {
+  group('Ciphertext length equals plaintext length (no GCM overhead inline)', () {
     test('single block ciphertext length matches directory entry', () {
       final content = Uint8List(1000);
       for (var i = 0; i < 1000; i++) {
         content[i] = i & 0xFF;
       }
-      const options = ZegelOptions(
+      final options = ZegelOptions(
         contentType: 'application/octet-stream',
         filename: 'ct.bin',
       );
@@ -307,12 +315,18 @@ void main() {
       // Then directory entry: type(1) + hash(32) + ctLen(4) + iv(12) + tag(16).
       const dirStart = 122 + 6; // 128
       const ctLenOffset = dirStart + 1 + 32; // type + hash = 33 bytes in
-      final ctLen = ByteData.sublistView(sealed, ctLenOffset, ctLenOffset + 4)
-          .getUint32(0, Endian.big);
+      final ctLen = ByteData.sublistView(
+        sealed,
+        ctLenOffset,
+        ctLenOffset + 4,
+      ).getUint32(0, Endian.big);
 
       // Ciphertext length should equal plaintext length (1000 bytes).
-      expect(ctLen, equals(1000),
-          reason: 'Ciphertext length in directory should match plaintext');
+      expect(
+        ctLen,
+        equals(1000),
+        reason: 'Ciphertext length in directory should match plaintext',
+      );
     });
   });
 }

@@ -63,9 +63,9 @@ class RetentionPolicy {
   }
 
   Map<String, dynamic> toJson() => {
-        'default_retention_seconds': defaultRetention.inSeconds,
-        'rules': {for (final e in _rules.entries) e.key: e.value.inSeconds},
-      };
+    'default_retention_seconds': defaultRetention.inSeconds,
+    'rules': {for (final e in _rules.entries) e.key: e.value.inSeconds},
+  };
 
   String encode() => jsonEncode(toJson());
 
@@ -77,7 +77,8 @@ class RetentionPolicy {
     });
     return RetentionPolicy(
       defaultRetention: Duration(
-        seconds: (m['default_retention_seconds'] as num?)?.toInt() ??
+        seconds:
+            (m['default_retention_seconds'] as num?)?.toInt() ??
             const Duration(days: 365).inSeconds,
       ),
       rules: rules,

@@ -41,14 +41,14 @@ void main() {
 
     test('recommendedBlockSizeBytes scales with core count', () {
       int blockFor(int cores) => HardwareInfo(
-            processorCount: cores,
-            operatingSystem: 'linux',
-            operatingSystemVersion: '0',
-            hostname: 'h',
-            architecture: 'x64',
-            dartVersion: 'test',
-            localHostname: 'h',
-          ).recommendedBlockSizeBytes();
+        processorCount: cores,
+        operatingSystem: 'linux',
+        operatingSystemVersion: '0',
+        hostname: 'h',
+        architecture: 'x64',
+        dartVersion: 'test',
+        localHostname: 'h',
+      ).recommendedBlockSizeBytes();
 
       expect(blockFor(1), 32768);
       expect(blockFor(2), 65536);

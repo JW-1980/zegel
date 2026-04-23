@@ -143,9 +143,9 @@ class TimeLock {
 
     Uint8List current = Uint8List.fromList(startKey);
     final int progressInterval = (puzzle.iterations / 100).ceil().clamp(
-          1,
-          puzzle.iterations,
-        );
+      1,
+      puzzle.iterations,
+    );
 
     for (int i = 0; i < puzzle.iterations; i++) {
       final oldCurrent = current;

@@ -15,7 +15,7 @@ import 'hardware_info.dart';
 /// can pick reports up later and send them to a telemetry endpoint.
 class CrashReporter {
   CrashReporter({this.enabled = false, Anonymizer? anonymizer})
-      : _anonymizer = anonymizer ?? Anonymizer.random();
+    : _anonymizer = anonymizer ?? Anonymizer.random();
 
   /// Master toggle for the reporter. When false every `report*` call is a
   /// no-op.
@@ -65,9 +65,9 @@ class CrashReporter {
   void clear() => _reports.clear();
 
   String encode() => jsonEncode({
-        'enabled': enabled,
-        'reports': _reports.map((r) => r.toJson()).toList(),
-      });
+    'enabled': enabled,
+    'reports': _reports.map((r) => r.toJson()).toList(),
+  });
 
   static CrashReporter decodeJson(String raw) {
     final m = jsonDecode(raw) as Map<String, dynamic>;
@@ -104,18 +104,17 @@ class CrashReport {
   });
 
   static CrashReport fromJson(Map<String, dynamic> json) => CrashReport(
-        at: DateTime.parse(json['at'] as String).toUtc(),
-        message: json['message'] as String,
-        stackTrace: json['stack_trace'] as String,
-        context: json['context'] as String?,
-        hardware: json['hardware'] == null
-            ? const <String, dynamic>{}
-            : Map<String, dynamic>.from(
-                json['hardware'] as Map<String, dynamic>),
-        extra: json['extra'] == null
-            ? const <String, dynamic>{}
-            : Map<String, dynamic>.from(json['extra'] as Map<String, dynamic>),
-      );
+    at: DateTime.parse(json['at'] as String).toUtc(),
+    message: json['message'] as String,
+    stackTrace: json['stack_trace'] as String,
+    context: json['context'] as String?,
+    hardware: json['hardware'] == null
+        ? const <String, dynamic>{}
+        : Map<String, dynamic>.from(json['hardware'] as Map<String, dynamic>),
+    extra: json['extra'] == null
+        ? const <String, dynamic>{}
+        : Map<String, dynamic>.from(json['extra'] as Map<String, dynamic>),
+  );
 
   final DateTime at;
   final String message;
@@ -125,11 +124,11 @@ class CrashReport {
   final Map<String, dynamic> extra;
 
   Map<String, dynamic> toJson() => {
-        'at': at.toUtc().toIso8601String(),
-        'message': message,
-        'stack_trace': stackTrace,
-        if (context != null) 'context': context,
-        'hardware': hardware,
-        'extra': extra,
-      };
+    'at': at.toUtc().toIso8601String(),
+    'message': message,
+    'stack_trace': stackTrace,
+    if (context != null) 'context': context,
+    'hardware': hardware,
+    'extra': extra,
+  };
 }

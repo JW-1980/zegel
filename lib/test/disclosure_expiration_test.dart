@@ -99,7 +99,8 @@ void main() {
         final fileBytes = _createMultiBlockFile(masterKey);
         final merkleRoot = _getMerkleRoot(fileBytes);
         final salt = _getSalt(fileBytes);
-        final futureEpoch = DateTime.now()
+        final futureEpoch =
+            DateTime.now()
                 .add(const Duration(days: 365))
                 .toUtc()
                 .millisecondsSinceEpoch ~/
@@ -125,7 +126,8 @@ void main() {
         final fileBytes = _createMultiBlockFile(masterKey);
         final merkleRoot = _getMerkleRoot(fileBytes);
         final salt = _getSalt(fileBytes);
-        final pastEpoch = DateTime.now()
+        final pastEpoch =
+            DateTime.now()
                 .subtract(const Duration(days: 1))
                 .toUtc()
                 .millisecondsSinceEpoch ~/
@@ -153,7 +155,8 @@ void main() {
         final fileBytes = _createMultiBlockFile(masterKey);
         final merkleRoot = _getMerkleRoot(fileBytes);
         final salt = _getSalt(fileBytes);
-        final pastEpoch = DateTime.now()
+        final pastEpoch =
+            DateTime.now()
                 .subtract(const Duration(days: 1))
                 .toUtc()
                 .millisecondsSinceEpoch ~/
@@ -182,7 +185,8 @@ void main() {
         final fileBytes = _createMultiBlockFile(masterKey);
         final merkleRoot = _getMerkleRoot(fileBytes);
         final salt = _getSalt(fileBytes);
-        final futureEpoch = DateTime.now()
+        final futureEpoch =
+            DateTime.now()
                 .add(const Duration(days: 30))
                 .toUtc()
                 .millisecondsSinceEpoch ~/
@@ -210,7 +214,8 @@ void main() {
         final fileBytes = _createMultiBlockFile(masterKey);
         final merkleRoot = _getMerkleRoot(fileBytes);
         final salt = _getSalt(fileBytes);
-        final expiresAt = DateTime.now()
+        final expiresAt =
+            DateTime.now()
                 .add(const Duration(hours: 24))
                 .toUtc()
                 .millisecondsSinceEpoch ~/
@@ -254,7 +259,8 @@ void main() {
         final fileBytes = _createMultiBlockFile(masterKey);
         final merkleRoot = _getMerkleRoot(fileBytes);
         final salt = _getSalt(fileBytes);
-        final expiresAt = DateTime.now()
+        final expiresAt =
+            DateTime.now()
                 .add(const Duration(days: 7))
                 .toUtc()
                 .millisecondsSinceEpoch ~/

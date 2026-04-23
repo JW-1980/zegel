@@ -29,10 +29,12 @@ void main() {
         expect(ZegelFormat.versionMajor, equals(1));
       });
 
-      test('version minor is 4 (v1.4: domain separation + AAD + hedged nonces)',
-          () {
-        expect(ZegelFormat.versionMinor, equals(4));
-      });
+      test(
+        'version minor is 4 (v1.4: domain separation + AAD + hedged nonces)',
+        () {
+          expect(ZegelFormat.versionMinor, equals(4));
+        },
+      );
     });
 
     group('flags', () {
@@ -125,7 +127,8 @@ void main() {
       });
 
       test('all flags fit within uint16', () {
-        const allFlags = ZegelFormat.flagHasMetadata |
+        const allFlags =
+            ZegelFormat.flagHasMetadata |
             ZegelFormat.flagCompressed |
             ZegelFormat.flagPasswordDerived |
             ZegelFormat.flagHasKeyCommitment |

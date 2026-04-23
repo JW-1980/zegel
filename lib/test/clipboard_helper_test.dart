@@ -114,22 +114,25 @@ void main() {
       });
 
       test(
-          'value longer than 4 chars shows 2-char prefix then ellipsis then dots',
-          () {
-        final item = ClipboardHelper.secret('supersecret');
-        final preview = ClipboardHelper.previewFor(item);
-        // Pattern: first 2 chars + '…' + '••••'
-        expect(preview, startsWith('su'));
-        expect(preview, contains('…'));
-        expect(preview, endsWith('••••'));
-      });
+        'value longer than 4 chars shows 2-char prefix then ellipsis then dots',
+        () {
+          final item = ClipboardHelper.secret('supersecret');
+          final preview = ClipboardHelper.previewFor(item);
+          // Pattern: first 2 chars + '…' + '••••'
+          expect(preview, startsWith('su'));
+          expect(preview, contains('…'));
+          expect(preview, endsWith('••••'));
+        },
+      );
 
-      test('sensitive preview for value of 5 chars follows masking pattern',
-          () {
-        final item = ClipboardHelper.secret('hello');
-        final preview = ClipboardHelper.previewFor(item);
-        expect(preview, 'he…••••');
-      });
+      test(
+        'sensitive preview for value of 5 chars follows masking pattern',
+        () {
+          final item = ClipboardHelper.secret('hello');
+          final preview = ClipboardHelper.previewFor(item);
+          expect(preview, 'he…••••');
+        },
+      );
 
       test('sensitive preview never exposes more than 2 plaintext chars', () {
         final item = ClipboardHelper.secret('my-very-long-master-key-hex-data');
@@ -161,17 +164,19 @@ void main() {
         expect(item.sensitive, isFalse);
       });
 
-      test('sensitive item constructed correctly via ClipboardItem directly',
-          () {
-        const item = ClipboardItem(
-          value: 'secret',
-          label: 'Key',
-          autoClear: Duration(seconds: 30),
-          sensitive: true,
-        );
-        expect(item.sensitive, isTrue);
-        expect(item.autoClear, const Duration(seconds: 30));
-      });
+      test(
+        'sensitive item constructed correctly via ClipboardItem directly',
+        () {
+          const item = ClipboardItem(
+            value: 'secret',
+            label: 'Key',
+            autoClear: Duration(seconds: 30),
+            sensitive: true,
+          );
+          expect(item.sensitive, isTrue);
+          expect(item.autoClear, const Duration(seconds: 30));
+        },
+      );
     });
 
     group('defaultAutoClear constant', () {

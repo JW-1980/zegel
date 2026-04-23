@@ -172,8 +172,9 @@ class SignatureField {
       label: json['label'] as String?,
       defaultValue: json['default_value'] as String?,
       value: json['value'] as String?,
-      options:
-          (json['options'] as List<dynamic>?)?.map((o) => o as String).toList(),
+      options: (json['options'] as List<dynamic>?)
+          ?.map((o) => o as String)
+          .toList(),
     );
   }
 
@@ -268,15 +269,17 @@ class EnvelopeRecipient {
       email: json['email'] as String,
       role: RecipientRole.values.firstWhere((r) => r.name == json['role']),
       routingOrder: json['routing_order'] as int? ?? 1,
-      authentication: AuthenticationMethod.values
-          .firstWhere((a) => a.name == (json['authentication'] ?? 'none')),
+      authentication: AuthenticationMethod.values.firstWhere(
+        (a) => a.name == (json['authentication'] ?? 'none'),
+      ),
       accessCode: json['access_code'] as String?,
       phoneNumber: json['phone_number'] as String?,
       company: json['company'] as String?,
       title: json['title'] as String?,
       note: json['note'] as String?,
-      status: RecipientStatus.values
-          .firstWhere((s) => s.name == (json['status'] ?? 'created')),
+      status: RecipientStatus.values.firstWhere(
+        (s) => s.name == (json['status'] ?? 'created'),
+      ),
       signedAt: json['signed_at'] as int?,
       declinedAt: json['declined_at'] as int?,
       declineReason: json['decline_reason'] as String?,
@@ -510,22 +513,27 @@ class Envelope {
       id: json['id'] as String,
       subject: json['subject'] as String,
       message: json['message'] as String?,
-      routingMode: RoutingMode.values
-          .firstWhere((r) => r.name == (json['routing_mode'] ?? 'sequential')),
-      status: EnvelopeStatus.values
-          .firstWhere((s) => s.name == (json['status'] ?? 'draft')),
-      documentMerkleRoots: (json['document_merkle_roots'] as List<dynamic>?)
+      routingMode: RoutingMode.values.firstWhere(
+        (r) => r.name == (json['routing_mode'] ?? 'sequential'),
+      ),
+      status: EnvelopeStatus.values.firstWhere(
+        (s) => s.name == (json['status'] ?? 'draft'),
+      ),
+      documentMerkleRoots:
+          (json['document_merkle_roots'] as List<dynamic>?)
               ?.map((d) => d as String)
               .toList() ??
           <String>[],
       recipients: (json['recipients'] as List<dynamic>)
           .map((r) => EnvelopeRecipient.fromJson(r as Map<String, dynamic>))
           .toList(),
-      fields: (json['fields'] as List<dynamic>?)
+      fields:
+          (json['fields'] as List<dynamic>?)
               ?.map((f) => SignatureField.fromJson(f as Map<String, dynamic>))
               .toList() ??
           <SignatureField>[],
-      events: (json['events'] as List<dynamic>?)
+      events:
+          (json['events'] as List<dynamic>?)
               ?.map((e) => EnvelopeEvent.fromJson(e as Map<String, dynamic>))
               .toList() ??
           <EnvelopeEvent>[],
@@ -561,9 +569,9 @@ class Envelope {
     this.remindersEnabled = false,
     this.reminderIntervalDays = 3,
     this.reminderMaxCount = 3,
-  })  : documentMerkleRoots = documentMerkleRoots ?? <String>[],
-        fields = fields ?? <SignatureField>[],
-        events = events ?? <EnvelopeEvent>[];
+  }) : documentMerkleRoots = documentMerkleRoots ?? <String>[],
+       fields = fields ?? <SignatureField>[],
+       events = events ?? <EnvelopeEvent>[];
 
   /// Unique identifier for the envelope.
   final String id;
@@ -627,10 +635,12 @@ class Envelope {
   List<EnvelopeRecipient> currentRecipients() {
     if (routingMode == RoutingMode.parallel) {
       return recipients
-          .where((r) =>
-              r.status != RecipientStatus.signed &&
-              r.status != RecipientStatus.completed &&
-              r.status != RecipientStatus.declined)
+          .where(
+            (r) =>
+                r.status != RecipientStatus.signed &&
+                r.status != RecipientStatus.completed &&
+                r.status != RecipientStatus.declined,
+          )
           .toList();
     }
 
@@ -644,11 +654,13 @@ class Envelope {
           recipient.status != RecipientStatus.declined) {
         // Return all recipients at this routing order (for mixed mode).
         return recipients
-            .where((r) =>
-                r.routingOrder == recipient.routingOrder &&
-                r.status != RecipientStatus.signed &&
-                r.status != RecipientStatus.completed &&
-                r.status != RecipientStatus.declined)
+            .where(
+              (r) =>
+                  r.routingOrder == recipient.routingOrder &&
+                  r.status != RecipientStatus.signed &&
+                  r.status != RecipientStatus.completed &&
+                  r.status != RecipientStatus.declined,
+            )
             .toList();
       }
     }

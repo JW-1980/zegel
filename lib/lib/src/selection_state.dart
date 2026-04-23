@@ -8,8 +8,8 @@
 /// of items drives "select all" behaviour.
 class SelectionState<T> {
   SelectionState({Iterable<T>? items})
-      : _items = <T>{...?items},
-        _selected = <T>{};
+    : _items = <T>{...?items},
+      _selected = <T>{};
 
   final Set<T> _items;
   final Set<T> _selected;

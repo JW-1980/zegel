@@ -10,7 +10,7 @@
 /// which widgets to display and in what order.
 class DashboardCatalog {
   DashboardCatalog({List<DashboardWidgetSpec>? specs})
-      : _specs = _buildIndex(specs ?? DashboardCatalog.defaultSpecs);
+    : _specs = _buildIndex(specs ?? DashboardCatalog.defaultSpecs);
 
   static Map<String, DashboardWidgetSpec> _buildIndex(
     List<DashboardWidgetSpec> specs,
@@ -92,8 +92,9 @@ class DashboardCatalog {
         ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
 
   /// Returns every spec (visible or hidden), ordered by `sortOrder`.
-  List<DashboardWidgetSpec> allSpecs() => _specs.values.toList()
-    ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
+  List<DashboardWidgetSpec> allSpecs() =>
+      _specs.values.toList()
+        ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
 
   /// Looks up a widget spec by its key.
   DashboardWidgetSpec? lookup(String key) => _specs[key];
@@ -120,10 +121,9 @@ class DashboardCatalog {
       next += 1;
     }
     // Push the rest afterwards, preserving their prior relative order.
-    final leftover = _specs.values
-        .where((s) => !orderedKeys.contains(s.key))
-        .toList()
-      ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
+    final leftover =
+        _specs.values.where((s) => !orderedKeys.contains(s.key)).toList()
+          ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
     for (final spec in leftover) {
       _specs[spec.key] = spec.copyWith(sortOrder: next);
       next += 1;

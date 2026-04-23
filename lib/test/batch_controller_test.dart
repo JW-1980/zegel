@@ -62,12 +62,13 @@ void main() {
       c.cancel();
       await Future<void>.delayed(const Duration(milliseconds: 5));
       expect(
-          received,
-          containsAllInOrder([
-            BatchState.paused,
-            BatchState.running,
-            BatchState.cancelled,
-          ]));
+        received,
+        containsAllInOrder([
+          BatchState.paused,
+          BatchState.running,
+          BatchState.cancelled,
+        ]),
+      );
     });
   });
 }

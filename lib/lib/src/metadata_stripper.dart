@@ -87,7 +87,8 @@ class MetadataStripper {
     var removed = 0;
     var i = 8;
     while (i + 8 <= bytes.length) {
-      final length = (bytes[i] << 24) |
+      final length =
+          (bytes[i] << 24) |
           (bytes[i + 1] << 16) |
           (bytes[i + 2] << 8) |
           bytes[i + 3];
