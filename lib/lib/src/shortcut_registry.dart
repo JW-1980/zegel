@@ -6,6 +6,7 @@
 /// help screen. Keeping the data here (rather than inside the UI) makes
 /// it testable without pulling in Flutter.
 class ShortcutRegistry {
+
   /// Creates a registry with Zegel's default shortcuts: Ctrl+S to seal,
   /// Ctrl+O to open/verify, Ctrl+E to extract.
   factory ShortcutRegistry.defaults() {
@@ -79,7 +80,8 @@ class ShortcutRegistry {
         .map((e) => ShortcutBinding(shortcut: e.key, actionId: e.value))
         .toList()
       ..sort(
-        (a, b) => a.shortcut.displayLabel.compareTo(b.shortcut.displayLabel),
+        (a, b) =>
+            a.shortcut.displayLabel.compareTo(b.shortcut.displayLabel),
       );
     return bindings;
   }

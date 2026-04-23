@@ -5,6 +5,7 @@
 /// The registry is populated at startup and consulted by both the GUI
 /// help panels and a CLI `zegel explain <topic>` command.
 class HelpRegistry {
+
   /// Populates the registry with the default Zegel help entries.
   factory HelpRegistry.defaults() {
     final registry = HelpRegistry()

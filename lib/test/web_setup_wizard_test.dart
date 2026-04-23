@@ -79,9 +79,7 @@ void main() {
         expect(wizard.progress, greaterThan(0.0));
       });
 
-      test(
-          'completing all informational steps leaves the wizard at the first required step',
-          () {
+      test('completing all informational steps leaves the wizard at the first required step', () {
         final wizard = twoStepWizard();
         wizard.complete('step-a');
         expect(wizard.currentStep!.id, 'step-b');
@@ -155,8 +153,7 @@ void main() {
         wizard.answer('database', 'postgres://localhost/zegel');
         wizard.complete('database');
         wizard.complete('tsa');
-        wizard.answer('admin-key',
-            'abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890');
+        wizard.answer('admin-key', 'abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890');
         wizard.complete('admin-key');
         wizard.complete('finish');
       }

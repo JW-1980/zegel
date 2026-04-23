@@ -26,6 +26,7 @@ import 'envelope.dart';
 
 /// A Certificate of Completion for a signing envelope.
 class CertificateOfCompletion {
+
   /// Decodes a certificate from JSON bytes.
   factory CertificateOfCompletion.decode(Uint8List data) {
     return CertificateOfCompletion.fromJson(
@@ -58,7 +59,6 @@ class CertificateOfCompletion {
       certificateHash: json['certificate_hash'] as String?,
     );
   }
-
   /// Creates a [CertificateOfCompletion] from a completed [Envelope].
   CertificateOfCompletion({
     required this.envelopeId,

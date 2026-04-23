@@ -28,6 +28,7 @@ import 'template.dart';
 
 /// A single recipient in a bulk send list.
 class BulkRecipient {
+
   /// Deserializes from JSON.
   factory BulkRecipient.fromJson(Map<String, dynamic> json) {
     return BulkRecipient(
@@ -43,7 +44,6 @@ class BulkRecipient {
       title: json['title'] as String?,
     );
   }
-
   /// Creates a [BulkRecipient].
   const BulkRecipient({
     required this.name,
@@ -218,6 +218,7 @@ enum BulkSendStatus {
 
 /// A bulk send job containing many envelopes generated from one template.
 class BulkSendJob {
+
   /// Decodes from JSON bytes.
   factory BulkSendJob.decode(Uint8List data) {
     return BulkSendJob.fromJson(
@@ -246,7 +247,6 @@ class BulkSendJob {
       name: json['name'] as String?,
     );
   }
-
   /// Creates a [BulkSendJob].
   BulkSendJob({
     required this.id,

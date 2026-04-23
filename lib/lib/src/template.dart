@@ -30,6 +30,7 @@ import 'envelope.dart';
 /// When instantiating the template, each role is mapped to a concrete
 /// [EnvelopeRecipient] by providing a name, email, and authentication details.
 class TemplateRole {
+
   /// Deserializes from JSON.
   factory TemplateRole.fromJson(Map<String, dynamic> json) {
     return TemplateRole(
@@ -44,7 +45,6 @@ class TemplateRole {
       description: json['description'] as String?,
     );
   }
-
   /// Creates a [TemplateRole].
   const TemplateRole({
     required this.roleId,
@@ -102,6 +102,7 @@ class TemplateRole {
 /// When the template is instantiated, fields are remapped to the actual
 /// recipients for each role.
 class TemplateField {
+
   /// Deserializes from JSON.
   factory TemplateField.fromJson(Map<String, dynamic> json) {
     return TemplateField(
@@ -120,7 +121,6 @@ class TemplateField {
           (json['options'] as List<dynamic>?)?.map((o) => o as String).toList(),
     );
   }
-
   /// Creates a [TemplateField].
   const TemplateField({
     required this.id,
@@ -199,6 +199,7 @@ class TemplateField {
 
 /// A reusable envelope template.
 class EnvelopeTemplate {
+
   /// Decodes a template from JSON bytes.
   factory EnvelopeTemplate.decode(Uint8List data) {
     return EnvelopeTemplate.fromJson(
@@ -234,7 +235,6 @@ class EnvelopeTemplate {
       reminderMaxCount: json['reminder_max_count'] as int? ?? 3,
     );
   }
-
   /// Creates a new [EnvelopeTemplate].
   const EnvelopeTemplate({
     required this.id,
