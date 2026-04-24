@@ -577,7 +577,7 @@ void main() {
       );
       final json = chain.toJson();
       expect(json['protocol'], 'roughtime');
-      expect(json['responses'], isA<List>());
+      expect(json['responses'], isA<List<dynamic>>());
       expect(json.containsKey('not_before_us'), isTrue);
       expect(json.containsKey('not_after_us'), isTrue);
     });
