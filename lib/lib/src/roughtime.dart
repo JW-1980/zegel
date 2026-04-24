@@ -353,13 +353,14 @@ class RoughtimeClient {
     final certBytes = msg[tagCert];
 
     if (sigBytes == null || sigBytes.length != 64) {
-      throw FormatException('Missing or invalid SIG in Roughtime response');
+      throw const FormatException(
+          'Missing or invalid SIG in Roughtime response');
     }
     if (srepBytes == null) {
-      throw FormatException('Missing SREP in Roughtime response');
+      throw const FormatException('Missing SREP in Roughtime response');
     }
     if (certBytes == null) {
-      throw FormatException('Missing CERT in Roughtime response');
+      throw const FormatException('Missing CERT in Roughtime response');
     }
 
     // Parse certificate: contains DELE and SIG.
@@ -367,7 +368,7 @@ class RoughtimeClient {
     final certSig = cert[tagSig];
     final deleBytes = cert[tagDele];
     if (certSig == null || certSig.length != 64 || deleBytes == null) {
-      throw FormatException('Malformed CERT in Roughtime response');
+      throw const FormatException('Malformed CERT in Roughtime response');
     }
 
     // Verify delegation: long-term key signs DELE.
@@ -386,7 +387,7 @@ class RoughtimeClient {
     final dele = decodeMessage(deleBytes);
     final delegatedPubKey = dele[tagPubk];
     if (delegatedPubKey == null || delegatedPubKey.length != 32) {
-      throw FormatException('Missing PUBK in delegation');
+      throw const FormatException('Missing PUBK in delegation');
     }
 
     // Verify SREP with delegated key.
@@ -411,13 +412,13 @@ class RoughtimeClient {
     final rootBytes = srep[tagRoot];
 
     if (midpBytes == null || midpBytes.length != 8) {
-      throw FormatException('Missing or invalid MIDP in SREP');
+      throw const FormatException('Missing or invalid MIDP in SREP');
     }
     if (radiBytes == null || radiBytes.length != 4) {
-      throw FormatException('Missing or invalid RADI in SREP');
+      throw const FormatException('Missing or invalid RADI in SREP');
     }
     if (rootBytes == null || rootBytes.length != 32) {
-      throw FormatException('Missing or invalid ROOT in SREP');
+      throw const FormatException('Missing or invalid ROOT in SREP');
     }
 
     final midpUs = ByteData.sublistView(midpBytes).getUint64(0, Endian.little);
@@ -429,7 +430,7 @@ class RoughtimeClient {
     final pathBytes = msg[tagPath];
 
     if (indxBytes == null || indxBytes.length != 4) {
-      throw FormatException('Missing INDX in Roughtime response');
+      throw const FormatException('Missing INDX in Roughtime response');
     }
 
     final index = ByteData.sublistView(indxBytes).getUint32(0, Endian.little);
@@ -466,7 +467,8 @@ class RoughtimeClient {
     Uint8List expectedRoot,
   ) {
     if (path.length % 64 != 0) {
-      throw FormatException('Roughtime PATH length must be multiple of 64');
+      throw const FormatException(
+          'Roughtime PATH length must be multiple of 64');
     }
 
     var current = nonceHash;

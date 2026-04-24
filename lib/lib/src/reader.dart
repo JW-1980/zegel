@@ -484,10 +484,10 @@ class ZegelReader {
         );
       } catch (_) {
         // Fallback to self-asserted creation time on verification failure or unparseable JSON
-        verifiedCreationTime = VerifiedCreationTime(selfAsserted: true);
+        verifiedCreationTime = const VerifiedCreationTime(selfAsserted: true);
       }
     } else {
-      verifiedCreationTime = VerifiedCreationTime(selfAsserted: true);
+      verifiedCreationTime = const VerifiedCreationTime(selfAsserted: true);
     }
 
     // =========================================================================

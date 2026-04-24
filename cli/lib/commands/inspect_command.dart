@@ -52,16 +52,14 @@ class InspectCommand extends Command<int> {
   InspectCommand() {
     argParser.addFlag(
       'json',
-      help:
-          'Output header information as JSON.\n'
+      help: 'Output header information as JSON.\n'
           'Useful for piping to jq or other tools.',
       defaultsTo: false,
     );
 
     argParser.addFlag(
       'blocks',
-      help:
-          'Show block directory with type, size, and hash\n'
+      help: 'Show block directory with type, size, and hash\n'
           'for each block.',
       defaultsTo: false,
     );
@@ -217,19 +215,16 @@ class InspectCommand extends Command<int> {
     }
 
     // Timestamp status.
-    final vct = inspection.verifiedCreationTime;
-    if (vct != null) {
-      if (inspection.flags & ZegelFormat.flagHasTimestamp != 0) {
-        stdout.writeln(
-          '    Timestamp:     ${Ansi.success('ANCHORED')} '
-          '(verify with key to confirm)',
-        );
-      } else {
-        stdout.writeln(
-          '    Timestamp:     ${Ansi.warning('SELF-ASSERTED')} '
-          '(no external anchor)',
-        );
-      }
+    if (inspection.flags & ZegelFormat.flagHasTimestamp != 0) {
+      stdout.writeln(
+        '    Timestamp:     ${Ansi.success('ANCHORED')} '
+        '(verify with key to confirm)',
+      );
+    } else {
+      stdout.writeln(
+        '    Timestamp:     ${Ansi.warning('SELF-ASSERTED')} '
+        '(no external anchor)',
+      );
     }
 
     // Classification level (from public metadata).
@@ -262,7 +257,7 @@ class InspectCommand extends Command<int> {
         final holdActive = now.isBefore(holdDate);
         final holdStr =
             inspection.publicMetadata!['regulatory_hold_date_str'] ??
-            formatTimestamp(holdDate);
+                formatTimestamp(holdDate);
         stdout.writeln();
         stdout.writeln(Ansi.header('  Regulatory Hold:'));
         stdout.writeln('    Until:       $holdStr');

@@ -231,7 +231,7 @@ class TrustedTimestamp {
       // Minimal validation: TSA response starts with SEQUENCE tag (0x30)
       // and contains a status field.
       if (tsr.isEmpty || tsr[0] != 0x30) {
-        throw FormatException('Invalid TSA response: not a DER SEQUENCE');
+        throw const FormatException('Invalid TSA response: not a DER SEQUENCE');
       }
 
       final tsaName = tsaUrl.host;
@@ -256,7 +256,7 @@ class TrustedTimestamp {
   /// Loads a pre-obtained RFC 3161 token from raw DER bytes.
   static TimestampBlockData loadRfc3161Token(Uint8List tokenBytes) {
     if (tokenBytes.isEmpty || tokenBytes[0] != 0x30) {
-      throw FormatException('Invalid RFC 3161 token: not a DER SEQUENCE');
+      throw const FormatException('Invalid RFC 3161 token: not a DER SEQUENCE');
     }
 
     final genTime = _extractGenTimeFromTsr(tokenBytes);
@@ -303,7 +303,7 @@ class TrustedTimestamp {
       final json = jsonDecode(utf8.decode(payload)) as Map<String, dynamic>;
 
       if (json['protocol'] != 'roughtime') {
-        throw FormatException('Not a Roughtime payload');
+        throw const FormatException('Not a Roughtime payload');
       }
 
       final notBeforeUs = json['not_before_us'] as int;
@@ -336,7 +336,7 @@ class TrustedTimestamp {
   ) {
     try {
       if (payload.isEmpty || payload[0] != 0x30) {
-        throw FormatException('Not a valid DER SEQUENCE');
+        throw const FormatException('Not a valid DER SEQUENCE');
       }
 
       final genTime = _extractGenTimeFromTsr(payload);
@@ -647,7 +647,7 @@ class TimestampBlockData {
     final bd = ByteData.sublistView(bytes);
     final payloadLen = bd.getUint32(1, Endian.big);
     if (bytes.length < 5 + payloadLen) {
-      throw FormatException('TIMESTAMP block truncated');
+      throw const FormatException('TIMESTAMP block truncated');
     }
     final payload = Uint8List.sublistView(bytes, 5, 5 + payloadLen);
 

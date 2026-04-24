@@ -165,7 +165,8 @@ class _TimestampScreenState extends State<TimestampScreen>
       final masterSeal = inspection.masterSeal;
       final merkleRoot = inspection.merkleRoot;
       if (masterSeal == null || merkleRoot == null) {
-        throw Exception('File must be a valid Zegel container to verify timestamp');
+        throw Exception(
+            'File must be a valid Zegel container to verify timestamp');
       }
       final signerKey = HexUtils.hexToBytes(_hexKey);
 

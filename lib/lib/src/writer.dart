@@ -616,7 +616,7 @@ class ZegelWriter {
       final tsData = TimestampBlockData(
         protocol: TimestampProtocol.rfc3161,
         payload: options.timestampConfig!.preObtainedToken!,
-        verifiedTime: VerifiedCreationTime(selfAsserted: true),
+        verifiedTime: const VerifiedCreationTime(selfAsserted: true),
       );
       timestampAppendix = tsData.toBytes();
     }

@@ -527,8 +527,8 @@ void main() {
     });
 
     test('multiple tags preserved', () {
-      final tag1 = 0x01000000;
-      final tag2 = 0x02000000;
+      const tag1 = 0x01000000;
+      const tag2 = 0x02000000;
       final tags = [
         RoughtimeTag(tag1, Uint8List.fromList([1, 2, 3])),
         RoughtimeTag(tag2, Uint8List.fromList([4, 5])),

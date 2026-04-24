@@ -1,6 +1,5 @@
 import 'package:intl/intl.dart';
 import 'dart:typed_data';
-import 'package:intl/intl.dart';
 
 import 'package:flutter/material.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';

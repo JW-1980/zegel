@@ -20,8 +20,7 @@ class TimestampCommand extends Command<int> {
   final String name = 'timestamp';
 
   @override
-  String get description =>
-      'Trusted timestamp operations.\n'
+  String get description => 'Trusted timestamp operations.\n'
       '\n'
       'Timestamps provide provable creation times for sealed files,\n'
       'independent of local system clocks. This helps prevent\n'
@@ -54,8 +53,7 @@ class TimestampCreateCommand extends Command<int> {
   final String name = 'create';
 
   @override
-  String get description =>
-      'Create a timestamp for a .zgl file.\n'
+  String get description => 'Create a timestamp for a .zgl file.\n'
       '\n'
       'Creates a timestamp token that binds the file\'s Merkle root and\n'
       'master seal to a specific point in time. The timestamp can be\n'
@@ -87,16 +85,14 @@ class TimestampCreateCommand extends Command<int> {
 
     argParser.addOption(
       'tsa',
-      help:
-          'URL of a trusted timestamping authority (RFC 3161).\n'
+      help: 'URL of a trusted timestamping authority (RFC 3161).\n'
           'If not specified, creates a local timestamp.',
       valueHelp: 'url',
     );
 
     argParser.addOption(
       'signer-key',
-      help:
-          'Key for signing local timestamps (hex).\n'
+      help: 'Key for signing local timestamps (hex).\n'
           'If not specified, uses the master key.',
       valueHelp: 'hex',
     );
@@ -279,8 +275,7 @@ class TimestampVerifyCommand extends Command<int> {
   final String name = 'verify';
 
   @override
-  String get description =>
-      'Verify a timestamp token for a .zgl file.\n'
+  String get description => 'Verify a timestamp token for a .zgl file.\n'
       '\n'
       'Verifies that a timestamp token matches the specified .zgl file\n'
       'and that the signature is valid. For local timestamps, the signer\n'
@@ -310,8 +305,7 @@ class TimestampVerifyCommand extends Command<int> {
 
     argParser.addOption(
       'signer-key',
-      help:
-          'Key used for signing local timestamps (hex).\n'
+      help: 'Key used for signing local timestamps (hex).\n'
           'If not specified, uses the master key.',
       valueHelp: 'hex',
     );

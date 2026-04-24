@@ -122,8 +122,7 @@ class ManifestVerifyCommand extends Command<int> {
   String get name => 'manifest-verify';
 
   @override
-  String get description =>
-      'Verify a manifest against .zgl files on disk.\n'
+  String get description => 'Verify a manifest against .zgl files on disk.\n'
       '\n'
       'Checks that the manifest signature is valid, then verifies\n'
       'that each file listed in the manifest exists in the directory\n'
@@ -168,8 +167,8 @@ class ManifestVerifyCommand extends Command<int> {
     final dir = Directory(dirPath);
     final actualRoots = <String, Uint8List>{};
     for (final file in dir.listSync().whereType<File>().where(
-      (f) => f.path.endsWith('.zgl'),
-    )) {
+          (f) => f.path.endsWith('.zgl'),
+        )) {
       final name = file.path.split(Platform.pathSeparator).last;
       final bytes = Uint8List.fromList(file.readAsBytesSync());
       final header = RawZegelHeader.parse(bytes);
