@@ -9,6 +9,7 @@ import 'canary.dart';
 import 'format.dart';
 import 'key_derivation.dart';
 import 'merkle_tree.dart';
+import 'timestamp.dart';
 
 // =============================================================================
 // Result types
@@ -29,6 +30,7 @@ class ZegelResult {
     this.provenance,
     this.redactedBlocks,
     this.disclosedBlocks,
+    this.verifiedCreationTime,
   });
 
   /// Whether all cryptographic checks passed.
@@ -63,6 +65,9 @@ class ZegelResult {
 
   /// Zero-based indices of blocks successfully disclosed (only for selective disclosure).
   final List<int>? disclosedBlocks;
+
+  /// The creation time verified from the timestamp block, if present.
+  final VerifiedCreationTime? verifiedCreationTime;
 }
 
 /// Header-only inspection result (no master key required).
@@ -78,6 +83,8 @@ class ZegelInspection {
     this.publicMetadata,
     this.splitKeyParams,
     this.expirationTimestamp,
+    this.masterSeal,
+    this.merkleRoot,
   });
 
   /// Format version string (e.g. `"1.2"`).
@@ -106,6 +113,12 @@ class ZegelInspection {
 
   /// Expiration timestamp as Unix epoch seconds.
   final int? expirationTimestamp;
+
+  /// The master seal (HMAC-SHA512) for the file.
+  final Uint8List? masterSeal;
+
+  /// The Merkle tree root for the file's blocks.
+  final Uint8List? merkleRoot;
 }
 
 // =============================================================================
@@ -217,14 +230,31 @@ class ZegelReader {
     // =========================================================================
     // 6. Verify master seal (HMAC-SHA512)
     // =========================================================================
+    // Account for potential timestamp appendix
+    int endOfSeal = fileBytes.length;
+    if (h.flags & ZegelFormat.flagHasTimestamp != 0) {
+      // Find where the block directory and blocks end.
+      // Actually, since the timestamp block is an appendix AFTER the seal,
+      // we need to determine the original file length before the appendix.
+      // But we can just search backwards for the seal or use the parsed blocks length.
+      // A better way: the end of the blocks is h.dataStart + sum(ciphertextLen).
+      // The seal follows immediately after. So preSealBytes ends at that point.
+      int blocksLength = 0;
+      for (final entry in h.directory) {
+        blocksLength += entry.ciphertextLen;
+      }
+      endOfSeal = h.dataStart + blocksLength + ZegelFormat.sealSize;
+    }
+
     final Uint8List preSealBytes = Uint8List.sublistView(
       fileBytes,
       0,
-      fileBytes.length - ZegelFormat.sealSize,
+      endOfSeal - ZegelFormat.sealSize,
     );
     final Uint8List storedSeal = Uint8List.sublistView(
       fileBytes,
-      fileBytes.length - ZegelFormat.sealSize,
+      endOfSeal - ZegelFormat.sealSize,
+      endOfSeal,
     );
 
     final Uint8List sealKey = KeyDerivation.computeSealKey(
@@ -423,6 +453,44 @@ class ZegelReader {
     }
 
     // =========================================================================
+    // 10.5 Extract and Verify Timestamp if present
+    // =========================================================================
+    VerifiedCreationTime? verifiedCreationTime;
+    Uint8List? timestampBytes;
+
+    if (h.flags & ZegelFormat.flagHasTimestamp != 0) {
+      int blocksLength = 0;
+      for (final entry in h.directory) {
+        blocksLength += entry.ciphertextLen;
+      }
+      final int endOfSeal = h.dataStart + blocksLength + ZegelFormat.sealSize;
+      if (fileBytes.length > endOfSeal) {
+        timestampBytes = Uint8List.sublistView(fileBytes, endOfSeal);
+      }
+    }
+
+    if (timestampBytes != null) {
+      try {
+        final Uint8List messageImprint = TrustedTimestamp.computeMessageImprint(
+          h.merkleRoot,
+          storedSeal,
+        );
+        final payload = Uint8List.sublistView(timestampBytes, 5);
+        final protocol = TimestampProtocol.fromWireValue(timestampBytes[4]);
+        verifiedCreationTime = TrustedTimestamp.verifyTimestampBlock(
+          protocol,
+          payload,
+          messageImprint,
+        );
+      } catch (_) {
+        // Fallback to self-asserted creation time on verification failure or unparseable JSON
+        verifiedCreationTime = const VerifiedCreationTime(selfAsserted: true);
+      }
+    } else {
+      verifiedCreationTime = const VerifiedCreationTime(selfAsserted: true);
+    }
+
+    // =========================================================================
     // 11. Build result
     // =========================================================================
     return ZegelResult(
@@ -436,6 +504,7 @@ class ZegelReader {
       auditTrail: auditTrail.isNotEmpty ? auditTrail : null,
       provenance: provenanceEntries.isNotEmpty ? provenanceEntries : null,
       redactedBlocks: redactedBlocks.isNotEmpty ? redactedBlocks : null,
+      verifiedCreationTime: verifiedCreationTime,
     );
   }
 
@@ -457,6 +526,35 @@ class ZegelReader {
       };
     }
 
+    // Also extract masterSeal and merkleRoot
+    Uint8List? masterSeal;
+    if (fileBytes.length >= ZegelFormat.sealSize) {
+      int blocksLength = 0;
+      if (h.flags & ZegelFormat.flagHasTimestamp != 0) {
+        for (final entry in h.directory) {
+          blocksLength += entry.ciphertextLen;
+        }
+        final int endOfSeal = h.dataStart + blocksLength + ZegelFormat.sealSize;
+        if (fileBytes.length >= endOfSeal) {
+          masterSeal = Uint8List.sublistView(
+            fileBytes,
+            endOfSeal - ZegelFormat.sealSize,
+            endOfSeal,
+          );
+        } else {
+          masterSeal = Uint8List.sublistView(
+            fileBytes,
+            fileBytes.length - ZegelFormat.sealSize,
+          );
+        }
+      } else {
+        masterSeal = Uint8List.sublistView(
+          fileBytes,
+          fileBytes.length - ZegelFormat.sealSize,
+        );
+      }
+    }
+
     return ZegelInspection(
       version: '${h.versionMajor}.${h.versionMinor}',
       flags: h.flags,
@@ -467,6 +565,8 @@ class ZegelReader {
       publicMetadata: h.publicMetadata,
       splitKeyParams: splitKeyParams,
       expirationTimestamp: h.expirationTimestamp,
+      masterSeal: masterSeal,
+      merkleRoot: h.merkleRoot,
     );
   }
 

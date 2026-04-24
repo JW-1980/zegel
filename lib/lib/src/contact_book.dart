@@ -43,9 +43,10 @@ class ContactBook {
   /// Returns all contacts, sorted by display name (case-insensitive).
   List<Contact> list() {
     final all = _byId.values.toList()
-      ..sort((a, b) => a.displayName.toLowerCase().compareTo(
-            b.displayName.toLowerCase(),
-          ));
+      ..sort(
+        (a, b) =>
+            a.displayName.toLowerCase().compareTo(b.displayName.toLowerCase()),
+      );
     return all;
   }
 

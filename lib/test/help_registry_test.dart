@@ -5,12 +5,14 @@ void main() {
   group('HelpRegistry', () {
     test('register and lookup round trip', () {
       final reg = HelpRegistry()
-        ..register(const HelpEntry(
-          topic: 'seal',
-          title: 'Seal',
-          summary: 'Wraps a file in a tamper-proof container.',
-          body: 'Long description',
-        ));
+        ..register(
+          const HelpEntry(
+            topic: 'seal',
+            title: 'Seal',
+            summary: 'Wraps a file in a tamper-proof container.',
+            body: 'Long description',
+          ),
+        );
       final entry = reg.lookup('seal');
       expect(entry, isNotNull);
       expect(entry!.title, 'Seal');

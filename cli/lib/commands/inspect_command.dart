@@ -214,6 +214,19 @@ class InspectCommand extends Command<int> {
       stdout.writeln('    Key commitment: present');
     }
 
+    // Timestamp status.
+    if (inspection.flags & ZegelFormat.flagHasTimestamp != 0) {
+      stdout.writeln(
+        '    Timestamp:     ${Ansi.success('ANCHORED')} '
+        '(verify with key to confirm)',
+      );
+    } else {
+      stdout.writeln(
+        '    Timestamp:     ${Ansi.warning('SELF-ASSERTED')} '
+        '(no external anchor)',
+      );
+    }
+
     // Classification level (from public metadata).
     if (inspection.publicMetadata != null) {
       final classification =

@@ -15,8 +15,9 @@ void main() {
     final now = DateTime.utc(2026, 4, 12);
 
     test('default retention applies when no rule is set', () {
-      final policy =
-          RetentionPolicy(defaultRetention: const Duration(days: 30));
+      final policy = RetentionPolicy(
+        defaultRetention: const Duration(days: 30),
+      );
       final kept = _Event(now.subtract(const Duration(days: 10)), 'verify');
       final expired = _Event(now.subtract(const Duration(days: 60)), 'verify');
       expect(policy.isExpired(kept, now: now), isFalse);
@@ -24,8 +25,9 @@ void main() {
     });
 
     test('per-category rules override the default', () {
-      final policy =
-          RetentionPolicy(defaultRetention: const Duration(days: 30));
+      final policy = RetentionPolicy(
+        defaultRetention: const Duration(days: 30),
+      );
       policy.setRule('audit', const Duration(days: 365));
       final old = _Event(now.subtract(const Duration(days: 100)), 'audit');
       expect(policy.isExpired(old, now: now), isFalse);
@@ -35,8 +37,9 @@ void main() {
     });
 
     test('removeRule reverts to default', () {
-      final policy =
-          RetentionPolicy(defaultRetention: const Duration(days: 30));
+      final policy = RetentionPolicy(
+        defaultRetention: const Duration(days: 30),
+      );
       policy.setRule('audit', const Duration(days: 1));
       policy.removeRule('audit');
       final e = _Event(now.subtract(const Duration(days: 10)), 'audit');
@@ -44,8 +47,9 @@ void main() {
     });
 
     test('apply returns only kept events', () {
-      final policy =
-          RetentionPolicy(defaultRetention: const Duration(days: 30));
+      final policy = RetentionPolicy(
+        defaultRetention: const Duration(days: 30),
+      );
       final events = [
         _Event(now.subtract(const Duration(days: 10)), 'verify'),
         _Event(now.subtract(const Duration(days: 60)), 'verify'),
@@ -68,9 +72,8 @@ void main() {
     });
 
     test('encode/decodeJson round trip', () {
-      final policy = RetentionPolicy(
-        defaultRetention: const Duration(days: 5),
-      )..setRule('audit', const Duration(days: 100));
+      final policy = RetentionPolicy(defaultRetention: const Duration(days: 5))
+        ..setRule('audit', const Duration(days: 100));
       final restored = RetentionPolicy.decodeJson(policy.encode());
       expect(restored.defaultRetention.inDays, 5);
       expect(restored.retentionFor('audit').inDays, 100);

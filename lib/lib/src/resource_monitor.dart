@@ -24,10 +24,7 @@ class ResourceMonitor {
   /// Dart doesn't expose kernel tick rates portably, callers must
   /// supply two snapshots taken at known wall-clock times and the
   /// function returns the difference divided by the elapsed interval.
-  static double? sampleCpuPercent(
-    CpuSnapshot previous,
-    CpuSnapshot current,
-  ) {
+  static double? sampleCpuPercent(CpuSnapshot previous, CpuSnapshot current) {
     final elapsed = current.wallClock.difference(previous.wallClock);
     if (elapsed.inMilliseconds <= 0) return null;
     final userDelta = current.userTicks - previous.userTicks;

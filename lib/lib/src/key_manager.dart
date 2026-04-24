@@ -184,11 +184,7 @@ class KeyEntry {
   final DateTime? expiresAt;
   final String? description;
 
-  KeyEntry copyWith({
-    String? name,
-    DateTime? expiresAt,
-    String? description,
-  }) {
+  KeyEntry copyWith({String? name, DateTime? expiresAt, String? description}) {
     return KeyEntry(
       id: id,
       name: name ?? this.name,

@@ -1,8 +1,8 @@
+import 'package:intl/intl.dart';
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:convert';
 import 'dart:ui' as ui;
-import 'package:intl/intl.dart';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

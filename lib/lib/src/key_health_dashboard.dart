@@ -10,10 +10,7 @@ class KeyHealthDashboard {
   KeyHealthDashboard._();
 
   /// Builds a snapshot from a [KeyRotationReminder].
-  static KeyHealthSnapshot from(
-    KeyRotationReminder reminder, {
-    DateTime? now,
-  }) {
+  static KeyHealthSnapshot from(KeyRotationReminder reminder, {DateTime? now}) {
     final summaries = reminder.summarize(now: now);
     var ok = 0;
     var due = 0;

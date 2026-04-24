@@ -9,10 +9,7 @@ void main() {
         nowOverride: DateTime.utc(2026, 1, 1, 12, 0, 0),
       );
       expect(s.isLocked, isFalse);
-      expect(
-        s.lastActivity,
-        DateTime.utc(2026, 1, 1, 12, 0, 0),
-      );
+      expect(s.lastActivity, DateTime.utc(2026, 1, 1, 12, 0, 0));
     });
 
     test('isIdleAt returns true once timeout has passed', () {
@@ -20,14 +17,8 @@ void main() {
         timeout: const Duration(minutes: 5),
         nowOverride: DateTime.utc(2026, 1, 1, 12, 0, 0),
       );
-      expect(
-        s.isIdleAt(DateTime.utc(2026, 1, 1, 12, 4, 0)),
-        isFalse,
-      );
-      expect(
-        s.isIdleAt(DateTime.utc(2026, 1, 1, 12, 10, 0)),
-        isTrue,
-      );
+      expect(s.isIdleAt(DateTime.utc(2026, 1, 1, 12, 4, 0)), isFalse);
+      expect(s.isIdleAt(DateTime.utc(2026, 1, 1, 12, 10, 0)), isTrue);
     });
 
     test('recordActivity resets the last activity time', () {
@@ -36,10 +27,7 @@ void main() {
         nowOverride: DateTime.utc(2026, 1, 1, 12, 0, 0),
       );
       s.recordActivity(at: DateTime.utc(2026, 1, 1, 12, 30, 0));
-      expect(
-        s.isIdleAt(DateTime.utc(2026, 1, 1, 12, 31, 0)),
-        isFalse,
-      );
+      expect(s.isIdleAt(DateTime.utc(2026, 1, 1, 12, 31, 0)), isFalse);
     });
 
     test('lock and unlock emit events', () async {

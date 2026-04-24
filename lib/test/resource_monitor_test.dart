@@ -37,15 +37,8 @@ void main() {
 
     test('sampleCpuPercent returns null for zero elapsed time', () {
       final ts = DateTime.utc(2026, 1, 1, 12, 0, 0);
-      final snap = CpuSnapshot(
-        wallClock: ts,
-        userTicks: 100,
-        systemTicks: 20,
-      );
-      expect(
-        ResourceMonitor.sampleCpuPercent(snap, snap),
-        isNull,
-      );
+      final snap = CpuSnapshot(wallClock: ts, userTicks: 100, systemTicks: 20);
+      expect(ResourceMonitor.sampleCpuPercent(snap, snap), isNull);
     });
   });
 }

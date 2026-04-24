@@ -21,10 +21,7 @@ void main() {
       expect(r.entropyBits, greaterThan(80));
       expect(
         r.label,
-        anyOf(
-          PasswordStrengthLabel.strong,
-          PasswordStrengthLabel.veryStrong,
-        ),
+        anyOf(PasswordStrengthLabel.strong, PasswordStrengthLabel.veryStrong),
       );
       expect(r.score, greaterThanOrEqualTo(3));
     });
