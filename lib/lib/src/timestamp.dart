@@ -383,7 +383,6 @@ class TrustedTimestamp {
   /// tamper-detection for the timestamp value itself (someone can't change
   /// the epoch without the signer key). Use Roughtime or RFC 3161 for
   /// transferable wall-clock proof.
-  @Deprecated('Use fetchRoughtime or fetchRfc3161 for authoritative timestamps')
   static Map<String, dynamic> createLocalToken(
     Uint8List merkleRoot,
     Uint8List masterSeal,
@@ -421,7 +420,6 @@ class TrustedTimestamp {
   }
 
   /// Verifies a legacy local HMAC timestamp token.
-  @Deprecated('Local tokens are self-asserted and non-authoritative')
   static bool verifyLocalToken(
     Map<String, dynamic> token,
     Uint8List merkleRoot,
