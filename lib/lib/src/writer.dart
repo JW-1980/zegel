@@ -261,8 +261,7 @@ class ZegelWriter {
     // Key commitment is always enabled when using password-derived keys to
     // defend against partitioning oracle attacks. It can also be explicitly
     // requested for any file.
-    final bool requireKeyCommitment =
-        options.enableKeyCommitment ||
+    final bool requireKeyCommitment = options.enableKeyCommitment ||
         (options.argon2TimeCost != null && options.argon2MemoryCost != null);
     if (requireKeyCommitment) {
       flags |= ZegelFormat.flagHasKeyCommitment;
@@ -285,8 +284,8 @@ class ZegelWriter {
     if (options.versionChainHash != null) {
       flags |= ZegelFormat.flagVersioned;
     }
-    final bool hasTimestamp = options.timestampConfig != null &&
-        !options.timestampConfig!.offline;
+    final bool hasTimestamp =
+        options.timestampConfig != null && !options.timestampConfig!.offline;
     if (hasTimestamp) {
       flags |= ZegelFormat.flagHasTimestamp;
     }
@@ -389,8 +388,7 @@ class ZegelWriter {
     String? expirationDate;
     if (options.expiration != null) {
       final DateTime dt = options.expiration!.toUtc();
-      expirationDate =
-          '${dt.year.toString().padLeft(4, '0')}-'
+      expirationDate = '${dt.year.toString().padLeft(4, '0')}-'
           '${dt.month.toString().padLeft(2, '0')}-'
           '${dt.day.toString().padLeft(2, '0')}';
     }
@@ -615,8 +613,10 @@ class ZegelWriter {
     // =========================================================================
     Uint8List? timestampAppendix;
     if (hasTimestamp && options.timestampConfig!.preObtainedToken != null) {
-      final tsData = TrustedTimestamp.loadRfc3161Token(
-        options.timestampConfig!.preObtainedToken!,
+      final tsData = TimestampBlockData(
+        protocol: TimestampProtocol.rfc3161,
+        payload: options.timestampConfig!.preObtainedToken!,
+        verifiedTime: VerifiedCreationTime(selfAsserted: true),
       );
       timestampAppendix = tsData.toBytes();
     }
@@ -629,15 +629,15 @@ class ZegelWriter {
         (timestampAppendix?.length ?? 0);
     final Uint8List finalFile = Uint8List(totalLen);
     var assemblyOffset = 0;
-    finalFile.setRange(assemblyOffset, assemblyOffset + preSealBytes.length,
-        preSealBytes);
+    finalFile.setRange(
+        assemblyOffset, assemblyOffset + preSealBytes.length, preSealBytes);
     assemblyOffset += preSealBytes.length;
-    finalFile.setRange(assemblyOffset, assemblyOffset + masterSeal.length,
-        masterSeal);
+    finalFile.setRange(
+        assemblyOffset, assemblyOffset + masterSeal.length, masterSeal);
     assemblyOffset += masterSeal.length;
     if (timestampAppendix != null) {
-      finalFile.setRange(assemblyOffset, assemblyOffset +
-          timestampAppendix.length, timestampAppendix);
+      finalFile.setRange(assemblyOffset,
+          assemblyOffset + timestampAppendix.length, timestampAppendix);
     }
 
     return finalFile;
@@ -796,6 +796,7 @@ class _LocatingReader {
     offset += blockCount * ZegelFormat.blockDirectoryEntrySize;
 
     // Merkle root: 32 bytes at current offset.
-    return Uint8List.sublistView(fileBytes, offset, offset + ZegelFormat.hashSize);
+    return Uint8List.sublistView(
+        fileBytes, offset, offset + ZegelFormat.hashSize);
   }
 }

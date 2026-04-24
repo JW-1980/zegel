@@ -92,13 +92,13 @@ class UsageAnalytics {
   }
 
   Map<String, dynamic> toJson() => {
-    'enabled': enabled,
-    'command_counts': _commandCounts,
-    'screen_counts': _screenCounts,
-    'algorithm_counts': _algorithmCounts,
-    'total_files_sealed': _totalFilesSealed,
-    'total_bytes_sealed': _totalBytesSealed,
-  };
+        'enabled': enabled,
+        'command_counts': _commandCounts,
+        'screen_counts': _screenCounts,
+        'algorithm_counts': _algorithmCounts,
+        'total_files_sealed': _totalFilesSealed,
+        'total_bytes_sealed': _totalBytesSealed,
+      };
 
   String encode() => jsonEncode(toJson());
 

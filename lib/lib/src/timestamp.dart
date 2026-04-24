@@ -188,8 +188,7 @@ class TrustedTimestamp {
         notBefore: chain.notBefore,
         notAfter: chain.notAfter,
         selfAsserted: false,
-        anchorSource:
-            chain.responses.map((r) => r.serverName).join(', '),
+        anchorSource: chain.responses.map((r) => r.serverName).join(', '),
         protocol: TimestampProtocol.roughtime,
       ),
     );
@@ -301,8 +300,7 @@ class TrustedTimestamp {
 
   static VerifiedCreationTime _verifyRoughtimePayload(Uint8List payload) {
     try {
-      final json =
-          jsonDecode(utf8.decode(payload)) as Map<String, dynamic>;
+      final json = jsonDecode(utf8.decode(payload)) as Map<String, dynamic>;
 
       if (json['protocol'] != 'roughtime') {
         throw FormatException('Not a Roughtime payload');
@@ -318,8 +316,7 @@ class TrustedTimestamp {
       return VerifiedCreationTime(
         notBefore:
             DateTime.fromMicrosecondsSinceEpoch(notBeforeUs, isUtc: true),
-        notAfter:
-            DateTime.fromMicrosecondsSinceEpoch(notAfterUs, isUtc: true),
+        notAfter: DateTime.fromMicrosecondsSinceEpoch(notAfterUs, isUtc: true),
         selfAsserted: false,
         anchorSource: 'Roughtime ($serverNames)',
         protocol: TimestampProtocol.roughtime,
@@ -483,8 +480,7 @@ class TrustedTimestamp {
     ]);
 
     final hashedMessage = _derOctetString(messageImprint);
-    final msgImprintBody =
-        Uint8List(sha256Oid.length + hashedMessage.length);
+    final msgImprintBody = Uint8List(sha256Oid.length + hashedMessage.length);
     msgImprintBody.setRange(0, sha256Oid.length, sha256Oid);
     msgImprintBody.setRange(
       sha256Oid.length,
@@ -494,8 +490,7 @@ class TrustedTimestamp {
     final msgImprint = _derSequence(msgImprintBody);
 
     final version = Uint8List.fromList([0x02, 0x01, 0x01]); // INTEGER 1
-    final certReq =
-        Uint8List.fromList([0x01, 0x01, 0xff]); // BOOLEAN TRUE
+    final certReq = Uint8List.fromList([0x01, 0x01, 0xff]); // BOOLEAN TRUE
 
     final body = Uint8List(
       version.length + msgImprint.length + certReq.length,

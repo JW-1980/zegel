@@ -49,39 +49,39 @@ class ThemeBrand {
   final Map<String, int> extraColors;
 
   Map<String, dynamic> toJson() => <String, dynamic>{
-    'name': name,
-    'primary_color': primaryColor,
-    'secondary_color': secondaryColor,
-    if (accentColor != null) 'accent_color': accentColor,
-    'background_color': backgroundColor,
-    'surface_color': surfaceColor,
-    'error_color': errorColor,
-    if (fontFamily != null) 'font_family': fontFamily,
-    if (logoAssetPath != null) 'logo_asset_path': logoAssetPath,
-    if (iconPackId != null) 'icon_pack_id': iconPackId,
-    'extra_colors': extraColors,
-  };
+        'name': name,
+        'primary_color': primaryColor,
+        'secondary_color': secondaryColor,
+        if (accentColor != null) 'accent_color': accentColor,
+        'background_color': backgroundColor,
+        'surface_color': surfaceColor,
+        'error_color': errorColor,
+        if (fontFamily != null) 'font_family': fontFamily,
+        if (logoAssetPath != null) 'logo_asset_path': logoAssetPath,
+        if (iconPackId != null) 'icon_pack_id': iconPackId,
+        'extra_colors': extraColors,
+      };
 
   String encode() => jsonEncode(toJson());
 
   static ThemeBrand fromJson(Map<String, dynamic> json) => ThemeBrand(
-    name: json['name'] as String,
-    primaryColor: (json['primary_color'] as num).toInt(),
-    secondaryColor: (json['secondary_color'] as num).toInt(),
-    accentColor: (json['accent_color'] as num?)?.toInt(),
-    backgroundColor: (json['background_color'] as num).toInt(),
-    surfaceColor: (json['surface_color'] as num).toInt(),
-    errorColor: (json['error_color'] as num).toInt(),
-    fontFamily: json['font_family'] as String?,
-    logoAssetPath: json['logo_asset_path'] as String?,
-    iconPackId: json['icon_pack_id'] as String?,
-    extraColors: <String, int>{
-      if (json['extra_colors'] != null)
-        for (final entry
-            in (json['extra_colors'] as Map<String, dynamic>).entries)
-          entry.key: (entry.value as num).toInt(),
-    },
-  );
+        name: json['name'] as String,
+        primaryColor: (json['primary_color'] as num).toInt(),
+        secondaryColor: (json['secondary_color'] as num).toInt(),
+        accentColor: (json['accent_color'] as num?)?.toInt(),
+        backgroundColor: (json['background_color'] as num).toInt(),
+        surfaceColor: (json['surface_color'] as num).toInt(),
+        errorColor: (json['error_color'] as num).toInt(),
+        fontFamily: json['font_family'] as String?,
+        logoAssetPath: json['logo_asset_path'] as String?,
+        iconPackId: json['icon_pack_id'] as String?,
+        extraColors: <String, int>{
+          if (json['extra_colors'] != null)
+            for (final entry
+                in (json['extra_colors'] as Map<String, dynamic>).entries)
+              entry.key: (entry.value as num).toInt(),
+        },
+      );
 
   static ThemeBrand decodeJson(String raw) =>
       fromJson(jsonDecode(raw) as Map<String, dynamic>);

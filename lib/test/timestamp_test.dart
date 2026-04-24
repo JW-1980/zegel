@@ -309,7 +309,8 @@ void main() {
 
   group('TimestampBlockData serialization', () {
     test('roundtrip encode/decode preserves protocol and payload', () {
-      final payload = Uint8List.fromList(utf8.encode('{"protocol":"roughtime"}'));
+      final payload =
+          Uint8List.fromList(utf8.encode('{"protocol":"roughtime"}'));
       final data = TimestampBlockData(
         protocol: TimestampProtocol.roughtime,
         payload: payload,
@@ -445,6 +446,7 @@ void main() {
         timestampConfig: TimestampConfig.preObtainedToken(token: fakeToken),
       );
       final sealed = ZegelWriter(key, options).seal(content);
+      // NOTE: preObtainedToken creates a TIMESTAMP block during seal(), not an appendix
 
       // Flag should be set.
       final inspection = const ZegelReader().inspect(sealed);
@@ -632,9 +634,11 @@ void main() {
 Uint8List _buildFakeRfc3161Token() {
   final genTimeStr = utf8.encode('20260419100000Z');
   final inner = <int>[
-    0x18, genTimeStr.length,
+    0x18,
+    genTimeStr.length,
     ...genTimeStr,
-    0x04, 0x20,
+    0x04,
+    0x20,
     ...List.filled(32, 0),
   ];
   return Uint8List.fromList([0x30, inner.length, ...inner]);

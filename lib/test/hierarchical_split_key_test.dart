@@ -343,8 +343,7 @@ void main() {
         );
         expect(
           splitResult
-              .sharesByLevel[ZegelFormat.classificationConfidential]!
-              .length,
+              .sharesByLevel[ZegelFormat.classificationConfidential]!.length,
           equals(5),
         );
         expect(
@@ -367,8 +366,7 @@ void main() {
         expect(splitResult.sharesByLevel.length, equals(1));
         expect(
           splitResult
-              .sharesByLevel[ZegelFormat.classificationConfidential]!
-              .length,
+              .sharesByLevel[ZegelFormat.classificationConfidential]!.length,
           equals(5),
         );
       });

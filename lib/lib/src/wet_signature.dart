@@ -104,9 +104,8 @@ class WetSignatureConfig {
   factory WetSignatureConfig.fromJson(Map<String, dynamic> json) {
     return WetSignatureConfig(
       requiredSignatures: json['required_signatures'] as int,
-      roles: (json['roles'] as List<dynamic>?)
-          ?.map((r) => r as String)
-          .toList(),
+      roles:
+          (json['roles'] as List<dynamic>?)?.map((r) => r as String).toList(),
     );
   }
 

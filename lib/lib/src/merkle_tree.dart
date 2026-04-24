@@ -122,9 +122,8 @@ class MerkleTree {
         layer = List<Uint8List>.from(layer)
           ..add(Uint8List.fromList(layer.last));
       }
-      final int siblingIndex = currentIndex.isEven
-          ? currentIndex + 1
-          : currentIndex - 1;
+      final int siblingIndex =
+          currentIndex.isEven ? currentIndex + 1 : currentIndex - 1;
       proof.add(Uint8List.fromList(layer[siblingIndex]));
       currentIndex ~/= 2;
     }

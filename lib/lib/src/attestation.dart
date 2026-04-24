@@ -185,8 +185,7 @@ class Attestation {
     final Uint8List roleBytes = Uint8List.fromList(utf8.encode(role));
     final Uint8List statementBytes = Uint8List.fromList(utf8.encode(statement));
 
-    final int messageLen =
-        merkleRoot.length +
+    final int messageLen = merkleRoot.length +
         signerIdBytes.length +
         8 +
         roleBytes.length +
@@ -245,8 +244,7 @@ class Attestation {
     final Uint8List roleBytes = Uint8List.fromList(utf8.encode(role));
     final Uint8List statementBytes = Uint8List.fromList(utf8.encode(statement));
 
-    final int messageLen =
-        merkleRoot.length +
+    final int messageLen = merkleRoot.length +
         signerIdBytes.length +
         8 +
         roleBytes.length +

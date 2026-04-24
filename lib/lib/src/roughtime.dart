@@ -373,7 +373,8 @@ class RoughtimeClient {
     // Verify delegation: long-term key signs DELE.
     final certSignedMsg = Uint8List(_certContext.length + deleBytes.length);
     certSignedMsg.setRange(0, _certContext.length, _certContext);
-    certSignedMsg.setRange(_certContext.length, certSignedMsg.length, deleBytes);
+    certSignedMsg.setRange(
+        _certContext.length, certSignedMsg.length, deleBytes);
 
     if (!_ed25519Verify(server.publicKey, certSignedMsg, certSig)) {
       throw StateError(
@@ -474,9 +475,11 @@ class RoughtimeClient {
     for (var i = 0; i < levels; i++) {
       final sibling = Uint8List.sublistView(path, i * 64, (i + 1) * 64);
       if (index & 1 == 0) {
-        current = Uint8List.fromList(sha512.convert([...current, ...sibling]).bytes);
+        current =
+            Uint8List.fromList(sha512.convert([...current, ...sibling]).bytes);
       } else {
-        current = Uint8List.fromList(sha512.convert([...sibling, ...current]).bytes);
+        current =
+            Uint8List.fromList(sha512.convert([...sibling, ...current]).bytes);
       }
       index >>= 1;
     }
@@ -501,7 +504,9 @@ bool _ed25519Verify(Uint8List publicKey, Uint8List message, Uint8List sig) {
     final signedMessage = Uint8List(sig.length + message.length);
     signedMessage.setRange(0, sig.length, sig);
     signedMessage.setRange(sig.length, signedMessage.length, message);
-    vk.verifySignedMessage(signedMessage: signedMessage);
+    vk.verifySignedMessage(
+        signedMessage:
+            pinenacl.SignedMessage.fromList(signedMessage: signedMessage));
     return true;
   } on Exception {
     return false;

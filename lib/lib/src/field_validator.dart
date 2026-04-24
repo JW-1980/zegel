@@ -6,7 +6,6 @@
 /// purely string-based so the class can live in the core library and
 /// be exercised in unit tests without any UI framework.
 class FieldValidator {
-
   /// Shortcut for "all common text-field rules with defaults".
   factory FieldValidator.text({
     bool required = false,
@@ -57,7 +56,8 @@ class RequiredRule extends ValidatorRule {
 }
 
 class MinLengthRule extends ValidatorRule {
-  const MinLengthRule(this.length, {String? message}) : _customMessage = message;
+  const MinLengthRule(this.length, {String? message})
+      : _customMessage = message;
 
   final int length;
   final String? _customMessage;
@@ -72,7 +72,8 @@ class MinLengthRule extends ValidatorRule {
 }
 
 class MaxLengthRule extends ValidatorRule {
-  const MaxLengthRule(this.length, {String? message}) : _customMessage = message;
+  const MaxLengthRule(this.length, {String? message})
+      : _customMessage = message;
 
   final int length;
   final String? _customMessage;

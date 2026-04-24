@@ -257,7 +257,9 @@ void main() {
         expect(manager.defaultTemplate(), isNull);
       });
 
-      test('setDefault references the live store — changes reflected immediately', () {
+      test(
+          'setDefault references the live store — changes reflected immediately',
+          () {
         manager.upsert(template('live', description: 'v1'));
         manager.setDefault('live');
         // Update the template after setting default.

@@ -8,17 +8,16 @@
 /// to show, so the UI only has to render a single step at a time.
 class WebSetupWizard {
   WebSetupWizard({List<SetupStep>? steps})
-    : _steps = List<SetupStep>.unmodifiable(steps ?? defaultSteps),
-      _completed = <String>{},
-      _answers = <String, Object?>{};
+      : _steps = List<SetupStep>.unmodifiable(steps ?? defaultSteps),
+        _completed = <String>{},
+        _answers = <String, Object?>{};
 
   /// Default set of steps shipped with Zegel.
   static const List<SetupStep> defaultSteps = <SetupStep>[
     SetupStep(
       id: 'welcome',
       title: 'Welcome to Zegel',
-      description:
-          'A one-time setup configures the server. Takes about a '
+      description: 'A one-time setup configures the server. Takes about a '
           'minute.',
       requiredAnswer: null,
     ),

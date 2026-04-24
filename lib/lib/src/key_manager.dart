@@ -119,8 +119,8 @@ class KeyManager {
 
   /// Serializes the manager to JSON.
   String encode() => jsonEncode(<String, dynamic>{
-    'keys': _entries.values.map((e) => e.toJson()).toList(),
-  });
+        'keys': _entries.values.map((e) => e.toJson()).toList(),
+      });
 
   /// Writes the serialized state to disk.
   ///
@@ -167,15 +167,15 @@ class KeyEntry {
   });
 
   static KeyEntry fromJson(Map<String, dynamic> json) => KeyEntry(
-    id: json['id'] as String,
-    name: json['name'] as String,
-    fingerprint: json['fingerprint'] as String,
-    createdAt: DateTime.parse(json['created_at'] as String).toUtc(),
-    expiresAt: json['expires_at'] == null
-        ? null
-        : DateTime.parse(json['expires_at'] as String).toUtc(),
-    description: json['description'] as String?,
-  );
+        id: json['id'] as String,
+        name: json['name'] as String,
+        fingerprint: json['fingerprint'] as String,
+        createdAt: DateTime.parse(json['created_at'] as String).toUtc(),
+        expiresAt: json['expires_at'] == null
+            ? null
+            : DateTime.parse(json['expires_at'] as String).toUtc(),
+        description: json['description'] as String?,
+      );
 
   final String id;
   final String name;
@@ -196,11 +196,12 @@ class KeyEntry {
   }
 
   Map<String, dynamic> toJson() => <String, dynamic>{
-    'id': id,
-    'name': name,
-    'fingerprint': fingerprint,
-    'created_at': createdAt.toUtc().toIso8601String(),
-    if (expiresAt != null) 'expires_at': expiresAt!.toUtc().toIso8601String(),
-    if (description != null) 'description': description,
-  };
+        'id': id,
+        'name': name,
+        'fingerprint': fingerprint,
+        'created_at': createdAt.toUtc().toIso8601String(),
+        if (expiresAt != null)
+          'expires_at': expiresAt!.toUtc().toIso8601String(),
+        if (description != null) 'description': description,
+      };
 }
