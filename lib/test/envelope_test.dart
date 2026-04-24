@@ -13,14 +13,14 @@ void main() {
         senderName: 'Alice',
         senderEmail: 'alice@example.com',
         recipients: [
-          EnvelopeRecipient(
+          const EnvelopeRecipient(
             id: 'rcpt-1',
             name: 'Bob',
             email: 'bob@example.com',
             role: RecipientRole.signer,
             routingOrder: 1,
           ),
-          EnvelopeRecipient(
+          const EnvelopeRecipient(
             id: 'rcpt-2',
             name: 'Carol',
             email: 'carol@example.com',
@@ -40,7 +40,7 @@ void main() {
         id: 'env-roundtrip',
         subject: 'Test roundtrip',
         recipients: [
-          EnvelopeRecipient(
+          const EnvelopeRecipient(
             id: 'r1',
             name: 'Alice',
             email: 'alice@test.com',
@@ -64,7 +64,7 @@ void main() {
         subject: 'Sequential test',
         routingMode: RoutingMode.sequential,
         recipients: [
-          EnvelopeRecipient(
+          const EnvelopeRecipient(
             id: 'r1',
             name: 'First',
             email: 'first@test.com',
@@ -72,7 +72,7 @@ void main() {
             routingOrder: 1,
             status: RecipientStatus.signed,
           ),
-          EnvelopeRecipient(
+          const EnvelopeRecipient(
             id: 'r2',
             name: 'Second',
             email: 'second@test.com',
@@ -80,7 +80,7 @@ void main() {
             routingOrder: 2,
             status: RecipientStatus.sent,
           ),
-          EnvelopeRecipient(
+          const EnvelopeRecipient(
             id: 'r3',
             name: 'Third',
             email: 'third@test.com',
@@ -102,21 +102,21 @@ void main() {
         subject: 'Parallel test',
         routingMode: RoutingMode.parallel,
         recipients: [
-          EnvelopeRecipient(
+          const EnvelopeRecipient(
             id: 'r1',
             name: 'A',
             email: 'a@test.com',
             role: RecipientRole.signer,
             status: RecipientStatus.signed,
           ),
-          EnvelopeRecipient(
+          const EnvelopeRecipient(
             id: 'r2',
             name: 'B',
             email: 'b@test.com',
             role: RecipientRole.signer,
             status: RecipientStatus.sent,
           ),
-          EnvelopeRecipient(
+          const EnvelopeRecipient(
             id: 'r3',
             name: 'C',
             email: 'c@test.com',
@@ -136,14 +136,14 @@ void main() {
         id: 'env-cc',
         subject: 'CC test',
         recipients: [
-          EnvelopeRecipient(
+          const EnvelopeRecipient(
             id: 'r1',
             name: 'Signer',
             email: 's@test.com',
             role: RecipientRole.signer,
             status: RecipientStatus.signed,
           ),
-          EnvelopeRecipient(
+          const EnvelopeRecipient(
             id: 'r2',
             name: 'Copy',
             email: 'c@test.com',
@@ -161,7 +161,7 @@ void main() {
         id: 'env-audit',
         subject: 'Audit chain test',
         recipients: [
-          EnvelopeRecipient(
+          const EnvelopeRecipient(
             id: 'r1',
             name: 'Alice',
             email: 'a@test.com',
@@ -170,22 +170,28 @@ void main() {
         ],
       );
 
-      envelope.appendEvent(const EnvelopeEvent(
-        timestamp: 1000,
-        eventType: 'envelope_created',
-        description: 'Envelope created',
-      ));
-      envelope.appendEvent(const EnvelopeEvent(
-        timestamp: 1001,
-        eventType: 'envelope_sent',
-        description: 'Envelope sent to recipients',
-      ));
-      envelope.appendEvent(const EnvelopeEvent(
-        timestamp: 1002,
-        eventType: 'recipient_signed',
-        description: 'Alice signed',
-        recipientId: 'r1',
-      ));
+      envelope.appendEvent(
+        const EnvelopeEvent(
+          timestamp: 1000,
+          eventType: 'envelope_created',
+          description: 'Envelope created',
+        ),
+      );
+      envelope.appendEvent(
+        const EnvelopeEvent(
+          timestamp: 1001,
+          eventType: 'envelope_sent',
+          description: 'Envelope sent to recipients',
+        ),
+      );
+      envelope.appendEvent(
+        const EnvelopeEvent(
+          timestamp: 1002,
+          eventType: 'recipient_signed',
+          description: 'Alice signed',
+          recipientId: 'r1',
+        ),
+      );
 
       expect(envelope.events.length, equals(3));
       expect(envelope.events[0].previousHash, isNull);
@@ -199,7 +205,7 @@ void main() {
         id: 'env-tamper',
         subject: 'Tamper test',
         recipients: [
-          EnvelopeRecipient(
+          const EnvelopeRecipient(
             id: 'r1',
             name: 'X',
             email: 'x@test.com',
@@ -208,16 +214,20 @@ void main() {
         ],
       );
 
-      envelope.appendEvent(const EnvelopeEvent(
-        timestamp: 1000,
-        eventType: 'envelope_created',
-        description: 'Original',
-      ));
-      envelope.appendEvent(const EnvelopeEvent(
-        timestamp: 1001,
-        eventType: 'envelope_sent',
-        description: 'Sent',
-      ));
+      envelope.appendEvent(
+        const EnvelopeEvent(
+          timestamp: 1000,
+          eventType: 'envelope_created',
+          description: 'Original',
+        ),
+      );
+      envelope.appendEvent(
+        const EnvelopeEvent(
+          timestamp: 1001,
+          eventType: 'envelope_sent',
+          description: 'Sent',
+        ),
+      );
 
       // Tamper: replace first event with a different description.
       envelope.events[0] = const EnvelopeEvent(
@@ -236,7 +246,7 @@ void main() {
         subject: 'Expired',
         expiresAt: past,
         recipients: [
-          EnvelopeRecipient(
+          const EnvelopeRecipient(
             id: 'r1',
             name: 'X',
             email: 'x@test.com',
@@ -379,10 +389,7 @@ void main() {
         () => template.instantiate(
           envelopeId: 'env-bad',
           roleMapping: {
-            'a': const TemplateRoleMapping(
-              name: 'X',
-              email: 'x@test.com',
-            ),
+            'a': const TemplateRoleMapping(name: 'X', email: 'x@test.com'),
             // 'b' is missing!
           },
           documentMerkleRoots: [],
@@ -437,7 +444,7 @@ void main() {
         senderName: 'Alice',
         senderEmail: 'alice@test.com',
         recipients: [
-          EnvelopeRecipient(
+          const EnvelopeRecipient(
             id: 'r1',
             name: 'Bob',
             email: 'bob@test.com',
@@ -452,21 +459,27 @@ void main() {
         completedAt: 1700000000,
       );
 
-      envelope.appendEvent(const EnvelopeEvent(
-        timestamp: 1699999000,
-        eventType: 'envelope_created',
-        description: 'Created',
-      ));
-      envelope.appendEvent(const EnvelopeEvent(
-        timestamp: 1699999500,
-        eventType: 'envelope_sent',
-        description: 'Sent',
-      ));
-      envelope.appendEvent(const EnvelopeEvent(
-        timestamp: 1700000000,
-        eventType: 'envelope_completed',
-        description: 'All signatures collected',
-      ));
+      envelope.appendEvent(
+        const EnvelopeEvent(
+          timestamp: 1699999000,
+          eventType: 'envelope_created',
+          description: 'Created',
+        ),
+      );
+      envelope.appendEvent(
+        const EnvelopeEvent(
+          timestamp: 1699999500,
+          eventType: 'envelope_sent',
+          description: 'Sent',
+        ),
+      );
+      envelope.appendEvent(
+        const EnvelopeEvent(
+          timestamp: 1700000000,
+          eventType: 'envelope_completed',
+          description: 'All signatures collected',
+        ),
+      );
 
       final cert = CertificateOfCompletion.generate(envelope);
 
@@ -483,7 +496,7 @@ void main() {
         id: 'env-tampered-cert',
         subject: 'Test',
         recipients: [
-          EnvelopeRecipient(
+          const EnvelopeRecipient(
             id: 'r1',
             name: 'X',
             email: 'x@test.com',
@@ -492,11 +505,9 @@ void main() {
           ),
         ],
       );
-      envelope.appendEvent(const EnvelopeEvent(
-        timestamp: 1000,
-        eventType: 'a',
-        description: 'a',
-      ));
+      envelope.appendEvent(
+        const EnvelopeEvent(timestamp: 1000, eventType: 'a', description: 'a'),
+      );
 
       final cert = CertificateOfCompletion.generate(envelope);
 
@@ -523,7 +534,7 @@ void main() {
         senderName: 'Alice Smith',
         senderEmail: 'alice@example.com',
         recipients: [
-          EnvelopeRecipient(
+          const EnvelopeRecipient(
             id: 'r1',
             name: 'Bob Jones',
             email: 'bob@vendor.com',
@@ -533,11 +544,13 @@ void main() {
           ),
         ],
       );
-      envelope.appendEvent(const EnvelopeEvent(
-        timestamp: 1699999000,
-        eventType: 'envelope_created',
-        description: 'Envelope created by Alice Smith',
-      ));
+      envelope.appendEvent(
+        const EnvelopeEvent(
+          timestamp: 1699999000,
+          eventType: 'envelope_created',
+          description: 'Envelope created by Alice Smith',
+        ),
+      );
 
       final cert = CertificateOfCompletion.generate(envelope);
       final text = cert.renderText();
@@ -553,7 +566,7 @@ void main() {
 
   group('Bulk send', () {
     test('parses CSV recipient list', () {
-      final csv = '''name,email,company,employee_id
+      const csv = '''name,email,company,employee_id
 Alice,alice@test.com,Acme,E001
 Bob,bob@test.com,Acme,E002
 Carol,carol@test.com,Acme,E003
@@ -675,9 +688,7 @@ Carol,carol@test.com,Acme,E003
           jobId: 'bad',
           template: template,
           signerRoleId: 'nonexistent',
-          recipients: const [
-            BulkRecipient(name: 'X', email: 'x@t.com'),
-          ],
+          recipients: const [BulkRecipient(name: 'X', email: 'x@t.com')],
           documentMerkleRoots: [],
         ),
         throwsA(isA<ArgumentError>()),

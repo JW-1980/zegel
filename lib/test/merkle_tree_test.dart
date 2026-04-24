@@ -182,10 +182,7 @@ void main() {
 
     group('edge cases', () {
       test('empty list throws ArgumentError', () {
-        expect(
-          () => MerkleTree.buildRoot([]),
-          throwsA(isA<ArgumentError>()),
-        );
+        expect(() => MerkleTree.buildRoot([]), throwsA(isA<ArgumentError>()));
       });
 
       test('large number of leaves (128) produces 32-byte root', () {
@@ -288,8 +285,11 @@ void main() {
             proof,
             leaves.length,
           );
-          expect(verified, isTrue,
-              reason: 'Inclusion proof failed for leaf at index $i');
+          expect(
+            verified,
+            isTrue,
+            reason: 'Inclusion proof failed for leaf at index $i',
+          );
         }
       });
 
@@ -306,8 +306,11 @@ void main() {
             proof,
             leaves.length,
           );
-          expect(verified, isTrue,
-              reason: 'Inclusion proof failed for leaf at index $i');
+          expect(
+            verified,
+            isTrue,
+            reason: 'Inclusion proof failed for leaf at index $i',
+          );
         }
       });
 
@@ -347,13 +350,7 @@ void main() {
         final root = MerkleTree.buildRoot([leaf]);
 
         final proof = MerkleTree.generateProof([leaf], 0);
-        final verified = MerkleTree.verifyInclusion(
-          root,
-          leaf,
-          0,
-          proof,
-          1,
-        );
+        final verified = MerkleTree.verifyInclusion(root, leaf, 0, proof, 1);
         expect(verified, isTrue);
       });
     });

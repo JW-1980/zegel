@@ -519,22 +519,59 @@ Each level key is then split using standard Shamir SSS with level-appropriate th
 
 ## 7b. General Features (v1.3)
 
-### 7b.1 GEN-11: Trusted Timestamps (RFC 3161)
+### 7b.1 GEN-11: Trusted Timestamps
 
-When `FLAG_HAS_TIMESTAMP` (0x2000) is set, a timestamp block (type `0x0B`) contains a signed timestamp proving when the file was sealed.
+When `FLAG_HAS_TIMESTAMP` (0x2000) is set, a **TIMESTAMP appendix** follows the master seal at the end of the file. This appendix contains a cryptographic proof of creation time from an external anchor.
 
-**Timestamp request:**
+**Important limitation:** No purely offline mechanism can produce transferable, third-party-verifiable, rollback-resistant wall-clock proof against a root-privileged adversary on the sealing machine. This is an information-theoretic impossibility. Any authoritative creation time proof requires an external anchor at some point (at sealing, at provisioning, or via a pre-obtained token).
+
+The uint64 creation timestamp at header offset 12 is **self-asserted** (from the sealer's local clock) unless corroborated by a TIMESTAMP appendix.
+
+**Message imprint (shared across all protocols):**
 ```
 message_imprint = SHA-256(merkle_root || master_seal)
 ```
 
-**Local timestamp token:** When no external TSA is available, a local token is created:
+**TIMESTAMP appendix wire format** (appended after master seal):
 ```
-message = merkle_root || master_seal || pack_uint64_be(epoch_seconds)
-signature = HMAC-SHA256(signer_key, message)
+protocol:      uint8     (1 = Roughtime, 2 = RFC 3161, 3 = local HMAC)
+payload_len:   uint32 BE
+payload:       bytes[payload_len]
 ```
 
-This helps prevent clock manipulation attacks on expiration features.
+**Modes:**
+
+| Mode | Protocol | Network required | What it proves |
+|------|----------|-----------------|----------------|
+| Roughtime | 1 | At seal time (UDP) | Wall-clock time within radius, signed by multiple servers |
+| RFC 3161 | 2 | At seal time (HTTP) or pre-obtained | Wall-clock time (genTime), signed by TSA |
+| Pre-obtained token | 2 | Token obtained offline | Same as RFC 3161 (token fetched on a separate machine) |
+| Self-asserted | (none) | Never | Nothing — sealer's local clock only |
+
+**Roughtime (protocol = 1):** The payload is a JSON object:
+```json
+{
+  "protocol": "roughtime",
+  "responses": [
+    {"server": "Cloudflare", "midpoint_us": 1714000000000000, "radius_us": 1000000},
+    {"server": "Google", "midpoint_us": 1714000000500000, "radius_us": 2000000}
+  ],
+  "not_before_us": 1713999999000000,
+  "not_after_us": 1714000002500000
+}
+```
+Responses are chained: each subsequent nonce = SHA-512(previous_raw_response), creating an auditable happens-before order.
+
+**RFC 3161 (protocol = 2):** The payload is the DER-encoded TimeStampResp or TimeStampToken from the TSA. The message imprint inside the token must match `SHA-256(merkle_root || master_seal)`.
+
+**Local HMAC (protocol = 3, deprecated):** Self-asserted, non-authoritative. Kept for backward compatibility only.
+
+**Reader-side clock-rollback defense:** When a trusted anchor is present, the reader checks expiration against `max(DateTime.now(), anchor_time)`. This prevents a verifier with a rolled-back clock from accepting an expired file.
+
+**Integrity:** The TIMESTAMP appendix is NOT covered by the master seal (it is computed after the seal). Instead:
+- The `FLAG_HAS_TIMESTAMP` flag IS covered by the seal. Stripping the appendix while the flag is set → reader detects missing data.
+- The payload is externally signed (by the Roughtime server or TSA). Modifying the payload → signature verification fails.
+- The message imprint binds the token to this specific file. Swapping a token from another file → imprint mismatch.
 
 ### 7b.2 GEN-12: Anonymous Mode
 

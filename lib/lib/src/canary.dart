@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
+import 'secure_memory.dart';
 
 /// Canary trap / recipient fingerprinting (SEC-4, v1.2).
 ///
@@ -62,6 +63,7 @@ class CanaryTrap {
     // the original (pre-fix) output.
     final Uint8List padding = Uint8List(padLen);
     padding.setRange(0, padLen, scratch);
+    SecureMemory.wipe(scratch);
     return padding;
   }
 

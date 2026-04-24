@@ -5,10 +5,7 @@ void main() {
   group('CrashReporter', () {
     test('disabled reporter is a no-op', () {
       final reporter = CrashReporter(enabled: false);
-      final result = reporter.report(
-        Exception('boom'),
-        StackTrace.current,
-      );
+      final result = reporter.report(Exception('boom'), StackTrace.current);
       expect(result, isNull);
       expect(reporter.reports, isEmpty);
     });

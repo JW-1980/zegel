@@ -19,7 +19,7 @@ void main() {
     // -----------------------------------------------------------------------
     // Helpers
     // -----------------------------------------------------------------------
-    File _writeFile(String name, List<int> bytes) {
+    File writeFile(String name, List<int> bytes) {
       final file = File('${tempDir.path}${Platform.pathSeparator}$name');
       file.writeAsBytesSync(bytes);
       return file;
@@ -30,14 +30,14 @@ void main() {
     // -----------------------------------------------------------------------
     group('open', () {
       test('opens an existing file and exposes its length', () {
-        final file = _writeFile('sample.zgl', List<int>.generate(64, (i) => i));
+        final file = writeFile('sample.zgl', List<int>.generate(64, (i) => i));
         final reader = MmapReader.open(file.path);
         addTearDown(reader.close);
         expect(reader.length, 64);
       });
 
       test('exposes the absolute path', () {
-        final file = _writeFile('path_test.bin', [1, 2, 3]);
+        final file = writeFile('path_test.bin', [1, 2, 3]);
         final reader = MmapReader.open(file.path);
         addTearDown(reader.close);
         expect(reader.path, file.path);
@@ -51,7 +51,7 @@ void main() {
       });
 
       test('opens an empty file with length 0', () {
-        final file = _writeFile('empty.bin', []);
+        final file = writeFile('empty.bin', []);
         final reader = MmapReader.open(file.path);
         addTearDown(reader.close);
         expect(reader.length, 0);
@@ -64,7 +64,7 @@ void main() {
     group('read', () {
       test('reads bytes at offset 0', () {
         final data = List<int>.generate(16, (i) => i * 2);
-        final file = _writeFile('read_test.bin', data);
+        final file = writeFile('read_test.bin', data);
         final reader = MmapReader.open(file.path);
         addTearDown(reader.close);
 
@@ -74,7 +74,7 @@ void main() {
 
       test('reads bytes at a non-zero offset', () {
         final data = List<int>.generate(32, (i) => i);
-        final file = _writeFile('offset_test.bin', data);
+        final file = writeFile('offset_test.bin', data);
         final reader = MmapReader.open(file.path);
         addTearDown(reader.close);
 
@@ -84,7 +84,7 @@ void main() {
 
       test('reads the last byte of the file', () {
         final data = [0xAA, 0xBB, 0xCC, 0xDD];
-        final file = _writeFile('last_byte.bin', data);
+        final file = writeFile('last_byte.bin', data);
         final reader = MmapReader.open(file.path);
         addTearDown(reader.close);
 
@@ -94,7 +94,7 @@ void main() {
 
       test('returns a fresh Uint8List (not a shared view)', () {
         final data = List<int>.generate(10, (i) => i);
-        final file = _writeFile('fresh.bin', data);
+        final file = writeFile('fresh.bin', data);
         final reader = MmapReader.open(file.path);
         addTearDown(reader.close);
 
@@ -106,7 +106,7 @@ void main() {
       });
 
       test('throws RangeError when reading past end of file', () {
-        final file = _writeFile('small.bin', [1, 2, 3]);
+        final file = writeFile('small.bin', [1, 2, 3]);
         final reader = MmapReader.open(file.path);
         addTearDown(reader.close);
 
@@ -114,7 +114,7 @@ void main() {
       });
 
       test('throws ArgumentError for negative offset', () {
-        final file = _writeFile('neg_offset.bin', [1, 2, 3, 4]);
+        final file = writeFile('neg_offset.bin', [1, 2, 3, 4]);
         final reader = MmapReader.open(file.path);
         addTearDown(reader.close);
 
@@ -122,7 +122,7 @@ void main() {
       });
 
       test('throws ArgumentError for negative count', () {
-        final file = _writeFile('neg_count.bin', [1, 2, 3, 4]);
+        final file = writeFile('neg_count.bin', [1, 2, 3, 4]);
         final reader = MmapReader.open(file.path);
         addTearDown(reader.close);
 
@@ -130,7 +130,7 @@ void main() {
       });
 
       test('reading zero bytes returns an empty Uint8List', () {
-        final file = _writeFile('zero.bin', [5, 6, 7]);
+        final file = writeFile('zero.bin', [5, 6, 7]);
         final reader = MmapReader.open(file.path);
         addTearDown(reader.close);
 
@@ -145,7 +145,7 @@ void main() {
     group('readHeader', () {
       test('returns the first N bytes of the file', () {
         final data = List<int>.generate(128, (i) => i % 256);
-        final file = _writeFile('header_test.bin', data);
+        final file = writeFile('header_test.bin', data);
         final reader = MmapReader.open(file.path);
         addTearDown(reader.close);
 
@@ -155,7 +155,7 @@ void main() {
 
       test('is equivalent to read(0, count)', () {
         final data = List<int>.generate(20, (i) => i + 100);
-        final file = _writeFile('header_eq.bin', data);
+        final file = writeFile('header_eq.bin', data);
         final reader = MmapReader.open(file.path);
         addTearDown(reader.close);
 
@@ -169,7 +169,7 @@ void main() {
     group('readBlocks', () {
       test('yields all bytes when file is smaller than blockSize', () {
         final data = List<int>.generate(100, (i) => i);
-        final file = _writeFile('small_blocks.bin', data);
+        final file = writeFile('small_blocks.bin', data);
         final reader = MmapReader.open(file.path);
         addTearDown(reader.close);
 
@@ -180,7 +180,7 @@ void main() {
 
       test('yields multiple chunks when file exceeds blockSize', () {
         final data = List<int>.generate(100, (i) => i);
-        final file = _writeFile('multi_blocks.bin', data);
+        final file = writeFile('multi_blocks.bin', data);
         final reader = MmapReader.open(file.path);
         addTearDown(reader.close);
 
@@ -195,7 +195,7 @@ void main() {
 
       test('concatenating all chunks equals the full file', () {
         final data = List<int>.generate(256, (i) => i);
-        final file = _writeFile('concat_blocks.bin', data);
+        final file = writeFile('concat_blocks.bin', data);
         final reader = MmapReader.open(file.path);
         addTearDown(reader.close);
 
@@ -207,7 +207,7 @@ void main() {
       });
 
       test('throws ArgumentError for blockSize <= 0', () {
-        final file = _writeFile('bad_block.bin', [1, 2, 3]);
+        final file = writeFile('bad_block.bin', [1, 2, 3]);
         final reader = MmapReader.open(file.path);
         addTearDown(reader.close);
 
@@ -218,7 +218,7 @@ void main() {
       });
 
       test('yields no chunks for an empty file', () {
-        final file = _writeFile('empty_blocks.bin', []);
+        final file = writeFile('empty_blocks.bin', []);
         final reader = MmapReader.open(file.path);
         addTearDown(reader.close);
 
@@ -232,31 +232,28 @@ void main() {
     // -----------------------------------------------------------------------
     group('close', () {
       test('close is idempotent (calling twice does not throw)', () {
-        final file = _writeFile('close_twice.bin', [1, 2, 3]);
+        final file = writeFile('close_twice.bin', [1, 2, 3]);
         final reader = MmapReader.open(file.path);
         reader.close();
-        expect(() => reader.close(), returnsNormally);
+        expect(reader.close, returnsNormally);
       });
 
       test('read throws StateError after close', () {
-        final file = _writeFile('closed_read.bin', [1, 2, 3]);
+        final file = writeFile('closed_read.bin', [1, 2, 3]);
         final reader = MmapReader.open(file.path);
         reader.close();
         expect(() => reader.read(0, 1), throwsA(isA<StateError>()));
       });
 
       test('readBlocks throws StateError after close', () {
-        final file = _writeFile('closed_blocks.bin', [1, 2, 3]);
+        final file = writeFile('closed_blocks.bin', [1, 2, 3]);
         final reader = MmapReader.open(file.path);
         reader.close();
-        expect(
-          () => reader.readBlocks().toList(),
-          throwsA(isA<StateError>()),
-        );
+        expect(() => reader.readBlocks().toList(), throwsA(isA<StateError>()));
       });
 
       test('readHeader throws StateError after close', () {
-        final file = _writeFile('closed_header.bin', [1, 2, 3]);
+        final file = writeFile('closed_header.bin', [1, 2, 3]);
         final reader = MmapReader.open(file.path);
         reader.close();
         expect(() => reader.readHeader(1), throwsA(isA<StateError>()));

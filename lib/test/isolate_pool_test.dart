@@ -53,10 +53,7 @@ void main() {
     test('rejects submissions after close', () async {
       final pool = IsolatePool(maxWorkers: 1);
       await pool.close();
-      expect(
-        () => pool.run<int>(() async => 1),
-        throwsStateError,
-      );
+      expect(() => pool.run<int>(() async => 1), throwsStateError);
     });
 
     test('rejects invalid maxWorkers', () {

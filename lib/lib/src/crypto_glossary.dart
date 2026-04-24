@@ -134,10 +134,12 @@ class CryptoGlossary {
     final needle = query.trim().toLowerCase();
     if (needle.isEmpty) return const <GlossaryTerm>[];
     return _terms.values
-        .where((term) =>
-            term.term.contains(needle) ||
-            term.title.toLowerCase().contains(needle) ||
-            term.tooltip.toLowerCase().contains(needle))
+        .where(
+          (term) =>
+              term.term.contains(needle) ||
+              term.title.toLowerCase().contains(needle) ||
+              term.tooltip.toLowerCase().contains(needle),
+        )
         .toList();
   }
 }
