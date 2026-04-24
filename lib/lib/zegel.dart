@@ -39,6 +39,7 @@ export 'src/classification.dart';
 export 'src/excerpt.dart';
 export 'src/media_metadata.dart';
 export 'src/timestamp.dart';
+export 'src/roughtime.dart';
 export 'src/provenance_verification.dart';
 export 'src/hierarchical_split_key.dart';
 export 'src/streaming.dart';

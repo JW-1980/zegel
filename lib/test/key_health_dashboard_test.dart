@@ -13,15 +13,20 @@ void main() {
 
     test('mix of statuses produces a weighted health score', () {
       final now = DateTime.utc(2026, 4, 12);
-      final reminder = KeyRotationReminder(
-        rotationWindow: const Duration(days: 30),
-      )
-        ..registerKey('fresh', createdAt: now.subtract(const Duration(days: 1)))
-        ..registerKey('due', createdAt: now.subtract(const Duration(days: 31)))
-        ..registerKey(
-          'overdue',
-          createdAt: now.subtract(const Duration(days: 60)),
-        );
+      final reminder =
+          KeyRotationReminder(rotationWindow: const Duration(days: 30))
+            ..registerKey(
+              'fresh',
+              createdAt: now.subtract(const Duration(days: 1)),
+            )
+            ..registerKey(
+              'due',
+              createdAt: now.subtract(const Duration(days: 31)),
+            )
+            ..registerKey(
+              'overdue',
+              createdAt: now.subtract(const Duration(days: 60)),
+            );
 
       final snap = KeyHealthDashboard.from(reminder, now: now);
       expect(snap.total, 3);
@@ -35,12 +40,12 @@ void main() {
 
     test('isHealthy is false whenever anything is due or overdue', () {
       final now = DateTime.utc(2026, 4, 12);
-      final reminder = KeyRotationReminder(
-        rotationWindow: const Duration(days: 7),
-      )..registerKey(
-          'stale',
-          createdAt: now.subtract(const Duration(days: 30)),
-        );
+      final reminder =
+          KeyRotationReminder(rotationWindow: const Duration(days: 7))
+            ..registerKey(
+              'stale',
+              createdAt: now.subtract(const Duration(days: 30)),
+            );
       final snap = KeyHealthDashboard.from(reminder, now: now);
       expect(snap.isHealthy, isFalse);
     });

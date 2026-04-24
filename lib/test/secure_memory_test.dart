@@ -28,18 +28,9 @@ void main() {
     });
 
     test('constantTimeEquals handles equal and unequal buffers', () {
-      expect(
-        SecureMemory.constantTimeEquals([1, 2, 3], [1, 2, 3]),
-        isTrue,
-      );
-      expect(
-        SecureMemory.constantTimeEquals([1, 2, 3], [1, 2, 4]),
-        isFalse,
-      );
-      expect(
-        SecureMemory.constantTimeEquals([1, 2], [1, 2, 3]),
-        isFalse,
-      );
+      expect(SecureMemory.constantTimeEquals([1, 2, 3], [1, 2, 3]), isTrue);
+      expect(SecureMemory.constantTimeEquals([1, 2, 3], [1, 2, 4]), isFalse);
+      expect(SecureMemory.constantTimeEquals([1, 2], [1, 2, 3]), isFalse);
     });
 
     test('randomBytes returns correct length and rejects negatives', () {

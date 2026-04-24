@@ -10,9 +10,7 @@ class RetentionPolicy {
   RetentionPolicy({
     this.defaultRetention = const Duration(days: 365),
     Map<String, Duration>? rules,
-  }) : _rules = Map<String, Duration>.of(
-          rules ?? const <String, Duration>{},
-        );
+  }) : _rules = Map<String, Duration>.of(rules ?? const <String, Duration>{});
 
   /// Default retention windows applied when a category has no explicit rule.
   final Duration defaultRetention;
@@ -66,9 +64,7 @@ class RetentionPolicy {
 
   Map<String, dynamic> toJson() => {
         'default_retention_seconds': defaultRetention.inSeconds,
-        'rules': {
-          for (final e in _rules.entries) e.key: e.value.inSeconds,
-        },
+        'rules': {for (final e in _rules.entries) e.key: e.value.inSeconds},
       };
 
   String encode() => jsonEncode(toJson());

@@ -77,30 +77,18 @@ class Anonymizer {
     // Order matters: hex/base64 must run before the path/email patterns
     // because a 64-hex-char filename in a path would otherwise be emitted
     // as the path body rather than the hex body.
-    out = out.replaceAllMapped(
-      _hexBlob,
-      (m) => '<hex:${hash(m.group(0)!)}>',
-    );
+    out = out.replaceAllMapped(_hexBlob, (m) => '<hex:${hash(m.group(0)!)}>');
     out = out.replaceAllMapped(
       _base64Blob,
       (m) => '<b64:${hash(m.group(0)!)}>',
     );
-    out = out.replaceAllMapped(
-      _email,
-      (m) => '<email:${hash(m.group(0)!)}>',
-    );
-    out = out.replaceAllMapped(
-      _ipv4,
-      (m) => '<ip:${hash(m.group(0)!)}>',
-    );
+    out = out.replaceAllMapped(_email, (m) => '<email:${hash(m.group(0)!)}>');
+    out = out.replaceAllMapped(_ipv4, (m) => '<ip:${hash(m.group(0)!)}>');
     out = out.replaceAllMapped(
       _windowsPath,
       (m) => '<path:${hash(m.group(0)!)}>',
     );
-    out = out.replaceAllMapped(
-      _unixPath,
-      (m) => '<path:${hash(m.group(0)!)}>',
-    );
+    out = out.replaceAllMapped(_unixPath, (m) => '<path:${hash(m.group(0)!)}>');
     return out;
   }
 

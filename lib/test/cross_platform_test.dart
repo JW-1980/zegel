@@ -59,8 +59,18 @@ void main() {
       test('file starts with correct magic bytes', () {
         expect(
           fileBytes.sublist(0, 8),
-          equals(Uint8List.fromList(
-              [0x5A, 0x45, 0x47, 0x45, 0x4C, 0x00, 0x01, 0x00])),
+          equals(
+            Uint8List.fromList([
+              0x5A,
+              0x45,
+              0x47,
+              0x45,
+              0x4C,
+              0x00,
+              0x01,
+              0x00,
+            ]),
+          ),
         );
       });
 
@@ -70,16 +80,21 @@ void main() {
       });
 
       test('flags are 0x0000', () {
-        final flags =
-            ByteData.sublistView(fileBytes, 10, 12).getUint16(0, Endian.big);
+        final flags = ByteData.sublistView(
+          fileBytes,
+          10,
+          12,
+        ).getUint16(0, Endian.big);
         expect(flags, equals(0x0000));
       });
 
       test('content-type is "text/plain" null-padded to 64 bytes', () {
         final ctBytes = fileBytes.sublist(20, 84);
         final textPlainBytes = utf8.encode('text/plain');
-        expect(ctBytes.sublist(0, textPlainBytes.length),
-            equals(Uint8List.fromList(textPlainBytes)));
+        expect(
+          ctBytes.sublist(0, textPlainBytes.length),
+          equals(Uint8List.fromList(textPlainBytes)),
+        );
         // Rest is zeros
         for (var i = textPlainBytes.length; i < 64; i++) {
           expect(ctBytes[i], equals(0));
@@ -87,8 +102,11 @@ void main() {
       });
 
       test('filename length is 9 (big-endian)', () {
-        final fnLen =
-            ByteData.sublistView(fileBytes, 84, 86).getUint16(0, Endian.big);
+        final fnLen = ByteData.sublistView(
+          fileBytes,
+          84,
+          86,
+        ).getUint16(0, Endian.big);
         expect(fnLen, equals(9));
       });
 
@@ -103,8 +121,11 @@ void main() {
       });
 
       test('block count is 1', () {
-        final bc =
-            ByteData.sublistView(fileBytes, 127, 131).getUint32(0, Endian.big);
+        final bc = ByteData.sublistView(
+          fileBytes,
+          127,
+          131,
+        ).getUint32(0, Endian.big);
         expect(bc, equals(1));
       });
 
@@ -272,13 +293,19 @@ void main() {
         expect(fileBytes[9], equals(4));
 
         // Offset 10-11: Flags (uint16 BE)
-        final flags =
-            ByteData.sublistView(fileBytes, 10, 12).getUint16(0, Endian.big);
+        final flags = ByteData.sublistView(
+          fileBytes,
+          10,
+          12,
+        ).getUint16(0, Endian.big);
         expect(flags, equals(0));
 
         // Offset 12-19: Timestamp (uint64 BE)
-        final ts =
-            ByteData.sublistView(fileBytes, 12, 20).getUint64(0, Endian.big);
+        final ts = ByteData.sublistView(
+          fileBytes,
+          12,
+          20,
+        ).getUint64(0, Endian.big);
         expect(ts, greaterThan(0));
 
         // Offset 20-83: Content-Type (64 bytes, null-padded)
@@ -286,20 +313,28 @@ void main() {
         expect(ctField.length, equals(64));
 
         // Offset 84-85: Filename length (uint16 BE)
-        final fnLen =
-            ByteData.sublistView(fileBytes, 84, 86).getUint16(0, Endian.big);
+        final fnLen = ByteData.sublistView(
+          fileBytes,
+          84,
+          86,
+        ).getUint16(0, Endian.big);
         expect(fnLen, equals(9)); // "hello.txt"
 
         // Offset 86-94: Filename
-        expect(utf8.decode(fileBytes.sublist(86, 86 + fnLen)),
-            equals('hello.txt'));
+        expect(
+          utf8.decode(fileBytes.sublist(86, 86 + fnLen)),
+          equals('hello.txt'),
+        );
 
         // Offset 95-126: Salt (32 bytes)
         expect(fileBytes.sublist(95, 127), equals(_zeroSalt()));
 
         // Offset 127-130: Block count (uint32 BE)
-        final blockCount =
-            ByteData.sublistView(fileBytes, 127, 131).getUint32(0, Endian.big);
+        final blockCount = ByteData.sublistView(
+          fileBytes,
+          127,
+          131,
+        ).getUint32(0, Endian.big);
         expect(blockCount, equals(1));
 
         // Offset 131: Start of block directory
@@ -311,8 +346,11 @@ void main() {
         expect(blockHash.length, equals(32));
 
         // Ciphertext length at 164-167 (uint32 BE)
-        final ctLen =
-            ByteData.sublistView(fileBytes, 164, 168).getUint32(0, Endian.big);
+        final ctLen = ByteData.sublistView(
+          fileBytes,
+          164,
+          168,
+        ).getUint32(0, Endian.big);
         expect(ctLen, greaterThan(0));
 
         // IV at 168-179 (12 bytes)
@@ -360,11 +398,13 @@ void main() {
         // Known inverses in GF(256) with 0x11B
         expect(ShamirSecretSharing.gfInverse(1), equals(1));
         expect(
-            ShamirSecretSharing.gfMultiply(2, ShamirSecretSharing.gfInverse(2)),
-            equals(1));
+          ShamirSecretSharing.gfMultiply(2, ShamirSecretSharing.gfInverse(2)),
+          equals(1),
+        );
         expect(
-            ShamirSecretSharing.gfMultiply(3, ShamirSecretSharing.gfInverse(3)),
-            equals(1));
+          ShamirSecretSharing.gfMultiply(3, ShamirSecretSharing.gfInverse(3)),
+          equals(1),
+        );
       });
     });
 
@@ -404,7 +444,8 @@ void main() {
       test('padding for known inputs is deterministic', () {
         final key = _testKey();
         final recipientId = _sha256(
-            Uint8List.fromList(utf8.encode('user:1:alice@example.com')));
+          Uint8List.fromList(utf8.encode('user:1:alice@example.com')),
+        );
         const blockIndex = 0;
 
         // Compute expected padding per spec:
@@ -412,8 +453,10 @@ void main() {
         final message = Uint8List(recipientId.length + 4);
         message.setAll(0, recipientId);
         ByteData.sublistView(
-                message, recipientId.length, recipientId.length + 4)
-            .setUint32(0, blockIndex, Endian.big);
+          message,
+          recipientId.length,
+          recipientId.length + 4,
+        ).setUint32(0, blockIndex, Endian.big);
 
         final mac = _hmacSha256(key, message);
         final padLen = (mac[0] % 16) + 1;
@@ -429,8 +472,11 @@ void main() {
         expectedPadding[padLen - 1] = padLen;
 
         // Verify the library produces the same padding
-        final actualPadding =
-            CanaryTrap.generatePadding(key, recipientId, blockIndex);
+        final actualPadding = CanaryTrap.generatePadding(
+          key,
+          recipientId,
+          blockIndex,
+        );
         expect(actualPadding, equals(expectedPadding));
       });
     });

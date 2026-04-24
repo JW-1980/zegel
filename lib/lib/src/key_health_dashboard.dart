@@ -10,10 +10,7 @@ class KeyHealthDashboard {
   KeyHealthDashboard._();
 
   /// Builds a snapshot from a [KeyRotationReminder].
-  static KeyHealthSnapshot from(
-    KeyRotationReminder reminder, {
-    DateTime? now,
-  }) {
+  static KeyHealthSnapshot from(KeyRotationReminder reminder, {DateTime? now}) {
     final summaries = reminder.summarize(now: now);
     var ok = 0;
     var due = 0;
@@ -34,9 +31,8 @@ class KeyHealthDashboard {
       }
     }
     final total = ok + due + overdue;
-    final healthScore = total == 0
-        ? 1.0
-        : (ok * 1.0 + due * 0.5 + overdue * 0.0) / total;
+    final healthScore =
+        total == 0 ? 1.0 : (ok * 1.0 + due * 0.5 + overdue * 0.0) / total;
 
     KeyRotationSummary? mostUrgent;
     if (summaries.isNotEmpty) {

@@ -1,0 +1,120 @@
+name: Auto Merge All Branches to Main
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  merge-all-branches:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v5
+        with:
+          ref: main
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Merge all branches into main and delete them
+        run: |
+          # Fetch all remote branches
+          git fetch --all --prune
+
+          # Get all remote branches except main and HEAD
+          BRANCHES=$(git branch -r \
+            | grep -v 'origin/main' \
+            | grep -v 'origin/HEAD' \
+            | sed 's|origin/||' \
+            | tr -d ' ')
+
+          if [ -z "$BRANCHES" ]; then
+            echo "No branches to merge. Only main remains."
+            exit 0
+          fi
+
+          echo "Branches to merge into main:"
+          echo "$BRANCHES"
+
+          FAILED_BRANCHES=""
+
+          for BRANCH in $BRANCHES; do
+            echo ""
+            echo "========================================="
+            echo "Processing branch: $BRANCH"
+            echo "========================================="
+
+            # Try merge using 'theirs' strategy for auto conflict resolution
+            if git merge "origin/$BRANCH" \
+                -X theirs \
+                --no-edit \
+                -m "Auto merge branch '$BRANCH' into main"; then
+              echo "Merged $BRANCH successfully."
+            else
+              echo "Merge failed for $BRANCH even with 'theirs' strategy."
+              echo "Attempting manual conflict resolution..."
+
+              # Stage everything, accepting theirs for all conflicts
+              git checkout --theirs -- . 2>/dev/null || true
+              git add -A
+
+              if git commit -m "Auto merge branch '$BRANCH' into main (conflicts resolved with theirs)"; then
+                echo "Manual resolution succeeded for $BRANCH."
+              else
+                echo "ERROR: Could not resolve conflicts for $BRANCH. Skipping."
+                git merge --abort 2>/dev/null || true
+                FAILED_BRANCHES="$FAILED_BRANCHES $BRANCH"
+                continue
+              fi
+            fi
+
+            # Push updated main
+            if git push origin main; then
+              echo "Pushed main after merging $BRANCH."
+            else
+              echo "ERROR: Push failed after merging $BRANCH."
+              FAILED_BRANCHES="$FAILED_BRANCHES $BRANCH"
+              continue
+            fi
+
+            # Delete the remote branch
+            if git push origin --delete "$BRANCH"; then
+              echo "Deleted remote branch: $BRANCH"
+            else
+              echo "WARNING: Could not delete remote branch $BRANCH (may already be deleted)."
+            fi
+
+            # Delete local tracking ref if it exists
+            git branch -d -r "origin/$BRANCH" 2>/dev/null || true
+          done
+
+          echo ""
+          echo "========================================="
+          echo "Final Summary"
+          echo "========================================="
+
+          # Refresh remote info
+          git fetch --prune
+
+          REMAINING=$(git branch -r | grep -v 'origin/main' | grep -v 'origin/HEAD' | wc -l | tr -d ' ')
+
+          if [ -n "$FAILED_BRANCHES" ]; then
+            echo "WARNING: The following branches could not be merged:$FAILED_BRANCHES"
+          fi
+
+          if [ "$REMAINING" -eq 0 ]; then
+            echo "SUCCESS: Only main branch remains!"
+          else
+            echo "Remaining remote branches ($REMAINING):"
+            git branch -r | grep -v 'origin/main' | grep -v 'origin/HEAD'
+          fi

@@ -31,8 +31,7 @@ class CollaboratorStats {
   int get uniqueCollaborators => _counts.length;
 
   /// Total collaborations recorded.
-  int get totalCollaborations =>
-      _counts.values.fold<int>(0, (a, b) => a + b);
+  int get totalCollaborations => _counts.values.fold<int>(0, (a, b) => a + b);
 
   /// Ranked list of collaborators, highest count first. Limit to the
   /// top [limit] entries.
@@ -42,13 +41,15 @@ class CollaboratorStats {
     final out = <CollaboratorRank>[];
     for (final entry in entries.take(limit)) {
       final contact = _contactBook?.get(entry.key);
-      out.add(CollaboratorRank(
-        contactId: entry.key,
-        count: entry.value,
-        lastSeen: _lastSeen[entry.key],
-        displayName: contact?.displayName ?? entry.key,
-        trusted: contact?.trusted ?? false,
-      ));
+      out.add(
+        CollaboratorRank(
+          contactId: entry.key,
+          count: entry.value,
+          lastSeen: _lastSeen[entry.key],
+          displayName: contact?.displayName ?? entry.key,
+          trusted: contact?.trusted ?? false,
+        ),
+      );
     }
     return out;
   }

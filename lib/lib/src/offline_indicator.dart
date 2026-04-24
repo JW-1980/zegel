@@ -87,8 +87,9 @@ class OfflineIndicator {
   static Future<bool> _defaultProber(String endpoint) async {
     final host = _hostOf(endpoint);
     try {
-      final addresses = await InternetAddress.lookup(host)
-          .timeout(const Duration(seconds: 5));
+      final addresses = await InternetAddress.lookup(
+        host,
+      ).timeout(const Duration(seconds: 5));
       return addresses.isNotEmpty;
     } catch (_) {
       return false;

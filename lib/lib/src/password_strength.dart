@@ -135,13 +135,7 @@ class PasswordStrength {
   }
 }
 
-enum PasswordStrengthLabel {
-  veryWeak,
-  weak,
-  reasonable,
-  strong,
-  veryStrong,
-}
+enum PasswordStrengthLabel { veryWeak, weak, reasonable, strong, veryStrong }
 
 class PasswordStrengthResult {
   const PasswordStrengthResult({
