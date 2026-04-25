@@ -997,14 +997,14 @@ class ZegelService {
   ///
   /// Returns true if the version chain is intact and unbroken.
   Future<bool> verifyVersionChain(List<String> filePaths) async {
-    final fileBytesList = <Uint8List>[];
-    for (final path in filePaths) {
+    final futures = filePaths.map((path) async {
       final file = File(path);
       if (!await file.exists()) {
         throw FileSystemException('File does not exist', path);
       }
-      fileBytesList.add(await file.readAsBytes());
-    }
+      return file.readAsBytes();
+    });
+    final fileBytesList = await Future.wait(futures);
     return ContentVersioning.verifyVersionChain(fileBytesList);
   }
 
