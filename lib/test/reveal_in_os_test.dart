@@ -60,7 +60,7 @@ void main() {
       });
 
       test('passes the parent directory, not the file itself', () {
-        final path = '/home/alice/docs/secret.zgl';
+        const path = '/home/alice/docs/secret.zgl';
         final absPath = File(path).absolute.path;
         final parent = absPath.substring(0, absPath.lastIndexOf(Platform.pathSeparator));
         final cmd = RevealInOs.commandFor(
