@@ -56,7 +56,8 @@ class ExcerptProof {
     for (int i = 0; i < layers.length - 1; i++) {
       final List<Uint8List> layer = layers[i];
       final bool isRightNode = currentIndex % 2 == 1;
-      final int siblingIndex = isRightNode ? currentIndex - 1 : currentIndex + 1;
+      final int siblingIndex =
+          isRightNode ? currentIndex - 1 : currentIndex + 1;
 
       if (siblingIndex < layer.length) {
         proof.add(layer[siblingIndex]);

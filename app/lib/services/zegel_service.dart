@@ -896,7 +896,8 @@ class ZegelService {
     final layers = zgl.MerkleTree.buildTree(leafHashes);
     final root = zgl.MerkleTree.buildRoot(leafHashes);
     for (final idx in blockIndices) {
-      proofs.add(zgl.ExcerptProof.generateProofFromTree(leafHashes, layers, root, idx));
+      proofs.add(zgl.ExcerptProof.generateProofFromTree(
+          leafHashes, layers, root, idx));
     }
     return Uint8List.fromList(
       utf8.encode(
@@ -1011,7 +1012,8 @@ class ZegelService {
       }
       fileBytesList.add(await file.readAsBytes());
     }
-    return await Isolate.run(() => ContentVersioning.verifyVersionChain(fileBytesList));
+    return await Isolate.run(
+        () => ContentVersioning.verifyVersionChain(fileBytesList));
   }
 
   // ======================================================================

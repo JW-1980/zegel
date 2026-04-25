@@ -62,7 +62,8 @@ void main() {
       test('passes the parent directory, not the file itself', () {
         const path = '/home/alice/docs/secret.zgl';
         final absPath = File(path).absolute.path;
-        final parent = absPath.substring(0, absPath.lastIndexOf(Platform.pathSeparator));
+        final parent =
+            absPath.substring(0, absPath.lastIndexOf(Platform.pathSeparator));
         final cmd = RevealInOs.commandFor(
           path,
           overrideOs: 'linux',
