@@ -1,0 +1,1312 @@
+00:00 +0: loading test/statistics_dashboard_test.dart
+00:00 +0: test/statistics_dashboard_test.dart: StatisticsDashboard empty sources yield defaults
+00:00 +1: test/statistics_dashboard_test.dart: StatisticsDashboard combines analytics, history, and time-saved
+00:00 +2: test/statistics_dashboard_test.dart: StatisticsDashboard toJson returns well-formed data
+00:00 +3: test/prefetch_queue_test.dart: PrefetchQueue prefetch caches loader result
+00:00 +4: test/prefetch_queue_test.dart: PrefetchQueue fetch resolves immediately when the entry is hot
+00:00 +5: test/prefetch_queue_test.dart: PrefetchQueue invalidate drops cached entries
+00:00 +6: test/prefetch_queue_test.dart: PrefetchQueue isHot respects ttl
+00:00 +7: test/prefetch_queue_test.dart: PrefetchQueue maxEntries caps the cache size
+00:00 +8: test/comprehensive_tamper_test.dart: 1. Header truncation 0 bytes rejected
+00:00 +9: test/comprehensive_tamper_test.dart: 1. Header truncation only magic bytes (8) rejected
+00:00 +10: test/comprehensive_tamper_test.dart: 1. Header truncation below minimum header (< 86 bytes) rejected
+00:00 +11: test/comprehensive_tamper_test.dart: 1. Header truncation truncated mid-salt rejected
+00:00 +12: test/comprehensive_tamper_test.dart: 1. Header truncation truncated mid-salt rejected
+00:00 +13: test/usage_analytics_test.dart: UsageAnalytics enabled collector aggregates counts
+00:00 +14: test/comprehensive_tamper_test.dart: 1. Header truncation truncated mid-block-count rejected
+00:00 +15: test/usage_analytics_test.dart: UsageAnalytics topCommands returns descending order
+00:00 +16: test/comprehensive_tamper_test.dart: 2. Block reordering swap ciphertext of block 0 and block 1 -> fails
+00:00 +17: test/comprehensive_tamper_test.dart: 2. Block reordering swap ciphertext of block 0 and block 1 -> fails
+00:00 +18: test/comprehensive_tamper_test.dart: 2. Block reordering swap ciphertext of block 0 and block 1 -> fails
+00:00 +19: test/comprehensive_tamper_test.dart: 2. Block reordering swap ciphertext of block 0 and block 1 -> fails
+00:00 +20: test/comprehensive_tamper_test.dart: 2. Block reordering swap ciphertext of block 0 and block 1 -> fails
+00:00 +21: test/comprehensive_tamper_test.dart: 2. Block reordering swap ciphertext of block 0 and block 1 -> fails
+00:00 +22: test/comprehensive_tamper_test.dart: 2. Block reordering swap ciphertext of block 0 and block 1 -> fails
+00:00 +23: test/comprehensive_tamper_test.dart: 2. Block reordering swap ciphertext of block 0 and block 1 -> fails
+00:00 +24: test/comprehensive_tamper_test.dart: 2. Block reordering swap ciphertext of block 0 and block 1 -> fails
+00:00 +25: test/comprehensive_tamper_test.dart: 2. Block reordering swap ciphertext of block 0 and block 1 -> fails
+00:00 +26: test/comprehensive_tamper_test.dart: 2. Block reordering swap ciphertext of block 0 and block 1 -> fails
+00:00 +27: test/comprehensive_tamper_test.dart: 2. Block reordering swap ciphertext of block 0 and block 1 -> fails
+00:00 +28: test/comprehensive_tamper_test.dart: 2. Block reordering swap ciphertext of block 0 and block 1 -> fails
+00:00 +29: test/comprehensive_tamper_test.dart: 2. Block reordering swap ciphertext of block 0 and block 1 -> fails
+00:00 +30: test/comprehensive_tamper_test.dart: 2. Block reordering swap ciphertext of block 0 and block 1 -> fails
+00:00 +31: test/comprehensive_tamper_test.dart: 2. Block reordering swap ciphertext of block 0 and block 1 -> fails
+00:00 +32: test/comprehensive_tamper_test.dart: 2. Block reordering swap ciphertext of block 0 and block 1 -> fails
+00:00 +33: test/comprehensive_tamper_test.dart: 2. Block reordering swap ciphertext of block 0 and block 1 -> fails
+00:00 +34: test/comprehensive_tamper_test.dart: 2. Block reordering swap ciphertext of block 0 and block 1 -> fails
+00:00 +35: test/comprehensive_tamper_test.dart: 2. Block reordering swap ciphertext of block 0 and block 1 -> fails
+00:00 +36: test/comprehensive_tamper_test.dart: 2. Block reordering swap ciphertext of block 0 and block 1 -> fails
+00:00 +37: test/comprehensive_tamper_test.dart: 2. Block reordering swap ciphertext of block 0 and block 1 -> fails
+00:00 +38: test/comprehensive_tamper_test.dart: 2. Block reordering swap ciphertext of block 0 and block 1 -> fails
+00:00 +39: test/comprehensive_tamper_test.dart: 2. Block reordering swap ciphertext of block 0 and block 1 -> fails
+00:00 +40: test/comprehensive_tamper_test.dart: 2. Block reordering swap ciphertext of block 0 and block 1 -> fails
+00:00 +41: test/comprehensive_tamper_test.dart: 2. Block reordering swap ciphertext of block 0 and block 1 -> fails
+00:00 +42: test/comprehensive_tamper_test.dart: 2. Block reordering swap ciphertext of block 0 and block 1 -> fails
+00:00 +43: test/comprehensive_tamper_test.dart: 2. Block reordering swap ciphertext of block 0 and block 1 -> fails
+00:00 +44: test/comprehensive_tamper_test.dart: 2. Block reordering swap ciphertext of block 0 and block 1 -> fails
+00:00 +45: test/comprehensive_tamper_test.dart: 2. Block reordering swap ciphertext of block 0 and block 1 -> fails
+00:00 +46: test/comprehensive_tamper_test.dart: 2. Block reordering swap ciphertext of block 0 and block 1 -> fails
+00:00 +47: test/comprehensive_tamper_test.dart: 2. Block reordering swap ciphertext of block 0 and block 1 -> fails
+00:00 +48: test/comprehensive_tamper_test.dart: 2. Block reordering swap directory entries for blocks 0 and 1 -> fails
+00:00 +49: test/comprehensive_tamper_test.dart: 2. Block reordering swap directory entries for blocks 0 and 1 -> fails
+00:00 +50: test/comprehensive_tamper_test.dart: 2. Block reordering swap directory entries for blocks 0 and 1 -> fails
+00:00 +51: test/comprehensive_tamper_test.dart: 2. Block reordering swap directory entries for blocks 0 and 1 -> fails
+00:00 +52: test/comprehensive_tamper_test.dart: 2. Block reordering swap directory entries for blocks 0 and 1 -> fails
+00:00 +53: test/comprehensive_tamper_test.dart: 2. Block reordering swap directory entries for blocks 0 and 1 -> fails
+00:00 +54: test/comprehensive_tamper_test.dart: 2. Block reordering swap directory entries for blocks 0 and 1 -> fails
+00:00 +55: test/comprehensive_tamper_test.dart: 2. Block reordering swap directory entries for blocks 0 and 1 -> fails
+00:00 +56: test/comprehensive_tamper_test.dart: 2. Block reordering swap directory entries for blocks 0 and 1 -> fails
+00:01 +57: test/comprehensive_tamper_test.dart: 2. Block reordering swap directory entries for blocks 0 and 1 -> fails
+00:01 +58: test/comprehensive_tamper_test.dart: 2. Block reordering swap directory entries for blocks 0 and 1 -> fails
+00:01 +59: test/comprehensive_tamper_test.dart: 2. Block reordering swap directory entries for blocks 0 and 1 -> fails
+00:01 +60: test/comprehensive_tamper_test.dart: 2. Block reordering swap directory entries for blocks 0 and 1 -> fails
+00:01 +61: test/comprehensive_tamper_test.dart: 2. Block reordering swap directory entries for blocks 0 and 1 -> fails
+00:01 +62: test/comprehensive_tamper_test.dart: 3. Block duplication copy directory entry 0 over entry 1 -> fails
+00:01 +63: test/comprehensive_tamper_test.dart: 3. Block duplication copy directory entry 0 over entry 1 -> fails
+00:01 +64: test/comprehensive_tamper_test.dart: 3. Block duplication copy directory entry 0 over entry 1 -> fails
+00:01 +65: test/comprehensive_tamper_test.dart: 3. Block duplication copy directory entry 0 over entry 1 -> fails
+00:01 +66: test/comprehensive_tamper_test.dart: 4. Block deletion decrement block count without removing data -> fails
+00:01 +67: test/comprehensive_tamper_test.dart: 4. Block deletion decrement block count without removing data -> fails
+00:01 +68: test/comprehensive_tamper_test.dart: 4. Block deletion decrement block count without removing data -> fails
+00:01 +69: test/comprehensive_tamper_test.dart: 4. Block deletion decrement block count without removing data -> fails
+00:01 +70: test/comprehensive_tamper_test.dart: 4. Block deletion decrement block count without removing data -> fails
+00:01 +71: test/comprehensive_tamper_test.dart: 4. Block deletion truncate file to remove last block -> fails
+00:01 +72: test/comprehensive_tamper_test.dart: 4. Block deletion truncate file to remove last block -> fails
+00:01 +73: test/comprehensive_tamper_test.dart: 4. Block deletion truncate file to remove last block -> fails
+00:01 +74: test/comprehensive_tamper_test.dart: 4. Block deletion truncate file to remove last block -> fails
+00:01 +75: test/comprehensive_tamper_test.dart: 4. Block deletion truncate file to remove last block -> fails
+00:01 +76: test/comprehensive_tamper_test.dart: 4. Block deletion truncate file to remove last block -> fails
+00:01 +77: test/comprehensive_tamper_test.dart: 4. Block deletion truncate file to remove last block -> fails
+00:01 +78: test/comprehensive_tamper_test.dart: 4. Block deletion truncate file to remove last block -> fails
+00:01 +79: test/comprehensive_tamper_test.dart: 4. Block deletion truncate file to remove last block -> fails
+00:01 +80: test/comprehensive_tamper_test.dart: 4. Block deletion truncate file to remove last block -> fails
+00:01 +81: test/comprehensive_tamper_test.dart: 4. Block deletion truncate file to remove last block -> fails
+00:01 +82: test/comprehensive_tamper_test.dart: 5. Block insertion increment block count without adding data -> fails
+00:01 +83: test/comprehensive_tamper_test.dart: 5. Block insertion append extra bytes after master seal -> fails
+00:01 +84: test/comprehensive_tamper_test.dart: 6. Replay attack splice block from file A into file B (different salt) -> fails
+00:01 +85: test/comprehensive_tamper_test.dart: 6. Replay attack copy Merkle root from file A to file B -> fails
+00:01 +86: test/comprehensive_tamper_test.dart: 7. Key commitment modify key commitment hash -> fails
+00:01 +87: test/comprehensive_tamper_test.dart: 7. Key commitment wrong key with commitment enabled -> fails cleanly
+00:01 +88: test/comprehensive_tamper_test.dart: 8. Nonce uniqueness all IVs are unique within a multi-block file
+00:01 +89: test/comprehensive_tamper_test.dart: 8. Nonce uniqueness all IVs are unique within a multi-block file
+00:01 +90: test/comprehensive_tamper_test.dart: 8. Nonce uniqueness all IVs are unique within a multi-block file
+00:02 +91: test/comprehensive_tamper_test.dart: 8. Nonce uniqueness all IVs are unique within a multi-block file
+00:02 +92: test/comprehensive_tamper_test.dart: 8. Nonce uniqueness all IVs are unique within a multi-block file
+00:02 +93: test/comprehensive_tamper_test.dart: 8. Nonce uniqueness all IVs are unique within a multi-block file
+00:02 +94: test/comprehensive_tamper_test.dart: 8. Nonce uniqueness IVs unique across 10 sealings of the same content
+00:02 +95: test/comprehensive_tamper_test.dart: 9. Downgrade attack modify version minor -> fails (seal mismatch)
+00:02 +96: test/comprehensive_tamper_test.dart: 9. Downgrade attack modify version major -> fails
+00:02 +97: test/comprehensive_tamper_test.dart: 10. Flag manipulation modify flags bit -> fails
+00:02 +98: test/comprehensive_tamper_test.dart: 10. Flag manipulation remove COMPRESSED flag from compressed file -> fails
+00:02 +99: test/comprehensive_tamper_test.dart: 11. Salt manipulation flip 1 bit in salt -> fails
+00:02 +100: test/comprehensive_tamper_test.dart: 11. Salt manipulation replace salt with different random value -> fails
+00:02 +101: test/failure_stats_test.dart: FailureStats classify maps common messages to their buckets
+00:02 +102: test/failure_stats_test.dart: FailureStats classify maps common messages to their buckets
+00:02 +103: test/failure_stats_test.dart: FailureStats classify maps common messages to their buckets
+00:02 +104: test/failure_stats_test.dart: FailureStats classify maps common messages to their buckets
+00:02 +105: test/failure_stats_test.dart: FailureStats classify maps common messages to their buckets
+00:02 +106: test/failure_stats_test.dart: FailureStats classify maps common messages to their buckets
+00:02 +107: test/failure_stats_test.dart: FailureStats classify maps common messages to their buckets
+00:02 +108: test/failure_stats_test.dart: FailureStats classify maps common messages to their buckets
+00:02 +109: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:02 +110: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:02 +111: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:02 +112: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:02 +113: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:02 +114: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:02 +115: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:02 +116: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:02 +117: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:02 +118: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:02 +119: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:02 +120: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:02 +121: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:02 +122: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:02 +123: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:02 +124: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:02 +125: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:02 +126: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:02 +127: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:02 +128: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:02 +129: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:02 +130: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:02 +131: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:02 +132: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:02 +133: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:02 +134: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:02 +135: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:02 +136: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:02 +137: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:02 +138: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:02 +139: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:02 +140: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:02 +141: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:02 +142: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:02 +143: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:02 +144: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:02 +145: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +146: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +147: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +148: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +149: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +150: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +151: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +152: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +153: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +154: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +155: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +156: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +157: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +158: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +159: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +160: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +161: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +162: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +163: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +164: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +165: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +166: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +167: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +168: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +169: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +170: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +171: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +172: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +173: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +174: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +175: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +176: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +177: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +178: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +179: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +180: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +181: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +182: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +183: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +184: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +185: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +186: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +187: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +188: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +189: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +190: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +191: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +192: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +193: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +194: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +195: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +196: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +197: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:03 +198: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:04 +199: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:04 +200: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:04 +201: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:04 +202: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:04 +203: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:04 +204: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:04 +205: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:04 +206: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:04 +207: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:04 +208: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:04 +209: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:04 +210: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:04 +211: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:04 +212: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:04 +213: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:04 +214: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:04 +215: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:04 +216: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:04 +217: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:04 +218: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:04 +219: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:04 +220: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:04 +221: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:04 +222: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:04 +223: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:04 +224: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:04 +225: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:04 +226: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:04 +227: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:04 +228: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:04 +229: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:04 +230: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:04 +231: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:04 +232: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:04 +233: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:04 +234: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:05 +235: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:05 +236: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:06 +237: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 1 MiB file (16 blocks) roundtrips
+00:06 +238: test/redaction_test.dart: Redaction basic redaction redacted block type is 0x06 (REDACTED)
+00:06 +239: test/comprehensive_tamper_test.dart: 15. Large file and block boundary exactly 65536 bytes (1 block boundary) roundtrips
+00:06 +240: test/redaction_test.dart: Redaction basic redaction original plaintext hash preserved for Merkle tree
+00:07 +241: test/comprehensive_tamper_test.dart: 15. Large file and block boundary 65537 bytes (1 byte over boundary) creates 2 blocks
+00:07 +242: test/redaction_test.dart: Redaction basic redaction Merkle root is preserved after redaction
+00:07 +243: test/redaction_test.dart: Redaction basic redaction Merkle root is preserved after redaction
+00:07 +244: test/redaction_test.dart: Redaction basic redaction Merkle root is preserved after redaction
+00:07 +245: test/redaction_test.dart: Redaction basic redaction Merkle root is preserved after redaction
+00:07 +246: test/redaction_test.dart: Redaction basic redaction Merkle root is preserved after redaction
+00:07 +247: test/redaction_test.dart: Redaction basic redaction Merkle root is preserved after redaction
+00:07 +248: test/redaction_test.dart: Redaction basic redaction Merkle root is preserved after redaction
+00:07 +249: test/redaction_test.dart: Redaction basic redaction Merkle root is preserved after redaction
+00:07 +250: test/redaction_test.dart: Redaction basic redaction Merkle root is preserved after redaction
+00:07 +251: test/redaction_test.dart: Redaction basic redaction Merkle root is preserved after redaction
+00:07 +252: test/redaction_test.dart: Redaction basic redaction Merkle root is preserved after redaction
+00:07 +253: test/redaction_test.dart: Redaction basic redaction Merkle root is preserved after redaction
+00:07 +254: test/redaction_test.dart: Redaction basic redaction Merkle root is preserved after redaction
+00:07 +255: test/redaction_test.dart: Redaction basic redaction Merkle root is preserved after redaction
+00:07 +256: test/redaction_test.dart: Redaction basic redaction Merkle root is preserved after redaction
+00:07 +257: test/redaction_test.dart: Redaction basic redaction Merkle root is preserved after redaction
+00:07 +258: test/redaction_test.dart: Redaction basic redaction Merkle root is preserved after redaction
+00:07 +259: test/redaction_test.dart: Redaction basic redaction Merkle root is preserved after redaction
+00:07 +260: test/redaction_test.dart: Redaction basic redaction Merkle root is preserved after redaction
+00:07 +261: test/redaction_test.dart: Redaction basic redaction Merkle root is preserved after redaction
+00:07 +262: test/redaction_test.dart: Redaction HAS_REDACTIONS flag HAS_REDACTIONS flag is set after redaction
+00:07 +263: test/disclosure_test.dart: Selective disclosure token generation generate token for blocks 0 and 2 of a 4-block file
+00:07 +264: test/redaction_test.dart: Redaction HAS_REDACTIONS flag original file does not have HAS_REDACTIONS flag
+00:08 +265: test/disclosure_test.dart: Selective disclosure token generation token contains correct block keys (hex encoded)
+00:08 +266: test/redaction_test.dart: Redaction tamper detection after redaction tampering with non-redacted block after redaction -> fails
+00:08 +267: test/disclosure_test.dart: Selective disclosure token generation token should NOT contain keys for non-disclosed blocks
+00:08 +268: test/redaction_test.dart: Redaction redacting multiple blocks redact blocks 0 and 2
+00:08 +269: test/redaction_test.dart: Redaction redacting multiple blocks redact blocks 0 and 2
+00:08 +270: test/disclosure_test.dart: Selective disclosure token generation token has correct merkle_root
+00:09 +271: test/redaction_test.dart: Redaction redacting multiple blocks redacting all blocks -> verifies but no content extractable
+00:09 +272: test/redaction_test.dart: Redaction redacting multiple blocks redacting all blocks -> verifies but no content extractable
+00:09 +273: test/disclosure_test.dart: Selective disclosure extraction with token extract with token returns valid result
+00:09 +274: test/redaction_test.dart: Redaction redaction with metadata redact content block in file with metadata
+00:09 +275: test/disclosure_test.dart: Selective disclosure extraction with token partial token yields less content than full extraction
+00:10 +276: test/disclosure_test.dart: Selective disclosure extraction with token partial token yields less content than full extraction
+00:10 +277: test/disclosure_test.dart: Selective disclosure extraction with token partial token yields less content than full extraction
+00:10 +278: test/disclosure_test.dart: Selective disclosure extraction with token token works with metadata block (block 0 when metadata present)
+00:10 +279: test/version_chain_test.dart: Version Chain Verification verifyVersionChain succeeds for properly linked files
+00:10 +280: test/disclosure_test.dart: Selective disclosure extraction with token token for single content block works
+00:10 +281: test/disclosure_test.dart: Selective disclosure extraction with token token for single content block works
+00:10 +282: test/disclosure_test.dart: Selective disclosure extraction with token token for single content block works
+00:10 +283: test/disclosure_test.dart: Selective disclosure extraction with token token for single content block works
+00:10 +284: test/disclosure_test.dart: Selective disclosure extraction with token token for single content block works
+00:10 +285: test/disclosure_test.dart: Selective disclosure extraction with token token for single content block works
+00:10 +286: test/disclosure_test.dart: Selective disclosure extraction with token token for single content block works
+00:10 +287: test/disclosure_test.dart: Selective disclosure extraction with token token for single content block works
+00:10 +288: test/disclosure_test.dart: Selective disclosure extraction with token token for single content block works
+00:10 +289: test/disclosure_test.dart: Selective disclosure extraction with token token for single content block works
+00:10 +290: test/disclosure_test.dart: Selective disclosure extraction with token token for single content block works
+00:10 +291: test/disclosure_test.dart: Selective disclosure extraction with token token for single content block works
+00:10 +292: test/disclosure_test.dart: Selective disclosure extraction with token token for single content block works
+00:10 +293: test/disclosure_test.dart: Selective disclosure extraction with token token for single content block works
+00:11 +294: test/disclosure_test.dart: Selective disclosure extraction with token token for single content block works
+00:11 +295: test/disclosure_test.dart: Selective disclosure extraction with token token for single content block works
+00:11 +296: test/disclosure_test.dart: Selective disclosure extraction with token token for single content block works
+00:11 +297: test/disclosure_test.dart: Selective disclosure extraction with token token for single content block works
+00:11 +298: test/disclosure_test.dart: Selective disclosure extraction with token token for single content block works
+00:11 +299: test/disclosure_test.dart: Selective disclosure extraction with token token for single content block works
+00:11 +300: test/disclosure_test.dart: Selective disclosure extraction with token token for single content block works
+00:11 +301: test/disclosure_test.dart: Selective disclosure extraction with token token for single content block works
+00:11 +302: test/disclosure_test.dart: Selective disclosure extraction with token token for single content block works
+00:11 +303: test/disclosure_test.dart: Selective disclosure extraction with token token for single content block works
+00:11 +304: test/disclosure_test.dart: Selective disclosure extraction with token token for single content block works
+00:11 +305: test/disclosure_test.dart: Selective disclosure extraction with token token for single content block works
+00:11 +306: test/disclosure_test.dart: Selective disclosure extraction with token token for single content block works
+00:11 +307: test/disclosure_test.dart: Selective disclosure extraction with token token for single content block works
+00:11 +308: test/disclosure_test.dart: Selective disclosure extraction with token token for single content block works
+00:11 +309: test/disclosure_test.dart: Selective disclosure extraction with token token for single content block works
+00:11 +310: test/disclosure_test.dart: Selective disclosure extraction with token token for single content block works
+00:11 +311: test/disclosure_test.dart: Selective disclosure extraction with token token for single content block works
+00:11 +312: test/disclosure_test.dart: Selective disclosure extraction with token token for single content block works
+00:11 +313: test/disclosure_test.dart: Selective disclosure extraction with token token for single content block works
+00:11 +314: test/disclosure_test.dart: Selective disclosure extraction with token token for single content block works
+00:11 +315: test/disclosure_test.dart: Selective disclosure extraction with token token for single content block works
+00:11 +316: test/disclosure_test.dart: Selective disclosure extraction with token token for single content block works
+00:11 +317: test/disclosure_test.dart: Selective disclosure extraction with token token for single content block works
+00:11 +318: test/disclosure_test.dart: Selective disclosure extraction with token token for single content block works
+00:11 +319: test/disclosure_test.dart: Selective disclosure extraction with token token for single content block works
+00:11 +320: test/disclosure_test.dart: Selective disclosure extraction with token token for single content block works
+00:11 +321: test/disclosure_test.dart: Selective disclosure extraction with token token for single content block works
+00:11 +322: test/disclosure_test.dart: Selective disclosure extraction with token token for single content block works
+00:11 +323: test/disclosure_test.dart: Selective disclosure extraction with token token for single content block works
+00:11 +324: test/disclosure_test.dart: Selective disclosure extraction with token token for single content block works
+00:11 +325: test/disclosure_test.dart: Selective disclosure extraction with token token for single content block works
+00:11 +326: test/disclosure_test.dart: Selective disclosure extraction with token token for single content block works
+00:11 +327: test/disclosure_test.dart: Selective disclosure extraction with token token for single content block works
+00:11 +328: test/disclosure_test.dart: Selective disclosure extraction with token token for all blocks discloses everything
+00:11 +329: test/disclosure_test.dart: Selective disclosure extraction with token token for all blocks discloses everything
+00:11 +330: test/disclosure_test.dart: Selective disclosure extraction with token token for all blocks discloses everything
+00:11 +331: test/disclosure_test.dart: Selective disclosure extraction with token token for all blocks discloses everything
+00:11 +332: test/disclosure_test.dart: Selective disclosure extraction with token token for all blocks discloses everything
+00:11 +333: test/disclosure_test.dart: Selective disclosure extraction with token token for all blocks discloses everything
+00:11 +334: test/disclosure_test.dart: Selective disclosure extraction with token token for all blocks discloses everything
+00:11 +335: test/disclosure_test.dart: Selective disclosure extraction with token token for all blocks discloses everything
+00:11 +336: test/disclosure_test.dart: Selective disclosure extraction with token token for all blocks discloses everything
+00:11 +337: test/disclosure_test.dart: Selective disclosure extraction with token token for all blocks discloses everything
+00:11 +338: test/disclosure_test.dart: Selective disclosure extraction with token token for all blocks discloses everything
+00:11 +339: test/disclosure_test.dart: Selective disclosure extraction with token token for all blocks discloses everything
+00:11 +340: test/disclosure_test.dart: Selective disclosure extraction with token token for all blocks discloses everything
+00:11 +341: test/disclosure_test.dart: Selective disclosure extraction with token token for all blocks discloses everything
+00:11 +342: test/disclosure_test.dart: Selective disclosure extraction with token token for all blocks discloses everything
+00:11 +343: test/disclosure_test.dart: Selective disclosure extraction with token token for all blocks discloses everything
+00:11 +344: test/disclosure_test.dart: Selective disclosure extraction with token token for all blocks discloses everything
+00:11 +345: test/disclosure_test.dart: Selective disclosure extraction with token token for all blocks discloses everything
+00:11 +346: test/disclosure_test.dart: Selective disclosure extraction with token token for all blocks discloses everything
+00:11 +347: test/disclosure_test.dart: Selective disclosure extraction with token token for all blocks discloses everything
+00:11 +348: test/disclosure_test.dart: Selective disclosure extraction with token token for all blocks discloses everything
+00:11 +349: test/disclosure_test.dart: Selective disclosure extraction with token token for all blocks discloses everything
+00:11 +350: test/disclosure_test.dart: Selective disclosure extraction with token token for all blocks discloses everything
+00:11 +351: test/disclosure_test.dart: Selective disclosure extraction with token token for all blocks discloses everything
+00:11 +352: test/disclosure_test.dart: Selective disclosure extraction with token token for all blocks discloses everything
+00:11 +353: test/disclosure_test.dart: Selective disclosure extraction with token token for all blocks discloses everything
+00:11 +354: test/disclosure_test.dart: Selective disclosure extraction with token token for all blocks discloses everything
+00:11 +355: test/disclosure_test.dart: Selective disclosure extraction with token token for all blocks discloses everything
+00:11 +356: test/disclosure_test.dart: Selective disclosure extraction with token token for all blocks discloses everything
+00:11 +357: test/disclosure_test.dart: Selective disclosure extraction with token token for all blocks discloses everything
+00:12 +358: test/security_fixes_test.dart: Security Fix: AAD in AES-GCM multi-block roundtrip with AAD
+00:12 +359: test/disclosure_test.dart: Selective disclosure invalid tokens token generated for different file fails decryption
+00:12 +360: test/disclosure_test.dart: Selective disclosure invalid tokens token generated for different file fails decryption
+00:12 +361: test/disclosure_test.dart: Selective disclosure invalid tokens token generated for different file fails decryption
+00:12 +362: test/disclosure_test.dart: Selective disclosure invalid tokens token generated for different file fails decryption
+00:12 +363: test/disclosure_test.dart: Selective disclosure invalid tokens token generated for different file fails decryption
+00:12 +364: test/disclosure_test.dart: Selective disclosure invalid tokens token generated for different file fails decryption
+00:12 +365: test/disclosure_test.dart: Selective disclosure invalid tokens token generated for different file fails decryption
+00:12 +366: test/disclosure_test.dart: Selective disclosure invalid tokens token generated for different file fails decryption
+00:12 +367: test/disclosure_test.dart: Selective disclosure invalid tokens token generated for different file fails decryption
+00:12 +368: test/disclosure_test.dart: Selective disclosure invalid tokens token generated for different file fails decryption
+00:12 +369: test/disclosure_test.dart: Selective disclosure invalid tokens token generated for different file fails decryption
+00:12 +370: test/disclosure_test.dart: Selective disclosure invalid tokens token generated for different file fails decryption
+00:12 +371: test/disclosure_test.dart: Selective disclosure invalid tokens token generated for different file fails decryption
+00:12 +372: test/disclosure_test.dart: Selective disclosure invalid tokens token generated for different file fails decryption
+00:12 +373: test/disclosure_test.dart: Selective disclosure invalid tokens token generated for different file fails decryption
+00:12 +374: test/disclosure_test.dart: Selective disclosure invalid tokens token generated for different file fails decryption
+00:12 +375: test/disclosure_test.dart: Selective disclosure invalid tokens token generated for different file fails decryption
+00:12 +376: test/disclosure_test.dart: Selective disclosure invalid tokens token generated for different file fails decryption
+00:12 +377: test/disclosure_test.dart: Selective disclosure invalid tokens token generated for different file fails decryption
+00:12 +378: test/disclosure_test.dart: Selective disclosure invalid tokens token generated for different file fails decryption
+00:12 +379: test/disclosure_test.dart: Selective disclosure invalid tokens token generated for different file fails decryption
+00:12 +380: test/disclosure_test.dart: Selective disclosure invalid tokens token generated for different file fails decryption
+00:12 +381: test/disclosure_test.dart: Selective disclosure invalid tokens token generated for different file fails decryption
+00:12 +382: test/disclosure_test.dart: Selective disclosure invalid tokens token generated for different file fails decryption
+00:12 +383: test/disclosure_test.dart: Selective disclosure invalid tokens token generated for different file fails decryption
+00:12 +384: test/disclosure_test.dart: Selective disclosure invalid tokens token generated for different file fails decryption
+00:12 +385: test/disclosure_test.dart: Selective disclosure invalid tokens token generated for different file fails decryption
+00:12 +386: test/disclosure_test.dart: Selective disclosure invalid tokens token generated for different file fails decryption
+00:12 +387: test/disclosure_test.dart: Selective disclosure invalid tokens token with missing block_keys fails gracefully
+00:12 +388: test/disclosure_test.dart: Selective disclosure invalid tokens token with missing block_keys fails gracefully
+00:12 +389: test/disclosure_test.dart: Selective disclosure invalid tokens token with missing block_keys fails gracefully
+00:12 +390: test/disclosure_test.dart: Selective disclosure invalid tokens token with missing block_keys fails gracefully
+00:13 +391: test/disclosure_test.dart: Selective disclosure invalid tokens token with missing block_keys fails gracefully
+00:13 +392: test/disclosure_test.dart: Selective disclosure invalid tokens token with missing block_keys fails gracefully
+00:13 +393: test/disclosure_test.dart: Selective disclosure invalid tokens token with missing block_keys fails gracefully
+00:13 +394: test/disclosure_test.dart: Selective disclosure invalid tokens token with wrong version still works if block keys are correct
+00:13 +395: test/disclosure_test.dart: Selective disclosure invalid tokens token with wrong version still works if block keys are correct
+00:13 +396: test/disclosure_test.dart: Selective disclosure invalid tokens token with wrong version still works if block keys are correct
+00:13 +397: test/disclosure_test.dart: Selective disclosure invalid tokens token with wrong version still works if block keys are correct
+00:13 +398: test/disclosure_test.dart: Selective disclosure invalid tokens token with wrong version still works if block keys are correct
+00:13 +399: test/disclosure_test.dart: Selective disclosure invalid tokens token with wrong version still works if block keys are correct
+00:13 +400: test/disclosure_test.dart: Selective disclosure invalid tokens token with wrong version still works if block keys are correct
+00:13 +401: test/disclosure_test.dart: Selective disclosure invalid tokens token with wrong version still works if block keys are correct
+00:13 +402: test/disclosure_test.dart: Selective disclosure invalid tokens token with wrong version still works if block keys are correct
+00:13 +403: test/disclosure_test.dart: Selective disclosure invalid tokens token with wrong version still works if block keys are correct
+00:13 +404: test/disclosure_test.dart: Selective disclosure invalid tokens token with wrong version still works if block keys are correct
+00:13 +405: test/disclosure_test.dart: Selective disclosure invalid tokens token with wrong version still works if block keys are correct
+00:13 +406: test/disclosure_test.dart: Selective disclosure invalid tokens token with wrong version still works if block keys are correct
+00:13 +407: test/disclosure_test.dart: Selective disclosure invalid tokens token with wrong version still works if block keys are correct
+00:13 +408: test/disclosure_test.dart: Selective disclosure invalid tokens token with wrong version still works if block keys are correct
+00:13 +409: test/disclosure_test.dart: Selective disclosure invalid tokens token with wrong version still works if block keys are correct
+00:13 +410: test/disclosure_test.dart: Selective disclosure invalid tokens token with wrong version still works if block keys are correct
+00:13 +411: test/disclosure_test.dart: Selective disclosure invalid tokens token with wrong version still works if block keys are correct
+00:13 +412: test/disclosure_test.dart: Selective disclosure invalid tokens token with wrong version still works if block keys are correct
+00:13 +413: test/disclosure_test.dart: Selective disclosure invalid tokens token with wrong version still works if block keys are correct
+00:13 +414: test/disclosure_test.dart: Selective disclosure invalid tokens token with wrong version still works if block keys are correct
+00:13 +415: test/disclosure_test.dart: Selective disclosure invalid tokens token with wrong version still works if block keys are correct
+00:13 +416: test/disclosure_test.dart: Selective disclosure invalid tokens token with wrong version still works if block keys are correct
+00:13 +417: test/disclosure_test.dart: Selective disclosure invalid tokens token with wrong version still works if block keys are correct
+00:13 +418: test/disclosure_test.dart: Selective disclosure invalid tokens token with wrong version still works if block keys are correct
+00:13 +419: test/disclosure_test.dart: Selective disclosure invalid tokens token with wrong version still works if block keys are correct
+00:13 +420: test/disclosure_test.dart: Selective disclosure invalid tokens token with wrong version still works if block keys are correct
+00:13 +421: test/disclosure_test.dart: Selective disclosure invalid tokens token with wrong version still works if block keys are correct
+00:13 +422: test/disclosure_test.dart: Selective disclosure invalid tokens token with wrong version still works if block keys are correct
+00:13 +423: test/disclosure_test.dart: Selective disclosure invalid tokens token with wrong version still works if block keys are correct
+00:13 +424: test/disclosure_test.dart: Selective disclosure invalid tokens token with wrong version still works if block keys are correct
+00:13 +425: test/disclosure_test.dart: Selective disclosure invalid tokens token with wrong version still works if block keys are correct
+00:13 +426: test/disclosure_test.dart: Selective disclosure invalid tokens token with wrong version still works if block keys are correct
+00:13 +427: test/disclosure_test.dart: Selective disclosure invalid tokens token with wrong version still works if block keys are correct
+00:13 +428: test/feature_ratings_test.dart: FeatureRatings rejects out-of-range star values
+00:13 +429: test/disclosure_test.dart: Selective disclosure invalid tokens token with tampered block key fails decryption
+00:13 +430: test/disclosure_test.dart: Selective disclosure invalid tokens token with tampered block key fails decryption
+00:13 +431: test/disclosure_test.dart: Selective disclosure invalid tokens token with tampered block key fails decryption
+00:13 +432: test/disclosure_test.dart: Selective disclosure invalid tokens token with tampered block key fails decryption
+00:13 +433: test/output_size_assertion_test.dart: Output size assertions (anti-kleptographic) empty content produces expected size
+00:13 +434: test/disclosure_test.dart: Selective disclosure disclosure with SELECTIVE_DISCLOSURE flag file with selective disclosure flag set
+00:13 +435: test/disclosure_test.dart: Selective disclosure disclosure with SELECTIVE_DISCLOSURE flag file with selective disclosure flag set
+00:14 +436: test/disclosure_test.dart: Selective disclosure disclosure with SELECTIVE_DISCLOSURE flag file with selective disclosure flag set
+00:14 +437: test/output_size_assertion_test.dart: Output size assertions (anti-kleptographic) 65537 bytes produces 2 blocks of expected size
+00:14 +438: test/disclosure_test.dart: Selective disclosure block key determinism same file produces same block keys
+00:14 +439: test/output_size_assertion_test.dart: Output size assertions (anti-kleptographic) large file (1 MiB = 16 blocks) produces expected size
+00:14 +440: test/output_size_assertion_test.dart: Output size assertions (anti-kleptographic) large file (1 MiB = 16 blocks) produces expected size
+00:15 +441: test/output_size_assertion_test.dart: Output size assertions (anti-kleptographic) large file (1 MiB = 16 blocks) produces expected size
+00:15 +442: test/output_size_assertion_test.dart: Output size assertions (anti-kleptographic) large file (1 MiB = 16 blocks) produces expected size
+00:15 +443: test/output_size_assertion_test.dart: Output size assertions (anti-kleptographic) large file (1 MiB = 16 blocks) produces expected size
+00:15 +444: test/output_size_assertion_test.dart: Output size assertions (anti-kleptographic) large file (1 MiB = 16 blocks) produces expected size
+00:15 +445: test/output_size_assertion_test.dart: Output size assertions (anti-kleptographic) large file (1 MiB = 16 blocks) produces expected size
+00:15 +446: test/output_size_assertion_test.dart: Output size assertions (anti-kleptographic) large file (1 MiB = 16 blocks) produces expected size
+00:15 +447: test/output_size_assertion_test.dart: Output size assertions (anti-kleptographic) large file (1 MiB = 16 blocks) produces expected size
+00:15 +448: test/output_size_assertion_test.dart: Output size assertions (anti-kleptographic) large file (1 MiB = 16 blocks) produces expected size
+00:15 +449: test/output_size_assertion_test.dart: Output size assertions (anti-kleptographic) large file (1 MiB = 16 blocks) produces expected size
+00:15 +450: test/output_size_assertion_test.dart: Output size assertions (anti-kleptographic) large file (1 MiB = 16 blocks) produces expected size
+00:15 +451: test/output_size_assertion_test.dart: Output size assertions (anti-kleptographic) large file (1 MiB = 16 blocks) produces expected size
+00:15 +452: test/output_size_assertion_test.dart: Output size assertions (anti-kleptographic) large file (1 MiB = 16 blocks) produces expected size
+00:15 +453: test/output_size_assertion_test.dart: Output size assertions (anti-kleptographic) large file (1 MiB = 16 blocks) produces expected size
+00:15 +454: test/output_size_assertion_test.dart: Output size assertions (anti-kleptographic) large file (1 MiB = 16 blocks) produces expected size
+00:15 +455: test/output_size_assertion_test.dart: Output size assertions (anti-kleptographic) large file (1 MiB = 16 blocks) produces expected size
+00:15 +456: test/output_size_assertion_test.dart: Output size assertions (anti-kleptographic) large file (1 MiB = 16 blocks) produces expected size
+00:15 +457: test/output_size_assertion_test.dart: Output size assertions (anti-kleptographic) large file (1 MiB = 16 blocks) produces expected size
+00:15 +458: test/output_size_assertion_test.dart: Output size assertions (anti-kleptographic) large file (1 MiB = 16 blocks) produces expected size
+00:15 +459: test/output_size_assertion_test.dart: Output size assertions (anti-kleptographic) large file (1 MiB = 16 blocks) produces expected size
+00:15 +460: test/output_size_assertion_test.dart: Output size assertions (anti-kleptographic) large file (1 MiB = 16 blocks) produces expected size
+00:16 +461: test/output_size_assertion_test.dart: Output size assertions (anti-kleptographic) large file (1 MiB = 16 blocks) produces expected size
+00:16 +462: test/output_size_assertion_test.dart: Output size assertions (anti-kleptographic) large file (1 MiB = 16 blocks) produces expected size
+00:16 +463: test/output_size_assertion_test.dart: Output size assertions (anti-kleptographic) large file (1 MiB = 16 blocks) produces expected size
+00:16 +464: test/output_size_assertion_test.dart: Output size assertions (anti-kleptographic) large file (1 MiB = 16 blocks) produces expected size
+00:16 +465: test/output_size_assertion_test.dart: Output size assertions (anti-kleptographic) large file (1 MiB = 16 blocks) produces expected size
+00:16 +466: test/output_size_assertion_test.dart: Output size assertions (anti-kleptographic) large file (1 MiB = 16 blocks) produces expected size
+00:16 +467: test/output_size_assertion_test.dart: Output size assertions (anti-kleptographic) large file (1 MiB = 16 blocks) produces expected size
+00:16 +468: test/output_size_assertion_test.dart: Output size assertions (anti-kleptographic) large file (1 MiB = 16 blocks) produces expected size
+00:16 +469: test/output_size_assertion_test.dart: Output size assertions (anti-kleptographic) large file (1 MiB = 16 blocks) produces expected size
+00:16 +470: test/classification_test.dart: Classification declassify declassify with redaction removes specified blocks
+00:16 +471: test/classification_test.dart: Classification declassify declassify with redaction removes specified blocks
+00:16 +472: test/classification_test.dart: Classification declassify declassify with redaction removes specified blocks
+00:16 +473: test/classification_test.dart: Classification declassify declassify with redaction removes specified blocks
+00:16 +474: test/classification_test.dart: Classification declassify declassify with redaction removes specified blocks
+00:16 +475: test/classification_test.dart: Classification declassify declassify with redaction removes specified blocks
+00:16 +476: test/classification_test.dart: Classification declassify declassify with redaction removes specified blocks
+00:16 +477: test/classification_test.dart: Classification declassify declassify with redaction removes specified blocks
+00:16 +478: test/classification_test.dart: Classification declassify declassify with redaction removes specified blocks
+00:16 +479: test/classification_test.dart: Classification declassify declassify with redaction removes specified blocks
+00:16 +480: test/classification_test.dart: Classification declassify declassify with redaction removes specified blocks
+00:16 +481: test/classification_test.dart: Classification declassify declassify with redaction removes specified blocks
+00:16 +482: test/classification_test.dart: Classification declassify declassify with redaction removes specified blocks
+00:16 +483: test/classification_test.dart: Classification declassify declassify with redaction removes specified blocks
+00:16 +484: test/classification_test.dart: Classification declassify declassify with redaction removes specified blocks
+00:16 +485: test/classification_test.dart: Classification declassify declassify with redaction removes specified blocks
+00:16 +486: test/classification_test.dart: Classification declassify declassify with redaction removes specified blocks
+00:16 +487: test/classification_test.dart: Classification declassify declassify with redaction removes specified blocks
+00:16 +488: test/classification_test.dart: Classification declassify declassify with redaction removes specified blocks
+00:16 +489: test/classification_test.dart: Classification declassify declassify with redaction removes specified blocks
+00:16 +490: test/classification_test.dart: Classification declassify declassify with redaction removes specified blocks
+00:16 +491: test/classification_test.dart: Classification declassify declassify with redaction removes specified blocks
+00:16 +492: test/classification_test.dart: Classification declassify declassify with redaction removes specified blocks
+00:16 +493: test/classification_test.dart: Classification declassify declassify with redaction removes specified blocks
+00:16 +494: test/classification_test.dart: Classification declassify declassify with redaction removes specified blocks
+00:16 +495: test/classification_test.dart: Classification declassify declassify with redaction removes specified blocks
+00:17 +496: test/classification_test.dart: Classification declassify declassify with redaction removes specified blocks
+00:17 +497: test/classification_test.dart: Classification declassify declassify with redaction removes specified blocks
+00:17 +498: test/classification_test.dart: Classification declassify declassify with redaction removes specified blocks
+00:17 +499: test/classification_test.dart: Classification declassify declassify with redaction removes specified blocks
+00:17 +500: test/classification_test.dart: Classification declassify declassify with redaction removes specified blocks
+00:17 +501: test/classification_test.dart: Classification declassify declassify with redaction removes specified blocks
+00:17 +502: test/classification_test.dart: Classification declassify declassify with redaction removes specified blocks
+00:17 +503: test/classification_test.dart: Classification declassify declassify with redaction removes specified blocks
+00:17 +504: test/classification_test.dart: Classification declassify declassify with redaction removes specified blocks
+00:17 +505: test/classification_test.dart: Classification declassify declassify with redaction removes specified blocks
+00:17 +506: test/classification_test.dart: Classification declassify declassify with redaction removes specified blocks
+00:17 +507: test/tamper_test.dart: Tamper detection block order tampering swap two blocks -> fails
+00:17 +508: test/tamper_test.dart: Tamper detection block order tampering swap two blocks -> fails
+00:17 +509: test/tamper_test.dart: Tamper detection block order tampering swap two blocks -> fails
+00:17 +510: test/tamper_test.dart: Tamper detection block order tampering swap two blocks -> fails
+00:17 +511: test/tamper_test.dart: Tamper detection block order tampering replace one block with another -> fails
+00:17 +512: test/tamper_test.dart: Tamper detection block order tampering replace one block with another -> fails
+00:17 +513: test/tamper_test.dart: Tamper detection block order tampering replace one block with another -> fails
+00:17 +514: test/tamper_test.dart: Tamper detection block order tampering replace one block with another -> fails
+00:17 +515: test/tamper_test.dart: Tamper detection block order tampering replace one block with another -> fails
+00:17 +516: test/tamper_test.dart: Tamper detection block order tampering replace one block with another -> fails
+00:17 +517: test/tamper_test.dart: Tamper detection header tampering modify header timestamp -> fails (seal mismatch)
+00:17 +518: test/tamper_test.dart: Tamper detection header tampering modify flags -> fails
+00:17 +519: test/tamper_test.dart: Tamper detection IV tampering zero out IV -> fails
+00:17 +520: test/tamper_test.dart: Tamper detection IV tampering flip bit in IV -> fails
+00:17 +521: test/tamper_test.dart: Tamper detection auth tag tampering flip bit in GCM auth tag -> fails
+00:17 +522: test/tamper_test.dart: Tamper detection content-type tampering modify content-type field -> fails (seal mismatch)
+00:17 +523: test/tamper_test.dart: Tamper detection salt tampering modify salt -> fails
+00:17 +524: test/tamper_test.dart: Tamper detection multiple simultaneous modifications modify both header and block data -> fails
+00:17 +525: test/anonymizer_test.dart: Anonymizer scrub replaces emails, IPs, and paths
+00:17 +526: test/anonymizer_test.dart: Anonymizer scrubStackTrace preserves line count
+00:17 +527: test/anonymizer_test.dart: Anonymizer deterministic with same salt
+00:17 +528: test/anonymizer_test.dart: Anonymizer random salts differ across instances
+00:17 +529: test/attestation_role_test.dart: Attestation Roles createRoleAttestation includes role in JSON
+00:18 +530: test/attestation_role_test.dart: Attestation Roles createRoleAttestation all standard roles are accepted
+00:18 +531: test/attestation_role_test.dart: Attestation Roles createRoleAttestation rejects invalid roles
+00:18 +532: test/attestation_role_test.dart: Attestation Roles createRoleAttestation attestation without role omits role field
+00:18 +533: test/attestation_role_test.dart: Attestation Roles attestation verification with roles verification succeeds for role attestation
+00:18 +534: test/attestation_role_test.dart: Attestation Roles attestation verification with roles role verification fails with wrong key
+00:18 +535: test/attestation_role_test.dart: Attestation Roles checkPolicy succeeds when all required roles are present
+00:18 +536: test/attestation_role_test.dart: Attestation Roles checkPolicy fails when a required role is missing
+00:18 +537: test/attestation_role_test.dart: Attestation Roles checkPolicy fails when HMAC verification fails
+00:18 +538: test/attestation_role_test.dart: Attestation Roles checkPolicy empty required roles always passes
+00:18 +539: test/field_validator_test.dart: FieldValidator RequiredRule returns error for null
+00:18 +540: test/field_validator_test.dart: FieldValidator RequiredRule returns error for empty string
+00:18 +541: test/field_validator_test.dart: FieldValidator RequiredRule returns null for non-empty string
+00:18 +542: test/field_validator_test.dart: FieldValidator RequiredRule default message is human-readable
+00:18 +543: test/field_validator_test.dart: FieldValidator RequiredRule accepts custom message
+00:18 +544: test/field_validator_test.dart: FieldValidator RequiredRule passes for whitespace-only (not empty)
+00:18 +545: test/field_validator_test.dart: FieldValidator MinLengthRule returns error for null
+00:18 +546: test/field_validator_test.dart: FieldValidator MinLengthRule returns error when value is shorter than limit
+00:18 +547: test/field_validator_test.dart: FieldValidator MinLengthRule returns error when value is exactly one short
+00:18 +548: test/field_validator_test.dart: FieldValidator MinLengthRule returns null when value meets the minimum
+00:18 +549: test/field_validator_test.dart: FieldValidator MinLengthRule returns null when value exceeds the minimum
+00:18 +550: test/field_validator_test.dart: FieldValidator MinLengthRule default message mentions the length
+00:18 +551: test/field_validator_test.dart: FieldValidator MinLengthRule accepts custom message
+00:18 +552: test/field_validator_test.dart: FieldValidator MaxLengthRule returns null for null value
+00:18 +553: test/field_validator_test.dart: FieldValidator MaxLengthRule returns null when value is exactly at the limit
+00:18 +554: test/field_validator_test.dart: FieldValidator MaxLengthRule returns null when value is shorter than the limit
+00:18 +555: test/field_validator_test.dart: FieldValidator MaxLengthRule returns error when value exceeds the limit
+00:18 +556: test/field_validator_test.dart: FieldValidator MaxLengthRule default message mentions the length
+00:18 +557: test/field_validator_test.dart: FieldValidator MaxLengthRule accepts custom message
+00:18 +558: test/field_validator_test.dart: FieldValidator PatternRule returns null for null value
+00:18 +559: test/field_validator_test.dart: FieldValidator PatternRule returns null when pattern matches
+00:18 +560: test/field_validator_test.dart: FieldValidator PatternRule returns error when pattern does not match
+00:18 +561: test/field_validator_test.dart: FieldValidator PatternRule returns error for empty string when pattern requires content
+00:18 +562: test/field_validator_test.dart: FieldValidator PatternRule uses default message when none supplied
+00:18 +563: test/field_validator_test.dart: FieldValidator HexKeyRule returns null for null value
+00:18 +564: test/field_validator_test.dart: FieldValidator HexKeyRule returns null for valid 64-char hex key
+00:18 +565: test/field_validator_test.dart: FieldValidator HexKeyRule returns null for uppercase hex
+00:18 +566: test/field_validator_test.dart: FieldValidator HexKeyRule returns null for mixed-case hex
+00:18 +567: test/field_validator_test.dart: FieldValidator HexKeyRule returns error when too short
+00:18 +568: test/field_validator_test.dart: FieldValidator HexKeyRule returns error when too long
+00:18 +569: test/field_validator_test.dart: FieldValidator HexKeyRule returns error when non-hex chars present
+00:18 +570: test/field_validator_test.dart: FieldValidator HexKeyRule error message mentions expected char count
+00:18 +571: test/field_validator_test.dart: FieldValidator HexKeyRule custom bytes parameter adjusts expected length
+00:18 +572: test/field_validator_test.dart: FieldValidator HexKeyRule accepts custom message
+00:18 +573: test/field_validator_test.dart: FieldValidator EmailRule returns null for null value
+00:18 +574: test/field_validator_test.dart: FieldValidator EmailRule returns null for empty string (field is not required)
+00:18 +575: test/field_validator_test.dart: FieldValidator EmailRule returns null for valid simple email
+00:18 +576: test/field_validator_test.dart: FieldValidator EmailRule returns null for email with subdomains
+00:18 +577: test/field_validator_test.dart: FieldValidator EmailRule returns null for email with plus tag
+00:18 +578: test/field_validator_test.dart: FieldValidator EmailRule returns null for email with dots in local part
+00:18 +579: test/field_validator_test.dart: FieldValidator EmailRule returns error for missing at-sign
+00:18 +580: test/field_validator_test.dart: FieldValidator EmailRule returns error for missing domain
+00:18 +581: test/field_validator_test.dart: FieldValidator EmailRule returns error for missing TLD
+00:18 +582: test/field_validator_test.dart: FieldValidator EmailRule returns error for double at-sign
+00:18 +583: test/field_validator_test.dart: FieldValidator EmailRule uses expected default message
+00:18 +584: test/field_validator_test.dart: FieldValidator EmailRule accepts custom message
+00:18 +585: test/field_validator_test.dart: FieldValidator FieldValidator.validate pipeline returns null when no rules are configured
+00:18 +586: test/field_validator_test.dart: FieldValidator FieldValidator.validate pipeline returns null when all rules pass
+00:18 +587: test/field_validator_test.dart: FieldValidator FieldValidator.validate pipeline returns first error and stops (short-circuit)
+00:18 +588: test/field_validator_test.dart: FieldValidator FieldValidator.validate pipeline second rule fires when first passes
+00:18 +589: test/field_validator_test.dart: FieldValidator FieldValidator.text factory no options — allows anything
+00:18 +590: test/field_validator_test.dart: FieldValidator FieldValidator.text factory required:true fails on null
+00:18 +591: test/field_validator_test.dart: FieldValidator FieldValidator.text factory minLength enforced
+00:18 +592: test/field_validator_test.dart: FieldValidator FieldValidator.text factory maxLength enforced
+00:18 +593: test/field_validator_test.dart: FieldValidator FieldValidator.text factory pattern enforced with custom message
+00:18 +594: test/field_validator_test.dart: FieldValidator FieldValidator.text factory pattern uses default message when patternMessage is null
+00:18 +595: test/field_validator_test.dart: FieldValidator FieldValidator.text factory combined required + minLength + maxLength + pattern
+00:18 +596: test/batch_test.dart: BatchOperations batchVerify verifies multiple valid files
+00:18 +597: test/dashboard_catalog_test.dart: DashboardCatalog default catalog exposes the shipped widgets
+00:18 +598: test/dashboard_catalog_test.dart: DashboardCatalog default catalog exposes the shipped widgets
+00:18 +599: test/batch_test.dart: BatchOperations batchVerify stops on first failure when configured
+00:18 +600: test/batch_test.dart: BatchOperations batchVerify stops on first failure when configured
+00:18 +601: test/batch_test.dart: BatchOperations batchVerify stops on first failure when configured
+00:18 +602: test/dashboard_catalog_test.dart: DashboardCatalog setVisible throws on unknown key
+00:18 +603: test/batch_test.dart: BatchOperations batchVerify returns elapsed time per file
+00:18 +604: test/batch_test.dart: BatchOperations batchVerify handles empty input list
+00:18 +605: test/batch_test.dart: BatchOperations batchVerify preserves names in results
+00:18 +606: test/batch_test.dart: BatchOperations batchSeal seals multiple files with same key
+00:18 +607: test/batch_test.dart: BatchOperations batchSeal applies base options to all files
+00:18 +608: test/batch_test.dart: BatchOperations batchSeal preserves individual filenames
+00:18 +609: test/latency_tracker_test.dart: LatencyTracker records and summarizes percentiles correctly
+00:18 +610: test/latency_tracker_test.dart: LatencyTracker empty tracker returns null summary fields
+00:18 +611: test/latency_tracker_test.dart: LatencyTracker enforces maxSamples (rolling window)
+00:18 +612: test/latency_tracker_test.dart: LatencyTracker rejects negative latencies and invalid percentiles
+00:18 +613: test/latency_tracker_test.dart: LatencyTracker encode/decodeJson round trip
+00:18 +614: test/collaborator_stats_test.dart: CollaboratorStats ranks top collaborators by count
+00:18 +615: test/collaborator_stats_test.dart: CollaboratorStats resolves display names from the contact book
+00:18 +616: test/collaborator_stats_test.dart: CollaboratorStats activeSince filters by last-seen timestamp
+00:18 +617: test/collaborator_stats_test.dart: CollaboratorStats reset clears counts
+00:18 +618: test/audit_test.dart: AuditTrail createEntry creates entry with actor and action
+00:18 +619: test/audit_test.dart: AuditTrail createEntry includes details when provided
+00:18 +620: test/audit_test.dart: AuditTrail createEntry chain hash links to previous entry
+00:18 +621: test/audit_test.dart: AuditTrail createEntry first entry uses zero hash as previous
+00:18 +622: test/audit_test.dart: AuditTrail verifyChain verifies empty chain
+00:18 +623: test/audit_test.dart: AuditTrail verifyChain verifies single-entry chain
+00:18 +624: test/audit_test.dart: AuditTrail verifyChain verifies multi-entry chain
+00:18 +625: test/audit_test.dart: AuditTrail verifyChain detects tampered entry
+00:18 +626: test/audit_test.dart: AuditTrail verifyChain detects broken chain
+00:18 +627: test/hardware_info_test.dart: HardwareInfo detect() returns sane values for the running host
+00:18 +628: test/hardware_info_test.dart: HardwareInfo recommendedBatchConcurrency leaves a core free on >1 core hosts
+00:18 +629: test/hardware_info_test.dart: HardwareInfo recommendedBatchConcurrency returns 1 on single-core hosts
+00:18 +630: test/hardware_info_test.dart: HardwareInfo recommendedBlockSizeBytes scales with core count
+00:18 +631: test/hardware_info_test.dart: HardwareInfo toJson contains the expected keys
+00:19 +632: test/feedback_submitter_test.dart: FeedbackSubmitter submit returns a FeedbackEntry with the supplied fields
+00:19 +633: test/feedback_submitter_test.dart: FeedbackSubmitter submit assigns a non-empty id to the entry
+00:19 +634: test/feedback_submitter_test.dart: FeedbackSubmitter submit at defaults to a UTC time close to now
+00:19 +635: test/watch_folder_test.dart: WatchFolder initial scan discovers existing files
+00:19 +636: test/watch_folder_test.dart: WatchFolder initial scan discovers existing files
+00:19 +637: test/watch_folder_test.dart: WatchFolder initial scan discovers existing files
+00:19 +638: test/watch_folder_test.dart: WatchFolder initial scan discovers existing files
+00:19 +639: test/watch_folder_test.dart: WatchFolder initial scan discovers existing files
+00:19 +640: test/watch_folder_test.dart: WatchFolder initial scan discovers existing files
+00:19 +641: test/watch_folder_test.dart: WatchFolder initial scan discovers existing files
+00:19 +642: test/watch_folder_test.dart: WatchFolder initial scan discovers existing files
+00:19 +643: test/watch_folder_test.dart: WatchFolder initial scan discovers existing files
+00:19 +644: test/watch_folder_test.dart: WatchFolder initial scan discovers existing files
+00:19 +645: test/feedback_submitter_test.dart: FeedbackSubmitter list returns every submitted entry in order
+00:19 +646: test/feedback_submitter_test.dart: FeedbackSubmitter list returns every submitted entry in order
+00:19 +647: test/feedback_submitter_test.dart: FeedbackSubmitter list returns every submitted entry in order
+00:19 +648: test/feedback_submitter_test.dart: FeedbackSubmitter list returns every submitted entry in order
+00:19 +649: test/feedback_submitter_test.dart: FeedbackSubmitter list correctly deserialises category
+00:19 +650: test/feedback_submitter_test.dart: FeedbackSubmitter list correctly deserialises email and screen when present
+00:19 +651: test/feedback_submitter_test.dart: FeedbackSubmitter list email and screen are null when absent
+00:19 +652: test/feedback_submitter_test.dart: FeedbackSubmitter list at timestamp survives round trip as UTC
+00:19 +653: test/feedback_submitter_test.dart: FeedbackSubmitter list context map survives round trip
+00:19 +654: test/feedback_submitter_test.dart: FeedbackSubmitter list all FeedbackCategory values can be submitted and read back
+00:19 +655: test/feedback_submitter_test.dart: FeedbackSubmitter clear removes the storage file
+00:19 +656: test/feedback_submitter_test.dart: FeedbackSubmitter clear after clear, list returns empty
+00:19 +657: test/feedback_submitter_test.dart: FeedbackSubmitter clear clear when file does not exist is a no-op
+00:19 +658: test/feedback_submitter_test.dart: FeedbackSubmitter clear submit after clear creates a fresh file
+00:19 +659: test/feedback_submitter_test.dart: FeedbackSubmitter FeedbackEntry.toJson / fromJson round trip survives toJson/fromJson with all fields
+00:19 +660: test/feedback_submitter_test.dart: FeedbackSubmitter FeedbackEntry.toJson / fromJson round trip unknown category in JSON falls back to other
+00:19 +661: test/token_archive_test.dart: TokenArchive addToken places file in live directory
+00:19 +662: test/token_archive_test.dart: TokenArchive sweep moves expired tokens (meta-based) to archive
+00:19 +663: test/token_archive_test.dart: TokenArchive sweep falls back to inline expires_at when meta is absent
+00:19 +664: test/token_archive_test.dart: TokenArchive tokens without expiration remain live
+00:19 +665: test/merkle_tree_test.dart: MerkleTree (RFC 6962 domain-separated) single leaf root is domain-separated leaf hash (not raw leaf)
+00:19 +666: test/merkle_tree_test.dart: MerkleTree (RFC 6962 domain-separated) single leaf single leaf root is 32 bytes
+00:19 +667: test/merkle_tree_test.dart: MerkleTree (RFC 6962 domain-separated) single leaf hashLeaf helper matches domain-separated format
+00:19 +668: test/merkle_tree_test.dart: MerkleTree (RFC 6962 domain-separated) two leaves root is domain-separated node of domain-separated leaves
+00:19 +669: test/merkle_tree_test.dart: MerkleTree (RFC 6962 domain-separated) two leaves root is 32 bytes
+00:19 +670: test/merkle_tree_test.dart: MerkleTree (RFC 6962 domain-separated) two leaves order matters - swapping leaves changes root
+00:19 +671: test/merkle_tree_test.dart: MerkleTree (RFC 6962 domain-separated) two leaves domain separation prevents second preimage attack
+00:19 +672: test/merkle_tree_test.dart: MerkleTree (RFC 6962 domain-separated) three leaves (odd count) root uses duplicated last node for odd layers
+00:19 +673: test/merkle_tree_test.dart: MerkleTree (RFC 6962 domain-separated) four leaves (balanced) produces correct balanced tree root
+00:19 +674: test/merkle_tree_test.dart: MerkleTree (RFC 6962 domain-separated) eight leaves (three-level tree) produces correct three-level tree root
+00:19 +675: test/merkle_tree_test.dart: MerkleTree (RFC 6962 domain-separated) edge cases empty list throws ArgumentError
+00:19 +676: test/merkle_tree_test.dart: MerkleTree (RFC 6962 domain-separated) edge cases large number of leaves (128) produces 32-byte root
+00:19 +677: test/merkle_tree_test.dart: MerkleTree (RFC 6962 domain-separated) edge cases large number of leaves (100, not power of 2)
+00:19 +678: test/merkle_tree_test.dart: MerkleTree (RFC 6962 domain-separated) determinism same inputs always produce the same root
+00:19 +679: test/merkle_tree_test.dart: MerkleTree (RFC 6962 domain-separated) determinism different inputs produce different roots
+00:19 +680: test/merkle_tree_test.dart: MerkleTree (RFC 6962 domain-separated) determinism adding a leaf changes the root
+00:19 +681: test/merkle_tree_test.dart: MerkleTree (RFC 6962 domain-separated) inclusion proofs verifies inclusion of first leaf in two-leaf tree
+00:19 +682: test/merkle_tree_test.dart: MerkleTree (RFC 6962 domain-separated) inclusion proofs verifies inclusion of second leaf in two-leaf tree
+00:19 +683: test/merkle_tree_test.dart: MerkleTree (RFC 6962 domain-separated) inclusion proofs verifies inclusion at each position in 8-leaf tree
+00:19 +684: test/merkle_tree_test.dart: MerkleTree (RFC 6962 domain-separated) inclusion proofs verifies inclusion at each position in odd-count tree
+00:19 +685: test/merkle_tree_test.dart: MerkleTree (RFC 6962 domain-separated) inclusion proofs rejects wrong leaf with valid proof
+00:19 +686: test/merkle_tree_test.dart: MerkleTree (RFC 6962 domain-separated) inclusion proofs rejects valid leaf with wrong root
+00:19 +687: test/merkle_tree_test.dart: MerkleTree (RFC 6962 domain-separated) inclusion proofs single leaf inclusion proof is trivial
+00:19 +688: test/classification_stats_test.dart: ClassificationStats records and counts labels
+00:19 +689: test/classification_stats_test.dart: ClassificationStats distribution sums to 1.0
+00:19 +690: test/classification_stats_test.dart: ClassificationStats ranked returns slices in descending count order
+00:19 +691: test/classification_stats_test.dart: ClassificationStats topLevel reflects the most-used label
+00:19 +692: test/classification_stats_test.dart: ClassificationStats empty stats return null top and empty distribution
+00:19 +693: test/clipboard_helper_test.dart: ClipboardHelper hash returns a ClipboardItem with the supplied hex value
+00:19 +694: test/clipboard_helper_test.dart: ClipboardHelper hash is not sensitive
+00:19 +695: test/clipboard_helper_test.dart: ClipboardHelper hash autoClear is null (hash values are not auto-cleared)
+00:19 +696: test/clipboard_helper_test.dart: ClipboardHelper hash default label is "Hash"
+00:19 +697: test/clipboard_helper_test.dart: ClipboardHelper hash accepts a custom label
+00:19 +698: test/clipboard_helper_test.dart: ClipboardHelper secret returns a ClipboardItem with the supplied value
+00:19 +699: test/clipboard_helper_test.dart: ClipboardHelper secret is marked sensitive
+00:19 +700: test/clipboard_helper_test.dart: ClipboardHelper secret default autoClear equals defaultAutoClear (45 s)
+00:19 +701: test/clipboard_helper_test.dart: ClipboardHelper secret accepts a custom autoClear duration
+00:19 +702: test/clipboard_helper_test.dart: ClipboardHelper secret default label is "Secret"
+00:19 +703: test/clipboard_helper_test.dart: ClipboardHelper secret accepts a custom label
+00:19 +704: test/clipboard_helper_test.dart: ClipboardHelper previewFor — non-sensitive items returns full value when at or below 40 chars
+00:19 +705: test/clipboard_helper_test.dart: ClipboardHelper previewFor — non-sensitive items returns full value for short hashes
+00:19 +706: test/clipboard_helper_test.dart: ClipboardHelper previewFor — non-sensitive items truncates value longer than 40 chars with ellipsis
+00:19 +707: test/clipboard_helper_test.dart: ClipboardHelper previewFor — non-sensitive items truncated prefix is exactly 37 characters
+00:19 +708: test/clipboard_helper_test.dart: ClipboardHelper previewFor — non-sensitive items value of exactly 41 chars is truncated
+00:19 +709: test/clipboard_helper_test.dart: ClipboardHelper previewFor — sensitive items very short value is fully masked
+00:19 +710: test/clipboard_helper_test.dart: ClipboardHelper previewFor — sensitive items value of exactly 4 chars is fully masked
+00:19 +711: test/clipboard_helper_test.dart: ClipboardHelper previewFor — sensitive items value longer than 4 chars shows 2-char prefix then ellipsis then dots
+00:19 +712: test/clipboard_helper_test.dart: ClipboardHelper previewFor — sensitive items sensitive preview for value of 5 chars follows masking pattern
+00:19 +713: test/clipboard_helper_test.dart: ClipboardHelper previewFor — sensitive items sensitive preview never exposes more than 2 plaintext chars
+00:19 +714: test/clipboard_helper_test.dart: ClipboardHelper previewFor — sensitive items single character value is fully masked
+00:19 +715: test/clipboard_helper_test.dart: ClipboardHelper ClipboardItem properties hash item constructed correctly via ClipboardItem directly
+00:19 +716: test/clipboard_helper_test.dart: ClipboardHelper ClipboardItem properties sensitive item constructed correctly via ClipboardItem directly
+00:19 +717: test/clipboard_helper_test.dart: ClipboardHelper defaultAutoClear constant is 45 seconds
+00:19 +718: test/log_view_formatter_test.dart: LogViewFormatter format returns one FormattedLogLine per entry (default limit)
+00:20 +719: test/log_view_formatter_test.dart: LogViewFormatter format respects the limit parameter
+00:20 +720: test/log_view_formatter_test.dart: LogViewFormatter format newest entry appears first
+00:20 +721: test/log_view_formatter_test.dart: LogViewFormatter format assigns LogLevel.info for successful entries
+00:20 +722: test/log_view_formatter_test.dart: LogViewFormatter format assigns LogLevel.error for failed entries
+00:20 +723: test/log_view_formatter_test.dart: LogViewFormatter format each line has a non-null timestamp
+00:20 +724: test/log_view_formatter_test.dart: LogViewFormatter format text contains the operation name
+00:20 +725: test/log_view_formatter_test.dart: LogViewFormatter format text contains OK for successful entries
+00:20 +726: test/log_view_formatter_test.dart: LogViewFormatter format text contains FAIL for failed entries
+00:20 +727: test/log_view_formatter_test.dart: LogViewFormatter format duration is included in text when includeDuration = true
+00:20 +728: test/log_view_formatter_test.dart: LogViewFormatter format duration is omitted when includeDuration = false
+00:20 +729: test/log_view_formatter_test.dart: LogViewFormatter format returns empty list for an empty log
+00:20 +730: test/log_view_formatter_test.dart: LogViewFormatter formatEntry returns a non-empty string
+00:20 +731: test/log_view_formatter_test.dart: LogViewFormatter formatEntry contains operation name
+00:20 +732: test/log_view_formatter_test.dart: LogViewFormatter formatEntry contains OK for success
+00:20 +733: test/log_view_formatter_test.dart: LogViewFormatter formatEntry contains FAIL for failure
+00:20 +734: test/log_view_formatter_test.dart: LogViewFormatter formatEntry contains filename when present
+00:20 +735: test/log_view_formatter_test.dart: LogViewFormatter formatEntry contains message when present
+00:20 +736: test/log_view_formatter_test.dart: LogViewFormatter formatEntry contains duration in ms when includeDuration = true
+00:20 +737: test/log_view_formatter_test.dart: LogViewFormatter formatEntry omits duration when includeDuration = false
+00:20 +738: test/log_view_formatter_test.dart: LogViewFormatter formatEntry handles entry with no filename or message gracefully
+00:20 +739: test/log_view_formatter_test.dart: LogViewFormatter dump returns a non-empty string for a non-empty log
+00:20 +740: test/log_view_formatter_test.dart: LogViewFormatter dump contains one line per entry
+00:20 +741: test/log_view_formatter_test.dart: LogViewFormatter dump each line contains the operation name
+00:20 +742: test/log_view_formatter_test.dart: LogViewFormatter dump each line contains OK or FAIL
+00:20 +743: test/log_view_formatter_test.dart: LogViewFormatter dump each line starts with an ISO-8601 timestamp
+00:20 +744: test/log_view_formatter_test.dart: LogViewFormatter dump returns empty string for an empty log
+00:20 +745: test/log_view_formatter_test.dart: LogViewFormatter filterByLevel LogLevel.info returns only successful entries
+00:20 +746: test/log_view_formatter_test.dart: LogViewFormatter filterByLevel LogLevel.error returns only failed entries
+00:20 +747: test/log_view_formatter_test.dart: LogViewFormatter filterByLevel info count + error count equals total entry count
+00:20 +748: test/log_view_formatter_test.dart: LogViewFormatter filterByLevel returns empty list when no entries match the level
+00:20 +749: test/log_view_formatter_test.dart: LogViewFormatter filterByLevel filtered entries belong to the original log
+00:20 +750: test/log_view_formatter_test.dart: LogViewFormatter FormattedLogLine stores all four fields
+00:20 +751: test/log_view_formatter_test.dart: LogViewFormatter LogLevel info and error are distinct values
+00:20 +752: test/log_view_formatter_test.dart: LogViewFormatter LogLevel values list contains both levels
+00:20 +753: test/time_saved_test.dart: TimeSavedTracker positive savings when batch beats baseline
+00:20 +754: test/time_saved_test.dart: TimeSavedTracker zero savings when batch is slower than baseline
+00:20 +755: test/time_saved_test.dart: TimeSavedTracker multiple batches accumulate
+00:20 +756: test/time_saved_test.dart: TimeSavedTracker rejects negative durations and ignores zero-file batches
+00:20 +757: test/time_saved_test.dart: TimeSavedTracker reset zeroes all counters
+00:20 +758: test/batch_controller_test.dart: BatchController starts in running state
+00:20 +759: test/batch_controller_test.dart: BatchController pause transitions to paused, resume back to running
+00:20 +760: test/batch_controller_test.dart: BatchController awaitResume yields immediately when running
+00:20 +761: test/batch_controller_test.dart: BatchController awaitResume blocks when paused until resumed
+00:20 +762: test/batch_controller_test.dart: BatchController cancel transitions to cancelled and unblocks awaitResume
+00:20 +763: test/batch_controller_test.dart: BatchController complete transitions to completed state
+00:20 +764: test/batch_controller_test.dart: BatchController stream emits state transitions
+00:20 +765: test/sealing_template_test.dart: SealingTemplate round trips through JSON
+00:20 +766: test/sealing_template_test.dart: SealingTemplate copyWith overrides fields
+00:20 +767: test/sealing_template_test.dart: SealingTemplateStore save/load/list/delete work end to end
+00:20 +768: test/sealing_template_test.dart: SealingTemplateStore sanitizes filesystem-hostile characters in names
+00:20 +769: test/offline_indicator_test.dart: OfflineIndicator initial state starts in unknown state
+00:20 +770: test/offline_indicator_test.dart: OfflineIndicator probeOnce — always-online prober returns online when prober returns true
+00:20 +771: test/offline_indicator_test.dart: OfflineIndicator probeOnce — always-online prober state is online after probeOnce returns online
+00:20 +772: test/offline_indicator_test.dart: OfflineIndicator probeOnce — always-online prober returns online with multiple endpoints (first hit short-circuits)
+00:20 +773: test/offline_indicator_test.dart: OfflineIndicator probeOnce — always-offline prober returns offline when prober returns false for all endpoints
+00:20 +774: test/offline_indicator_test.dart: OfflineIndicator probeOnce — always-offline prober state is offline after probeOnce returns offline
+00:20 +775: test/offline_indicator_test.dart: OfflineIndicator probeOnce — always-offline prober probes all endpoints before giving up
+00:20 +776: test/offline_indicator_test.dart: OfflineIndicator probeOnce — throwing prober treats exception as offline when only endpoint throws
+00:20 +777: test/offline_indicator_test.dart: OfflineIndicator probeOnce — throwing prober falls through to next endpoint when first throws
+00:20 +778: test/offline_indicator_test.dart: OfflineIndicator probeOnce — throwing prober all endpoints throwing results in offline state
+00:20 +779: test/offline_indicator_test.dart: OfflineIndicator probeOnce — empty endpoint list returns offline with no endpoints configured
+00:20 +780: test/offline_indicator_test.dart: OfflineIndicator stream — state transitions emits online event when state changes from unknown to online
+00:20 +781: test/offline_indicator_test.dart: OfflineIndicator stream — state transitions emits offline event when state changes from unknown to offline
+00:20 +782: test/offline_indicator_test.dart: OfflineIndicator stream — state transitions does not emit duplicate events when state is unchanged
+00:20 +783: test/offline_indicator_test.dart: OfflineIndicator stream — state transitions emits transition when state flips from online to offline
+00:20 +784: test/offline_indicator_test.dart: OfflineIndicator stream — state transitions stream is a broadcast stream (multiple listeners allowed)
+00:20 +785: test/offline_indicator_test.dart: OfflineIndicator start / stop stop cancels the polling timer without error
+00:20 +786: test/offline_indicator_test.dart: OfflineIndicator start / stop calling stop before start is safe
+00:20 +787: test/offline_indicator_test.dart: OfflineIndicator close close is safe to call when not started
+00:20 +788: test/offline_indicator_test.dart: OfflineIndicator close close is safe to call after stop
+00:20 +789: test/offline_indicator_test.dart: OfflineIndicator ConnectivityState enum has exactly three values
+00:20 +790: test/offline_indicator_test.dart: OfflineIndicator ConnectivityState enum values are unknown, online, offline
+00:20 +791: test/offline_indicator_test.dart: OfflineIndicator endpoints property stores the supplied endpoints list
+00:20 +792: test/offline_indicator_test.dart: OfflineIndicator endpoints property stores the poll interval
+00:20 +793: test/offline_indicator_test.dart: OfflineIndicator endpoints property default poll interval is 30 seconds
+00:20 +794: test/accessibility_theme_test.dart: AccessibilityTheme relativeLuminance pure white has luminance 1.0
+00:20 +795: test/accessibility_theme_test.dart: AccessibilityTheme relativeLuminance pure black has luminance 0.0
+00:20 +796: test/accessibility_theme_test.dart: AccessibilityTheme relativeLuminance luminance is in [0.0, 1.0]
+00:20 +797: test/accessibility_theme_test.dart: AccessibilityTheme relativeLuminance alpha channel is ignored
+00:20 +798: test/accessibility_theme_test.dart: AccessibilityTheme relativeLuminance red has higher luminance than blue
+00:20 +799: test/accessibility_theme_test.dart: AccessibilityTheme contrastRatio black on white is ~21:1
+00:20 +800: test/accessibility_theme_test.dart: AccessibilityTheme contrastRatio white on black is the same ratio (symmetric)
+00:20 +801: test/accessibility_theme_test.dart: AccessibilityTheme contrastRatio identical colors have ratio 1.0
+00:20 +802: test/accessibility_theme_test.dart: AccessibilityTheme contrastRatio ratio is always >= 1.0
+00:20 +803: test/accessibility_theme_test.dart: AccessibilityTheme passesAA black on white passes AA
+00:20 +804: test/accessibility_theme_test.dart: AccessibilityTheme passesAA white on black passes AA
+00:20 +805: test/accessibility_theme_test.dart: AccessibilityTheme passesAA light gray on white fails AA
+00:20 +806: test/accessibility_theme_test.dart: AccessibilityTheme passesAAA pure black on pure white passes AAA
+00:20 +807: test/accessibility_theme_test.dart: AccessibilityTheme passesAAA pure white on pure black passes AAA
+00:20 +808: test/accessibility_theme_test.dart: AccessibilityTheme passesAAA mid-gray on white does not pass AAA (contrast < 7:1)
+00:20 +809: test/accessibility_theme_test.dart: AccessibilityTheme passesAAA light gray on white fails AAA
+00:20 +810: test/accessibility_theme_test.dart: AccessibilityTheme derive derived light theme has white background
+00:20 +811: test/accessibility_theme_test.dart: AccessibilityTheme derive derived light theme has black foreground (primaryColor)
+00:20 +812: test/accessibility_theme_test.dart: AccessibilityTheme derive derived dark theme has black background
+00:20 +813: test/accessibility_theme_test.dart: AccessibilityTheme derive derived dark theme has white foreground (primaryColor)
+00:20 +814: test/accessibility_theme_test.dart: AccessibilityTheme derive derived theme appends "(High Contrast)" to the name
+00:20 +815: test/accessibility_theme_test.dart: AccessibilityTheme derive derived theme preserves secondary color from source
+00:20 +816: test/accessibility_theme_test.dart: AccessibilityTheme derive derived theme preserves font family from source
+00:20 +817: test/accessibility_theme_test.dart: AccessibilityTheme derive surface color matches background color in derived theme
+00:20 +818: test/accessibility_theme_test.dart: AccessibilityTheme derive derived light theme foreground/background passes AAA
+00:20 +819: test/accessibility_theme_test.dart: AccessibilityTheme derive derived dark theme foreground/background passes AAA
+00:20 +820: test/accessibility_theme_test.dart: AccessibilityTheme named constants blackOnWhiteBackground is 0xFFFFFFFF
+00:20 +821: test/accessibility_theme_test.dart: AccessibilityTheme named constants blackOnWhiteForeground is 0xFF000000
+00:20 +822: test/accessibility_theme_test.dart: AccessibilityTheme named constants whiteOnBlackBackground is 0xFF000000
+00:20 +823: test/accessibility_theme_test.dart: AccessibilityTheme named constants whiteOnBlackForeground is 0xFFFFFFFF
+00:20 +824: test/key_manager_test.dart: KeyManager KeyManager.empty starts with no entries
+00:20 +825: test/key_manager_test.dart: KeyManager KeyManager.load returns empty manager when file does not exist
+00:20 +826: test/key_manager_test.dart: KeyManager KeyManager.load round-trips through save and load
+00:21 +827: test/session_lockout_test.dart: SessionLockout initially unlocked and records activity time
+00:21 +828: test/key_manager_test.dart: KeyManager KeyManager.load loads all entries from disk
+00:21 +829: test/session_lockout_test.dart: SessionLockout isIdleAt returns true once timeout has passed
+00:21 +830: test/key_manager_test.dart: KeyManager create returns a KeyEntry with the given name
+00:21 +831: test/key_manager_test.dart: KeyManager create returns a KeyEntry with the given name
+00:21 +832: test/session_lockout_test.dart: SessionLockout lock and unlock emit events
+00:21 +833: test/session_lockout_test.dart: SessionLockout lock and unlock emit events
+00:21 +834: test/session_lockout_test.dart: SessionLockout lock and unlock emit events
+00:21 +835: test/session_lockout_test.dart: SessionLockout lock and unlock emit events
+00:21 +836: test/session_lockout_test.dart: SessionLockout lock and unlock emit events
+00:21 +837: test/session_lockout_test.dart: SessionLockout lock and unlock emit events
+00:21 +838: test/key_manager_test.dart: KeyManager create accepts optional expiresAt
+00:21 +839: test/key_manager_test.dart: KeyManager create accepts optional expiresAt
+00:21 +840: test/key_manager_test.dart: KeyManager create two distinct keys produce different fingerprints
+00:21 +841: test/key_manager_test.dart: KeyManager create each created entry gets a unique id
+00:21 +842: test/key_manager_test.dart: KeyManager read returns the entry with the given id
+00:21 +843: test/key_manager_test.dart: KeyManager read returns null for an unknown id
+00:21 +844: test/key_manager_test.dart: KeyManager findByFingerprint finds an entry by its fingerprint
+00:21 +845: test/key_manager_test.dart: KeyManager findByFingerprint returns null when fingerprint is not in the registry
+00:21 +846: test/key_manager_test.dart: KeyManager update updates the name field
+00:21 +847: test/key_manager_test.dart: KeyManager update updates the description field
+00:21 +848: test/key_manager_test.dart: KeyManager update updates expiresAt
+00:21 +849: test/key_manager_test.dart: KeyManager update preserves fingerprint after update
+00:21 +850: test/key_manager_test.dart: KeyManager update returns null for an unknown id
+00:21 +851: test/key_manager_test.dart: KeyManager update read returns updated data after update
+00:21 +852: test/key_manager_test.dart: KeyManager delete returns true when the entry existed
+00:21 +853: test/key_manager_test.dart: KeyManager delete returns false when the entry did not exist
+00:21 +854: test/key_manager_test.dart: KeyManager delete entry is no longer accessible after delete
+00:21 +855: test/key_manager_test.dart: KeyManager delete list does not include deleted entry
+00:21 +856: test/key_manager_test.dart: KeyManager list returns all entries when includeExpired = true (default)
+00:21 +857: test/key_manager_test.dart: KeyManager list excludes expired entries when includeExpired = false
+00:21 +858: test/key_manager_test.dart: KeyManager list entry with future expiry is included when includeExpired = false
+00:21 +859: test/key_manager_test.dart: KeyManager list entries are sorted by createdAt ascending
+00:21 +860: test/key_manager_test.dart: KeyManager list returns empty list when no entries exist
+00:21 +861: test/key_manager_test.dart: KeyManager list includeExpired uses custom now for cutoff
+00:21 +862: test/key_manager_test.dart: KeyManager encode and save encode returns valid JSON string
+00:21 +863: test/key_manager_test.dart: KeyManager encode and save saved file is readable as text
+00:21 +864: test/cron_template_test.dart: CronTemplate presets map to expected cron expressions
+00:21 +865: test/cron_template_test.dart: CronTemplate crontabLine resolves preset schedules and adds comment
+00:21 +866: test/cron_template_test.dart: CronTemplate crontabLine rejects malformed literal expressions
+00:21 +867: test/cron_template_test.dart: CronTemplate environment lines precede the cron expression
+00:21 +868: test/cron_template_test.dart: CronTemplate systemdUnits builds valid unit bodies
+00:21 +869: test/cron_template_test.dart: CronTemplate zegelRoutine builds crontab for known routines
+00:21 +870: test/secure_memory_test.dart: SecureMemory wipe replaces the buffer contents with zeros
+00:21 +871: test/secure_memory_test.dart: SecureMemory wipe on empty buffer is a no-op
+00:21 +872: test/secure_memory_test.dart: SecureMemory takeAndWipe returns a copy and zeros the source
+00:21 +873: test/secure_memory_test.dart: SecureMemory constantTimeEquals handles equal and unequal buffers
+00:21 +874: test/secure_memory_test.dart: SecureMemory randomBytes returns correct length and rejects negatives
+00:21 +875: test/resource_monitor_test.dart: ResourceMonitor sampleResidentMemoryBytes returns non-null on Linux
+00:21 +876: test/resource_monitor_test.dart: ResourceMonitor captureCpuSnapshot returns ticks on Linux
+00:21 +877: test/resource_monitor_test.dart: ResourceMonitor sampleCpuPercent handles inverted snapshots gracefully
+00:21 +878: test/resource_monitor_test.dart: ResourceMonitor sampleCpuPercent returns null for zero elapsed time
+00:21 +879: test/webhook_test.dart: ZegelWebhook buildPayload includes event type and timestamp
+00:21 +880: test/webhook_test.dart: ZegelWebhook signPayload produces a deterministic HMAC-SHA256
+00:21 +881: test/canary_test.dart: Canary trap padding generation generates different padding for recipient A and B
+00:21 +882: test/canary_test.dart: Canary trap padding generation padding length is always 1-16 bytes
+00:21 +883: test/canary_test.dart: Canary trap padding generation padding is deterministic for same inputs
+00:21 +884: test/canary_test.dart: Canary trap padding generation padding differs across block indices for same recipient
+00:21 +885: test/canary_test.dart: Canary trap padding generation last byte of padding equals padding length (PKCS#7 style)
+00:21 +886: test/canary_test.dart: Canary trap seal with canary both recipients produce valid sealed files
+00:21 +887: test/suggested_improvements_test.dart: Item 42: ErrorHelper-style error messages ZegelTamperedException contains descriptive message
+00:21 +888: test/suggested_improvements_test.dart: Item 42: ErrorHelper-style error messages ZegelTamperedException contains descriptive message
+00:21 +889: test/suggested_improvements_test.dart: Item 42: ErrorHelper-style error messages ZegelTamperedException contains descriptive message
+00:21 +890: test/canary_test.dart: Canary trap recipient identification identifyRecipient correctly identifies recipient A
+00:21 +891: test/canary_test.dart: Canary trap recipient identification identifyRecipient correctly identifies recipient A
+00:21 +892: test/canary_test.dart: Canary trap recipient identification identifyRecipient correctly identifies recipient A
+00:21 +893: test/suggested_improvements_test.dart: Item 76: Sensitive data patterns master key is exactly 32 bytes
+00:21 +894: test/suggested_improvements_test.dart: Item 76: Sensitive data patterns master key is exactly 32 bytes
+00:21 +895: test/suggested_improvements_test.dart: Item 76: Sensitive data patterns master key is exactly 32 bytes
+00:21 +896: test/canary_test.dart: Canary trap recipient identification identifyRecipient works with many candidates
+00:21 +897: test/canary_test.dart: Canary trap recipient identification identifyRecipient works with many candidates
+00:21 +898: test/suggested_improvements_test.dart: Item 97: Contact-like signer data in attestation attestation block stores signer identity
+00:21 +899: test/suggested_improvements_test.dart: Item 97: Contact-like signer data in attestation attestation block stores signer identity
+00:21 +900: test/suggested_improvements_test.dart: Item 97: Contact-like signer data in attestation attestation block stores signer identity
+00:21 +901: test/canary_test.dart: Canary trap strip padding strip padding works across multiple blocks
+00:22 +902: test/canary_test.dart: Canary trap strip padding strip padding works across multiple blocks
+00:22 +903: test/canary_test.dart: Canary trap strip padding strip padding works across multiple blocks
+00:22 +904: test/canary_test.dart: Canary trap strip padding strip padding works across multiple blocks
+00:22 +905: test/canary_test.dart: Canary trap strip padding strip padding works across multiple blocks
+00:22 +906: test/canary_test.dart: Canary trap strip padding strip padding works across multiple blocks
+00:22 +907: test/canary_test.dart: Canary trap strip padding strip padding works across multiple blocks
+00:22 +908: test/canary_test.dart: Canary trap strip padding strip padding works across multiple blocks
+00:22 +909: test/canary_test.dart: Canary trap strip padding strip padding works across multiple blocks
+00:22 +910: test/canary_test.dart: Canary trap strip padding strip padding works across multiple blocks
+00:22 +911: test/canary_test.dart: Canary trap strip padding strip padding works across multiple blocks
+00:22 +912: test/canary_test.dart: Canary trap padding algorithm correctness padding matches HMAC-SHA256 based generation
+00:22 +913: test/key_rotation_reminder_test.dart: KeyRotationReminder new keys are OK until the rotation window elapses
+00:22 +914: test/key_rotation_reminder_test.dart: KeyRotationReminder markRotated resets the age
+00:22 +915: test/key_rotation_reminder_test.dart: KeyRotationReminder unknown keys return RotationStatus.unknown
+00:22 +916: test/key_rotation_reminder_test.dart: KeyRotationReminder summarize sorts by age descending
+00:22 +917: test/key_rotation_reminder_test.dart: KeyRotationReminder encode/decodeJson preserves records and window
+00:22 +918: test/history_log_test.dart: HistoryLog record appends entries and tail returns newest first
+00:22 +919: test/history_log_test.dart: HistoryLog byOperation and byStatus filter correctly
+00:22 +920: test/history_log_test.dart: HistoryLog inRange filters by timestamp
+00:22 +921: test/history_log_test.dart: HistoryLog prune removes expired entries using a retention policy
+00:22 +922: test/history_log_test.dart: HistoryLog encode/decode round trip
+00:22 +923: test/isolate_pool_test.dart: IsolatePool runs tasks up to maxWorkers in parallel
+00:22 +924: test/isolate_pool_test.dart: IsolatePool errors propagate to the caller
+00:22 +925: test/isolate_pool_test.dart: IsolatePool runAll preserves order
+00:22 +926: test/isolate_pool_test.dart: IsolatePool rejects submissions after close
+00:22 +927: test/isolate_pool_test.dart: IsolatePool rejects invalid maxWorkers
+00:22 +928: test/key_backup_test.dart: KeyBackupPlanner backupNow copies files and records manifest
+00:22 +929: test/key_backup_test.dart: KeyBackupPlanner backupNow skips when source is unchanged
+00:23 +930: test/key_backup_test.dart: KeyBackupPlanner backupNow writes a fresh snapshot when source changes
+00:23 +931: test/key_backup_test.dart: KeyBackupPlanner retainSnapshots prunes the oldest backups
+00:23 +932: test/metadata_stripper_test.dart: MetadataStripper stripJpeg returns the original for non-JPEG inputs
+00:23 +933: test/key_backup_test.dart: KeyBackupPlanner throws when source file is missing
+00:23 +934: test/key_backup_test.dart: KeyBackupPlanner throws when source file is missing
+00:23 +935: test/metadata_stripper_test.dart: MetadataStripper stripPng removes tEXt chunks but preserves IHDR/IEND
+00:23 +936: test/metadata_stripper_test.dart: MetadataStripper stripAny dispatches based on magic bytes
+00:23 +937: test/selection_state_test.dart: SelectionState<String> initial state no items selected when constructed without items
+00:23 +938: test/selection_state_test.dart: SelectionState<String> initial state constructed items are tracked but none selected
+00:23 +939: test/selection_state_test.dart: SelectionState<String> initial state items getter returns all tracked items
+00:23 +940: test/selection_state_test.dart: SelectionState<String> select adds item to selected set
+00:23 +941: test/selection_state_test.dart: SelectionState<String> select selecting the same item twice does not duplicate it
+00:23 +942: test/selection_state_test.dart: SelectionState<String> select throws StateError when item is not in items
+00:23 +943: test/selection_state_test.dart: SelectionState<String> select selecting all items makes isAllSelected true
+00:23 +944: test/selection_state_test.dart: SelectionState<String> deselect removes item from selected set
+00:23 +945: test/selection_state_test.dart: SelectionState<String> deselect deselectng unselected item is a no-op
+00:23 +946: test/selection_state_test.dart: SelectionState<String> deselect deselect does not remove item from tracked set
+00:23 +947: test/selection_state_test.dart: SelectionState<String> toggle selects an unselected item
+00:23 +948: test/selection_state_test.dart: SelectionState<String> toggle deselects a selected item
+00:23 +949: test/selection_state_test.dart: SelectionState<String> toggle double toggle returns to original state
+00:23 +950: test/selection_state_test.dart: SelectionState<String> toggle throws StateError when item is not tracked
+00:23 +951: test/selection_state_test.dart: SelectionState<String> selectAll selects every tracked item
+00:23 +952: test/selection_state_test.dart: SelectionState<String> selectAll is a no-op when item set is empty
+00:23 +953: test/selection_state_test.dart: SelectionState<String> selectAll calling selectAll twice is idempotent
+00:23 +954: test/selection_state_test.dart: SelectionState<String> selectAll isAllSelected is false for empty item set
+00:23 +955: test/selection_state_test.dart: SelectionState<String> clear deselects all items
+00:23 +956: test/selection_state_test.dart: SelectionState<String> clear clear does not remove items from the tracked set
+00:23 +957: test/selection_state_test.dart: SelectionState<String> clear clear on empty selection is a no-op
+00:23 +958: test/selection_state_test.dart: SelectionState<String> invert inverts an empty selection to all selected
+00:23 +959: test/selection_state_test.dart: SelectionState<String> invert inverts a full selection to none selected
+00:23 +960: test/selection_state_test.dart: SelectionState<String> invert inverts a partial selection correctly
+00:23 +961: test/selection_state_test.dart: SelectionState<String> invert double invert returns to original selection
+00:23 +962: test/selection_state_test.dart: SelectionState<String> invert invert on empty item set is a no-op
+00:23 +963: test/roundtrip_test.dart: Roundtrip tests content sizes small file: 13 bytes ("Hello, Zegel!")
+00:23 +964: test/roundtrip_test.dart: Roundtrip tests content sizes small file: 13 bytes ("Hello, Zegel!")
+00:23 +965: test/roundtrip_test.dart: Roundtrip tests content sizes small file: 13 bytes ("Hello, Zegel!")
+00:23 +966: test/roundtrip_test.dart: Roundtrip tests content sizes small file: 13 bytes ("Hello, Zegel!")
+00:23 +967: test/roundtrip_test.dart: Roundtrip tests content sizes small file: 13 bytes ("Hello, Zegel!")
+00:23 +968: test/roundtrip_test.dart: Roundtrip tests content sizes small file: 13 bytes ("Hello, Zegel!")
+00:23 +969: test/roundtrip_test.dart: Roundtrip tests content sizes small file: 13 bytes ("Hello, Zegel!")
+00:23 +970: test/roundtrip_test.dart: Roundtrip tests content sizes small file: 13 bytes ("Hello, Zegel!")
+00:23 +971: test/roundtrip_test.dart: Roundtrip tests content sizes small file: 13 bytes ("Hello, Zegel!")
+00:23 +972: test/roundtrip_test.dart: Roundtrip tests content sizes small file: 13 bytes ("Hello, Zegel!")
+00:23 +973: test/roundtrip_test.dart: Roundtrip tests content sizes small file: 13 bytes ("Hello, Zegel!")
+00:23 +974: test/roundtrip_test.dart: Roundtrip tests content sizes small file: 13 bytes ("Hello, Zegel!")
+00:23 +975: test/roundtrip_test.dart: Roundtrip tests content sizes small file: 13 bytes ("Hello, Zegel!")
+00:23 +976: test/roundtrip_test.dart: Roundtrip tests content sizes small file: 13 bytes ("Hello, Zegel!")
+00:23 +977: test/roundtrip_test.dart: Roundtrip tests content sizes small file: 13 bytes ("Hello, Zegel!")
+00:23 +978: test/roundtrip_test.dart: Roundtrip tests content sizes small file: 13 bytes ("Hello, Zegel!")
+00:23 +979: test/roundtrip_test.dart: Roundtrip tests content sizes small file: 13 bytes ("Hello, Zegel!")
+00:23 +980: test/roundtrip_test.dart: Roundtrip tests content sizes exact block size: 65536 bytes
+00:23 +981: test/roundtrip_test.dart: Roundtrip tests content sizes exact block size: 65536 bytes
+00:23 +982: test/roundtrip_test.dart: Roundtrip tests content sizes exact block size: 65536 bytes
+00:23 +983: test/roundtrip_test.dart: Roundtrip tests content sizes exact block size: 65536 bytes
+00:23 +984: test/roundtrip_test.dart: Roundtrip tests content sizes exact block size: 65536 bytes
+00:23 +985: test/roundtrip_test.dart: Roundtrip tests content sizes exact block size: 65536 bytes
+00:23 +986: test/roundtrip_test.dart: Roundtrip tests content sizes exact block size: 65536 bytes
+00:23 +987: test/roundtrip_test.dart: Roundtrip tests content sizes exact block size: 65536 bytes
+00:23 +988: test/roundtrip_test.dart: Roundtrip tests content sizes exact block size: 65536 bytes
+00:23 +989: test/roundtrip_test.dart: Roundtrip tests content sizes exact block size: 65536 bytes
+00:23 +990: test/roundtrip_test.dart: Roundtrip tests content sizes exact block size: 65536 bytes
+00:24 +991: test/roundtrip_test.dart: Roundtrip tests content sizes multi-block file: 3 blocks (65536 * 2 + 100 bytes)
+00:24 +992: test/roundtrip_test.dart: Roundtrip tests content sizes multi-block file: 3 blocks (65536 * 2 + 100 bytes)
+00:24 +993: test/roundtrip_test.dart: Roundtrip tests content sizes multi-block file: 3 blocks (65536 * 2 + 100 bytes)
+00:24 +994: test/roundtrip_test.dart: Roundtrip tests content sizes multi-block file: 3 blocks (65536 * 2 + 100 bytes)
+00:24 +995: test/roundtrip_test.dart: Roundtrip tests content sizes multi-block file: 3 blocks (65536 * 2 + 100 bytes)
+00:24 +996: test/roundtrip_test.dart: Roundtrip tests content sizes multi-block file: 3 blocks (65536 * 2 + 100 bytes)
+00:24 +997: test/roundtrip_test.dart: Roundtrip tests content sizes multi-block file: 3 blocks (65536 * 2 + 100 bytes)
+00:24 +998: test/roundtrip_test.dart: Roundtrip tests content sizes multi-block file: 3 blocks (65536 * 2 + 100 bytes)
+00:24 +999: test/roundtrip_test.dart: Roundtrip tests content sizes multi-block file: 3 blocks (65536 * 2 + 100 bytes)
+00:24 +1000: test/roundtrip_test.dart: Roundtrip tests content sizes multi-block file: 3 blocks (65536 * 2 + 100 bytes)
+00:24 +1001: test/roundtrip_test.dart: Roundtrip tests content sizes multi-block file: 3 blocks (65536 * 2 + 100 bytes)
+00:24 +1002: test/roundtrip_test.dart: Roundtrip tests content sizes multi-block file: 3 blocks (65536 * 2 + 100 bytes)
+00:24 +1003: test/roundtrip_test.dart: Roundtrip tests content sizes multi-block file: 3 blocks (65536 * 2 + 100 bytes)
+00:24 +1004: test/roundtrip_test.dart: Roundtrip tests content sizes multi-block file: 3 blocks (65536 * 2 + 100 bytes)
+00:24 +1005: test/roundtrip_test.dart: Roundtrip tests content sizes multi-block file: 3 blocks (65536 * 2 + 100 bytes)
+00:24 +1006: test/roundtrip_test.dart: Roundtrip tests content sizes multi-block file: 3 blocks (65536 * 2 + 100 bytes)
+00:24 +1007: test/roundtrip_test.dart: Roundtrip tests content sizes multi-block file: 3 blocks (65536 * 2 + 100 bytes)
+00:24 +1008: test/roundtrip_test.dart: Roundtrip tests content sizes multi-block file: 3 blocks (65536 * 2 + 100 bytes)
+00:24 +1009: test/roundtrip_test.dart: Roundtrip tests content sizes multi-block file: 3 blocks (65536 * 2 + 100 bytes)
+00:24 +1010: test/roundtrip_test.dart: Roundtrip tests content sizes multi-block file: 3 blocks (65536 * 2 + 100 bytes)
+00:24 +1011: test/roundtrip_test.dart: Roundtrip tests content sizes multi-block file: 3 blocks (65536 * 2 + 100 bytes)
+00:24 +1012: test/roundtrip_test.dart: Roundtrip tests content sizes multi-block file: 3 blocks (65536 * 2 + 100 bytes)
+00:24 +1013: test/roundtrip_test.dart: Roundtrip tests content sizes multi-block file: 3 blocks (65536 * 2 + 100 bytes)
+00:24 +1014: test/roundtrip_test.dart: Roundtrip tests content sizes multi-block file: 3 blocks (65536 * 2 + 100 bytes)
+00:24 +1015: test/roundtrip_test.dart: Roundtrip tests content sizes multi-block file: 3 blocks (65536 * 2 + 100 bytes)
+00:24 +1016: test/writer_test.dart: ZegelWriter block count multiple content blocks for large file
+00:24 +1017: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:24 +1018: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:24 +1019: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:24 +1020: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:24 +1021: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:24 +1022: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:24 +1023: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:24 +1024: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:24 +1025: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:25 +1026: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:25 +1027: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:25 +1028: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:25 +1029: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:25 +1030: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:25 +1031: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:25 +1032: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:25 +1033: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:25 +1034: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:25 +1035: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:25 +1036: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:25 +1037: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:25 +1038: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:25 +1039: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:25 +1040: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:25 +1041: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:25 +1042: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:25 +1043: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:25 +1044: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:25 +1045: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:25 +1046: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:25 +1047: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:25 +1048: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:25 +1049: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:25 +1050: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:25 +1051: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:25 +1052: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:25 +1053: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:25 +1054: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:25 +1055: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:25 +1056: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:25 +1057: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:25 +1058: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:25 +1059: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:25 +1060: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:25 +1061: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:25 +1062: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:25 +1063: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:25 +1064: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:25 +1065: test/roundtrip_test.dart: Roundtrip tests content sizes large file: 256 KB
+00:25 +1066: test/roundtrip_test.dart: Roundtrip tests content sizes empty content: 0 bytes
+00:25 +1067: test/roundtrip_test.dart: Roundtrip tests content sizes one byte content
+00:25 +1068: test/roundtrip_test.dart: Roundtrip tests content sizes just under block size: 65535 bytes
+00:25 +1069: test/roundtrip_test.dart: Roundtrip tests content sizes just under block size: 65535 bytes
+00:25 +1070: test/roundtrip_test.dart: Roundtrip tests content sizes just under block size: 65535 bytes
+00:25 +1071: test/roundtrip_test.dart: Roundtrip tests content sizes just under block size: 65535 bytes
+00:25 +1072: test/roundtrip_test.dart: Roundtrip tests content sizes just under block size: 65535 bytes
+00:25 +1073: test/roundtrip_test.dart: Roundtrip tests content sizes just under block size: 65535 bytes
+00:25 +1074: test/roundtrip_test.dart: Roundtrip tests content sizes just under block size: 65535 bytes
+00:25 +1075: test/roundtrip_test.dart: Roundtrip tests content sizes just over block size: 65537 bytes
+00:26 +1076: test/roundtrip_test.dart: Roundtrip tests content sizes just over block size: 65537 bytes
+00:26 +1077: test/roundtrip_test.dart: Roundtrip tests content sizes just over block size: 65537 bytes
+00:26 +1078: test/roundtrip_test.dart: Roundtrip tests content sizes just over block size: 65537 bytes
+00:26 +1079: test/roundtrip_test.dart: Roundtrip tests content sizes just over block size: 65537 bytes
+00:26 +1080: test/roundtrip_test.dart: Roundtrip tests content sizes just over block size: 65537 bytes
+00:26 +1081: test/roundtrip_test.dart: Roundtrip tests content sizes just over block size: 65537 bytes
+00:26 +1082: test/roundtrip_test.dart: Roundtrip tests content sizes just over block size: 65537 bytes
+00:26 +1083: test/roundtrip_test.dart: Roundtrip tests content sizes just over block size: 65537 bytes
+00:26 +1084: test/roundtrip_test.dart: Roundtrip tests content sizes just over block size: 65537 bytes
+00:26 +1085: test/roundtrip_test.dart: Roundtrip tests content sizes just over block size: 65537 bytes
+00:26 +1086: test/roundtrip_test.dart: Roundtrip tests content sizes just over block size: 65537 bytes
+00:26 +1087: test/roundtrip_test.dart: Roundtrip tests content sizes just over block size: 65537 bytes
+00:26 +1088: test/roundtrip_test.dart: Roundtrip tests content sizes just over block size: 65537 bytes
+00:26 +1089: test/roundtrip_test.dart: Roundtrip tests content sizes just over block size: 65537 bytes
+00:26 +1090: test/roundtrip_test.dart: Roundtrip tests content sizes just over block size: 65537 bytes
+00:26 +1091: test/roundtrip_test.dart: Roundtrip tests content sizes just over block size: 65537 bytes
+00:26 +1092: test/roundtrip_test.dart: Roundtrip tests content sizes just over block size: 65537 bytes
+00:26 +1093: test/roundtrip_test.dart: Roundtrip tests content sizes just over block size: 65537 bytes
+00:26 +1094: test/roundtrip_test.dart: Roundtrip tests content sizes just over block size: 65537 bytes
+00:26 +1095: test/roundtrip_test.dart: Roundtrip tests content sizes just over block size: 65537 bytes
+00:26 +1096: test/roundtrip_test.dart: Roundtrip tests content sizes just over block size: 65537 bytes
+00:26 +1097: test/roundtrip_test.dart: Roundtrip tests content sizes just over block size: 65537 bytes
+00:26 +1098: test/roundtrip_test.dart: Roundtrip tests content sizes just over block size: 65537 bytes
+00:26 +1099: test/roundtrip_test.dart: Roundtrip tests content sizes just over block size: 65537 bytes
+00:26 +1100: test/roundtrip_test.dart: Roundtrip tests content sizes just over block size: 65537 bytes
+00:26 +1101: test/roundtrip_test.dart: Roundtrip tests content sizes just over block size: 65537 bytes
+00:26 +1102: test/roundtrip_test.dart: Roundtrip tests content sizes just over block size: 65537 bytes
+00:26 +1103: test/roundtrip_test.dart: Roundtrip tests content types binary content with all byte values
+00:26 +1104: test/roundtrip_test.dart: Roundtrip tests content types random binary content
+00:26 +1105: test/roundtrip_test.dart: Roundtrip tests content types UTF-8 content with Unicode characters
+00:26 +1106: test/roundtrip_test.dart: Roundtrip tests content types JSON content
+00:26 +1107: test/roundtrip_test.dart: Roundtrip tests with metadata preserves simple metadata
+00:26 +1108: test/roundtrip_test.dart: Roundtrip tests with metadata preserves complex metadata with nested objects
+00:26 +1109: test/roundtrip_test.dart: Roundtrip tests with metadata metadata with Unicode values
+00:26 +1110: test/roundtrip_test.dart: Roundtrip tests with compression compressible text content roundtrips correctly
+00:26 +1111: test/roundtrip_test.dart: Roundtrip tests with compression compressed file is smaller than uncompressed for compressible data
+00:26 +1112: test/roundtrip_test.dart: Roundtrip tests with compression compressed file is smaller than uncompressed for compressible data
+00:26 +1113: test/roundtrip_test.dart: Roundtrip tests with compression compressed file is smaller than uncompressed for compressible data
+00:26 +1114: test/roundtrip_test.dart: Roundtrip tests with compression compressed file is smaller than uncompressed for compressible data
+00:26 +1115: test/roundtrip_test.dart: Roundtrip tests with compression compressed file is smaller than uncompressed for compressible data
+00:26 +1116: test/roundtrip_test.dart: Roundtrip tests with compression compressed file is smaller than uncompressed for compressible data
+00:26 +1117: test/roundtrip_test.dart: Roundtrip tests with compression compressed file is smaller than uncompressed for compressible data
+00:26 +1118: test/roundtrip_test.dart: Roundtrip tests with compression binary content with compression roundtrips
+00:26 +1119: test/roundtrip_test.dart: Roundtrip tests with public metadata public metadata survives roundtrip
+00:26 +1120: test/roundtrip_test.dart: Roundtrip tests with expiration future expiration: file can be extracted
+00:26 +1121: test/roundtrip_test.dart: Roundtrip tests with expiration past expiration: extraction is refused
+00:26 +1122: test/roundtrip_test.dart: Roundtrip tests with key commitment key commitment roundtrip succeeds
+00:26 +1123: test/roundtrip_test.dart: Roundtrip tests with key commitment key commitment flag is set in file
+00:26 +1124: test/roundtrip_test.dart: Roundtrip tests filenames short filename
+00:26 +1125: test/roundtrip_test.dart: Roundtrip tests filenames long filename (255 bytes)
+00:26 +1126: test/roundtrip_test.dart: Roundtrip tests filenames Unicode filename
+00:26 +1127: test/roundtrip_test.dart: Roundtrip tests filenames filename with spaces and special characters
+00:26 +1128: test/roundtrip_test.dart: Roundtrip tests various content-types text/plain
+00:26 +1129: test/roundtrip_test.dart: Roundtrip tests various content-types application/pdf
+00:26 +1130: test/roundtrip_test.dart: Roundtrip tests various content-types image/png
+00:26 +1131: test/roundtrip_test.dart: Roundtrip tests various content-types application/octet-stream
+00:26 +1132: test/roundtrip_test.dart: Roundtrip tests various content-types content-type with parameters
+00:26 +1133: test/roundtrip_test.dart: Roundtrip tests combined options metadata + compression
+00:26 +1134: test/roundtrip_test.dart: Roundtrip tests combined options metadata + key commitment + public metadata
+00:26 +1135: test/roundtrip_test.dart: Roundtrip tests combined options compression + expiration + key commitment
+00:26 +1136: test/roundtrip_test.dart: Roundtrip tests determinism same inputs produce same output with fixed salt
+00:26 +1137: test/retention_policy_test.dart: RetentionPolicy default retention applies when no rule is set
+00:26 +1138: test/retention_policy_test.dart: RetentionPolicy per-category rules override the default
+00:26 +1139: test/retention_policy_test.dart: RetentionPolicy removeRule reverts to default
+00:26 +1140: test/retention_policy_test.dart: RetentionPolicy apply returns only kept events
+00:26 +1141: test/retention_policy_test.dart: RetentionPolicy partition returns kept and expired lists
+00:26 +1142: test/retention_policy_test.dart: RetentionPolicy encode/decodeJson round trip
+00:26 +1143: test/reader_test.dart: ZegelReader rejects invalid files rejects file with wrong magic bytes
+00:26 +1144: test/reader_test.dart: ZegelReader rejects invalid files rejects file with partially wrong magic bytes
+00:26 +1145: test/reader_test.dart: ZegelReader rejects invalid files rejects truncated file (too short for header)
+00:26 +1146: test/reader_test.dart: ZegelReader rejects invalid files rejects file with modified seal
+00:26 +1147: test/reader_test.dart: ZegelReader rejects invalid files rejects file with modified merkle root
+00:26 +1148: test/reader_test.dart: ZegelReader rejects invalid files rejects file with modified block data
+00:26 +1149: test/reader_test.dart: ZegelReader successfully reads valid files verify returns valid for unmodified file
+00:26 +1150: test/reader_test.dart: ZegelReader successfully reads valid files verify returns correct content
+00:26 +1151: test/reader_test.dart: ZegelReader successfully reads valid files verify returns correct UTF-8 string content
+00:26 +1152: test/tutorial_sequence_test.dart: TutorialSequence next advances through the steps
+00:26 +1153: test/tutorial_sequence_test.dart: TutorialSequence next advances through the steps
+00:26 +1154: test/tutorial_sequence_test.dart: TutorialSequence next advances through the steps
+00:26 +1155: test/reader_test.dart: ZegelReader handles files with and without metadata file with metadata includes it in result
+00:26 +1156: test/reader_test.dart: ZegelReader handles files with and without metadata file with metadata includes it in result
+00:26 +1157: test/reader_test.dart: ZegelReader handles files with and without metadata file with metadata includes it in result
+00:26 +1158: test/tutorial_sequence_test.dart: TutorialSequence reset returns to the first step
+00:26 +1159: test/reader_test.dart: ZegelReader handles files with and without metadata file with empty metadata map
+00:26 +1160: test/reader_test.dart: ZegelReader handles files with and without metadata file with empty metadata map
+00:26 +1161: test/reader_test.dart: ZegelReader inspect (no key required) inspect works without a key
+00:26 +1162: test/reader_test.dart: ZegelReader inspect (no key required) inspect reports correct version
+00:26 +1163: test/reader_test.dart: ZegelReader inspect (no key required) inspect reports correct flags
+00:26 +1164: test/reader_test.dart: ZegelReader inspect (no key required) inspect reports correct block count
+00:26 +1165: test/reader_test.dart: ZegelReader inspect (no key required) inspect reports correct block count with metadata
+00:26 +1166: test/reader_test.dart: ZegelReader inspect (no key required) inspect reports correct content type
+00:26 +1167: test/reader_test.dart: ZegelReader inspect (no key required) inspect reports correct filename
+00:27 +1168: test/reader_test.dart: ZegelReader inspect (no key required) inspect reports timestamp
+00:27 +1169: test/reader_test.dart: ZegelReader inspect (no key required) inspect reports public metadata when present
+00:27 +1170: test/reader_test.dart: ZegelReader inspect (no key required) inspect reports block count for valid file
+00:27 +1171: test/reader_test.dart: ZegelReader wrong key wrong key fails verification
+00:27 +1172: test/reader_test.dart: ZegelReader wrong key wrong key fails extraction
+00:27 +1173: test/template_manager_test.dart: TemplateManager upsert and get get returns null when template does not exist
+00:27 +1174: test/template_manager_test.dart: TemplateManager upsert and get get returns the template after upsert
+00:27 +1175: test/undo_manager_test.dart: UndoManager execute applies the command and enables undo
+00:27 +1176: test/undo_manager_test.dart: UndoManager execute applies the command and enables undo
+00:27 +1177: test/template_manager_test.dart: TemplateManager upsert and get multiple distinct templates can be stored
+00:27 +1178: test/template_manager_test.dart: TemplateManager list returns empty list when no templates exist
+00:27 +1179: test/template_manager_test.dart: TemplateManager list returns empty list when no templates exist
+00:27 +1180: test/undo_manager_test.dart: UndoManager executing a new command clears the redo stack
+00:27 +1181: test/template_manager_test.dart: TemplateManager list returns names of all stored templates
+00:27 +1182: test/template_manager_test.dart: TemplateManager list returns names of all stored templates
+00:27 +1183: test/undo_manager_test.dart: UndoManager clear empties both stacks
+00:27 +1184: test/template_manager_test.dart: TemplateManager allTemplates returns SealingTemplate objects for each name
+00:27 +1185: test/template_manager_test.dart: TemplateManager allTemplates returns empty list when store is empty
+00:27 +1186: test/template_manager_test.dart: TemplateManager update updates description of an existing template
+00:27 +1187: test/template_manager_test.dart: TemplateManager update updates contentType
+00:27 +1188: test/template_manager_test.dart: TemplateManager update updates compress flag
+00:27 +1189: test/template_manager_test.dart: TemplateManager update updates classification
+00:27 +1190: test/template_manager_test.dart: TemplateManager update updates blockSize
+00:27 +1191: test/template_manager_test.dart: TemplateManager update updates expirationFromNow
+00:27 +1192: test/template_manager_test.dart: TemplateManager update throws StateError when template does not exist
+00:27 +1193: test/template_manager_test.dart: TemplateManager update name is preserved after update
+00:27 +1194: test/template_manager_test.dart: TemplateManager delete returns true when the template existed
+00:27 +1195: test/template_manager_test.dart: TemplateManager delete returns false when the template did not exist
+00:27 +1196: test/template_manager_test.dart: TemplateManager delete deleted template is no longer returned by get
+00:27 +1197: test/template_manager_test.dart: TemplateManager delete deleted template is no longer in list
+00:27 +1198: test/template_manager_test.dart: TemplateManager delete deleting the default template clears the default
+00:27 +1199: test/template_manager_test.dart: TemplateManager duplicate creates a new template under the new name
+00:27 +1200: test/template_manager_test.dart: TemplateManager duplicate copy preserves description from source
+00:27 +1201: test/template_manager_test.dart: TemplateManager duplicate source template still exists after duplicate
+00:27 +1202: test/template_manager_test.dart: TemplateManager duplicate returns null when source does not exist
+00:27 +1203: test/template_manager_test.dart: TemplateManager duplicate duplicate with a different name does not overwrite source
+00:27 +1204: test/template_manager_test.dart: TemplateManager setDefault and defaultTemplate defaultTemplate returns null when none is set
+00:27 +1205: test/template_manager_test.dart: TemplateManager setDefault and defaultTemplate setDefault marks a template as the default
+00:27 +1206: test/template_manager_test.dart: TemplateManager setDefault and defaultTemplate setDefault can be changed to a different template
+00:27 +1207: test/template_manager_test.dart: TemplateManager setDefault and defaultTemplate setDefault throws StateError for an unknown template
+00:27 +1208: test/template_manager_test.dart: TemplateManager setDefault and defaultTemplate defaultTemplate returns null after the default is deleted
+00:27 +1209: test/template_manager_test.dart: TemplateManager setDefault and defaultTemplate setDefault references the live store — changes reflected immediately
+00:27 +1210: test/use_case_integration_test.dart: Use Case: House Purchase Contract full contract workflow: seal, attest by multiple parties, verify policy
+00:27 +1211: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:27 +1212: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:27 +1213: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:27 +1214: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:27 +1215: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:27 +1216: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:27 +1217: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:27 +1218: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:27 +1219: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:28 +1220: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:28 +1221: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:28 +1222: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:28 +1223: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:28 +1224: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:28 +1225: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:28 +1226: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:28 +1227: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:28 +1228: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:28 +1229: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:28 +1230: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:28 +1231: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:28 +1232: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:28 +1233: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:28 +1234: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:28 +1235: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:28 +1236: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:28 +1237: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:28 +1238: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:28 +1239: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:28 +1240: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:28 +1241: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:28 +1242: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:28 +1243: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:28 +1244: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:28 +1245: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:28 +1246: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:28 +1247: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:28 +1248: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:28 +1249: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:28 +1250: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:28 +1251: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:28 +1252: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:28 +1253: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:28 +1254: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:28 +1255: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:28 +1256: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:28 +1257: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:28 +1258: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:28 +1259: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:28 +1260: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:28 +1261: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:28 +1262: test/use_case_integration_test.dart: Use Case: House Purchase Contract selective disclosure: bank sees only financial terms
+00:28 +1263: test/use_case_integration_test.dart: Use Case: House Purchase Contract redact personal data for public records
+00:28 +1264: test/use_case_integration_test.dart: Use Case: House Purchase Contract redact personal data for public records
+00:28 +1265: test/use_case_integration_test.dart: Use Case: House Purchase Contract redact personal data for public records
+00:28 +1266: test/use_case_integration_test.dart: Use Case: House Purchase Contract redact personal data for public records
+00:28 +1267: test/use_case_integration_test.dart: Use Case: House Purchase Contract redact personal data for public records
+00:28 +1268: test/use_case_integration_test.dart: Use Case: House Purchase Contract redact personal data for public records
+00:28 +1269: test/use_case_integration_test.dart: Use Case: House Purchase Contract redact personal data for public records
+00:28 +1270: test/use_case_integration_test.dart: Use Case: House Purchase Contract redact personal data for public records
+00:28 +1271: test/use_case_integration_test.dart: Use Case: House Purchase Contract redact personal data for public records
+00:28 +1272: test/use_case_integration_test.dart: Use Case: House Purchase Contract redact personal data for public records
+00:28 +1273: test/use_case_integration_test.dart: Use Case: House Purchase Contract redact personal data for public records
+00:28 +1274: test/use_case_integration_test.dart: Use Case: House Purchase Contract redact personal data for public records
+00:29 +1275: test/use_case_integration_test.dart: Use Case: House Purchase Contract redact personal data for public records
+00:29 +1276: test/use_case_integration_test.dart: Use Case: House Purchase Contract redact personal data for public records
+00:29 +1277: test/use_case_integration_test.dart: Use Case: House Purchase Contract redact personal data for public records
+00:29 +1278: test/use_case_integration_test.dart: Use Case: House Purchase Contract redact personal data for public records
+00:29 +1279: test/use_case_integration_test.dart: Use Case: Financial Audit batch verify quarterly statements
+00:29 +1280: test/use_case_integration_test.dart: Use Case: Financial Audit manifest for audit package
+00:29 +1281: test/use_case_integration_test.dart: Use Case: Academic Credentials issue and verify diploma
+00:29 +1282: test/use_case_integration_test.dart: Use Case: Government Classified classify, distribute, declassify
+00:29 +1283: test/use_case_integration_test.dart: Use Case: Government Classified classify, distribute, declassify
+00:29 +1284: test/use_case_integration_test.dart: Use Case: Government Classified classify, distribute, declassify
+00:29 +1285: test/use_case_integration_test.dart: Use Case: Government Classified classify, distribute, declassify
+00:29 +1286: test/use_case_integration_test.dart: Use Case: Government Classified classify, distribute, declassify
+00:29 +1287: test/use_case_integration_test.dart: Use Case: Government Classified classify, distribute, declassify
+00:30 +1288: test/use_case_integration_test.dart: Use Case: Government Classified classify, distribute, declassify
+00:30 +1289: test/disclosure_expiration_test.dart: Disclosure Token Expiration isTokenExpired token with future expiration is not expired
+00:30 +1290: test/disclosure_expiration_test.dart: Disclosure Token Expiration isTokenExpired token with future expiration is not expired
+00:30 +1291: test/disclosure_expiration_test.dart: Disclosure Token Expiration isTokenExpired token with future expiration is not expired
+00:30 +1292: test/use_case_integration_test.dart: Use Case: Insurance Claim batch verify claim documents with provenance
+00:30 +1293: test/disclosure_expiration_test.dart: Disclosure Token Expiration isTokenExpired token with past expiration is expired
+00:30 +1294: test/disclosure_expiration_test.dart: Disclosure Token Expiration isTokenExpired token with past expiration is expired
+00:30 +1295: test/disclosure_expiration_test.dart: Disclosure Token Expiration isTokenExpired token with past expiration is expired
+00:30 +1296: test/disclosure_expiration_test.dart: Disclosure Token Expiration isTokenExpired token with past expiration is expired
+00:30 +1297: test/disclosure_expiration_test.dart: Disclosure Token Expiration isTokenExpired token with past expiration is expired
+00:30 +1298: test/disclosure_expiration_test.dart: Disclosure Token Expiration isTokenExpired token with past expiration is expired
+00:30 +1299: test/use_case_integration_test.dart: Use Case: Medical Records seal patient record with selective disclosure for specialist
+00:31 +1300: test/use_case_integration_test.dart: Use Case: Medical Records seal patient record with selective disclosure for specialist
+00:31 +1301: test/disclosure_expiration_test.dart: Disclosure Token Expiration extractBlock with expired token accepts non-expired token via extractWithToken
+00:31 +1302: test/disclosure_expiration_test.dart: Disclosure Token Expiration extractBlock with expired token accepts non-expired token via extractWithToken
+00:31 +1303: test/use_case_integration_test.dart: Use Case: Legal Discovery seal evidence, redact privileged content, verify chain
+00:32 +1304: test/use_case_integration_test.dart: Use Case: Legal Discovery seal evidence, redact privileged content, verify chain
+00:32 +1305: test/use_case_integration_test.dart: Use Case: Legal Discovery seal evidence, redact privileged content, verify chain
+00:32 +1306: test/disclosure_expiration_test.dart: Disclosure Token Expiration token JSON structure token preserves all standard fields alongside expiration
+00:32 +1307: test/disclosure_expiration_test.dart: Disclosure Token Expiration token JSON structure token preserves all standard fields alongside expiration
+00:32 +1308: test/disclosure_expiration_test.dart: Disclosure Token Expiration edge cases token expiring right now (within same second)
+00:33 +1309: test/disclosure_expiration_test.dart: Disclosure Token Expiration edge cases very far future expiration is not expired
+00:33 +1310: All tests passed!
