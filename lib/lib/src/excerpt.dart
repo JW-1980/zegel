@@ -38,6 +38,42 @@ class ExcerptProof {
     };
   }
 
+  static Map<String, dynamic> generateProofFromTree(
+    List<Uint8List> leafHashes,
+    List<List<Uint8List>> layers,
+    Uint8List root,
+    int blockIndex,
+  ) {
+    if (blockIndex < 0 || blockIndex >= leafHashes.length) {
+      throw RangeError(
+        'Block index $blockIndex out of range [0, ${leafHashes.length})',
+      );
+    }
+
+    final List<Uint8List> proof = <Uint8List>[];
+    int currentIndex = blockIndex;
+
+    for (int i = 0; i < layers.length - 1; i++) {
+      List<Uint8List> layer = layers[i];
+      bool isRightNode = currentIndex % 2 == 1;
+      int siblingIndex = isRightNode ? currentIndex - 1 : currentIndex + 1;
+
+      if (siblingIndex < layer.length) {
+        proof.add(layer[siblingIndex]);
+      }
+
+      currentIndex ~/= 2;
+    }
+
+    return {
+      'block_index': blockIndex,
+      'block_hash': _bytesToHex(leafHashes[blockIndex]),
+      'merkle_root': _bytesToHex(root),
+      'proof': proof.map(_bytesToHex).toList(),
+      'total_leaves': leafHashes.length,
+    };
+  }
+
   /// Verifies an excerpt proof.
   ///
   /// [proofData] is the map returned by [generateProof].
