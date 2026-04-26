@@ -1,193 +1,195 @@
-# Recommendations
+# Recommendations and Improvements
 
-## 100 Improvements for Zegel Software
+## 100 Items to Improve Our Software
 
-### UI / UX Improvements
-1. Customizable user dashboard layout with drag-and-drop widgets.
-2. Theming engine allowing custom color palettes for brand consistency.
-3. Contextual onboarding tooltips for new users navigating the interface.
-4. Skeleton loading screens instead of generic spinners for smoother perceived performance.
-5. Sticky table headers for long lists (e.g., audit logs, file directories).
-6. Inline renaming of files directly from the list view.
-7. Breadcrumbs navigation in the Flutter app for deeper nested screens.
-8. Toast notifications with action buttons (e.g., 'Undo', 'View File').
-9. Advanced table filtering with combinable rules (AND/OR).
-10. Option to view files in a grid (thumbnail) view or list view.
-11. Dark mode auto-sync based on local sunset/sunrise times.
-12. Floating action button (FAB) in Flutter app for quick file sealing.
-13. Swipe gestures on list items for quick actions (delete, share).
-14. Customizable typography settings (font size, font family) for accessibility.
-15. Minimap navigation for extremely large documents/certificates.
-16. Multi-window support on desktop platforms for the Flutter app.
+### Better Looking / UI Improvements
+1. Implement a unified Design System documentation site (e.g., Storybook) for consistent frontend components.
+2. Add a global command palette (Ctrl+K/Cmd+K) to quickly search and jump to any section or setting.
+3. Provide a high-contrast theme specifically optimized for visually impaired users.
+4. Introduce user-customizable color tags for files to allow quick visual grouping in the dashboard.
+5. Standardize breadcrumb navigation components across all nested pages for better spatial context.
+6. Display a dynamic "strength meter" visualization for split-key configurations, suggesting optimal M-of-N ratios.
+7. Use standard animated transition effects between screens in the Flutter app to make navigation feel smoother.
+8. Add skeleton loading screens instead of generic circular spinners for data-heavy dashboard views.
+9. Implement a visual progress indicator for multi-file operations showing estimated time remaining.
+10. Add a dynamic visual indicator showing the calculated entropy of generated cryptographic keys.
+11. Implement sticky table headers for long pagination lists (e.g., audit logs, file directories).
+12. Provide empty state illustrations with clear call-to-actions for screens with no data (e.g., no files yet).
+13. Add contextual tooltips explaining complex cryptographic terms (e.g., Merkle Root, Isolate Pool).
+14. Implement an adjustable font-size setting within the app for improved readability.
+15. Add native-like swipe-to-dismiss behavior in the Flutter app lists for deleting or archiving items.
 
-### Ease of Use
-17. Integration with native OS share menus (share to Zegel app).
-18. Browser extension for quick sealing of downloaded files.
-19. Context menu integration (right-click) in Windows/macOS/Linux for sealing files directly from the file explorer.
-20. Support for signing files via QR code scanning.
-21. Bulk metadata editing for multiple selected files.
-22. Hotkeys/keyboard shortcuts for power users (e.g., Ctrl+S to seal).
-23. Global search accessible via keyboard shortcut (Cmd/Ctrl + K).
-24. File preview capability without extracting (for supported text/image formats).
+### Easier to Use
+16. Auto-save form drafts locally in the browser/app to prevent data loss on accidental navigation or crash.
+17. Support bulk downloading of selected files as a single comprehensive ZIP archive.
+18. Add a "duplicate file" button, allowing users to quickly seal a copy with modified metadata.
+19. Create a "Recently Viewed" section in the sidebar for rapid access to frequently needed files.
+20. Add a "quick seal" feature on the homepage that bypasses advanced configuration steps for basic use cases.
+21. Provide an option to export the current view of any data table (e.g., audits) directly to a printable format.
+22. Allow drag-and-drop reordering of items within lists and configuration tables.
+23. Add a dedicated "Getting Started" interactive checklist for new users to guide them through their first operations.
+24. Support custom sorting criteria in file lists, such as sorting by classification level or expiration date.
+25. Allow users to add personal, local-only notes to files that are not embedded in the globally sealed payload.
+26. Enable double-clicking on a file row to instantly open its primary action or viewer.
+27. Add contextual keyboard shortcuts for primary actions (e.g., 'S' for Seal, 'V' for Verify).
 
-### Automation
-25. Scheduled automated sealing of specific folders on the local machine.
-26. Watch folder feature: automatically seal any file dropped into a specific directory.
-27. Expiration alerts: automatically send email/push notifications when a file is about to expire.
-28. Automated webhook triggers upon specific file classifications.
-29. Rule-based auto-tagging of files based on content type or filename.
-30. Auto-archiving of files older than a specified duration.
-31. Automated reporting via email (e.g., weekly summary of verified files).
+### Additional Automation
+28. Add a background service to regularly clean up orphaned or expired session tokens in the database.
+29. Implement automated directory watching for a "Hot Folder" that automatically seals any dropped files.
+30. Add scheduled reminder emails alerting users 7 days before important documents are set to expire.
+31. Automatically tag files upon upload based on their MIME type and content analysis.
+32. Introduce scheduled recurring automated backups of the platform's core database.
+33. Create an auto-retry queue mechanism for failed webhook delivery attempts with exponential backoff.
+34. Automatically archive files that haven't been accessed or verified in over a year.
+35. Generate and email a weekly summary report of all sealing and verification activities.
+36. Add an automatic "sweep" tool to move deleted items from the trash bin permanently after 30 days.
+37. Trigger predefined webhooks automatically whenever a file is classified above a certain sensitivity tier.
 
-### Security
-32. Biometric lock (FaceID/TouchID) for launching the Flutter app.
-33. FIDO2 / WebAuthn support for hardware security keys (YubiKey).
-34. IP address whitelisting/blacklisting for API access.
-35. Geo-fencing: restrict file access based on the user's geographic location.
-36. Device fingerprinting to detect and block suspicious login attempts.
-37. Anti-debugging and anti-tampering protection in the Flutter mobile apps.
-38. Automated dependency vulnerability scanning in CI/CD pipeline.
-39. Local rate limiting / lockout for PIN/password attempts in the Flutter app to prevent brute-forcing.
-40. Strict Content Security Policy (CSP) headers with reporting endpoints.
-41. Certificate pinning in the mobile app for API requests.
-42. End-to-end encrypted chat/comments feature attached to shared files.
-43. Hardware-backed keystore/Secure Enclave utilization for master key storage.
-44. Option to require multiple physical security keys to reconstruct the master key.
-45. Implement a 'Panic Button' to instantly wipe all local keys and files.
+### Free Ways of Gathering More Useful and Relevant Data
+38. Implement an opt-in "Rate this Feature" micro-survey after users complete complex tasks like split-key generation.
+39. Analyze the most frequently searched terms in the global search bar to identify missing features or documentation.
+40. Track the average time it takes users to successfully complete the "Seal File" flow.
+41. Collect statistics on which file extensions are most commonly uploaded to guide future integration priorities.
+42. Monitor the frequency of abandoned multi-step forms to identify UX friction points.
+43. Track the adoption rate of new features (e.g., Canary Tokens) to measure release success.
+44. Analyze geographic distribution of file verification requests to understand global reach.
+45. Count the number of times users use the "Copy to Clipboard" button for specific data points.
 
-### Performance
-46. WebAssembly (Wasm) implementation of core crypto routines for the web frontend.
-47. Local caching of file verification results using IndexedDB/SQLite.
-48. Background sync for offline actions in the mobile app.
-49. Delta-updates for large files (only upload/download changed blocks).
-50. Implement gRPC for faster internal microservice communication.
-51. CDN integration for serving static assets and public files.
-52. Lazy loading of heavy UI components and non-critical images.
-53. Connection pooling for database queries to handle high concurrency.
-54. HTTP/3 (QUIC) support for faster and more reliable connections.
-55. Native isolates in Flutter for concurrent batch processing.
+### Better User Experience
+46. Introduce an onboarding walkthrough tour overlay for newly registered users.
+47. Implement a toast notification system with an "Undo" action for destructive operations like deletions.
+48. Provide a split-pane view option for tablets and large screens to show lists and details side-by-side.
+49. Save the user's preferred view settings (grid vs list, columns shown) across sessions.
+50. Add a 'Panic Button' feature to instantly log out and wipe cached sensitive data from the local device.
+51. Enable continuous background syncing for offline actions performed in the mobile app.
+52. Support minimizing active tasks (like a large extraction) into a bottom pill while navigating the app.
+53. Introduce a robust undo/redo history stack for the metadata editing interface.
+54. Add haptic feedback to the mobile app for important successes or warnings.
 
-### PII and Data Leakage
-56. Automatic detection and warning if PII (SSN, credit cards) is detected in unencrypted metadata.
-57. Data anonymization tool for exporting logs and analytics.
-58. Ephemeral 'burn after reading' sharing links.
-59. Watermarking (visual and invisible) for exported/extracted documents.
-60. Option to blur sensitive fields on screen to protect against shoulder surfing.
-61. Strict memory wiping of passwords and keys immediately after use in Flutter.
-62. Disable screenshot capabilities on sensitive screens in Android/iOS apps.
-63. Secure clipboard clearing after copying master keys or secrets.
+### Improved Security
+55. Implement strict Content Security Policy (CSP) headers across the web application.
+56. Enforce Subresource Integrity (SRI) hashes for all CDN-delivered external assets.
+57. Implement HTTP Strict Transport Security (HSTS) with the preload directive.
+58. Automatically expire and invalidate active sessions upon any password reset or privilege escalation.
+59. Add an "Unrecognized Login Detected" email alert for access from new IP addresses or devices.
+60. Implement an IP safelist/whitelist capability exclusively for admin panel access.
+61. Prevent concurrent active logins from different geographic locations simultaneously.
+62. Add native Two-Factor Authentication (2FA) support via TOTP or WebAuthn hardware keys.
+63. Implement application-level rate limiting and brute-force protection specific to sensitive API endpoints.
+64. Bind active web sessions to User-Agent hashes to mitigate the risk of session cookie hijacking.
+65. Introduce a detailed Role-Based Access Control (RBAC) matrix for granular permission management.
 
-### Telemetry and Data
-64. Error tracking integration (e.g., Sentry) with user consent.
-65. Performance metrics collection (e.g., time to verify, app startup time).
-66. Anonymous usage statistics (most used features) to guide development.
-67. User feedback collection widget within the app ('Rate this feature').
-68. Crash dump analysis tools built into the admin dashboard.
+### Improved Performance
+66. Configure Redis-based caching for high-read, low-write API endpoints to reduce database load.
+67. Optimize database queries by enabling Eloquent strict mode to aggressively prevent N+1 query problems.
+68. Implement an automated image optimization pipeline to compress and convert user avatars to WebP.
+69. Enable lazy loading for off-screen images and heavy components in both the web and mobile apps.
+70. Improve asset minification and bundling using advanced Vite plugins for smaller initial payloads.
+71. Add support for configuring database read-replicas to distribute heavy query loads.
+72. Implement ETag headers for conditional GET requests to leverage browser caching effectively.
+73. Replace synchronous, heavy background jobs with chunked asynchronous queue processing.
+74. Implement cursor-based pagination instead of offset pagination for extremely high-volume tables like audit logs.
+75. Enable HTTP/3 (QUIC) support on the server for faster and more reliable client connections.
 
-### Statistics
-69. Visual graph of verification success vs. failure rates over time.
-70. Leaderboard of most active users/signers within an organization.
-71. Storage usage breakdown by file type and classification level.
-72. World map visualization of where files are being downloaded from.
-73. Historical trend line of average file sizes being sealed.
+### Improved PII and Other Data Leakage Prevention or Handling
+76. Build an automated detection scanner that warns users if common PII (like SSNs or credit cards) is found in unencrypted metadata.
+77. Create a dedicated data anonymization tool for safely exporting logs and analytics for third-party review.
+78. Introduce ephemeral "burn-after-reading" sharing links for sensitive files.
+79. Allow administrators to enforce a policy that blurs sensitive on-screen fields to protect against shoulder surfing.
+80. Implement strict native memory wiping (clearing variables) immediately after cryptographic keys are used in memory.
+81. Automatically disable OS-level screenshot capabilities when viewing the most sensitive classified screens on mobile.
+82. Ensure the system clipboard is automatically cleared 60 seconds after a user copies a master key or secret.
 
-### CRUD Enhancements
-74. Advanced CRUD grid for user management with inline permission toggling and role assignment.
-75. Version history for file metadata (track who changed tags and when).
-76. Bulk import of user accounts via CSV for admin provisioning.
-77. Export complete account data as a portable archive (ZIP).
-78. Nested folders/directories support for organizing files.
-79. Custom fields functionality for files (user-defined key-value pairs).
+### Display of Interesting or Useful Statistics
+83. Provide a real-time active user and active session counter on the admin dashboard.
+84. Display peak usage time heatmaps to help administrators schedule maintenance windows.
+85. Visualize storage usage forecasting based on historical upload growth trends.
+86. Show a chronological visual graph of verification success versus failure rates over time.
+87. Create a leaderboard displaying the most active users or signers within a given organization.
+88. Present a breakdown pie chart of storage usage segmented by file type and classification level.
 
-### Standardized Components
-80. Implement a unified Design System documentation site (e.g., Storybook).
-81. Standardized error handling and generic error screens across the app.
-82. Reusable empty state components with illustrations and call-to-actions.
-83. Consistent skeleton loading widgets for all asynchronous operations.
-84. Centralized validation logic shared between frontend and backend.
+### (Better) CRUD Where Possible
+89. Implement an advanced CRUD grid for user management allowing inline permission toggling without opening new pages.
+90. Add full version history tracking for file metadata, showing who changed tags and exactly when.
+91. Support bulk importing of user accounts via CSV mapping for rapid organization provisioning.
+92. Allow users to export their complete account profile and history data as a portable, standardized archive.
+93. Support nested hierarchical folders/directories for organizing files rather than just flat tags.
+94. Enable custom metadata fields allowing organizations to define their own key-value schemas for files.
 
-### User Interaction
-85. Collaborative workspaces where multiple users can view and manage shared files.
-86. Comments and annotation system directly on files.
-87. Mention system (@user) to notify colleagues about specific files.
-88. Activity feed showing actions taken by team members.
-89. User profiles with avatars and bio information.
-90. In-app messaging or notification center for peer-to-peer sharing.
-91. Public upvote/downvote system for community-shared public files.
-92. Badges and gamification for completing security checklists.
-93. Shareable folders (groups of files) via a single link.
-94. Request a signature feature (send a file to someone asking them to seal/sign it).
-95. Audit event subscriptions (users can subscribe to be notified when a specific file is verified).
+### Standardized Components (SOLID/DRY)
+95. Extract core file processing logic into a dedicated set of reusable, single-responsibility Action classes.
+96. Implement the Repository pattern to abstract complex Eloquent database queries away from Controllers.
+97. Standardize API response formatting using a dedicated, unified middleware or API Resource layer.
+98. Centralize all Flutter app string resources into a single localization file to prepare for future internationalization.
+99. Extract third-party API integrations (e.g., storage, email) into interchangeable service provider contracts.
 
-### Other Discoveries
-96. Integration with Zapier or Make.com for no-code workflow automation.
-97. Native integration with cloud storage providers (Google Drive, Dropbox, OneDrive).
-98. Plugin architecture allowing third-party developers to extend functionality.
-99. CLI auto-completion scripts for Bash/Zsh.
-100. Support for decentralized storage backends (IPFS, Arweave).
+### Anything Else (Websearch/Industry Standards)
+100. Provide native integration options with enterprise cloud storage providers (Google Drive, OneDrive, Dropbox).
 
+---
 
-## 15 Items for Easier Installation/Hosting
-1. Docker Compose setup for instant local hosting.
-2. Helm charts for Kubernetes deployment.
-3. Ansible playbooks for automated server provisioning.
-4. One-click deploy button for DigitalOcean App Platform.
-5. Heroku button (app.json) for easy PaaS deployment.
-6. Terraform scripts for AWS infrastructure (EC2 + RDS).
-7. Pre-configured Vagrantfile for local VM development.
-8. Nix flake for deterministic environment setup.
-9. Auto-generating SSL certificates with Certbot/Let's Encrypt in setup script.
-10. Automated database seeding tool with realistic dummy data for staging.
-11. Pre-built Docker images hosted on GitHub Container Registry (GHCR).
-12. Script to automatically configure Cloudflare Turnstile/reCAPTCHA.
-13. Healthcheck endpoints standardized for load balancers.
-14. Systemd service files provided for manual Linux installations.
-15. Environment variable validation script during startup.
+## 15 Items to Make It Easier to Install/Host
 
+1. Provide an official, ready-to-run Docker Compose stack encompassing the app, database, and Redis cache.
+2. Publish an official Helm Chart for streamlined deployments to Kubernetes clusters.
+3. Provide a "One-Click Deploy" button configured for the DigitalOcean App Platform.
+4. Create an `app.json` configuration to enable a "Deploy to Heroku" button.
+5. Create a pre-configured AWS CloudFormation template for enterprise AWS deployments.
+6. Provide a comprehensive Ansible playbook for automated provisioning of bare-metal Ubuntu servers.
+7. Develop an interactive setup wizard in the CLI (`php artisan app:install`) that prompts for credentials and tests connections.
+8. Ship a pre-built, optimized SQLite configuration to allow zero-setup local evaluation of the software.
+9. Publish a NixOS configuration flake to guarantee deterministic and reproducible environment builds.
+10. Integrate automated SSL certificate provisioning via Certbot/Let's Encrypt directly into the primary installation script.
+11. Supply a Terraform module for declarative provisioning of the required cloud infrastructure.
+12. Create a generic, signed `.deb` package to simplify installation on Debian/Ubuntu-based operating systems.
+13. Publish a verified community application template for easy installation on unRAID home servers.
+14. Supply an auto-updating cron script that safely pulls and applies the latest stable release.
+15. Provide pre-built, hardened Docker images published directly to the GitHub Container Registry (GHCR).
 
-## 20 Pages of Laravel Website to Redesign
+---
 
-1. `welcome.blade.php`: Needs a modern hero section with animated product mockups to improve conversion.
-2. `home.blade.php`: Dashboard needs widget-based layout for user stats (e.g., active files, total views) for better clarity.
-3. `auth/login.blade.php`: Move to a split-screen design with a feature highlight on the right to engage users during login.
-4. `auth/register.blade.php`: Implement a multi-step wizard for registration to reduce cognitive load.
-5. `auth/forgot-password.blade.php`: Simplify UI to just email input with a prominent back-to-login link.
-6. `admin/dashboard.blade.php`: Add interactive charts (e.g., Chart.js) for download events instead of static heatmaps.
-7. `admin/files/index.blade.php`: Implement a data table with inline editing and advanced filtering sidebars.
-8. `admin/audit.blade.php`: Use a chronological timeline UI with color-coded event types for easier scanning.
-9. `admin/consent.blade.php`: Add visual pie charts summarizing consent acceptance vs rejection rates.
-10. `user/profile.blade.php`: Organize settings into vertical tabs (General, Security, Preferences) to reduce scrolling.
-11. `user/sessions.blade.php`: Display map snippets showing the geographic location of active sessions.
-12. `files/show.blade.php`: Redesign certificate presentation to look like a physical document with a modern shadow effect.
-13. `files/create.blade.php`: Full-page drag-and-drop dropzone with animated file parsing states.
-14. `downloads/index.blade.php`: Grid layout of downloadable assets with large thumbnail previews.
-15. `search/index.blade.php`: Add "as-you-type" instant search results with highlighted matching keywords.
-16. `legal/retention.blade.php`: Convert dense legal text into an accordion format for better readability.
-17. `verify/index.blade.php`: Add a step-by-step progress tracker for the verification process.
-18. `installer/index.blade.php`: Make the installation steps a horizontal progress bar with clear success/error icons.
-19. `partials/navbar.blade.php`: Change to a mega-menu for better navigation of complex features.
-20. `layouts/app.blade.php`: Add a persistent sidebar for quick access to core tools instead of relying solely on the top navbar.
+## 40 Redesign Recommendations (20 Flutter, 20 Laravel)
 
+### Flutter App Screens (20)
+1. **`home_screen.dart`**: Redesign into a comprehensive dashboard layout showing recent activity, statistics, and quick actions, rather than just a simple list of buttons.
+2. **`seal_screen.dart`**: Implement a visual multi-step progress indicator wizard (Select Files -> Metadata -> Cryptography -> Apply) to reduce cognitive overload.
+3. **`verify_screen.dart`**: Shift focus to a highly visual, immediate representation of verification status (e.g., a massive green shield or red warning) instead of dense technical text blocks.
+4. **`settings_screen.dart`**: Group the lengthy list of settings into logical, expandable categories (Security, Appearance, Network, Advanced) with clear iconography.
+5. **`audit_screen.dart`**: Redesign the basic list view into an interactive data table format with sortable columns and a floating action button for advanced filtering.
+6. **`keygen_screen.dart`**: Add engaging visual flair to the key generation process, such as an animated lock mechanism or a particle system that reacts during entropy collection.
+7. **`extract_screen.dart`**: Implement a responsive split-pane view for tablets, showing the list of extracted files on the left and a preview of the selected file on the right.
+8. **`inspect_screen.dart`**: Transition to a card-based layout to strictly demarcate sections for general metadata, cryptographic details, and signature validation.
+9. **`redact_screen.dart`**: Implement a WYSIWYG interactive preview pane allowing users to visually select and black out text/images before confirming the redaction.
+10. **`split_key_screen.dart`**: Display the generated key shares in a visual grid layout with distinct "Copy" and "Share" buttons for each individual block.
+11. **`timestamp_screen.dart`**: Redesign to display the temporal proof chronologically on a visual vertical timeline to emphasize the sequence of events.
+12. **`media_metadata_screen.dart`**: Feature a large, central preview of the media asset, with floating, semi-transparent overlay panels displaying the extracted EXIF data.
+13. **`manifest_screen.dart`**: Present complex manifest files in an interactive, collapsible tree view instead of a flat, JSON-like text structure.
+14. **`canary_screen.dart`**: Utilize high-contrast warning colors (yellow/black diagonal stripes) to immediately emphasize the security-critical nature of the canary status.
+15. **`contract_screen.dart`**: Implement a dual-pane document-viewer layout with the contract text on one side and the real-time signature validation status anchored alongside it.
+16. **`credential_screen.dart`**: Redesign the UI to resemble physical ID cards or badges to intuitively communicate the concept of verifiable credentials to the user.
+17. **`disclose_screen.dart`**: Add clear, descriptive toggle switches and a prominent summary panel detailing exactly which data points are about to be exposed.
+18. **`envelope_screen.dart`**: Use large envelope iconography and distinct visual states (e.g., an animated sealing animation) to reflect the locked/unlocked status of the data.
+19. **`wet_signature_screen.dart`**: Provide a dedicated, distraction-free canvas area that simulates pressure sensitivity and smooths strokes for drawing wet signatures.
+20. **`version_chain_screen.dart`**: Design a node-based vertical timeline or graph to clearly and visually demonstrate the lineage from version 1 to the current file.
 
-## 20 Screens of Flutter App to Redesign
-
-1. `attest_screen.dart`: Needs clearer visual distinction between different attestation roles (e.g., color coding) to prevent signing mistakes.
-2. `audit_screen.dart`: Timeline view should be used instead of a simple list for better temporal understanding of audit events.
-3. `batch_screen.dart`: Add visual drag-and-drop zones and a grid view for files instead of just a list.
-4. `canary_screen.dart`: Visual graph showing the spread of the canary tokens to quickly identify leak sources.
-5. `classification_screen.dart`: Color-coded severity banners (e.g., Red for Top Secret, Green for Public) for immediate visual context.
-6. `contract_screen.dart`: Implement a split-pane view showing the contract document on one side and signatures on the other.
-7. `credential_screen.dart`: Redesign as a digital wallet interface showing credentials like cards.
-8. `disclose_screen.dart`: Add a visual document preview where users can highlight/select blocks to disclose directly on the document.
-9. `envelope_screen.dart`: Animated locking/unlocking visuals to clarify the state of the secure envelope.
-10. `excerpt_screen.dart`: Visual representation of the Merkle tree to help users understand which part of the tree they are extracting.
-11. `extract_screen.dart`: Add a progress indicator for large file extractions and a success celebration animation.
-12. `home_screen.dart`: Add a dashboard with recent activity, pending signatures, and quick action buttons.
-13. `inspect_screen.dart`: Hex viewer style layout for technical users, alongside a human-readable parsed metadata view.
-14. `keygen_screen.dart`: Add visual entropy indicators (like a strength meter or random particle animation) during key generation.
-15. `manifest_screen.dart`: Tree view for nested directories/files within the manifest for better navigation.
-16. `media_metadata_screen.dart`: Image/video preview pane with EXIF/metadata overlaid as selectable tags.
-17. `provenance_screen.dart`: Node-based directed graph showing the chain of custody visually.
-18. `redact_screen.dart`: WYSIWYG editor style interface allowing users to black out text/images directly.
-19. `seal_screen.dart`: Add an interactive checklist of security options (compression, password, expiry) before sealing.
-20. `settings_screen.dart`: Categorized side-navigation layout instead of a long scrollable list for better organization.
+### Laravel Website Pages (20)
+21. **`welcome.blade.php`**: Transform the plain entry page into a modern, high-converting landing page featuring animated product mockups and clear, compelling Call-To-Actions (CTAs).
+22. **`home.blade.php`**: Change the default list presentation into a masonry grid of summary cards for better visual discovery and space utilization.
+23. **`user/dashboard.blade.php`**: Integrate interactive JavaScript charts summarizing recent activity, storage utilization, and overall verification success rates.
+24. **`user/files/index.blade.php`**: Upgrade to a high-density data table view featuring quick-action dropdown menus, replacing the bulky and inefficient card layout.
+25. **`user/files/create.blade.php`**: Implement a full-page, interactive drag-and-drop zone featuring animated progress bars for file parsing and uploading states.
+26. **`user/account/edit.blade.php`**: Reorganize the long scrolling form into a clean tabbed interface separating Profile Details, Security Settings, and User Preferences.
+27. **`admin/dashboard.blade.php`**: Redesign into a high-density metrics view utilizing sparkline charts and traffic light indicators for immediate server health assessment.
+28. **`admin/users/index.blade.php`**: Add robust inline filtering and batch action checkboxes to significantly streamline administrative management tasks.
+29. **`admin/audit/index.blade.php`**: Apply a monospaced, log-viewer style dark mode interface that aligns with developer and sysadmin expectations for reading system logs.
+30. **`admin/settings/edit.blade.php`**: Restructure the monolithic settings page into a categorized sidebar navigation form rather than a single, infinitely scrolling page.
+31. **`files/show.blade.php`**: Redesign the page to make the digital certificate the central focus, applying a formal, printable layout style with distinct borders and seals.
+32. **`files/raw.blade.php`**: Replace the basic text dump with an integrated, syntax-highlighted code editor view for better readability of raw data formats.
+33. **`verify/show.blade.php`**: Implement a split-screen design where the upload zone remains fixed on the left while live verification results populate on the right.
+34. **`search/index.blade.php`**: Replace the standalone search results page with a global "search as you type" overlay modal that highlights matching keyword snippets.
+35. **`downloads/index.blade.php`**: Transition to a timeline-based view to chronologically display when and what specific assets were downloaded recently.
+36. **`auth/login.blade.php`**: Adopt a modern split layout featuring brand messaging or customer testimonials on one half and the clean login form on the other.
+37. **`auth/register.blade.php`**: Break the overwhelming registration form into a quick, frictionless 2-step process (Step 1: Email, Step 2: Password & Details).
+38. **`installer/database.blade.php`**: Add inline, AJAX-powered connection testing buttons providing real-time success/failure feedback before the user proceeds.
+39. **`installer/requirements.blade.php`**: Upgrade the text list to a dynamic checklist UI featuring clear green/red status icons for immediate visual clarity on server compatibility.
+40. **`installer/welcome.blade.php`**: Introduce a modern, animated welcome graphic accompanied by a clear, step-by-step overview of the installation process ahead.
