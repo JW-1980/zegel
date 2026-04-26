@@ -166,14 +166,21 @@ class ManifestVerifyCommand extends Command<int> {
     // Check files
     final dir = Directory(dirPath);
     final actualRoots = <String, Uint8List>{};
-    for (final file in dir.listSync().whereType<File>().where(
-          (f) => f.path.endsWith('.zgl'),
-        )) {
-      final name = file.path.split(Platform.pathSeparator).last;
-      final bytes = Uint8List.fromList(file.readAsBytesSync());
-      final header = RawZegelHeader.parse(bytes);
-      actualRoots[name] = header.merkleRoot;
-    }
+
+    final files = dir
+        .listSync()
+        .whereType<File>()
+        .where((f) => f.path.endsWith('.zgl'))
+        .toList();
+
+    await Future.wait(
+      files.map((file) async {
+        final name = file.path.split(Platform.pathSeparator).last;
+        final bytes = await file.readAsBytes();
+        final header = RawZegelHeader.parse(bytes);
+        actualRoots[name] = header.merkleRoot;
+      }),
+    );
 
     final fileResults = ZegelManifest.checkFiles(manifest, actualRoots);
     int matched = 0;
