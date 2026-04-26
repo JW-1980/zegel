@@ -210,10 +210,20 @@ class SupplyChainVerifier {
   }
 
   static Uint8List _hexToBytes(String hex) {
+    if (hex.length.isOdd) {
+      throw FormatException('Hex string has odd length: ${hex.length}');
+    }
     final int length = hex.length ~/ 2;
     final Uint8List bytes = Uint8List(length);
     for (int i = 0; i < length; i++) {
-      bytes[i] = int.parse(hex.substring(i * 2, i * 2 + 2), radix: 16);
+      final int? parsed = int.tryParse(
+        hex.substring(i * 2, i * 2 + 2),
+        radix: 16,
+      );
+      if (parsed == null) {
+        throw const FormatException('Hex string contains non-hex characters');
+      }
+      bytes[i] = parsed;
     }
     return bytes;
   }

@@ -100,6 +100,8 @@ class TokenArchive {
 
     for (final entity in d.listSync()) {
       if (entity is! File || !entity.path.endsWith('.json')) continue;
+      // Skip symlinks to prevent directory traversal via symlink race.
+      if (FileSystemEntity.isLinkSync(entity.path)) continue;
       final expiry = _readExpiry(entity);
       if (expiry == null) continue;
       if (expiry.isBefore(cutoff)) {

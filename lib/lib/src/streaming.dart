@@ -273,9 +273,13 @@ class StreamingSealWriter {
       gcmTags.add(Uint8List.fromList(encrypted.sublist(ctLen)));
     }
 
-    // Compute key commitment (optional).
+    // Compute key commitment. Must match ZegelWriter: always enabled
+    // when password-derived keys are in use (SEC-11 partitioning oracle
+    // defence), and optionally when explicitly requested.
+    final bool requireKeyCommitment = options.enableKeyCommitment ||
+        (options.argon2TimeCost != null && options.argon2MemoryCost != null);
     Uint8List? keyCommitment;
-    if (options.enableKeyCommitment) {
+    if (requireKeyCommitment) {
       keyCommitment = KeyDerivation.computeKeyCommitment(blockKeys);
     }
 
@@ -286,7 +290,7 @@ class StreamingSealWriter {
     if (options.argon2TimeCost != null && options.argon2MemoryCost != null) {
       flags |= ZegelFormat.flagPasswordDerived;
     }
-    if (options.enableKeyCommitment) flags |= ZegelFormat.flagHasKeyCommitment;
+    if (requireKeyCommitment) flags |= ZegelFormat.flagHasKeyCommitment;
     if (options.expiration != null) flags |= ZegelFormat.flagHasExpiration;
     if (options.publicMetadata != null) {
       flags |= ZegelFormat.flagHasPublicMetadata;
