@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:test/test.dart';
 import 'package:zegel/zegel.dart';
 
@@ -14,14 +15,16 @@ void main() {
 
       test('passes /select,<path> as single argument', () {
         const path = r'C:\Users\alice\secret.zgl';
+        final absPath = File(path).absolute.path;
         final cmd = RevealInOs.commandFor(path, overrideOs: 'windows');
-        expect(cmd.arguments, ['/select,$path']);
+        expect(cmd.arguments, ['/select,"$absPath"']);
       });
 
       test('works for paths with spaces', () {
         const path = r'C:\My Documents\report.zgl';
+        final absPath = File(path).absolute.path;
         final cmd = RevealInOs.commandFor(path, overrideOs: 'windows');
-        expect(cmd.arguments.first, '/select,$path');
+        expect(cmd.arguments.first, '/select,"$absPath"');
       });
     });
 
@@ -36,13 +39,14 @@ void main() {
 
       test('passes -R flag followed by the path', () {
         const path = '/Users/alice/Documents/secret.zgl';
+        final absPath = File(path).absolute.path;
         final cmd = RevealInOs.commandFor(path, overrideOs: 'macos');
-        expect(cmd.arguments, ['-R', path]);
+        expect(cmd.arguments, ['-R', '--', absPath]);
       });
 
-      test('arguments list has exactly two elements', () {
+      test('arguments list has exactly three elements', () {
         final cmd = RevealInOs.commandFor('/tmp/foo.zgl', overrideOs: 'macos');
-        expect(cmd.arguments.length, 2);
+        expect(cmd.arguments.length, 3);
       });
     });
 
@@ -56,11 +60,15 @@ void main() {
       });
 
       test('passes the parent directory, not the file itself', () {
+        const path = '/home/alice/docs/secret.zgl';
+        final absPath = File(path).absolute.path;
+        final parent =
+            absPath.substring(0, absPath.lastIndexOf(Platform.pathSeparator));
         final cmd = RevealInOs.commandFor(
-          '/home/alice/docs/secret.zgl',
+          path,
           overrideOs: 'linux',
         );
-        expect(cmd.arguments, ['/home/alice/docs']);
+        expect(cmd.arguments, [parent]);
       });
 
       test('handles file in root directory gracefully', () {
@@ -68,7 +76,7 @@ void main() {
         // The file is at the root; the parent resolution falls back to
         // the path itself when idx <= 0.
         expect(cmd.arguments.length, 1);
-        expect(cmd.arguments.first, isNotEmpty);
+        expect(cmd.arguments[0], isNotEmpty);
       });
 
       test('arguments list has exactly one element', () {

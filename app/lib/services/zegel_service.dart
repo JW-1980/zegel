@@ -885,6 +885,7 @@ class ZegelService {
     final masterKey = HexUtils.hexToBytes(hexKey);
     const reader = zgl.ZegelReader();
     final result = reader.verify(fileBytes, masterKey);
+    zgl.SecureMemory.wipe(masterKey);
     if (!result.valid) {
       throw const zgl.ZegelTamperedException(
         'Cannot generate excerpt proof for a tampered file',
@@ -892,8 +893,11 @@ class ZegelService {
     }
     final leafHashes = _readLeafHashes(fileBytes);
     final proofs = <Map<String, dynamic>>[];
+    final layers = zgl.MerkleTree.buildTree(leafHashes);
+    final root = zgl.MerkleTree.buildRoot(leafHashes);
     for (final idx in blockIndices) {
-      proofs.add(zgl.ExcerptProof.generateProof(leafHashes, idx));
+      proofs.add(zgl.ExcerptProof.generateProofFromTree(
+          leafHashes, layers, root, idx));
     }
     return Uint8List.fromList(
       utf8.encode(
@@ -924,13 +928,16 @@ class ZegelService {
         jsonDecode(await proofFile.readAsString()) as Map<String, dynamic>;
     final proofs = (decoded['proofs'] as List<dynamic>?) ?? const <dynamic>[];
     if (proofs.isEmpty) return false;
-    for (final p in proofs) {
-      final proofMap = p as Map<String, dynamic>;
-      if (!zgl.ExcerptProof.verifyProof(proofMap, expectedRoot)) {
-        return false;
+    final isValid = await Isolate.run(() {
+      for (final p in proofs) {
+        final proofMap = p as Map<String, dynamic>;
+        if (!zgl.ExcerptProof.verifyProof(proofMap, expectedRoot)) {
+          return false;
+        }
       }
-    }
-    return true;
+      return true;
+    });
+    return isValid;
   }
 
   // ======================================================================
@@ -1005,7 +1012,8 @@ class ZegelService {
       }
       fileBytesList.add(await file.readAsBytes());
     }
-    return ContentVersioning.verifyVersionChain(fileBytesList);
+    return await Isolate.run(
+        () => ContentVersioning.verifyVersionChain(fileBytesList));
   }
 
   // ======================================================================
