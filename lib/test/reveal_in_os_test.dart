@@ -7,21 +7,21 @@ void main() {
     group('commandFor – windows', () {
       test('uses explorer executable', () {
         final cmd = RevealInOs.commandFor(
-          r'C:\Users\alice\secret.zgl',
+          File('secret.zgl').absolute.path,
           overrideOs: 'windows',
         );
         expect(cmd.executable, 'explorer');
       });
 
       test('passes /select,<path> as single argument', () {
-        const path = r'C:\Users\alice\secret.zgl';
+        final path = File('secret.zgl').absolute.path;
         final absPath = File(path).absolute.path;
         final cmd = RevealInOs.commandFor(path, overrideOs: 'windows');
         expect(cmd.arguments, ['/select,"$absPath"']);
       });
 
       test('works for paths with spaces', () {
-        const path = r'C:\My Documents\report.zgl';
+        final path = File('report.zgl').absolute.path;
         final absPath = File(path).absolute.path;
         final cmd = RevealInOs.commandFor(path, overrideOs: 'windows');
         expect(cmd.arguments.first, '/select,"$absPath"');
@@ -31,21 +31,22 @@ void main() {
     group('commandFor – macos', () {
       test('uses open executable', () {
         final cmd = RevealInOs.commandFor(
-          '/Users/alice/Documents/secret.zgl',
+          File('secret.zgl').absolute.path,
           overrideOs: 'macos',
         );
         expect(cmd.executable, 'open');
       });
 
       test('passes -R flag followed by the path', () {
-        const path = '/Users/alice/Documents/secret.zgl';
+        final path = File('secret.zgl').absolute.path;
         final absPath = File(path).absolute.path;
         final cmd = RevealInOs.commandFor(path, overrideOs: 'macos');
         expect(cmd.arguments, ['-R', '--', absPath]);
       });
 
       test('arguments list has exactly three elements', () {
-        final cmd = RevealInOs.commandFor('/tmp/foo.zgl', overrideOs: 'macos');
+        final cmd = RevealInOs.commandFor(File('foo.zgl').absolute.path,
+            overrideOs: 'macos');
         expect(cmd.arguments.length, 3);
       });
     });
@@ -53,14 +54,14 @@ void main() {
     group('commandFor – linux', () {
       test('uses xdg-open executable', () {
         final cmd = RevealInOs.commandFor(
-          '/home/alice/docs/secret.zgl',
+          File('secret.zgl').absolute.path,
           overrideOs: 'linux',
         );
         expect(cmd.executable, 'xdg-open');
       });
 
       test('passes the parent directory, not the file itself', () {
-        const path = '/home/alice/docs/secret.zgl';
+        final path = File('secret.zgl').absolute.path;
         final absPath = File(path).absolute.path;
         final parent =
             absPath.substring(0, absPath.lastIndexOf(Platform.pathSeparator));
@@ -72,7 +73,8 @@ void main() {
       });
 
       test('handles file in root directory gracefully', () {
-        final cmd = RevealInOs.commandFor('/secret.zgl', overrideOs: 'linux');
+        final cmd = RevealInOs.commandFor(File('secret.zgl').absolute.path,
+            overrideOs: 'linux');
         // The file is at the root; the parent resolution falls back to
         // the path itself when idx <= 0.
         expect(cmd.arguments.length, 1);
@@ -81,7 +83,7 @@ void main() {
 
       test('arguments list has exactly one element', () {
         final cmd = RevealInOs.commandFor(
-          '/var/data/report.zgl',
+          File('report.zgl').absolute.path,
           overrideOs: 'linux',
         );
         expect(cmd.arguments.length, 1);
@@ -91,21 +93,24 @@ void main() {
     group('commandFor – unsupported OS', () {
       test('throws UnsupportedError for unknown platform', () {
         expect(
-          () => RevealInOs.commandFor('/tmp/file.zgl', overrideOs: 'fuchsia'),
+          () => RevealInOs.commandFor(File('file.zgl').absolute.path,
+              overrideOs: 'fuchsia'),
           throwsA(isA<UnsupportedError>()),
         );
       });
 
       test('throws UnsupportedError for empty string platform', () {
         expect(
-          () => RevealInOs.commandFor('/tmp/file.zgl', overrideOs: ''),
+          () => RevealInOs.commandFor(File('file.zgl').absolute.path,
+              overrideOs: ''),
           throwsA(isA<UnsupportedError>()),
         );
       });
 
       test('error message mentions the unsupported OS name', () {
         try {
-          RevealInOs.commandFor('/tmp/file.zgl', overrideOs: 'android');
+          RevealInOs.commandFor(File('file.zgl').absolute.path,
+              overrideOs: 'android');
           fail('expected UnsupportedError');
         } on UnsupportedError catch (e) {
           expect(e.message, contains('android'));
