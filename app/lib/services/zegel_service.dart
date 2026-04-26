@@ -699,14 +699,19 @@ class ZegelService {
     String signerId,
   ) async {
     final entries = <String, Uint8List>{};
-    for (final p in filePaths) {
-      final file = File(p);
-      if (!await file.exists()) {
-        throw FileSystemException('File does not exist', p);
-      }
-      final bytes = await file.readAsBytes();
-      entries[_basename(p)] = _readMerkleRootUnverified(bytes);
-    }
+
+    final results = await Future.wait(
+      filePaths.map((p) async {
+        final file = File(p);
+        if (!await file.exists()) {
+          throw FileSystemException('File does not exist', p);
+        }
+        final bytes = await file.readAsBytes();
+        return MapEntry(_basename(p), _readMerkleRootUnverified(bytes));
+      }),
+    );
+    entries.addEntries(results);
+
     final signerKey = HexUtils.hexToBytes(signerKeyHex);
     final manifest = zgl.ZegelManifest.create(entries, signerKey, signerId);
     return Uint8List.fromList(
