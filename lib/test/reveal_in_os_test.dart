@@ -73,8 +73,7 @@ void main() {
       });
 
       test('handles file in root directory gracefully', () {
-        final cmd = RevealInOs.commandFor(File('secret.zgl').absolute.path,
-            overrideOs: 'linux');
+        final cmd = RevealInOs.commandFor('/secret.zgl', overrideOs: 'linux');
         // The file is at the root; the parent resolution falls back to
         // the path itself when idx <= 0.
         expect(cmd.arguments.length, 1);
