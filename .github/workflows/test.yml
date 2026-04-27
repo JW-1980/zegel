@@ -19,8 +19,8 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
-      - uses: actions/checkout@v4.2.2
-      - uses: dart-lang/setup-dart@v1.6.5
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
         with:
           sdk: stable
       - name: Install dependencies
@@ -45,8 +45,8 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
-      - uses: actions/checkout@v4.2.2
-      - uses: dart-lang/setup-dart@v1.6.5
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
         with:
           sdk: stable
       - name: Install lib dependencies
@@ -74,7 +74,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
-      - uses: actions/checkout@v4.2.2
+      - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2.16.0
         with:
           channel: stable
@@ -99,8 +99,8 @@ jobs:
     name: Dependency Audit
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.2.2
-      - uses: dart-lang/setup-dart@v1.6.5
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
         with:
           sdk: stable
       - name: Audit lib
