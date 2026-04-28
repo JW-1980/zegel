@@ -5,6 +5,7 @@ import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
 import 'package:pinenacl/ed25519.dart' as pinenacl;
+import 'package:liboqs/liboqs.dart' as liboqs;
 
 import 'format.dart';
 import 'reader.dart';
@@ -462,6 +463,78 @@ class DeviceAttestation {
     }
     return bytes;
   }
+
+  /// Creates a signed attestation block from device information using Post-Quantum Cryptography.
+  ///
+  /// [deviceInfo] is the captured device information.
+  /// [keyPair] is a [ZegelPqcKeyPair].
+  ///
+  /// Returns a JSON-serialisable map suitable for inclusion as a
+  /// DEVICE_ATTESTATION block.
+  static Map<String, dynamic> createPqcAttestation(
+    DeviceInfo deviceInfo,
+    ZegelPqcKeyPair keyPair,
+  ) {
+    final Map<String, dynamic> infoMap = deviceInfo.toJson();
+    final String infoJson = jsonEncode(infoMap);
+    final Uint8List infoBytes = Uint8List.fromList(utf8.encode(infoJson));
+
+    // Sign the device info JSON with Post-Quantum algorithm (e.g. ML-DSA-65).
+    final Uint8List digest = Uint8List.fromList(
+      sha256.convert(infoBytes).bytes,
+    );
+
+    final liboqs.Signature signer = liboqs.Signature.create(keyPair.algorithm);
+    final Uint8List signature = signer.sign(digest, keyPair.privateKey);
+
+    return <String, dynamic>{
+      'device_info': infoMap,
+      'signature_hex': _bytesToHex(Uint8List.fromList(signature)),
+      'public_key_hex': _bytesToHex(Uint8List.fromList(keyPair.publicKey)),
+      'algorithm': keyPair.algorithm,
+    };
+  }
+
+  /// Verifies a device attestation signature using Post-Quantum Cryptography.
+  ///
+  /// [attestation] is the attestation map (as produced by [createPqcAttestation]).
+  /// [publicKey] is the Post-Quantum public key. If null, the public key
+  /// embedded in the attestation is used.
+  ///
+  /// Returns `true` if the signature is valid.
+  static bool verifyPqcAttestation(
+    Map<String, dynamic> attestation, {
+    Uint8List? publicKey,
+  }) {
+    final String algorithm = attestation['algorithm'] as String? ?? 'ML-DSA-65';
+    if (!algorithm.startsWith('ML-DSA') &&
+        !algorithm.startsWith('Dilithium') &&
+        !algorithm.startsWith('Falcon')) {
+      return false; // Not a supported PQC algorithm
+    }
+
+    final Uint8List pubKey =
+        publicKey ?? _hexToBytes(attestation['public_key_hex'] as String);
+
+    final Map<String, dynamic> infoMap =
+        attestation['device_info'] as Map<String, dynamic>;
+    final String infoJson = jsonEncode(infoMap);
+    final Uint8List infoBytes = Uint8List.fromList(utf8.encode(infoJson));
+    final Uint8List digest = Uint8List.fromList(
+      sha256.convert(infoBytes).bytes,
+    );
+
+    final Uint8List signatureBytes = _hexToBytes(
+      attestation['signature_hex'] as String,
+    );
+
+    try {
+      final liboqs.Signature verifier = liboqs.Signature.create(algorithm);
+      return verifier.verify(digest, signatureBytes, pubKey);
+    } on Exception {
+      return false;
+    }
+  }
 }
 
 /// Captured device and platform information.
@@ -549,4 +622,45 @@ class DeviceInfo {
     }
     return bytes;
   }
+}
+
+/// A Post-Quantum (ML-DSA / Dilithium) signing keypair for Zegel identity.
+class ZegelPqcKeyPair {
+  /// Creates a [ZegelPqcKeyPair].
+  const ZegelPqcKeyPair(
+      {required this.privateKey,
+      required this.publicKey,
+      this.algorithm = 'ML-DSA-65'});
+
+  /// The Post-Quantum private key.
+  final Uint8List privateKey;
+
+  /// The Post-Quantum public key.
+  final Uint8List publicKey;
+
+  /// The Post-Quantum algorithm used.
+  final String algorithm;
+}
+
+/// A Post-Quantum signature over a .zgl file's integrity markers.
+class ZegelPqcSignature {
+  /// Creates a [ZegelPqcSignature].
+  const ZegelPqcSignature({
+    required this.signature,
+    required this.timestamp,
+    required this.merkleRootHex,
+    this.algorithm = 'ML-DSA-65',
+  });
+
+  /// The Post-Quantum signature.
+  final Uint8List signature;
+
+  /// Unix epoch seconds when the signature was created.
+  final int timestamp;
+
+  /// Hex-encoded Merkle root that was signed.
+  final String merkleRootHex;
+
+  /// The Post-Quantum algorithm used.
+  final String algorithm;
 }
