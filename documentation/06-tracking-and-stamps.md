@@ -14,13 +14,23 @@ Zegel uses **Attestations**. Think of an attestation like a personal wax seal st
 
 Because the envelope is locked with fingerprints (the Merkle Tree we learned about in Part 4), if *anyone* tries to change the price of the house later, the fingerprints will break, and all three wax seals will instantly shatter. You can always prove exactly who agreed to exactly what file.
 
+## The Digital Notary (Trusted Timestamps)
+
+Sometimes, knowing *when* a file was created is just as important as knowing what is inside it.
+
+Imagine you write a hit song. Two years later, someone else claims they wrote it first. If you just check the creation date on a normal computer file, it doesn't prove anything, because a sneaky person can just change the clock on their computer to make it look like they wrote the song ten years ago!
+
+Zegel fixes this with **Trusted Timestamps**.
+
+When you lock your file, Zegel can briefly talk to a highly secure, official "Time Server" on the internet (like a digital notary public). Zegel gives the server the unique fingerprint of your file. The server stamps the fingerprint with the exact, unchangeable time, signs it with its own unbreakable math, and sends it back.
+
+Zegel attaches this official notary stamp to the outside of your envelope. Now you can prove to anyone in the world exactly when your file existed, and no one can fake it by changing their computer clock.
+
 ## The "Time Bomb" (Expiration)
 
 Sometimes files should only exist for a little while. For example, a company might give an employee a secret file that they are only allowed to read until Friday.
 
 Zegel has an **Expiration** feature. You can set a date on the envelope. Once that date passes, the lock permanently rusts shut. Even if the employee still has the correct Master Key, the file simply refuses to open.
-
-*Note: This relies on the computer telling the correct time. If a very clever bad guy tricks their computer into thinking it is always Thursday, they might be able to keep reading it. But for normal use, it is a great way to enforce rules.*
 
 ## Catching Spies (Canary Traps)
 
@@ -51,6 +61,6 @@ You now know how the magic envelope works!
 *   **Encryption** (the lock) keeps peeking eyes out.
 *   **Hashing and Merkle Trees** (the fingerprints) stop sneaky editors from changing the file.
 *   **Split Keys, Redaction, and Selective Disclosure** let you share exactly what you want, when you want.
-*   **Attestations, Expiration, and Canary Traps** let you sign contracts, set time limits, and catch spies.
+*   **Attestations, Trusted Timestamps, Expiration, and Canary Traps** let you sign contracts, prove timelines, set time limits, and catch spies.
 
 Zegel turns flimsy digital files into strong, reliable, physical-feeling objects. Your secrets are safe!

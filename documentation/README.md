@@ -17,7 +17,9 @@ This documentation is written for **absolutely everyone**. You do not need to be
 5. [Sharing Secrets (Advanced File Tricks)](05-sharing-and-hiding.md)
    * Splitting keys, hiding parts of a file, and magic reading windows.
 6. [Stamps and Traps (Catching Leaks & Adding Signatures)](06-tracking-and-stamps.md)
-   * How Zegel catches people who leak files, and how to digitally sign documents.
+   * How Zegel catches spies, digitally signs documents, and proves the exact time a file was created.
+7. [Real-World Superpowers (10 Ways to Use Zegel)](07-use-cases.md)
+   * Examples of how doctors, lawyers, and normal people use Zegel every day.
 
 ---
 
