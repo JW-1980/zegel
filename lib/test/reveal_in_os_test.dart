@@ -53,7 +53,8 @@ void main() {
 
       test('passes the parent directory, not the file itself', () {
         final path = File('secret.zgl').absolute.path;
-        final parent = path.substring(0, path.lastIndexOf(Platform.pathSeparator));
+        final parent =
+            path.substring(0, path.lastIndexOf(Platform.pathSeparator));
         final cmd = RevealInOs.commandFor(path, overrideOs: 'linux');
         expect(cmd.arguments, [parent]);
       });
