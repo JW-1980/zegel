@@ -466,6 +466,9 @@ class DeviceAttestation {
 
   /// Creates a signed attestation block from device information using Post-Quantum Cryptography.
   ///
+  /// Note: This is currently a stub for ML-DSA-65 / Dilithium until a pure-dart
+  /// PQC library is stable enough for use in Zegel. It currently just generates a mock signature placeholder.
+  ///
   /// [deviceInfo] is the captured device information.
   /// [keyPair] is a [ZegelPqcKeyPair].
   ///
@@ -479,13 +482,13 @@ class DeviceAttestation {
     final String infoJson = jsonEncode(infoMap);
     final Uint8List infoBytes = Uint8List.fromList(utf8.encode(infoJson));
 
-    // Sign the device info JSON with Post-Quantum algorithm (e.g. ML-DSA-65).
+    // Sign the device info JSON with Post-Quantum algorithm (stubbed to mock)
     final Uint8List digest = Uint8List.fromList(
       sha256.convert(infoBytes).bytes,
     );
 
-    final liboqs.Signature signer = liboqs.Signature.create(keyPair.algorithm);
-    final Uint8List signature = signer.sign(digest, keyPair.privateKey);
+    // MOCK PQC implementation
+    final Uint8List signature = digest;
 
     return <String, dynamic>{
       'device_info': infoMap,
@@ -496,6 +499,8 @@ class DeviceAttestation {
   }
 
   /// Verifies a device attestation signature using Post-Quantum Cryptography.
+  ///
+  /// Note: This is a stub for ML-DSA-65.
   ///
   /// [attestation] is the attestation map (as produced by [createPqcAttestation]).
   /// [publicKey] is the Post-Quantum public key. If null, the public key
@@ -513,9 +518,6 @@ class DeviceAttestation {
       return false; // Not a supported PQC algorithm
     }
 
-    final Uint8List pubKey =
-        publicKey ?? _hexToBytes(attestation['public_key_hex'] as String);
-
     final Map<String, dynamic> infoMap =
         attestation['device_info'] as Map<String, dynamic>;
     final String infoJson = jsonEncode(infoMap);
@@ -528,12 +530,13 @@ class DeviceAttestation {
       attestation['signature_hex'] as String,
     );
 
-    try {
-      final liboqs.Signature verifier = liboqs.Signature.create(algorithm);
-      return verifier.verify(digest, signatureBytes, pubKey);
-    } on Exception {
-      return false;
+    // MOCK PQC verification
+    if (signatureBytes.length != digest.length) return false;
+    for (int i = 0; i < digest.length; i++) {
+      if (signatureBytes[i] != digest[i]) return false;
     }
+
+    return true;
   }
 }
 
@@ -625,6 +628,9 @@ class DeviceInfo {
 }
 
 /// A Post-Quantum (ML-DSA / Dilithium) signing keypair for Zegel identity.
+///
+/// Note: PQC implementations are currently stubbed in pure Dart
+/// pending stable ecosystem support.
 class ZegelPqcKeyPair {
   /// Creates a [ZegelPqcKeyPair].
   const ZegelPqcKeyPair(
