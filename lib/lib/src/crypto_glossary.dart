@@ -114,6 +114,17 @@ class CryptoGlossary {
           'chain. Any modification to any entry breaks the chain.',
       seeAlso: <String>['chain-hash'],
     ),
+    'post-quantum-cryptography': const GlossaryTerm(
+      term: 'post-quantum-cryptography',
+      title: 'Post-Quantum Cryptography (PQC)',
+      tooltip: 'Cryptographic algorithms resistant to quantum computer attacks.',
+      description:
+          'PQC refers to new mathematical algorithms designed to be secure against '
+          'the massive computing power of future quantum computers. Zegel employs '
+          'PQC (like Kyber/ML-KEM and Dilithium/ML-DSA) alongside traditional cryptography '
+          'to ensure long-term data security against "store now, decrypt later" attacks.',
+      seeAlso: <String>['aes-256-gcm', 'ed25519', 'post-quantum-cryptography'],
+    ),
   };
 
   /// Returns the term for [key], or null if unknown.

@@ -15,6 +15,7 @@ void main() {
       'nonce',
       'attestation',
       'audit-trail',
+      'post-quantum-cryptography',
     ];
 
     group('lookup', () {
