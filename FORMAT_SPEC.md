@@ -973,3 +973,83 @@ A cross-platform implementation in Dart/Flutter is available in the `zegel` open
 - `lib/lib/src/` - Core library (format, reader, writer, Merkle tree, key derivation, Shamir SSS, canary traps, attestation, audit trail, selective disclosure, batch, manifest, classification, excerpt, timestamp, provenance verification, hierarchical split-key, media metadata)
 - `cli/bin/zegel.dart` - CLI application with 22 commands
 - `app/` - Flutter GUI for Windows, macOS, Linux, Android, iOS
+
+---
+
+## 17. Security Considerations & Known Limitations
+
+This section documents acknowledged limitations of the Zegel format that
+implementers and users should be aware of.
+
+### 17.1 Expiration Enforcement (SOFT vs HARD)
+
+The `FLAG_HAS_EXPIRATION` mechanism relies on comparing the expiration
+timestamp against the local system clock. An adversary with physical access
+to the device can set the OS clock backwards to bypass expiration. This is
+classified as **SOFT enforcement**.
+
+When a file also includes a trusted timestamp block (`FLAG_HAS_TIMESTAMP`)
+from an RFC 3161 or eIDAS Qualified Time Stamp Authority, the expiration
+becomes **HARD enforceable** because the creation time is independently
+verifiable. The `ZegelInspection.expirationEnforcement` property reports
+`SOFT` or `HARD` accordingly.
+
+**Recommendation:** For high-security scenarios (legal holds, regulatory
+compliance), require online verification against a trusted time source or
+use a Key Management Server (KMS) that releases the key share only after
+verifying time via the Roughtime protocol.
+
+### 17.2 Canary Trap Limitations
+
+Canary traps (SEC-4) embed invisible deterministic padding in each
+recipient's copy that survives within the `.zgl` container. However:
+
+- If a recipient extracts the plaintext and re-encrypts it into a new
+  container, the canary padding is destroyed.
+- If a recipient takes screenshots, runs OCR, or copies content via
+  clipboard, the canary is lost entirely.
+- Canary traps are a **ciphertext-layer** defence; they do not survive
+  decryption/re-encryption cycles.
+
+For stronger leak tracing, consider supplementing canary traps with
+**plaintext-layer steganography** (NLP synonym substitution or invisible
+visual watermarking) at the application layer, before sealing.
+
+### 17.3 Redaction vs Plaintext Integrity
+
+When blocks are redacted (SEC-5), the original plaintext hash is preserved
+in the Merkle tree for structural integrity, but the consumer cannot verify
+that the *remaining* (non-redacted) blocks' plaintext matches the original
+file's plaintext without additional data.
+
+**Mitigation (v1.5):** The `enablePlaintextManifest` option stores
+hex-encoded SHA-256 hashes of every plaintext block in the public metadata
+under `"plaintext_manifest"`. After redaction, a reader can compare each
+non-redacted block's decrypted hash against the manifest to independently
+verify content authenticity. This closes the gap between "file integrity"
+and "content integrity."
+
+### 17.4 Semantic Chunking & Selective Disclosure
+
+Fixed-size 64 KB blocks do not respect logical data boundaries. Disclosing
+block N via a selective disclosure token may cut a JSON object, legal
+paragraph, or medical record mid-value, rendering the disclosed data
+unparseable or semantically misleading.
+
+**Mitigation (v1.5):** The `boundaryHints` option on `ZegelOptions`
+allows the application layer to specify byte offsets where block splits
+should occur. This ensures blocks align with logical structures (JSON
+nodes, paragraphs, table rows) without requiring full Content-Defined
+Chunking (CDC), preserving cross-platform simplicity.
+
+### 17.5 Legal Compliance (eIDAS / Timestamps)
+
+An RFC 3161 timestamp provides cryptographic proof of creation time but may
+not carry legal weight in all jurisdictions. Under EU eIDAS regulations,
+only Qualified Time Stamps (QTST) issued by certified Qualified Trust
+Service Providers (QTSP) hold notary-level legal weight. Self-signed
+timestamps or Roughtime tokens may be challenged in court.
+
+Implementers targeting EU Real Estate, Financial Bookkeeping, or GDPR
+litigation hold use cases should ensure their TSA is an eIDAS-certified
+QTSP.

@@ -48,6 +48,8 @@ class ZegelOptions {
     this.tsaUrl,
     this.preserveMediaMetadata = false,
     this.timestampConfig,
+    this.enablePlaintextManifest = false,
+    this.boundaryHints,
   });
 
   /// MIME type of the original content (e.g. `"text/plain"`).
@@ -164,6 +166,29 @@ class ZegelOptions {
   /// forensics, and evidence preservation where the original capture
   /// context must be maintained.
   final bool preserveMediaMetadata;
+
+  /// Whether to include a plaintext block manifest in public metadata (v1.5).
+  ///
+  /// When `true`, the SHA-256 hash of each plaintext block (before
+  /// encryption) is stored in the public metadata under the key
+  /// `"plaintext_manifest"`. This allows readers to verify the integrity
+  /// of individual non-redacted blocks independently, without requiring
+  /// the master key. Addresses the "Redaction vs. Plaintext Integrity"
+  /// concern: after redaction, remaining blocks can be proven authentic.
+  final bool enablePlaintextManifest;
+
+  /// Byte offsets where block splits should occur (v1.5, optional).
+  ///
+  /// When non-null, the writer splits content at these exact byte
+  /// positions instead of at fixed [blockSize] intervals. Each offset
+  /// must be strictly increasing and less than the content length.
+  /// Remaining bytes after the last hint form the final block.
+  ///
+  /// This allows the application layer to ensure that logical data
+  /// boundaries (JSON objects, legal paragraphs, table rows) are never
+  /// split across blocks, solving the "Semantic Chunking" problem for
+  /// selective disclosure without requiring full Content-Defined Chunking.
+  final List<int>? boundaryHints;
 }
 
 // =============================================================================
@@ -269,7 +294,7 @@ class ZegelWriter {
     if (options.expiration != null) {
       flags |= ZegelFormat.flagHasExpiration;
     }
-    if (options.publicMetadata != null) {
+    if (options.publicMetadata != null || options.enablePlaintextManifest) {
       flags |= ZegelFormat.flagHasPublicMetadata;
     }
     if (options.recipientId != null) {
@@ -561,8 +586,24 @@ class ZegelWriter {
     }
 
     if (flags & ZegelFormat.flagHasPublicMetadata != 0) {
+      // Merge caller-supplied public metadata with the plaintext manifest
+      // (if enabled). The manifest stores hex-encoded SHA-256 hashes of
+      // every plaintext block so readers can verify non-redacted blocks
+      // independently without the master key.
+      final Map<String, dynamic> mergedPubMeta = <String, dynamic>{
+        if (options.publicMetadata != null) ...options.publicMetadata!,
+      };
+      if (options.enablePlaintextManifest) {
+        mergedPubMeta['plaintext_manifest'] = leafHashes
+            .map(
+              (h) => h
+                  .map((b) => b.toRadixString(16).padLeft(2, '0'))
+                  .join(),
+            )
+            .toList();
+      }
       final Uint8List pubMetaBytes = Uint8List.fromList(
-        utf8.encode(jsonEncode(options.publicMetadata!)),
+        utf8.encode(jsonEncode(mergedPubMeta)),
       );
       builder.add(_packUint32BE(pubMetaBytes.length));
       builder.add(pubMetaBytes);
@@ -721,6 +762,14 @@ class ZegelWriter {
     if (content.isEmpty) {
       return <Uint8List>[Uint8List(0)];
     }
+
+    // If boundary hints are provided, split at those offsets instead of
+    // at fixed blockSize intervals. This ensures logical data boundaries
+    // (JSON objects, paragraphs) are never sliced across blocks.
+    if (options.boundaryHints != null && options.boundaryHints!.isNotEmpty) {
+      return _splitAtBoundaries(content, options.boundaryHints!);
+    }
+
     final List<Uint8List> chunks = <Uint8List>[];
     int offset = 0;
     while (offset < content.length) {
@@ -731,6 +780,29 @@ class ZegelWriter {
       offset = end;
     }
     return chunks;
+  }
+
+  /// Splits [content] at the exact byte offsets in [hints].
+  ///
+  /// Each hint is a boundary where a new block starts. Hints must be
+  /// strictly increasing and in range `(0, content.length)`. Any bytes
+  /// after the last hint form the final block.
+  static List<Uint8List> _splitAtBoundaries(
+    Uint8List content,
+    List<int> hints,
+  ) {
+    final List<Uint8List> chunks = <Uint8List>[];
+    int offset = 0;
+    for (final int boundary in hints) {
+      if (boundary <= offset || boundary >= content.length) continue;
+      chunks.add(Uint8List.fromList(content.sublist(offset, boundary)));
+      offset = boundary;
+    }
+    // Remaining bytes after the last hint.
+    if (offset < content.length) {
+      chunks.add(Uint8List.fromList(content.sublist(offset)));
+    }
+    return chunks.isEmpty ? <Uint8List>[Uint8List(0)] : chunks;
   }
 
   /// Generates [length] cryptographically random bytes.

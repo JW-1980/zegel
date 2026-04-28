@@ -119,6 +119,36 @@ class ZegelInspection {
 
   /// The Merkle tree root for the file's blocks.
   final Uint8List? merkleRoot;
+
+  /// Whether the expiration enforcement is HARD or SOFT (v1.5).
+  ///
+  /// `HARD` means the file includes a trusted timestamp (RFC 3161 or
+  /// equivalent) that was verified by an external authority; the
+  /// expiration cannot be bypassed by altering the local system clock.
+  ///
+  /// `SOFT` means the file relies solely on the local OS clock for
+  /// expiration enforcement, which an adversary with physical access
+  /// can trivially bypass by changing the system time.
+  ///
+  /// `null` when the file has no expiration flag.
+  String? get expirationEnforcement {
+    if (expirationTimestamp == null) return null;
+    // If the file has FLAG_HAS_TIMESTAMP, a trusted timestamp block
+    // was embedded, making the expiration "hard" enforceable.
+    return (flags & ZegelFormat.flagHasTimestamp != 0) ? 'HARD' : 'SOFT';
+  }
+
+  /// The plaintext block manifest from public metadata, if present.
+  ///
+  /// Each entry is the hex-encoded SHA-256 hash of the corresponding
+  /// plaintext block (before encryption). Allows independent verification
+  /// of non-redacted blocks without the master key.
+  List<String>? get plaintextManifest {
+    if (publicMetadata == null) return null;
+    final dynamic raw = publicMetadata!['plaintext_manifest'];
+    if (raw is! List) return null;
+    return raw.map((e) => e.toString()).toList();
+  }
 }
 
 // =============================================================================
