@@ -23,3 +23,66 @@
     main { padding: 0 !important; max-width: none !important; }
     article, section { break-inside: avoid; }
 }
+
+
+@theme {
+    --color-on-primary-container: #fefcff;
+    --color-outline: #727785;
+    --color-on-primary: #ffffff;
+    --color-on-surface: #191c1e;
+    --color-error-container: #ffdad6;
+    --color-inverse-primary: #adc6ff;
+    --color-on-secondary-fixed-variant: #38485d;
+    --color-primary-fixed: #d8e2ff;
+    --color-error: #ba1a1a;
+    --color-surface-container-highest: #e0e3e5;
+    --color-on-tertiary-fixed: #311400;
+    --color-on-background: #191c1e;
+    --color-tertiary-fixed-dim: #ffb786;
+    --color-secondary-fixed: #d3e4fe;
+    --color-surface-variant: #e0e3e5;
+    --color-primary-container: #2170e4;
+    --color-background: #f7f9fb;
+    --color-tertiary-container: #b75b00;
+    --color-surface-container: #eceef0;
+    --color-secondary-fixed-dim: #b7c8e1;
+    --color-inverse-on-surface: #eff1f3;
+    --color-primary-fixed-dim: #adc6ff;
+    --color-on-tertiary-fixed-variant: #723600;
+    --color-tertiary-fixed: #ffdcc6;
+    --color-surface-tint: #005ac2;
+    --color-on-secondary: #ffffff;
+    --color-surface-container-lowest: #ffffff;
+    --color-on-error: #ffffff;
+    --color-surface-dim: #d8dadc;
+    --color-on-tertiary: #ffffff;
+    --color-primary: #0058be;
+    --color-outline-variant: #c2c6d6;
+    --color-on-surface-variant: #424754;
+    --color-surface-container-low: #f2f4f6;
+    --color-on-error-container: #93000a;
+    --color-on-secondary-container: #54647a;
+    --color-surface-container-high: #e6e8ea;
+    --color-surface: #f7f9fb;
+    --color-surface-bright: #f7f9fb;
+    --color-inverse-surface: #2d3133;
+    --color-on-primary-fixed: #001a42;
+    --color-on-secondary-fixed: #0b1c30;
+    --color-secondary-container: #d0e1fb;
+    --color-secondary: #505f76;
+    --color-tertiary: #924700;
+    --color-on-tertiary-container: #fffbff;
+    --color-on-primary-fixed-variant: #004395;
+}
+
+@theme {
+    --font-label-caps: 12px;
+    --font-body-lg: 18px;
+    --font-h1: 30px;
+    --font-display: 36px;
+    --font-helper: 12px;
+    --font-h2: 24px;
+    --font-body-md: 16px;
+    --font-body-sm: 14px;
+    --font-h3: 20px;
+}
