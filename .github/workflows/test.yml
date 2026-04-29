@@ -20,12 +20,12 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
       - uses: actions/checkout@v4
-      - uses: dart-lang/setup-dart@v1
+      - uses: subosito/flutter-action@v2.16.0
         with:
-          sdk: stable
+          channel: any
       - name: Install dependencies
         working-directory: lib
-        run: dart pub get
+        run: flutter pub get
       - name: Analyze
         working-directory: lib
         run: dart analyze --fatal-infos
@@ -46,15 +46,15 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
       - uses: actions/checkout@v4
-      - uses: dart-lang/setup-dart@v1
+      - uses: subosito/flutter-action@v2.16.0
         with:
-          sdk: stable
+          channel: any
       - name: Install lib dependencies
         working-directory: lib
-        run: dart pub get
+        run: flutter pub get
       - name: Install CLI dependencies
         working-directory: cli
-        run: dart pub get
+        run: flutter pub get
       - name: Analyze
         working-directory: cli
         run: dart analyze --fatal-infos
@@ -80,7 +80,7 @@ jobs:
           channel: any
       - name: Install lib dependencies
         working-directory: lib
-        run: dart pub get
+        run: flutter pub get
       - name: Install app dependencies
         working-directory: app
         run: flutter pub get
@@ -100,16 +100,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: dart-lang/setup-dart@v1
+      - uses: subosito/flutter-action@v2.16.0
         with:
-          sdk: stable
+          channel: any
       - name: Audit lib
         working-directory: lib
         run: |
-          dart pub get
+          flutter pub get
           # dart pub audit
       - name: Audit CLI
         working-directory: cli
         run: |
-          dart pub get
+          flutter pub get
           # dart pub audit
