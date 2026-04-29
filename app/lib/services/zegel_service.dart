@@ -115,6 +115,24 @@ class ZegelInspection {
     if (flags & 0x0800 != 0) names.add('VERSIONED');
     return names;
   }
+
+  /// Whether the expiration enforcement is HARD or SOFT.
+  ///
+  /// `HARD` = trusted timestamp present (cannot be bypassed by clock change).
+  /// `SOFT` = relies on local OS clock (spoofable).
+  /// `null` = no expiration set.
+  String? get expirationEnforcement {
+    if (!hasExpiration) return null;
+    return (flags & 0x2000 != 0) ? 'HARD' : 'SOFT';
+  }
+
+  /// Per-block plaintext hashes from public metadata, if present.
+  List<String>? get plaintextManifest {
+    if (publicMetadata == null) return null;
+    final dynamic raw = publicMetadata!['plaintext_manifest'];
+    if (raw is! List) return null;
+    return raw.map((e) => e.toString()).toList();
+  }
 }
 
 /// An attestation entry from a .zgl file.
@@ -180,6 +198,8 @@ class SealOptions {
   final bool enableSelectiveDisclosure;
   final Map<String, dynamic>? metadata;
   final int blockSize;
+  final bool enablePlaintextManifest;
+  final List<int>? boundaryHints;
 
   const SealOptions({
     this.compress = false,
@@ -190,6 +210,8 @@ class SealOptions {
     this.enableSelectiveDisclosure = false,
     this.metadata,
     this.blockSize = 65536,
+    this.enablePlaintextManifest = false,
+    this.boundaryHints,
   });
 }
 
@@ -1141,6 +1163,8 @@ class ZegelService {
       enableSelectiveDisclosure: options.enableSelectiveDisclosure,
       blockSize: options.blockSize,
       enableKeyCommitment: true,
+      enablePlaintextManifest: options.enablePlaintextManifest,
+      boundaryHints: options.boundaryHints,
     );
   }
 

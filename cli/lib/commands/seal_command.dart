@@ -174,6 +174,23 @@ class SealCommand extends Command<int> {
           'METADATA block.',
       defaultsTo: false,
     );
+
+    argParser.addFlag(
+      'plaintext-manifest',
+      help: 'Store SHA-256 hashes of every plaintext block in public\n'
+          'metadata. Allows readers to verify non-redacted blocks\n'
+          'independently without the master key after redaction.',
+      defaultsTo: false,
+    );
+
+    argParser.addOption(
+      'boundary-hints',
+      help: 'Comma-separated byte offsets where block splits should\n'
+          'occur. Ensures logical data boundaries (JSON objects,\n'
+          'paragraphs) are never sliced across blocks for selective\n'
+          'disclosure. Example: --boundary-hints 1024,5096,12000',
+      valueHelp: 'offset1,offset2,...',
+    );
   }
 
   @override
@@ -404,6 +421,10 @@ class SealCommand extends Command<int> {
       // Reuse the Argon2 salt as the file salt so the reader can reproduce
       // the derivation. For non-password keys, let the writer choose.
       salt: passwordSalt,
+      enablePlaintextManifest: argResults!['plaintext-manifest'] as bool,
+      boundaryHints: _parseBoundaryHints(
+        argResults!['boundary-hints'] as String?,
+      ),
     );
 
     // Create the sealed container.
@@ -476,6 +497,18 @@ class SealCommand extends Command<int> {
     }
     // Non-interactive: just read a line.
     return stdin.readLineSync() ?? '';
+  }
+
+  /// Parses a comma-separated list of boundary hint offsets.
+  static List<int>? _parseBoundaryHints(String? raw) {
+    if (raw == null || raw.trim().isEmpty) return null;
+    return raw
+        .split(',')
+        .map((s) => int.tryParse(s.trim()))
+        .where((v) => v != null && v > 0)
+        .cast<int>()
+        .toList()
+      ..sort();
   }
 
   /// Guesses the MIME content type from the file extension.
