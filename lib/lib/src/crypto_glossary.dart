@@ -117,7 +117,8 @@ class CryptoGlossary {
     'post-quantum-cryptography': const GlossaryTerm(
       term: 'post-quantum-cryptography',
       title: 'Post-Quantum Cryptography (PQC)',
-      tooltip: 'Cryptographic algorithms resistant to quantum computer attacks.',
+      tooltip:
+          'Cryptographic algorithms resistant to quantum computer attacks.',
       description:
           'PQC refers to new mathematical algorithms designed to be secure against '
           'the massive computing power of future quantum computers. Zegel employs '
