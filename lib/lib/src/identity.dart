@@ -5,7 +5,6 @@ import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
 import 'package:pinenacl/ed25519.dart' as pinenacl;
-import 'package:liboqs/liboqs.dart' as liboqs;
 
 import 'format.dart';
 import 'reader.dart';
