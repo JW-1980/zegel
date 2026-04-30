@@ -28,7 +28,7 @@ import 'writer.dart';
 class TimeLock {
   TimeLock._();
 
-  /// Default assumed SHA-256 hashing rate (iterations per second).
+  /// Default baseline SHA-256 hashing rate (iterations per second).
   ///
   /// This is a conservative estimate for a modern CPU core. Adjust using
   /// [calibrate] for your specific hardware.
@@ -67,7 +67,7 @@ class TimeLock {
   ///
   /// [masterKey] is the 32-byte key to lock.
   /// [duration] is the desired minimum time to unlock.
-  /// [hashRate] is the assumed iterations per second (use [calibrate] to
+  /// [hashRate] is the baseline iterations per second (use [calibrate] to
   /// measure). Defaults to [defaultHashRate].
   ///
   /// Returns a [TimeLockPuzzle] containing the puzzle parameters and the
@@ -190,7 +190,7 @@ class TimeLock {
   /// [masterKey] is the 32-byte master key (puzzle starting point).
   /// [duration] is the desired minimum time before content is accessible.
   /// [options] provides additional sealing options.
-  /// [hashRate] is the assumed iterations per second.
+  /// [hashRate] is the baseline iterations per second.
   ///
   /// Returns a [TimeLockSealResult] containing the sealed file bytes and
   /// the puzzle for distribution.

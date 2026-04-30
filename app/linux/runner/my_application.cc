@@ -25,7 +25,7 @@ static void my_application_activate(GApplication* application) {
   // desktop).
   // If running on X and not using GNOME then just use a traditional title bar
   // in case the window manager does more exotic layout, e.g. tiling.
-  // If running on Wayland assume the header bar will work (may need changing
+  // If running on Wayland expect the header bar will work (may need changing
   // if future cases occur).
   gboolean use_header_bar = TRUE;
 #ifdef GDK_WINDOWING_X11
