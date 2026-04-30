@@ -7,7 +7,8 @@ void main() {
     late File outputTemp;
 
     setUp(() {
-      inputTemp = File('test_input_seal_error.txt')..writeAsStringSync('test data');
+      inputTemp = File('test_input_seal_error.txt')
+        ..writeAsStringSync('test data');
       outputTemp = File('test_output_seal_error.zgl');
     });
 
@@ -32,7 +33,8 @@ void main() {
       ]);
 
       expect(result.exitCode, 1);
-      expect(result.stderr.toString(), contains('Invalid expiration date format'));
+      expect(
+          result.stderr.toString(), contains('Invalid expiration date format'));
     });
 
     test('invalid format in classification level', () async {
@@ -51,7 +53,8 @@ void main() {
       ]);
 
       expect(result.exitCode, 1);
-      expect(result.stderr.toString(), contains('Invalid classification level: "INVALID_LEVEL"'));
+      expect(result.stderr.toString(),
+          contains('Invalid classification level: "INVALID_LEVEL"'));
     });
 
     test('invalid format in recipient-id (non-hex)', () async {
@@ -70,7 +73,8 @@ void main() {
       ]);
 
       expect(result.exitCode, 1);
-      expect(result.stderr.toString(), contains('Invalid hex recipient-id: contains non-hex characters.'));
+      expect(result.stderr.toString(),
+          contains('Invalid hex recipient-id: contains non-hex characters.'));
     });
 
     test('invalid format in recipient-id (wrong length)', () async {
@@ -89,7 +93,10 @@ void main() {
       ]);
 
       expect(result.exitCode, 1);
-      expect(result.stderr.toString(), contains('Recipient ID must be exactly 32 bytes (64 hex characters). Got 31 bytes.'));
+      expect(
+          result.stderr.toString(),
+          contains(
+              'Recipient ID must be exactly 32 bytes (64 hex characters). Got 31 bytes.'));
     });
   });
 }
