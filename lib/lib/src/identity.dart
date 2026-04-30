@@ -483,10 +483,6 @@ class DeviceAttestation {
 
     LibOQS.init();
     final sig = Signature.create(keyPair.algorithm);
-    if (sig == null) {
-      throw UnsupportedError(
-          'PQC Algorithm ${keyPair.algorithm} is not supported by liboqs.');
-    }
 
     final Uint8List signature;
     try {
@@ -538,9 +534,6 @@ class DeviceAttestation {
 
     LibOQS.init();
     final sig = Signature.create(algorithm);
-    if (sig == null) {
-      return false;
-    }
 
     try {
       return sig.verify(infoBytes, signatureBytes, pubKeyBytes);
