@@ -32,7 +32,7 @@ class AuditTrail {
         DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
 
     // Build the entry without chain_hash first (chain_hash depends on the
-    // serialised entry, so we include a placeholder and compute over the
+    // serialised entry, so we include a blank field and compute over the
     // canonical form).
     final Map<String, dynamic> entry = <String, dynamic>{
       'actor': actor,

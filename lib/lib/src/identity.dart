@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
+import 'package:oqs/oqs.dart';
 
 import 'package:crypto/crypto.dart';
 import 'package:pinenacl/ed25519.dart' as pinenacl;
@@ -465,8 +466,7 @@ class DeviceAttestation {
 
   /// Creates a signed attestation block from device information using Post-Quantum Cryptography.
   ///
-  /// Note: This is currently a stub for ML-DSA-65 / Dilithium until a pure-dart
-  /// PQC library is stable enough for use in Zegel. It currently just generates a mock signature placeholder.
+  /// ML-DSA-65 / Dilithium signature logic is fully implemented via FFI to liboqs.
   ///
   /// [deviceInfo] is the captured device information.
   /// [keyPair] is a [ZegelPqcKeyPair].
@@ -481,25 +481,31 @@ class DeviceAttestation {
     final String infoJson = jsonEncode(infoMap);
     final Uint8List infoBytes = Uint8List.fromList(utf8.encode(infoJson));
 
-    // Sign the device info JSON with Post-Quantum algorithm (stubbed to mock)
-    final Uint8List digest = Uint8List.fromList(
-      sha256.convert(infoBytes).bytes,
-    );
+    LibOQS.init();
+    final sig = Signature.create(keyPair.algorithm);
+    if (sig == null) {
+      throw UnsupportedError(
+          'PQC Algorithm ${keyPair.algorithm} is not supported by liboqs.');
+    }
 
-    // MOCK PQC implementation
-    final Uint8List signature = digest;
+    final Uint8List signature;
+    try {
+      signature = sig.sign(infoBytes, keyPair.privateKey);
+    } finally {
+      sig.dispose();
+    }
 
     return <String, dynamic>{
       'device_info': infoMap,
-      'signature_hex': _bytesToHex(Uint8List.fromList(signature)),
-      'public_key_hex': _bytesToHex(Uint8List.fromList(keyPair.publicKey)),
+      'signature_hex': _bytesToHex(signature),
+      'public_key_hex': _bytesToHex(keyPair.publicKey),
       'algorithm': keyPair.algorithm,
     };
   }
 
   /// Verifies a device attestation signature using Post-Quantum Cryptography.
   ///
-  /// Note: This is a stub for ML-DSA-65.
+  /// Fully implemented via liboqs FFI.
   ///
   /// [attestation] is the attestation map (as produced by [createPqcAttestation]).
   /// [publicKey] is the Post-Quantum public key. If null, the public key
@@ -513,7 +519,8 @@ class DeviceAttestation {
     final String algorithm = attestation['algorithm'] as String? ?? 'ML-DSA-65';
     if (!algorithm.startsWith('ML-DSA') &&
         !algorithm.startsWith('Dilithium') &&
-        !algorithm.startsWith('Falcon')) {
+        !algorithm.startsWith('Falcon') &&
+        !algorithm.startsWith('SPHINCS')) {
       return false; // Not a supported PQC algorithm
     }
 
@@ -521,21 +528,27 @@ class DeviceAttestation {
         attestation['device_info'] as Map<String, dynamic>;
     final String infoJson = jsonEncode(infoMap);
     final Uint8List infoBytes = Uint8List.fromList(utf8.encode(infoJson));
-    final Uint8List digest = Uint8List.fromList(
-      sha256.convert(infoBytes).bytes,
-    );
 
     final Uint8List signatureBytes = _hexToBytes(
       attestation['signature_hex'] as String,
     );
 
-    // MOCK PQC verification
-    if (signatureBytes.length != digest.length) return false;
-    for (int i = 0; i < digest.length; i++) {
-      if (signatureBytes[i] != digest[i]) return false;
+    final Uint8List pubKeyBytes =
+        publicKey ?? _hexToBytes(attestation['public_key_hex'] as String);
+
+    LibOQS.init();
+    final sig = Signature.create(algorithm);
+    if (sig == null) {
+      return false;
     }
 
-    return true;
+    try {
+      return sig.verify(infoBytes, signatureBytes, pubKeyBytes);
+    } catch (_) {
+      return false;
+    } finally {
+      sig.dispose();
+    }
   }
 }
 
@@ -626,10 +639,8 @@ class DeviceInfo {
   }
 }
 
-/// A Post-Quantum (ML-DSA / Dilithium) signing keypair for Zegel identity.
-///
-/// Note: PQC implementations are currently stubbed in pure Dart
-/// pending stable ecosystem support.
+/// Post-Quantum (ML-DSA / Dilithium) keypair for Zegel identity.
+/// Requires liboqs available via FFI.
 class ZegelPqcKeyPair {
   /// Creates a [ZegelPqcKeyPair].
   const ZegelPqcKeyPair(

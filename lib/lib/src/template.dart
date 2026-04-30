@@ -13,7 +13,7 @@ import 'envelope.dart';
 ///
 /// ## Template vs. Envelope
 ///
-/// - A **template** defines ROLES (e.g., "buyer", "seller") with placeholder
+/// - A **template** defines ROLES (e.g., "buyer", "seller") with variables
 ///   field positions.
 /// - An **envelope** is an instance of a template filled with actual
 ///   recipient data.
@@ -22,10 +22,10 @@ import 'envelope.dart';
 /// integrity protection.
 
 // =============================================================================
-// TemplateRole - A role placeholder in a template
+// TemplateRole - A role variable in a template
 // =============================================================================
 
-/// A role placeholder in a template.
+/// A role variable in a template.
 ///
 /// When instantiating the template, each role is mapped to a concrete
 /// [EnvelopeRecipient] by providing a name, email, and authentication details.
@@ -93,10 +93,10 @@ class TemplateRole {
 }
 
 // =============================================================================
-// TemplateField - A field placeholder in a template
+// TemplateField - A field variable in a template
 // =============================================================================
 
-/// A field placeholder in a template.
+/// A field variable in a template.
 ///
 /// Template fields use [roleId] instead of a concrete recipient ID.
 /// When the template is instantiated, fields are remapped to the actual
@@ -276,7 +276,7 @@ class EnvelopeTemplate {
   /// List of roles that must be filled when instantiating.
   final List<TemplateRole> roles;
 
-  /// List of field placeholders.
+  /// List of field variables.
   final List<TemplateField> fields;
 
   /// Creation timestamp.

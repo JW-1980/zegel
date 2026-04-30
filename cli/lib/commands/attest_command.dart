@@ -346,7 +346,7 @@ class AttestCommand extends Command<int> {
         newIvs.add(header.blockDirectory[i].iv);
         newCiphertexts.add(plaintexts[i]);
         newTags.add(header.blockDirectory[i].tag);
-        newBlockKeys.add(Uint8List(32)); // Placeholder.
+        newBlockKeys.add(Uint8List(32)); // Dummy key for redacted block.
         continue;
       }
 
