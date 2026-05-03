@@ -52,3 +52,4 @@ export 'src/envelope.dart';
 export 'src/template.dart';
 export 'src/certificate_of_completion.dart';
 export 'src/bulk_send.dart';
+export 'src/creative_proof.dart';

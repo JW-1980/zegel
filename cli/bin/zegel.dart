@@ -6,6 +6,7 @@ import 'package:zegel_cli/commands/audit_command.dart';
 import 'package:zegel_cli/commands/batch_command.dart';
 import 'package:zegel_cli/commands/canary_command.dart';
 import 'package:zegel_cli/commands/classify_command.dart';
+import 'package:zegel_cli/commands/creative_command.dart';
 import 'package:zegel_cli/commands/disclose_command.dart';
 import 'package:zegel_cli/commands/excerpt_command.dart';
 import 'package:zegel_cli/commands/extract_command.dart';
@@ -97,6 +98,12 @@ void main(List<String> arguments) async {
         '  verify-build          Verify a build attestation\n'
         '  audit-entropy         Audit randomness quality in a .zgl file\n'
         '\n'
+        'Creative Proof commands:\n'
+        '  creative seal         Seal a creative work with proof-of-origination\n'
+        '  creative verify       Verify a creative proof and show creator identity\n'
+        '  creative inspect      Inspect creative proof without master key\n'
+        '  creative extract      Extract original asset from a creative proof\n'
+        '\n'
         'Advanced commands:\n'
         '  hierarchical-split    Hierarchical key splitting (split, reconstruct)\n'
         '  media-metadata        Media metadata operations (extract, view)\n'
@@ -173,6 +180,9 @@ void main(List<String> arguments) async {
   runner.addCommand(BuildAttestCommand());
   runner.addCommand(VerifyBuildCommand());
   runner.addCommand(AuditEntropyCommand());
+
+  // Creative proof commands.
+  runner.addCommand(CreativeCommand());
 
   // Advanced commands.
   runner.addCommand(HierarchicalSplitCommand());
