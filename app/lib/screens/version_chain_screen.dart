@@ -316,7 +316,7 @@ class _VersionChainScreenState extends State<VersionChainScreen> {
                         physics: const NeverScrollableScrollPhysics(),
                         itemCount: _filePaths.length,
                         // ignore: deprecated_member_use
-                        onReorder: (oldIndex, newIndex) {
+                        onReorderItem: (oldIndex, newIndex) {
                           setState(() {
                             if (newIndex > oldIndex) newIndex--;
                             final item = _filePaths.removeAt(oldIndex);
