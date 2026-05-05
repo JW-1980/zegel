@@ -19,7 +19,7 @@
 /// final result = reader.verify(sealed, masterKey);
 /// assert(result.valid);
 /// ```
-library zegel;
+library;
 
 export 'src/format.dart';
 export 'src/merkle_tree.dart';

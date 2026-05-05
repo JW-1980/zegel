@@ -60,7 +60,7 @@ class ProvenanceVerification {
   /// 2. Each event's previous_event hash matches the prior event
   /// 3. All signatures are valid
   ///
-  /// Returns a map with 'valid' (bool) and 'errors' (List<String>).
+  /// Returns a map with 'valid' (bool) and 'errors' (`List<String>`).
   static Map<String, dynamic> verifyChain(
     List<Map<String, dynamic>> events,
     Uint8List signerKey,
