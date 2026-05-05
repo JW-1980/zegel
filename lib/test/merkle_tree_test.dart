@@ -103,15 +103,15 @@ void main() {
         // Two-leaf tree root.
         final root = MerkleTree.buildRoot([raw0, raw1]);
 
-        // Now build a "fake" leaf whose contents = leafDs(raw0) || leafDs(raw1).
+        // Now build a combined leaf whose contents = leafDs(raw0) || leafDs(raw1).
         // Without domain separation, this would hash to the same as the
         // internal node and could be used as a second preimage.
-        final fakeLeafData = _concat(_leafDs(raw0), _leafDs(raw1));
-        final fakeLeafRaw = _sha256(fakeLeafData);
-        final fakeTreeRoot = MerkleTree.buildRoot([fakeLeafRaw]);
+        final concatenatedLeafData = _concat(_leafDs(raw0), _leafDs(raw1));
+        final concatenatedLeafRaw = _sha256(concatenatedLeafData);
+        final concatenatedTreeRoot = MerkleTree.buildRoot([concatenatedLeafRaw]);
 
-        // The fake single-leaf root must differ from the two-leaf root.
-        expect(fakeTreeRoot, isNot(equals(root)));
+        // The single-leaf root must differ from the two-leaf root.
+        expect(concatenatedTreeRoot, isNot(equals(root)));
       });
     });
 

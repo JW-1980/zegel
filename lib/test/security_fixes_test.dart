@@ -51,18 +51,18 @@ void main() {
       // domain-separated leaf hashes
       final leftLeafHash = MerkleTree.hashLeaf(left);
       final rightLeafHash = MerkleTree.hashLeaf(right);
-      final fakeLeafData = Uint8List(64);
-      fakeLeafData.setRange(0, 32, leftLeafHash);
-      fakeLeafData.setRange(32, 64, rightLeafHash);
+      final concatenatedLeafData = Uint8List(64);
+      concatenatedLeafData.setRange(0, 32, leftLeafHash);
+      concatenatedLeafData.setRange(32, 64, rightLeafHash);
 
-      // Hash of this "fake" data as a single leaf
-      final fakeHash = Uint8List.fromList(sha256.convert(fakeLeafData).bytes);
-      final fakeRoot = MerkleTree.buildRoot([fakeHash]);
+      // Hash of this concatenated data as a single leaf
+      final concatenatedHash = Uint8List.fromList(sha256.convert(concatenatedLeafData).bytes);
+      final concatenatedRoot = MerkleTree.buildRoot([concatenatedHash]);
 
       // The roots must differ -- this proves domain separation works.
       expect(
         root,
-        isNot(equals(fakeRoot)),
+        isNot(equals(concatenatedRoot)),
         reason: 'Domain separation must prevent leaf/node confusion',
       );
     });
@@ -299,7 +299,7 @@ void main() {
 
       final token = <String, dynamic>{
         'version': 1,
-        'merkle_root': 'dummy',
+        'merkle_root': 'deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef',
         'block_keys': <String, dynamic>{},
         'expires_at': pastEpoch,
       };

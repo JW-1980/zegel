@@ -30,7 +30,7 @@ void main() {
     });
 
     test('stripPng removes tEXt chunks but preserves IHDR/IEND', () {
-      // Build a minimal PNG: signature + IHDR stub + tEXt + IEND.
+      // Build a minimal PNG: signature + IHDR block + tEXt + IEND.
       // Real CRCs aren't validated by the stripper so we can use zeros.
       int b(int v) => v & 0xFF;
       final chunk = <int>[];
