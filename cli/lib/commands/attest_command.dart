@@ -346,7 +346,8 @@ class AttestCommand extends Command<int> {
         newIvs.add(header.blockDirectory[i].iv);
         newCiphertexts.add(plaintexts[i]);
         newTags.add(header.blockDirectory[i].tag);
-        newBlockKeys.add(_randomBytes(random, 32)); // Secure random key for redacted block.
+        newBlockKeys.add(
+            _randomBytes(random, 32)); // Secure random key for redacted block.
         continue;
       }
 
