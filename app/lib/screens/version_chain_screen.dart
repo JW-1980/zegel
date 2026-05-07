@@ -99,7 +99,7 @@ class _VersionChainScreenState extends State<VersionChainScreen> {
       for (final filePath in _filePaths) {
         final file = File(filePath);
         if (!await file.exists()) {
-          throw Exception('File does not exist: $filePath');
+          throw FileSystemException('File does not exist', filePath);
         }
 
         final bytes = await file.readAsBytes();

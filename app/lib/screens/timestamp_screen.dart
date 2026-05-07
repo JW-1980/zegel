@@ -85,7 +85,7 @@ class _TimestampScreenState extends State<TimestampScreen>
     try {
       final file = File(_filePath!);
       if (!await file.exists()) {
-        throw Exception('File does not exist');
+        throw const FileSystemException('File does not exist');
       }
 
       final bytes = await file.readAsBytes();
@@ -97,7 +97,7 @@ class _TimestampScreenState extends State<TimestampScreen>
       final merkleRoot = inspection.merkleRoot;
 
       if (masterSeal == null || merkleRoot == null) {
-        throw Exception('File must be a valid Zegel container to timestamp');
+        throw const FileSystemException('File must be a valid Zegel container to timestamp');
       }
 
       // Create a local timestamp token using the signer key
@@ -153,7 +153,7 @@ class _TimestampScreenState extends State<TimestampScreen>
     try {
       final file = File(_filePath!);
       if (!await file.exists()) {
-        throw Exception('File does not exist');
+        throw const FileSystemException('File does not exist');
       }
 
       final bytes = await file.readAsBytes();
@@ -165,7 +165,7 @@ class _TimestampScreenState extends State<TimestampScreen>
       final masterSeal = inspection.masterSeal;
       final merkleRoot = inspection.merkleRoot;
       if (masterSeal == null || merkleRoot == null) {
-        throw Exception(
+        throw const FileSystemException(
             'File must be a valid Zegel container to verify timestamp');
       }
       final signerKey = HexUtils.hexToBytes(_hexKey);
