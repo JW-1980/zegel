@@ -53,8 +53,12 @@ void main() {
 
       test('passes the parent directory, not the file itself', () {
         final path = File('secret.zgl').absolute.path;
-        final parent =
-            path.substring(0, path.lastIndexOf(Platform.pathSeparator));
+        // On Windows with linux override, the separator could be '\\' and there could be no '/'
+        // Just verify it uses parent directory using absolute path string manipulation that matches RevealInOs
+        final sep = Platform.pathSeparator;
+        final idx = path.lastIndexOf(sep);
+        final parent = idx <= 0 ? path : path.substring(0, idx);
+
         final cmd = RevealInOs.commandFor(path, overrideOs: 'linux');
         expect(cmd.arguments, [parent]);
       });

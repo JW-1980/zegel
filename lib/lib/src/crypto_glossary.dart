@@ -70,7 +70,7 @@ class CryptoGlossary {
           'Ed25519 is a fast, deterministic digital signature scheme. Zegel '
           'uses it so the creator of a file can sign its Merkle root; any '
           'party can later verify the signature with the public key alone.',
-      seeAlso: <String>['identity'],
+      seeAlso: <String>['identity', 'post-quantum-cryptography'],
     ),
     'argon2id': const GlossaryTerm(
       term: 'argon2id',
@@ -124,7 +124,7 @@ class CryptoGlossary {
           'the massive computing power of future quantum computers. Zegel employs '
           'PQC (like Kyber/ML-KEM and Dilithium/ML-DSA) alongside traditional cryptography '
           'to ensure long-term data security against "store now, decrypt later" attacks.',
-      seeAlso: <String>['aes-256-gcm', 'ed25519', 'post-quantum-cryptography'],
+      seeAlso: <String>['aes-256-gcm', 'ed25519'],
     ),
   };
 
