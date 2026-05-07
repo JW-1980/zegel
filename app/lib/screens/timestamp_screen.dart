@@ -97,7 +97,8 @@ class _TimestampScreenState extends State<TimestampScreen>
       final merkleRoot = inspection.merkleRoot;
 
       if (masterSeal == null || merkleRoot == null) {
-        throw const FileSystemException('File must be a valid Zegel container to timestamp');
+        throw const FileSystemException(
+            'File must be a valid Zegel container to timestamp');
       }
 
       // Create a local timestamp token using the signer key
