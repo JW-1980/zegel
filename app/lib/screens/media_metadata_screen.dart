@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:zegel/zegel.dart' as core;
@@ -346,37 +347,27 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
                           theme,
                         ),
                         const SizedBox(height: 12),
-                        // Map placeholder
-                        Container(
-                          height: 200,
-                          decoration: BoxDecoration(
-                            color: theme.colorScheme.surfaceContainerHighest,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color: theme.colorScheme.outline.withValues(
-                                alpha: 0.3,
-                              ),
-                            ),
-                          ),
-                          child: Center(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  Icons.map,
-                                  size: 48,
-                                  color: theme.colorScheme.onSurfaceVariant
-                                      .withValues(alpha: 0.5),
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  'Map view available in full version',
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: theme.colorScheme.onSurfaceVariant,
-                                  ),
-                                ),
-                              ],
-                            ),
+                        // Interactive map button
+                        const SizedBox(height: 12),
+                        SizedBox(
+                          width: double.infinity,
+                          child: FilledButton.icon(
+                            icon: const Icon(Icons.map),
+                            label: const Text('Open in Maps'),
+                            onPressed: () async {
+                              final lat = double.tryParse(_metadata!['gps_latitude'].toString()) ?? 0.0;
+                              final lng = double.tryParse(_metadata!['gps_longitude'].toString()) ?? 0.0;
+                              final url = Uri.parse('https://www.google.com/maps/search/?api=1&query=$lat,$lng');
+                              if (await canLaunchUrl(url)) {
+                                await launchUrl(url);
+                              } else {
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('Could not open map')),
+                                  );
+                                }
+                              }
+                            },
                           ),
                         ),
                       ],

@@ -38,7 +38,8 @@ class ZegelPreferences {
     }
     final decoded = jsonDecode(raw);
     if (decoded is! Map<String, dynamic>) {
-      throw const FormatException('Preferences file must contain a JSON object');
+      throw const FormatException(
+          'Preferences file must contain a JSON object');
     }
     return ZegelPreferences._(filePath, Map<String, dynamic>.from(decoded));
   }
