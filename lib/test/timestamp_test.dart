@@ -23,7 +23,7 @@ Uint8List _testMerkleRoot() {
   );
 }
 
-/// Creates a 64-byte fake master seal for testing.
+/// Creates a 64-byte test master seal for testing.
 Uint8List _testMasterSeal() {
   return Uint8List.fromList(
     sha256.convert(utf8.encode('test-master-seal-part1')).bytes +
@@ -439,11 +439,11 @@ void main() {
     test('sets FLAG_HAS_TIMESTAMP and embeds appendix', () {
       final key = _testKey();
       final content = Uint8List.fromList(utf8.encode('timestamped'));
-      final fakeToken = _buildFakeRfc3161Token();
+      final testToken = _buildTestRfc3161Token();
       final options = ZegelOptions(
         contentType: 'text/plain',
         salt: _zeroSalt(),
-        timestampConfig: TimestampConfig.preObtainedToken(token: fakeToken),
+        timestampConfig: TimestampConfig.preObtainedToken(token: testToken),
       );
       final sealed = ZegelWriter(key, options).seal(content);
       // NOTE: preObtainedToken creates a TIMESTAMP block during seal(), not an appendix
@@ -630,8 +630,8 @@ void main() {
   });
 }
 
-/// Builds a minimal fake DER structure resembling an RFC 3161 response.
-Uint8List _buildFakeRfc3161Token() {
+/// Builds a minimal test DER structure resembling an RFC 3161 response.
+Uint8List _buildTestRfc3161Token() {
   final genTimeStr = utf8.encode('20260419100000Z');
   final inner = <int>[
     0x18,
