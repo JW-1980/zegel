@@ -99,7 +99,7 @@ class _VersionChainScreenState extends State<VersionChainScreen> {
       for (final filePath in _filePaths) {
         final file = File(filePath);
         if (!await file.exists()) {
-          throw Exception('File does not exist: $filePath');
+          throw FileSystemException('File does not exist', filePath);
         }
 
         final bytes = await file.readAsBytes();
@@ -316,7 +316,7 @@ class _VersionChainScreenState extends State<VersionChainScreen> {
                         physics: const NeverScrollableScrollPhysics(),
                         itemCount: _filePaths.length,
                         // ignore: deprecated_member_use
-                        onReorderItem: (oldIndex, newIndex) {
+                        onReorder: (oldIndex, newIndex) {
                           setState(() {
                             if (newIndex > oldIndex) newIndex--;
                             final item = _filePaths.removeAt(oldIndex);

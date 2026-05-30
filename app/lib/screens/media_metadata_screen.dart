@@ -79,7 +79,7 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
     try {
       final file = File(_filePath!);
       if (!await file.exists()) {
-        throw Exception('File does not exist');
+        throw const FileSystemException('File does not exist');
       }
 
       final bytes = await file.readAsBytes();
@@ -96,13 +96,13 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
       ); // Note: still returns core.ZegelResult
 
       if (!result.valid) {
-        throw Exception('File verification failed');
+        throw const FileSystemException('File verification failed');
       }
 
       // Extract basic metadata from content
       final content = result.content;
       if (content == null || content.isEmpty) {
-        throw Exception('No content found in file');
+        throw const FileSystemException('No content found in file');
       }
 
       // Use MediaMetadata to extract metadata

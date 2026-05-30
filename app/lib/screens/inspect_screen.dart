@@ -64,7 +64,7 @@ class _InspectScreenState extends State<InspectScreen> {
     try {
       final file = File(_filePath!);
       if (!await file.exists()) {
-        throw Exception('File does not exist');
+        throw const FileSystemException('File does not exist');
       }
 
       final bytes = await file.readAsBytes();
