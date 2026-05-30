@@ -3,8 +3,6 @@ import 'dart:io';
 import 'package:zegel_app/utils/hex_utils.dart';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:zegel_app/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
@@ -341,111 +339,27 @@ class _MediaMetadataScreenState extends State<MediaMetadataScreen> {
                           theme,
                         ),
                         const SizedBox(height: 12),
-                        // Interactive Map
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Container(
-                            height: 250,
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: theme.colorScheme.outline.withValues(
-                                  alpha: 0.3,
-                                ),
-                              ),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Stack(
-                              children: [
-                                FlutterMap(
-                                  options: MapOptions(
-                                    initialCenter: LatLng(
-                                      double.tryParse(
-                                            _metadata!['gps_latitude']
-                                                    ?.toString() ??
-                                                '0',
-                                          ) ??
-                                          0,
-                                      double.tryParse(
-                                            _metadata!['gps_longitude']
-                                                    ?.toString() ??
-                                                '0',
-                                          ) ??
-                                          0,
-                                    ),
-                                    initialZoom: 14.0,
-                                  ),
-                                  children: [
-                                    TileLayer(
-                                      urlTemplate:
-                                          'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                                      userAgentPackageName: 'com.zegel.app',
-                                    ),
-                                    RichAttributionWidget(
-                                      attributions: [
-                                        TextSourceAttribution(
-                                          'OpenStreetMap contributors',
-                                          onTap: () => launchUrl(
-                                            Uri.parse(
-                                              'https://openstreetmap.org/copyright',
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    MarkerLayer(
-                                      markers: [
-                                        Marker(
-                                          point: LatLng(
-                                            double.tryParse(
-                                                  _metadata!['gps_latitude']
-                                                          ?.toString() ??
-                                                      '0',
-                                                ) ??
-                                                0,
-                                            double.tryParse(
-                                                  _metadata!['gps_longitude']
-                                                          ?.toString() ??
-                                                      '0',
-                                                ) ??
-                                                0,
-                                          ),
-                                          width: 40,
-                                          height: 40,
-                                          child: const Icon(
-                                            Icons.location_on,
-                                            color: Colors.red,
-                                            size: 40,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                Positioned(
-                                  right: 8,
-                                  bottom: 8,
-                                  child: FloatingActionButton.small(
-                                    heroTag: 'mapFallback',
-                                    onPressed: () async {
-                                      final lat = _metadata!['gps_latitude']
-                                              ?.toString() ??
-                                          '0';
-                                      final lng = _metadata!['gps_longitude']
-                                              ?.toString() ??
-                                          '0';
-                                      final url = Uri.parse(
-                                        'https://www.openstreetmap.org/?mlat=$lat&mlon=$lng#map=15/$lat/$lng',
-                                      );
-                                      if (await canLaunchUrl(url)) {
-                                        await launchUrl(url);
-                                      }
-                                    },
-                                    tooltip: 'Open in Browser',
-                                    child: const Icon(Icons.open_in_new),
-                                  ),
-                                ),
-                              ],
-                            ),
+                        // Interactive map button
+                        const SizedBox(height: 12),
+                        SizedBox(
+                          width: double.infinity,
+                          child: FilledButton.icon(
+                            icon: const Icon(Icons.map),
+                            label: const Text('Open in Maps'),
+                            onPressed: () async {
+                              final lat = double.tryParse(_metadata!['gps_latitude'].toString()) ?? 0.0;
+                              final lng = double.tryParse(_metadata!['gps_longitude'].toString()) ?? 0.0;
+                              final url = Uri.parse('https://www.google.com/maps/search/?api=1&query=$lat,$lng');
+                              if (await canLaunchUrl(url)) {
+                                await launchUrl(url);
+                              } else {
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('Could not open map')),
+                                  );
+                                }
+                              }
+                            },
                           ),
                         ),
                       ],

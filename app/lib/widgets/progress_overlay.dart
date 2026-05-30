@@ -71,7 +71,7 @@ class ProgressOverlay extends StatelessWidget {
   }
 }
 
-/// A skeleton loader widget that shows a shimmering animation
+/// A skeleton loader component that shows a shimmering animation to indicate loading state
 /// while content is loading.
 ///
 /// Replaces traditional spinners for a more polished loading experience.
