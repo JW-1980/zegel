@@ -25,6 +25,8 @@ import 'version_chain_screen.dart';
 import 'attest_screen.dart';
 import 'audit_screen.dart';
 import 'canary_screen.dart';
+import 'creative_proof_screen.dart';
+import 'creative_viewer_screen.dart';
 import 'keygen_screen.dart';
 import 'wet_signature_screen.dart';
 import 'envelope_screen.dart';
@@ -340,6 +342,15 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
+
+          // Creative Proof
+          sectionHeader('CREATIVE PROOF'),
+          drawerItem(Icons.verified, 'Seal Creative Proof',
+              () => _navigateTo(const CreativeProofScreen())),
+          drawerItem(Icons.play_circle, 'Verify & View',
+              () => _navigateTo(const CreativeViewerScreen())),
+
+          const Divider(),
 
           // Core
           sectionHeader(l10n.drawerCoreSection),
