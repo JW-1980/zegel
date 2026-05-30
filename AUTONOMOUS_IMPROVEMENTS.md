@@ -1,194 +1,169 @@
-# Autonomous Improvements
+# Final Autonomous Improvement List
 
-## 1. 100 Software Improvements (Non-AI, Novel)
+## 100 Software Improvements
 
-### Better Looking / UI Improvements
-1. Implement a holographic card tilt effect (using accelerometer data on mobile) for the main certificate view to simulate physical paper.
-2. Add support for OS-level accent color syncing (e.g., matching the user's Windows or Android theme color).
-3. Introduce an ASCII-art fallback rendering mode for CLI users viewing public metadata.
-4. Replace the standard scrollbars in the Flutter app with an interactive mini-map of the document structure.
-5. Create a dynamic "heat map" visualizer for Merkle tree nodes showing which blocks are accessed most frequently.
-6. Implement a "cinematic mode" that dims the background and centers the currently selected Zegel file.
-7. Use localized, culturally appropriate iconography sets based on the user's geographic region.
-8. Add a retro "terminal" theme with green phosphor colors and scanlines for the developer dashboard.
-9. Support custom CSS injection for Enterprise self-hosted instances to match corporate branding perfectly.
-10. Render the cryptographic seal visually using WebGL shaders for a unique, animated lock graphic.
+### New Features & Workflows
+1. Implement WebRTC for peer-to-peer file transfer directly between browsers, bypassing servers completely.
+2. Add support for verifiable credentials (W3C standard) natively within Zegel wrappers.
+3. Create a desktop companion app (using Tauri or Electron) that acts as a local node.
+4. Develop a Microsoft Office add-in to seal documents directly from Word/Excel.
+5. Build a Google Workspace add-on to seal Google Docs directly to Google Drive.
+6. Introduce a 'self-destructing message' feature where the master key is automatically deleted from the server after X views.
+7. Add support for embedding standard cryptographic timestamps (RFC 3161) automatically via multiple distinct TSAs for redundancy.
+8. Create a specialized 'legal hold' feature that prevents deletion of specific files and maintains an immutable audit log of access attempts.
+9. Implement 'split-key' sharing via QR codes where M of N QR codes must be scanned to reconstruct the key.
+10. Add a feature to bind a file seal to a specific hardware device ID, making it impossible to open on another machine.
+11. Create a 'honeypot' file feature: a fake Zegel file that triggers an alert when someone tries to tamper with or open it.
+12. Implement 'time-based access controls' where a file can only be opened during specific business hours.
+13. Add support for verifiable multi-party computation (MPC) to allow operations on sealed data without decrypting it locally.
+14. Develop a browser extension that automatically verifies Zegel files downloaded from the internet.
+15. Create a feature to 're-seal' a file with an updated key without exposing the plaintext on disk.
+16. Implement an organizational 'key escrow' system allowing admins to recover files if an employee loses their key.
+17. Add native support for sealing large directory structures (tarballing and sealing automatically).
+18. Create a 'proof of existence' feature using OpenTimestamps to anchor file hashes to the Bitcoin blockchain.
+19. Implement a localized mesh network sharing feature for mobile apps using Bluetooth LE / Wi-Fi Direct.
+20. Add an audio-based 'chirp' key transfer method for sharing keys between physical devices in the same room.
+21. Create a feature to generate a deterministic 'fingerprint' image from the file's hash for visual verification.
+22. Implement support for signing files using an external smart card via PC/SC.
+23. Add a 'batch verification summary' that exports a cryptographically signed PDF of the verification results.
+24. Develop a plugin for popular email clients (Outlook, Thunderbird) to automatically seal attachments.
+25. Create a 'secure print' feature that temporarily decrypts a file directly to the printer spooler and wipes it immediately.
+26. Implement support for custom entropy sources (e.g., LavaRand) during key generation.
+27. Add a feature to securely shred the original plaintext file (Gutmann method) after successfully sealing it.
+28. Create a 'visual watermark' feature that overlays the verifier's identity on extracted images/documents.
+29. Implement a 'geofenced decryption' feature requiring the device GPS coordinates to match a predefined area.
+30. Add support for wrapping Zegel files inside standard ZIP archives with automatically generated README instructions.
+31. Create a specialized 'whistleblower mode' that routes all traffic through Tor and strips all local metadata.
+32. Implement a 'dead man's switch' feature that automatically shares the master key with designated contacts if the user doesn't check in.
+33. Add a feature to split a large file into multiple smaller Zegel files (chunking) for easier transport over restricted networks.
+34. Create an interactive 'Merkle tree visualizer' within the app to help users understand the file's structure.
+35. Implement support for generating 'zero-knowledge proofs' (ZKPs) that a file contains certain keywords without revealing the file.
+36. Add a 'network isolation mode' in the mobile app that disables all radios (Wi-Fi, Cellular) during extraction.
+37. Create a feature to bind a file to a specific IP subnet (e.g., only decryptable within the corporate network).
+38. Implement a 'tamper-evident log' that records every failed verification attempt on a central server.
+39. Add support for exporting keys using the standard PKCS#12 format for interoperability.
+40. Create a 'secure clipboard' feature in the mobile app that clears automatically after 30 seconds when copying keys.
+41. Implement a feature to generate a 'decoy file' if an incorrect password/key is entered.
+42. Add a 'bandwidth throttle' option for batch operations to prevent network saturation.
+43. Create a specialized 'archive mode' that optimizes compression for long-term cold storage over speed.
+44. Implement support for scanning standard NFC tags to retrieve or store master keys.
+45. Add a feature to require multi-factor authentication (MFA) before allowing the extraction of a specific file.
+46. Create an 'audit report generator' that produces compliance-ready documents for HIPAA, GDPR, etc.
+47. Implement a 'secure wipe' of free disk space on the device after extracting sensitive files.
+48. Add support for reading and writing files directly to/from cloud storage (S3, GCS) without intermediate local storage.
+49. Create a feature to overlay a dynamic QR code on the screen during file viewing to prevent easy photography/screenshotting.
+50. Implement a 'session timeout' that automatically closes open files and flushes memory after a period of inactivity.
+51. Add a 'password strength meter' specifically tuned for Argon2id parameters during key derivation.
+52. Create a feature to allow users to 'revoke' a file by deleting its metadata from the central registry (if used).
+53. Implement support for hardware-accelerated encryption engines (AES-NI) explicitly in the Dart layer.
+54. Add a 'data loss prevention' (DLP) scanner that warns users before sealing files containing sensitive patterns (SSNs, etc).
+55. Create an 'immutable configuration' mode for the CLI that prevents changes to security policies once set.
+56. Implement a feature to 'splice' two Zegel files together if they contain sequential data logs.
+57. Add support for exporting verification proofs in standard JSON-LD format.
+58. Create a 'stealth mode' installation option that hides the app icon and requires a dialer code to open.
+59. Implement a feature to automatically quarantine files that fail verification into an isolated folder.
+60. Add a 'key rotation' wizard that automatically decrypts and re-encrypts files with a new key.
+61. Create a feature to limit the number of concurrent extractions to prevent resource exhaustion.
+62. Implement support for generating a 'hardware attestation' proving the file was sealed on a specific physical device.
+63. Add a 'read-only' mode for the app that disables all sealing capabilities, useful for audit terminals.
+64. Create a feature to embed a customized 'Terms of Service' agreement that must be accepted before extraction.
+65. Implement a 'self-healing' mechanism that can recover corrupted metadata blocks if redundant copies are available.
+66. Add support for integrating with enterprise key management servers (KMS) via KMIP.
+67. Create an 'activity heat map' showing which parts of a large file are accessed most frequently.
+68. Implement a feature to automatically lock the app if the device is shaken or turned face down.
+69. Add a 'secure memory enclave' for key processing using OS-level protections (e.g., iOS Secure Enclave, Android StrongBox).
+70. Create a feature to require two distinct users to authenticate simultaneously to perform an action (Two-man rule).
+71. Implement a 'canary token generator' that embeds tracking pixels inside specific file types (e.g., PDF, Word) before sealing.
+72. Add support for automatically backing up keys to a decentralized storage network (e.g., IPFS) in encrypted form.
+73. Create an 'integrity check' for the app itself that runs on startup to detect unauthorized modifications.
+74. Implement a feature to allow 'blind signatures', where a user signs a file without seeing its contents.
+75. Add a 'data retention policy' engine that automatically deletes files after a specified period.
+76. Create a feature to 'freeze' a user account, temporarily disabling all access without deleting data.
+77. Implement support for hardware security modules (HSMs) using PKCS#11 for key generation and storage.
+78. Add a 'secure sharing portal' where external users can upload files directly into a sealed container.
+79. Create an 'anomalous activity detector' that flags unusual access patterns (e.g., opening many files quickly).
+80. Implement a feature to enforce 'minimum password entropy' policies organization-wide.
+81. Add support for exporting the entire application state into a single, encrypted backup file.
+82. Create a 'sandbox mode' for opening potentially malicious files in an isolated environment.
+83. Implement a feature to require a physical 'token present' (e.g., USB key) continuously while viewing a file.
+84. Add a 'secure chat' feature linked to specific files for discussing their contents.
+85. Create a 'compliance dashboard' showing real-time adherence to internal security policies.
+86. Implement support for 'homomorphic encryption' to allow basic operations on encrypted data.
+87. Add a feature to 'shred' individual blocks within a file without destroying the entire container.
+88. Create a 'secure rendering pipeline' that prevents screen-scraping malware from capturing file contents.
+89. Implement a feature to 'tether' a file to a specific network interface (e.g., only openable on Wi-Fi, not Cellular).
+90. Add support for generating 'cryptographic receipts' proving that a specific user opened a file at a specific time.
+91. Create a 'secure boot' check that prevents the app from running on rooted or jailbroken devices.
+92. Implement a feature to 'watermark' audio/video files dynamically during extraction.
+93. Add a 'key recovery agent' role that can reconstruct keys under specific, audited circumstances.
+94. Create a 'threat intelligence feed' integration that warns users if a file hash matches known malware.
+95. Implement a feature to require 'manager approval' before a file can be successfully extracted.
+96. Add support for 'ephemeral keys' that exist only in RAM and are never written to disk.
+97. Create a 'secure log viewer' that prevents admins from tampering with the audit trail.
+98. Implement a feature to 'cloak' files, making them invisible to standard file browsers.
+99. Add a 'secure update mechanism' that verifies the cryptographic signature of new app versions before installing.
+100. Create a 'chaos engineering' mode that randomly injects errors to test the system's resilience.
 
-### Easier to Use
-11. Implement a "drag to scroll" behavior for wide data tables on desktop, mimicking touch interfaces.
-12. Add a persistent "recently viewed files" dock at the bottom of the screen.
-13. Enable importing user profiles and settings directly from exported JSON configuration files.
-14. Create an interactive command palette tailored specifically for cryptographic actions (e.g., typing "split" prompts for M-of-N details).
-15. Support "shake to undo" for destructive actions in the mobile Flutter app.
-16. Implement natural language date parsing for expiration dates (e.g., typing "next Friday" auto-resolves to the date).
-17. Provide an offline-first "draft" mode that queues files for sealing once the connection is restored.
-18. Add a physical YubiKey/NFC tap-to-authenticate prompt directly overlaying the seal action.
-19. Allow users to select files via a circular "pie menu" on touch devices.
-20. Support importing master keys directly from a secure hardware enclave export without manual copy-pasting.
+## 15 Items for Easier Installation/Hosting
 
-### Additional Automation
-21. Automatically expire and clean up temporary "shared link" database records after 24 hours.
-22. Auto-generate a weekly PDF summary report of all sealing and verification activities and email it to admins.
-23. Create a cron job that automatically rotates application log files and compresses them into a Zegel container.
-24. Auto-detect user timezone from the browser and adjust all timestamps globally without manual settings.
-25. Implement automated webhooks that fire immediately upon any failed verification attempt.
-26. Automatically lock user sessions if mouse movement or keyboard input ceases for 15 minutes.
-27. Auto-fetch and display public gravatars based on the user's registered email address.
-28. Automatically compress high-resolution image uploads down to a standardized WebP format before sealing.
-29. Create an automated database pruning script that removes unverified accounts after 7 days.
-30. Auto-populate document metadata by extracting EXIF data from uploaded images before sealing.
+1. Create an Unraid community application template for one-click NAS deployment.
+2. Provide a TrueNAS SCALE catalog app for simple integration.
+3. Publish a Bicep template for native Azure Resource Manager deployments.
+4. Create a detailed guide for self-hosting securely via a Cloudflare Tunnel.
+5. Provide an official AppImage for standalone execution on any Linux distribution.
+6. Publish a Flatpak for easy distribution on Linux desktop environments.
+7. Create a Snap package with strict confinement for Ubuntu and other supported distros.
+8. Provide a Pulumi infrastructure-as-code template (in TypeScript).
+9. Publish a guide for deploying on Fly.io using their global Anycast network.
+10. Create an automated script for setting up a cluster using K3s (lightweight Kubernetes).
+11. Provide a pre-configured setup for deploying via render.com.
+12. Publish an official template for Zeabur deployment.
+13. Create a guide for deploying the application on a homelab using CasaOS.
+14. Provide a CapRover template for easy PaaS-like deployment on a personal server.
+15. Publish an official setup for deploying via Porter.
 
-### Free Ways of Gathering More Useful and Relevant Data
-31. Parse User-Agent strings to build aggregate reports on the most popular OS and browser versions accessing the platform.
-32. Track the sequence of visited pages (clickpaths) using lightweight cookie-less local storage arrays to identify common workflows.
-33. Record the average time taken to complete the "seal file" form to identify UX bottlenecks.
-34. Log geographic regions (anonymized at the country level via IP mapping) to see where the product is most popular.
-35. Monitor the frequency of specific search terms in the dashboard to identify what users struggle to find.
-36. Track the usage ratio between the light and dark mode settings to inform future design priorities.
-37. Count the number of repeated "failed logins" per username to identify potential brute-force targets.
-38. Measure the average size of uploaded files to optimize storage bucket provisioning.
-39. Record which external links users click from the documentation to see what external resources are most helpful.
-40. Log the frequency of use for each specific CLI flag to deprecate unused features.
+## 20 Screens of the Flutter App to Redesign
 
-### Better User Experience
-41. Display an estimated "time remaining" progress bar for sealing operations on files larger than 100MB.
-42. Add a 'confetti' animation overlay when a user successfully seals their first 100 files.
-43. Implement a "focus mode" that hides the navigation sidebar during complex M-of-N key splitting.
-44. Provide a visual diff tool that highlights the exact byte differences if a file fails verification.
-45. Implement a "lazy load" strategy for the Merkle tree visualization so large trees don't freeze the browser.
-46. Add a floating "Help" widget that displays context-sensitive documentation based on the current active URL.
-47. Support offline viewing of the local Flutter app's documentation via packaged Markdown files.
-48. Implement an "Undo Seal" feature that securely destroys the generated key and container within a 10-second window.
-49. Provide audio cues (subtle clicks or chimes) for important actions like successful key generation.
-50. Offer a 'guided mode' for novices that limits options to just the essentials, hiding advanced settings behind an 'expert' toggle.
+1. Redesign `app/lib/screens/keygen_screen.dart`: Needs an interactive, gamified entropy gathering phase (like moving the mouse or tapping randomly) with a visual particle system instead of a static button.
+2. Redesign `app/lib/screens/verify_screen.dart`: The success/failure state needs to be the primary focus, utilizing large, full-screen color changes (green/red) and haptic feedback rather than small text indicators.
+3. Redesign `app/lib/screens/batch_screen.dart`: Replace the basic list view with a staggered grid view and circular progress indicators overlaid on file thumbnails to better visualize concurrent operations.
+4. Redesign `app/lib/screens/inspect_screen.dart`: Needs a dual-pane layout for tablets/desktops; showing a hex editor view on one side and parsed, human-readable metadata on the other.
+5. Redesign `app/lib/screens/attest_screen.dart`: Implement a 'digital signature pad' interface mimicking physical signing, requiring the user to physically draw their signature for a stronger psychological commitment.
+6. Redesign `app/lib/screens/audit_screen.dart`: Move away from a chronological table and implement a visual node-graph timeline showing the branching history of file access and modifications.
+7. Redesign `app/lib/screens/canary_screen.dart`: Needs a geographical map overlay showing exactly where canary tokens have been triggered worldwide in real-time.
+8. Redesign `app/lib/screens/disclose_screen.dart`: Implement a WYSIWYG document viewer where users can use a 'highlighter' tool to select exactly which paragraphs to disclose, generating the token automatically.
+9. Redesign `app/lib/screens/redact_screen.dart`: Similar to disclose, provide a 'black marker' tool to physically draw over sensitive text in a preview image, rather than selecting block indices.
+10. Redesign `app/lib/screens/provenance_screen.dart`: Represent the chain of custody as a connected, interactive 3D blockchain visual, allowing users to rotate and inspect individual custody transfer events.
+11. Redesign `app/lib/screens/manifest_screen.dart`: Use a collapsible, 'folder tree' UI component for complex manifests, similar to a standard OS file explorer.
+12. Redesign `app/lib/screens/envelope_screen.dart`: Add a prominent, animated vault door or lock mechanism that physically animates opening/closing when operations succeed or fail.
+13. Redesign `app/lib/screens/classification_screen.dart`: Use large, color-coded 'stamps' (e.g., a big red TOP SECRET stamp) that visually overlay onto the file representation.
+14. Redesign `app/lib/screens/contract_screen.dart`: Implement a split-screen view with the document on the top and a horizontal 'carousel' of required signers on the bottom.
+15. Redesign `app/lib/screens/credential_screen.dart`: Design the UI to mimic a physical leather wallet, where different credentials look like distinct plastic cards.
+16. Redesign `app/lib/screens/excerpt_screen.dart`: Represent the Merkle tree visually; allow users to tap individual leaf nodes to select them for the excerpt proof.
+17. Redesign `app/lib/screens/share_management_screen.dart`: Use a 'puzzle piece' visual metaphor; dragging pieces together reconstructs the key.
+18. Redesign `app/lib/screens/hardware_key_screen.dart`: Add clear, animated 3D models showing exactly where to tap the NFC key or insert the USB key based on the detected device type.
+19. Redesign `app/lib/screens/network_settings_screen.dart`: Categorize settings into visual 'cards' (Proxy, Custom Node, Tor) rather than a continuous scrolling list.
+20. Redesign `app/lib/screens/error_reporting_screen.dart`: Transform it from a plain text log dump into a 'chat-style' interface where a bot asks the user what went wrong, making it less intimidating.
 
-### Improved Security
-51. Implement a mandatory "second approver" workflow for deleting files marked as TOP_SECRET.
-52. Add automatic file-type signature verification (magic bytes) independently of the file extension before processing.
-53. Introduce IP-based rate limiting on the key reconstruction endpoint to prevent brute-force attacks.
-54. Implement strict Content Security Policy (CSP) headers that completely disable inline scripts globally.
-55. Add support for physical FIDO2 security keys for super-administrator login.
-56. Create a "tamper-evident log" of all admin actions that is itself sealed in a Zegel container daily.
-57. Automatically strip all hidden metadata (like author or software tags) from uploaded PDFs before processing.
-58. Implement a 'panic button' that instantly logs out all active sessions and locks the database.
-59. Enforce a minimum entropy check on custom passwords used for key derivation.
-60. Introduce session binding to the user's initial IP address; logging out if the IP changes drastically.
+## 20 Pages of the Laravel Website to Redesign
 
-### Improved Performance
-61. Utilize Web Workers to offload the SHA-256 hashing operations from the main browser thread.
-62. Implement database query caching using Redis for frequently accessed public file metadata.
-63. Use chunked file reading in the Flutter app to prevent out-of-memory errors on multi-gigabyte files.
-64. Optimize the Merkle tree calculation algorithm to utilize SIMD instructions where supported by the architecture.
-65. Minify and bundle all CSS and JS assets to reduce the number of HTTP requests on initial load.
-66. Implement aggressive caching headers (Cache-Control) for all static assets like logos and fonts.
-67. Switch to a binary serialization format (like Protocol Buffers) for internal RPC communication instead of JSON.
-68. Use a CDN to serve the Flutter web app assets to reduce latency for global users.
-69. Optimize database indexes on the `files` table specifically for the `merkle_root` column to speed up lookups.
-70. Pre-allocate memory buffers during the AES-GCM encryption phase to avoid costly re-allocations.
-
-### Improved PII and Data Leakage Prevention
-71. Automatically mask the middle sections of email addresses displayed in the public audit logs.
-72. Ensure that uploaded file names are hashed before being stored on the server's temporary disk.
-73. Implement a strict zero-knowledge architecture where the server never sees the unencrypted file content in memory.
-74. Automatically redact standard patterns like Social Security Numbers or Credit Cards from unencrypted metadata fields.
-75. Add a "burn after reading" feature that deletes the database record the first time a file is accessed.
-76. Ensure all temporary files created during the sealing process are wiped using a secure multi-pass overwrite (DoD 5220.22-M).
-77. Restrict the export of user lists to specific IP ranges authorized by the privacy officer.
-78. Automatically obfuscate the exact time of file creation in public metadata, rounding to the nearest hour to prevent timing correlations.
-
-### Telemetry Collection
-79. Log the specific cryptographic library version used by each client to ensure old, vulnerable versions are phased out.
-80. Track the ratio of successful vs. failed seal verifications to identify potential systemic format corruption issues.
-81. Collect anonymous crash reports containing the stack trace but omitting local file paths.
-82. Monitor the frequency of "password reset" requests to gauge the usability of the login flow.
-83. Track the total volume of data sealed per day across the network to plan for database scaling.
-
-### Display of Interesting or Useful Statistics
-84. Display a dynamic "Total Data Secured" counter on the homepage, updating in real-time.
-85. Show a pie chart in the admin dashboard breaking down the usage of different classification levels (PUBLIC vs. SECRET).
-86. Provide a user-specific "Security Score" based on their use of features like expiration dates and strong passwords.
-87. Display a timeline graph showing the user's sealing activity over the past 30 days.
-88. Add a leaderboard for enterprise environments showing the departments that seal the most sensitive documents.
-
-### Collecting and Using Data for ML Features
-89. Collect metadata on which file types are most commonly associated with specific classification levels to train an auto-classifier.
-90. Analyze the timing patterns of user logins to train an anomaly detection system for account takeovers.
-91. Gather text from the "reason for declassification" fields to train a natural language summarizer for audit reports.
-92. Track user navigation paths to train a predictive pre-fetching system that loads the next likely page in the background.
-
-### (Better) CRUD Where Possible
-93. Implement soft deletes for user accounts, allowing restoration within a 30-day window before permanent deletion.
-94. Add inline editing capabilities directly within the file list view for non-cryptographic metadata (like file descriptions).
-95. Create a bulk-update interface allowing admins to change the visibility status of hundreds of files simultaneously.
-96. Implement version control for document metadata, storing a history of changes to descriptions and tags.
-
-### Standardized Components (SOLID and DRY)
-97. Extract the common date-picking logic into a single, highly reusable Web Component used across all forms.
-98. Refactor the various API response formatters into a central `ResponseFactory` class to ensure consistent JSON structures.
-
-### Features Encouraging Interaction
-99. Add a "request verification" button allowing users to ping peers to verify a specific document's integrity.
-100. Implement a shared "team workspace" where members can leave comments on the metadata of a sealed document.
-
-## 2. 15 Installation and Hosting Improvements
-1. Provide a single-line installation script (`curl -sL https://zegel.local/install | bash`) for instant server deployment.
-2. Publish official Helm charts for deploying the application on Kubernetes clusters.
-3. Create an automated AWS CloudFormation template that provisions the database, load balancer, and application servers.
-4. Supply a pre-configured Vagrantfile for local virtual machine development setups.
-5. Publish a fully configured Docker Compose file that includes the application, database, Redis cache, and an Nginx reverse proxy.
-6. Implement a web-based setup wizard that automatically checks server requirements (PHP extensions, memory limits) before installation.
-7. Provide an interactive CLI setup tool (`php artisan zegel:install`) that prompts for database credentials and admin details.
-8. Support seamless integration with SQLite for zero-configuration local testing environments.
-9. Package the Laravel application into a single executable Phar archive for easier distribution.
-10. Include an automatic Let's Encrypt SSL certificate generation script within the deployment process.
-11. Add a `make deploy` command that automates the steps of pulling code, installing dependencies, and running migrations.
-12. Create a standardized configuration file (`zegel.toml`) that consolidates environment variables for easier management.
-13. Publish an official Terraform provider or module for declarative infrastructure management.
-14. Provide a script to automatically configure log rotation (logrotate) for server logs to prevent disk exhaustion.
-15. Include a health check endpoint (`/api/health`) out of the box for integration with external monitoring tools like Uptime Kuma.
-
-## 3. Redesign Recommendations: 40 Screens and Pages
-
-### 20 Flutter App Screens to Redesign
-1. **Seal Screen:** Move from a linear form to a step-by-step wizard to reduce cognitive load when configuring complex cryptographic options.
-2. **Verify Screen:** Replace the dense text output with a visual representation of the file, highlighting the exact location of any tampering.
-3. **Contract Screen:** Redesign the multi-party signing flow as a circular "round-table" graphic to clearly show who has and hasn't signed.
-4. **Credential Screen:** Structure the view like a physical diploma or ID card rather than a standard data list for better contextual understanding.
-5. **Batch Screen:** Implement a grid layout with progress rings on each file instead of a single long list, allowing better oversight of concurrent operations.
-6. **Classification Screen:** Use distinct, bold color coding (e.g., bright red for TOP_SECRET) covering the entire screen header to instantly communicate the security level.
-7. **Manifest Screen:** Redesign as a hierarchical tree view to clearly show the relationship between the master manifest and its individual files.
-8. **Excerpt Screen:** Use a split-pane layout showing the full document outline on the left and the specific excerpt proof details on the right.
-9. **Provenance Screen:** Convert the chronological list into a vertical timeline with connecting lines and distinct icons for different event types.
-10. **Settings Screen:** Group settings into logical, expandable cards instead of one long, scrolling list for easier navigation.
-11. **Key Generation Screen:** Add an interactive entropy visualization (like a filling bar) that reacts to user mouse movements or typing.
-12. **Split Key Screen:** Redesign to physically show "pieces" of a puzzle being generated to better explain the M-of-N concept.
-13. **Reconstruct Key Screen:** Create a visually satisfying "combination lock" interface where shares slot into place.
-14. **Dashboard/Home Screen:** Shift from a static list to a dynamic grid of interactive widgets showing recent activity and system status.
-15. **File Details Screen:** Introduce a tabbed interface (Metadata, Crypto, Provenance) to organize the overwhelming amount of file information.
-16. **User Profile Screen:** Focus the layout on the user's public cryptographic identity, prominently displaying their public key fingerprint.
-17. **Redaction Screen:** Implement a visual interface where users can "black out" sections of the file representation to simulate redaction.
-18. **Share/Disclose Screen:** Use a timeline interface to clearly define the expiration date and constraints of the shared token.
-19. **Onboarding Screen:** Replace static text slides with interactive micro-tutorials that require the user to perform basic actions (like dragging a file).
-20. **Error/Failure Screen:** Shift from generic error popups to full-screen explanations with clear, actionable steps to resolve the specific cryptographic failure.
-
-### 20 Laravel Website Pages to Redesign
-1. **Landing Page:** Redesign the hero section to include an interactive 3D animation of a sealing process instead of static illustrations.
-2. **Login Page:** Move the login form to an off-canvas sidebar that slides in, allowing the main background to display dynamic security stats.
-3. **Registration Page:** Break the signup process into a multi-step form with inline validation to improve conversion rates.
-4. **User Dashboard:** Redesign as a customizable grid where users can pin their most frequently accessed files and metrics.
-5. **File Directory Page:** Implement a dual-pane view: a folder tree on the left and a detailed list/grid on the right.
-6. **File Detail/Certificate Page:** Style the public certificate view to resemble a physical, watermarked document to increase trust for laypeople.
-7. **Audit Log Page:** Convert the standard data table into a searchable, filterable log stream resembling a terminal output for better data density.
-8. **Settings > Profile:** Introduce a modal interface for sensitive actions (like changing passwords) rather than navigating to a new page.
-9. **Settings > Security:** Visualize active sessions on a global map, making it easier to spot unauthorized access locations.
-10. **Admin > User Management:** Replace the basic list with a detailed grid view showing user avatars, roles, and quick-action buttons.
-11. **Admin > System Metrics:** Upgrade static charts to real-time, WebGL-powered graphs for performance monitoring.
-12. **Public File Gallery:** Switch from a list to a Pinterest-style masonry grid for visually browsing public files.
-13. **Documentation > API Reference:** Redesign using a three-column layout (navigation, content, code examples) standard in modern API docs (like Stripe).
-14. **Forgot Password Page:** Simplify the UI to focus entirely on the single email input field, removing extraneous header/footer links.
-15. **Pricing/Plans Page (if applicable):** Use interactive sliders to calculate storage costs instead of static pricing tiers.
-16. **Privacy Policy Page:** Implement an interactive table of contents and a 'TL;DR' summary box at the top of each dense legal section.
-17. **Upload/Dropzone Page:** Make the entire screen a valid drop target with a massive, responsive 'target' animation when dragging a file over the window.
-18. **Search Results Page:** Redesign to categorize results automatically (Files, Users, Documentation) in distinct, tabbed sections.
-19. **Notification Center:** Move from a dedicated page to a slide-out drawer accessible from anywhere in the app via the top navigation bar.
-20. **404/Error Page:** Design a custom, brand-aligned error page featuring a "broken seal" graphic and a prominent search bar to get users back on track.
+1. Redesign `website/resources/views/welcome.blade.php`: Replace the static hero image with an interactive terminal simulator showing the Zegel CLI in action.
+2. Redesign `website/resources/views/home.blade.php`: Transform the dashboard into a customizable 'Kanban board' style view for tracking files requiring signatures or verification.
+3. Redesign `website/resources/views/auth/register.blade.php`: Convert the long form into a conversational, step-by-step 'Typeform' style wizard.
+4. Redesign `website/resources/views/admin/dashboard.blade.php`: Implement a dense, 'Bloomberg Terminal' style layout for power users, maximizing data density and minimizing whitespace.
+5. Redesign `website/resources/views/files/show.blade.php`: Create a 'certificate of authenticity' view that looks like a formal, printable document with a dynamic QR code.
+6. Redesign `website/resources/views/admin/audit/index.blade.php`: Use a 'stock chart' style visualizer for audit events to quickly identify spikes in anomalous activity.
+7. Redesign `website/resources/views/user/profile.blade.php`: Implement a 'security score' gauge widget front-and-center, prompting the user to complete actions (enable 2FA, add recovery) to reach 100%.
+8. Redesign `website/resources/views/downloads/index.blade.php`: Change the list view to a 'software store' layout with large icons, version release notes, and prominent download buttons.
+9. Redesign `website/resources/views/search/index.blade.php`: Implement a 'command palette' style full-screen modal (similar to macOS Spotlight) that searches files, users, and settings simultaneously.
+10. Redesign `website/resources/views/legal/privacy.blade.php`: Use an 'accordion' layout that summarizes each complex legal clause into a simple, plain-english sentence.
+11. Redesign `website/resources/views/verify/index.blade.php`: Create a massive, screen-filling 'drop zone' that pulses to encourage users to drag and drop files directly onto the page.
+12. Redesign `website/resources/views/installer/index.blade.php`: Represent the installation process as a 'subway map' visual, showing the user exactly where they are in the setup journey.
+13. Redesign `website/resources/views/admin/users/index.blade.php`: Implement a 'data grid' similar to Excel, allowing admins to bulk-edit user permissions inline without opening individual pages.
+14. Redesign `website/resources/views/admin/settings/index.blade.php`: Organize settings using a left-hand vertical navigation menu (like standard macOS/Windows settings) instead of long scrolling pages.
+15. Redesign `website/resources/views/partials/navbar.blade.php`: Implement a 'mega menu' dropdown that reveals secondary navigation options and recent files without requiring a click.
+16. Redesign `website/resources/views/partials/footer.blade.php`: Streamline the footer into a minimalist 'sitemap' grid, removing unnecessary logos and reducing vertical height.
+17. Redesign `website/resources/views/errors/404.blade.php`: Create an interactive, themed mini-game (like the Chrome dinosaur) to reduce user frustration when hitting a dead link.
+18. Redesign `website/resources/views/user/api_keys/create.blade.php`: Use a 'scratch-off' visual effect where the user has to click/drag to reveal the secret key, emphasizing its sensitivity.
+19. Redesign `website/resources/views/admin/system_health.blade.php`: Replace raw metrics with a 3D visual 'server rack', color-coding individual 'blades' based on CPU/Memory usage.
+20. Redesign `website/resources/views/public/developer_portal.blade.php`: Implement an interactive, split-screen API explorer (like Swagger UI) allowing developers to test endpoints directly in the browser.
